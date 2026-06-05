@@ -90,7 +90,7 @@ def main() -> int:
     else:
         before = DIST.read_bytes()
         build = subprocess.run(
-            ["python", str(ROOT / "build_single_file.py")], capture_output=True, text=True
+            [sys.executable, str(ROOT / "build_single_file.py")], capture_output=True, text=True
         )
         if build.returncode != 0:
             failures.append("bundler failed to run:\n" + build.stderr)
