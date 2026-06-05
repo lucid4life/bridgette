@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bridgette Bar Calgary Menu, Wine & Pairing Dashboard</title>
+  <meta name="description" content="A Calgary-only Bridgette Bar menu, wine, cocktail, and pairing study dashboard.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to dashboard</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div>
+        <p class="eyebrow">Calgary-only reference dashboard</p>
+        <h1>Bridgette Bar Calgary</h1>
+        <p class="lede">Menu, Wine & Pairing Dashboard for learning the food, talking about the wines, recommending cocktails, and making confident table-friendly pairings.</p>
+      </div>
+      <aside class="source-panel" aria-label="Source note">
+        <p><strong>Menu reference checked: June 4, 2026</strong></p>
+        <p>Built from the public Calgary food, drink, dessert/digestif, and matinee/late-night menus. Verify nightly menu changes, 86s, BTG availability, and allergy language with the team.</p>
+        <p>Use it to learn patterns, then confirm details, allergies, stock, and staff language with the Bridgette team.</p>
+      </aside>
+    </div>
+  </header>
+
+  <nav class="top-nav" aria-label="Dashboard sections">
+    <div class="nav-inner">
+      <a class="nav-link" href="#start">Start</a>
+      <a class="nav-link" href="#drill">Service Drill</a>
+      <a class="nav-link" href="#wine">Wine Guide</a>
+      <a class="nav-link" href="#food">Food Guide</a>
+      <a class="nav-link" href="#pairing">Pairing Dashboard</a>
+      <a class="nav-link" href="#drinks">Cocktails, Beer & Zero-Proof</a>
+      <a class="nav-link" href="#notes">Notes & Print</a>
+    </div>
+  </nav>
+
+  <main id="main">
+    <div class="toolbar" aria-label="Search and filters">
+      <div class="global-search">
+        <div class="field">
+          <label for="globalSearch">Search the dashboard</label>
+          <input id="globalSearch" type="search" placeholder="Try riesling, oysters, steak, spicy, zero-proof, dessert..." autocomplete="off">
+        </div>
+      </div>
+      <div class="chip-row" role="group" aria-label="Quick filters">
+        <button class="chip active" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-filter="safe" aria-pressed="false">First Shift</button>
+        <button class="chip" type="button" data-filter="wine" aria-pressed="false">Wine</button>
+        <button class="chip" type="button" data-filter="food" aria-pressed="false">Food</button>
+        <button class="chip" type="button" data-filter="cocktail" aria-pressed="false">Cocktails</button>
+        <button class="chip" type="button" data-filter="seafood" aria-pressed="false">Seafood</button>
+        <button class="chip" type="button" data-filter="steak" aria-pressed="false">Steak</button>
+        <button class="chip" type="button" data-filter="spice" aria-pressed="false">Spice</button>
+        <button class="chip" type="button" data-filter="zero-proof" aria-pressed="false">Zero-Proof</button>
+      </div>
+    </div>
+    <p id="liveStatus" class="eyebrow" aria-live="polite">Showing all dashboard cards.</p>
+
+    <section class="section dark" id="start">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Start here</p>
+          <h2 class="section-title">What To Learn First</h2>
+          <p class="section-sub">This is the high-yield version: learn a few safe wines, learn why they work, then connect them to the plates guests actually order.</p>
+        </div>
+        <button class="btn gold" type="button" data-print="cheat">Print quick cheat sheet</button>
+      </div>
+      <div class="section-body">
+        <div class="start-grid">
+          <div class="callout">
+            <h3>Five safe first recommendations</h3>
+            <ul class="plain-list">
+              <li><strong>Blue Mountain Brut:</strong> oysters, fries, crudo, burrata, seafood. Bubbles plus acid makes salt and fat feel lighter.</li>
+              <li><strong>Hiedler Loss Gruner Veltliner:</strong> green, tangy, spicy, yogurt, tahini, cucumber, herbs. Crisp and peppery without being weird.</li>
+              <li><strong>Darting Durkheimer Fronhof Riesling:</strong> chili, jalapeno, honey spice, pickle, sausage. Do not oversell sweetness until tasted.</li>
+              <li><strong>Bindi Sergardi La Boncia Sangiovese:</strong> tomato, pizza, pasta, salami, steak. Sour-cherry acidity is your tomato friend.</li>
+              <li><strong>St. John Claret:</strong> steak, ribeye, mushrooms, duck, richer pasta. Black-fruit Bordeaux shape without needing a speech.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h3>Server wine translator</h3>
+            <ul class="plain-list">
+              <li><strong>High acid:</strong> fresh, bright, mouthwatering.</li>
+              <li><strong>Tannin:</strong> dry grip, like strong black tea.</li>
+              <li><strong>Mineral:</strong> salty, stony, clean.</li>
+              <li><strong>Medium body:</strong> not heavy, not thin.</li>
+              <li><strong>Fruit-forward:</strong> fruity does not automatically mean sweet.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-grid">
+          <div class="mini"><b>Salt</b> Salt makes wine taste softer and fruitier. Fries, oysters, olives, and salami love bright wine.</div>
+          <div class="mini"><b>Fat</b> Fat wants acid, bubbles, tannin, or bitterness. Cheese, steak, duck, and fried food need a reset.</div>
+          <div class="mini"><b>Spice</b> Heat can make alcohol and tannin feel hotter. Use Riesling, rose, beer, or fruit-forward cocktails.</div>
+          <div class="mini"><b>Intensity</b> Match weight. Light seafood wants fresh whites; ribeye wants Claret, Nebbiolo, Monastrell, or richer cocktails.</div>
+        </div>
+        <div class="practice-strip" aria-label="Table recommendation rhythm">
+          <div class="practice-step"><b>Ask</b> Find the lane first: crisp, richer, red, cocktail, or no alcohol.</div>
+          <div class="practice-step"><b>Match</b> Use the dish weight, salt, fat, spice, and sauce before naming a drink.</div>
+          <div class="practice-step"><b>Explain</b> Give one reason only: acid cuts fat, bubbles refresh, tannin handles steak, or Riesling calms heat.</div>
+          <div class="practice-step"><b>Confirm</b> Mention allergies, sweetness, stock, or premium bottle details only after checking when needed.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="drill">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Service Drill</p>
+          <h2 class="section-title">Practice The Table Moment</h2>
+          <p class="section-sub">Use this when you want active recall instead of reading. Pick a lane, answer out loud, then reveal the pairing, table phrase, and confirm note.</p>
+        </div>
+        <button class="btn primary" type="button" id="newDrillTop">New prompt</button>
+      </div>
+      <div class="section-body">
+        <div class="drill-shell">
+          <div class="drill-checklist">
+            <h3>How to answer</h3>
+            <ul class="plain-list">
+              <li><strong>Name the lane:</strong> crisp white, richer white, light red, steak red, cocktail, beer, or zero-proof.</li>
+              <li><strong>Give one reason:</strong> acid, bubbles, tannin, salt, fat, spice, or intensity.</li>
+              <li><strong>Say it like service:</strong> short, confident, and easy for the guest to understand.</li>
+              <li><strong>Confirm:</strong> allergies, 86s, sweetness, egg whites, milk wash, raw seafood, and bottle details.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="drill-tabs" role="group" aria-label="Service drill type">
+              <button class="chip active" type="button" data-drill-type="food" aria-pressed="true">Food Pairing</button>
+              <button class="chip" type="button" data-drill-type="wine" aria-pressed="false">Wine Talk</button>
+              <button class="chip" type="button" data-drill-type="cocktail" aria-pressed="false">Cocktail Lane</button>
+              <button class="chip" type="button" data-drill-type="safety" aria-pressed="false">Safety Check</button>
+            </div>
+            <article class="drill-card" aria-live="polite">
+              <div class="drill-card-head">
+                <p class="drill-label" id="drillTypeLabel">Food Pairing</p>
+                <p class="drill-prompt" id="drillPrompt">Loading prompt...</p>
+              </div>
+              <div class="drill-card-body">
+                <div class="answer-box" id="drillAnswer" hidden></div>
+                <div class="drill-actions">
+                  <button class="btn primary" type="button" id="revealDrill" aria-expanded="false" aria-controls="drillAnswer">Reveal answer</button>
+                  <button class="btn" type="button" id="newDrill">New prompt</button>
+                  <button class="btn" type="button" id="jumpToPairing">Use pairing builder</button>
+                </div>
+                <p id="drillStatus" class="meta" aria-live="polite">Prompt ready.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="wine">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Wine Guide</p>
+          <h2 class="section-title">By-The-Glass Confidence Builder</h2>
+          <p class="section-sub">The goal is not to sound like a textbook. The goal is to know the style, know the best foods, and have one natural sentence ready.</p>
+        </div>
+        <button class="btn primary" type="button" data-print="wine">Print wine guide</button>
+      </div>
+      <div class="section-body">
+        <div class="callout translator-intro" id="guestAskTranslator">
+          <h3>Common guest ask translator</h3>
+          <p>When a guest asks for a familiar varietal, anchor them first: "We do not have that exact glass, but I can put you in the same lane." Then choose by weight: crisp white, round white, light red, juicy red, steak red, bubbles, or rose.</p>
+          <p class="meta">Search helpers: Cab, Cabernet, Merlot, Malbec, Shiraz, Syrah, Sauvignon Blanc, Pinot Grigio, Pinot Gris, Chardonnay, Chablis, Prosecco, Champagne, Riesling, Moscato, Chianti, Rioja, Zinfandel, house white, house red.</p>
+        </div>
+        <div class="scroll-wrap" role="region" aria-label="Common wine varietal substitute table" tabindex="0">
+          <table class="matrix translator-table">
+            <caption>Use this table when a guest asks for a common varietal and the Calgary list uses a more niche wine.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Guest asks for</th>
+                <th scope="col">Best Bridgette answer</th>
+                <th scope="col">Second or bottle option</th>
+                <th scope="col">What feels familiar</th>
+                <th scope="col">What feels different / phrase</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Chardonnay</th>
+                <td><strong>Bodega Cerron Remordimiento Blanco</strong> by the glass.</td>
+                <td><strong>Eleonore Moreau Petit Chablis</strong>, <strong>Mount Eden Wolff Vineyard</strong>, or <strong>Meursault</strong> for a bottle.</td>
+                <td>Same grape. Fuller white lane with pear, ripe lemon, and enough roundness for seafood, butter, trout, cod, crab, and creamy pasta.</td>
+                <td>It may not read as a heavy butter-and-vanilla Chardonnay. Say: "This is our fuller Chardonnay-style glass; if you want a more classic premium Chardonnay bottle, I can show you Chablis, Mount Eden, or Meursault."</td>
+              </tr>
+              <tr>
+                <th scope="row">Oaky or buttery Chardonnay</th>
+                <td><strong>Bodega Cerron Blanco</strong> if they want a glass and food-friendly richness.</td>
+                <td><strong>Mount Eden Wolff Vineyard</strong>, <strong>Domaine de la Rochette Macon-Bussieres</strong>, or <strong>Meursault</strong>.</td>
+                <td>Rounder body, ripe citrus, pear, and texture. Works with garlic bread, shrimp and crab, cod, trout, and ricotta dumplings.</td>
+                <td>Be honest: "It is the richer white lane, but not a sweet butter bomb. If you want more premium Chardonnay depth, the bottles are stronger."</td>
+              </tr>
+              <tr>
+                <th scope="row">Sauvignon Blanc</th>
+                <td><strong>Hiedler Loss Gruner Veltliner</strong> for a crisp, bright glass.</td>
+                <td><strong>Denizot Sancerre</strong> if they want Sauvignon Blanc by the bottle; <strong>Landron Muscadet</strong> for seafood crispness.</td>
+                <td>High freshness, citrus, green/herbal lift, and a clean finish. Great for cucumber, herbs, seafood, oysters, and tangy dishes.</td>
+                <td>Gruner is less grassy and more white-peppery. Say: "If you like Sauvignon for crispness, I would go Gruner by the glass; if you want the exact grape, Sancerre is our bottle lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Pinot Grigio / Pinot Gris</th>
+                <td><strong>Wagner Stempel Weissburgunder</strong> for a soft, easy white.</td>
+                <td><strong>Hiedler Loss</strong> for a brighter crisp style; <strong>Maloof Where Ya Pjs At?</strong> for a skin-contact Pinot Gris bottle.</td>
+                <td>Light-to-medium feel, pear/apple fruit, and an easy-drinking shape. Good with chicken, cheese, potatoes, salads, and lighter snacks.</td>
+                <td>Pinot Blanc is softer and calmer than many sharp Pinot Grigios. Say: "This is the comfortable easy white; if you want more zip, I would move you to the Gruner."</td>
+              </tr>
+              <tr>
+                <th scope="row">Riesling</th>
+                <td><strong>Darting Durkheimer Fronhof Riesling</strong> by the glass.</td>
+                <td><strong>Donnhoff Feinherb</strong> by the bottle for a more classic German Riesling lane.</td>
+                <td>Peach, lime, racy freshness, and a strong match for chili, pickle, honey spice, pork sausage, sprouts, and salty food.</td>
+                <td>Do not promise bone-dry or sweet until tasted. Say: "Riesling is our best problem solver for spice; it has fruit and freshness, and I can confirm the sweetness level for you."</td>
+              </tr>
+              <tr>
+                <th scope="row">Moscato / sweet white</th>
+                <td><strong>Darting Riesling</strong> if they want fruit and freshness with a table wine.</td>
+                <td><strong>Valdespino Cream Sherry</strong>, <strong>Tawny Port</strong>, or dessert wine lanes after food.</td>
+                <td>Riesling gives peachy fruit and aromatic lift, which can satisfy guests asking for a softer white.</td>
+                <td>There is not a true Moscato-style glass. Say: "We do not have a sweet Moscato, but Riesling is the closest fruity white. For dessert, I can move you into sherry or port."</td>
+              </tr>
+              <tr>
+                <th scope="row">Rose</th>
+                <td><strong>Ameztoi Rubentis</strong> for bright, dry, coastal rose with a tiny spritz.</td>
+                <td><strong>Leitz Eins Zwei Dry Rose</strong> for cleaner red berry and less salty/spritzy character.</td>
+                <td>Dry, refreshing, pink, seafood-friendly, and easy with salads, crudo, burrata, pizza, squash, and chicken.</td>
+                <td>Ameztoi is more saline and energetic; Leitz is more classic and easy. Say: "Ameztoi is the fun coastal rose; Leitz is the clean dry rose."</td>
+              </tr>
+              <tr>
+                <th scope="row">Prosecco / Champagne</th>
+                <td><strong>Blue Mountain Brut</strong> for dry, crisp bubbles by the glass.</td>
+                <td><strong>Griesel Blanc de Noirs</strong> or <strong>Christophe Mignon Adn de Meunier Brut Nature</strong> for a premium bottle; <strong>Fattoria Moretto Lambrusco</strong> for sparkling red.</td>
+                <td>Bubbles, acid, freshness, and celebration feel. Great with oysters, fries, crudo, burrata, seafood, and salty snacks.</td>
+                <td>Blue Mountain is drier and more Champagne-shaped than Prosecco. Say: "If you want bubbles, Blue Mountain is our crisp BC brut; if you want Champagne energy in a bottle, I can show you the Blanc de Noirs or Meunier."</td>
+              </tr>
+              <tr>
+                <th scope="row">Pinot Noir</th>
+                <td><strong>Deinhard Deidesheim Pinot Noir</strong> by the glass.</td>
+                <td><strong>Pierre Thibert Chorey-les-Beaune</strong> for Burgundy; <strong>Kistler</strong> for premium Russian River Pinot.</td>
+                <td>Light red body, cherry/strawberry fruit, soft tannin, and an earthy lane for mushrooms, carpaccio, duck, trout, and lighter red drinkers.</td>
+                <td>The German Pinot is lighter and brighter than many California Pinots. Say: "This is the soft, lighter red. If you want a richer Pinot bottle, I would go Burgundy or Kistler."</td>
+              </tr>
+              <tr>
+                <th scope="row">Cabernet Sauvignon</th>
+                <td><strong>St. John Claret</strong> by the glass.</td>
+                <td><strong>White Rock Cabernet Sauvignon</strong>, <strong>Chateau Larose Perganson</strong>, or <strong>Aia Vecchia Sor Ugo</strong> by the bottle.</td>
+                <td>Dark fruit, structure, cedar/savoury Bordeaux shape, and enough grip for strip steak, ribeye, mushrooms, duck, and richer pasta.</td>
+                <td>Claret is Cabernet blended with Merlot, so it is a little softer than a big Napa Cab. Say: "For a Cab drinker, Claret is the safest glass; if you want true Napa Cabernet, White Rock is the bottle."</td>
+              </tr>
+              <tr>
+                <th scope="row">Merlot</th>
+                <td><strong>St. John Claret</strong> for the glass, because it includes Merlot and Cabernet Sauvignon.</td>
+                <td><strong>Whitehall Lane Merlot</strong> for the exact grape by the bottle.</td>
+                <td>Plum, dark fruit, smoother texture than straight Cabernet, and a steak-friendly red that is not too aggressive.</td>
+                <td>Claret is more savoury/Bordeaux than plush California Merlot. Say: "This is the Merlot-Cab blend by the glass; if you want a true Merlot bottle, Whitehall Lane is the move."</td>
+              </tr>
+              <tr>
+                <th scope="row">Malbec</th>
+                <td><strong>Bodega Cerron Remordimiento Tinto</strong> for a darker, fuller red glass.</td>
+                <td><strong>St. John Claret</strong> for a more classic steak-red shape; <strong>Gulfi Nerojbleo</strong> for a bigger dark-fruit bottle.</td>
+                <td>Plum, blackberry, spice, fuller body, and a good match for lamb, sausage, ribeye, squash, and smoky richness.</td>
+                <td>It is Monastrell/Garnacha, not Malbec, so it is more Spanish, smoky, and savoury. Say: "If you like Malbec for dark fruit and body, this Spanish red is the closest glass."</td>
+              </tr>
+              <tr>
+                <th scope="row">Shiraz / Syrah</th>
+                <td><strong>Bodega Cerron Tinto</strong> if they want a dark, spicy red by the glass.</td>
+                <td><strong>Texier Brezeme Syrah</strong> for the exact grape by the bottle; <strong>Gigondas</strong> for a Southern Rhone blend with Grenache/Syrah/Mourvedre.</td>
+                <td>Dark fruit, spice, savoury depth, and enough weight for lamb, sausage, ribeye, and smoky dishes.</td>
+                <td>Australian Shiraz is often plusher; Texier Syrah is more savoury and peppery. Say: "By the glass I would use the Spanish red; for true Syrah, Texier is the bottle lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Chianti / Sangiovese</th>
+                <td><strong>Bindi Sergardi La Boncia</strong> by the glass.</td>
+                <td><strong>Castello di Potentino Sacromonte</strong> or <strong>Aia Vecchia Sor Ugo</strong> if they want a richer Italian bottle.</td>
+                <td>Exact Sangiovese lane: sour cherry, herbs, tomato-friendly acidity, and a natural fit for Margherita, pasta, salami, and ricotta dumplings.</td>
+                <td>It is fresher and more food-driven than jammy. Say: "This is the classic tomato-and-pizza red; if the table is going richer, I can move you into a bigger Italian bottle."</td>
+              </tr>
+              <tr>
+                <th scope="row">Zinfandel</th>
+                <td><strong>Sindicat la Figuera Grenache</strong> for juicy red fruit and warm spice.</td>
+                <td><strong>Bodega Cerron Tinto</strong> for darker fruit and more body.</td>
+                <td>Generous fruit, spice, and comfort with salami, sausage, lamb, duck, and honey-chili pizza.</td>
+                <td>These are less jammy and less high-alcohol than many Zinfandels. Say: "We do not have Zin, but this Grenache gives you the juicy, spicy red-fruit lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Rioja / Tempranillo</th>
+                <td><strong>Bindi Sergardi Sangiovese</strong> for red fruit, herbs, and food-friendly acidity by the glass.</td>
+                <td><strong>Algre Valgañon</strong> for Tempranillo & Grenache by the bottle.</td>
+                <td>Red-fruit savoury profile, herbs, and a flexible pairing lane for tomato, salami, roasted meat, and mushrooms.</td>
+                <td>No Tempranillo by the glass. Say: "For Rioja energy by the glass, I would use Sangiovese for freshness or Grenache for warmth; the exact Rioja-style bottle is Algre Valgañon."</td>
+              </tr>
+              <tr>
+                <th scope="row">Chablis</th>
+                <td><strong>Hiedler Loss Gruner Veltliner</strong> if they need a crisp, mineral-feeling glass.</td>
+                <td><strong>Eleonore Moreau Petit Chablis</strong> for the exact Chablis lane by bottle.</td>
+                <td>Freshness, citrus, clean seafood compatibility, and a leaner feel than round Chardonnay.</td>
+                <td>Gruner is not Chardonnay, but it solves the same crisp seafood-white request. Say: "If Chablis is the ask, the bottle is exact; for a glass, I would put you in the crisp Gruner lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Bordeaux / red blend</th>
+                <td><strong>St. John Claret</strong> by the glass.</td>
+                <td><strong>Chateau Larose Perganson</strong> for Bordeaux; <strong>Aia Vecchia Sor Ugo</strong> for a polished Super Tuscan blend.</td>
+                <td>Merlot/Cabernet structure, dark fruit, savoury edges, and steak-table confidence.</td>
+                <td>This is one of the cleanest matches. Say: "Claret is the Bordeaux-style blend by the glass; if you want to build the table around a bottle, Larose Perganson is the direct upgrade."</td>
+              </tr>
+              <tr>
+                <th scope="row">House white / easy white</th>
+                <td><strong>Wagner Stempel Weissburgunder</strong> for soft and easy; <strong>Hiedler Loss</strong> for crisp and bright.</td>
+                <td><strong>Dona Matilde Branco</strong> for a flexible food white with citrus, herbs, and texture.</td>
+                <td>Approachable white wine without needing a long explanation.</td>
+                <td>Ask one question: "Do you want softer and pear-like, or crisp and bright?" Then choose Wagner for soft or Gruner for crisp.</td>
+              </tr>
+              <tr>
+                <th scope="row">House red / easy red</th>
+                <td><strong>Bindi Sergardi Sangiovese</strong> for pizza/pasta; <strong>Deinhard Pinot Noir</strong> for lighter red.</td>
+                <td><strong>St. John Claret</strong> if the table is ordering steak, mushrooms, or richer mains.</td>
+                <td>Easy red choices by food lane: tomato, light red, or steak red.</td>
+                <td>Ask one question: "Are we pairing with pizza/pasta, or something richer like steak?" Then move them to Sangiovese, Pinot, or Claret.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3 class="subsection-title">By-The-Glass Cards</h3>
+        <div class="cards" id="wineCards"></div>
+      </div>
+    </section>
+
+    <section class="section" id="food">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Food Guide</p>
+          <h2 class="section-title">Menu Cards With Pairing Ideas</h2>
+          <p class="section-sub">Each card is built around what matters at the table: flavour, allergy/safety flags, a wine, a cocktail, a zero-proof/beer option, and the guest-friendly recommendation angle.</p>
+        </div>
+        <button class="btn primary" type="button" data-print="food">Print food matrix</button>
+      </div>
+      <div class="section-body">
+        <div class="cards" id="foodCards"></div>
+      </div>
+    </section>
+
+    <section class="section dark" id="pairing">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Pairing Dashboard</p>
+          <h2 class="section-title">Pick A Dish, Build The Recommendation</h2>
+          <p class="section-sub">Use this when you need one smart answer quickly. It gives a glass, a bottle lane, a cocktail, a zero-proof option, the reason, and a table phrase.</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="select-grid">
+          <div>
+            <label for="dishSelect">Dish</label>
+            <select id="dishSelect"></select>
+          </div>
+          <div>
+            <label for="styleSelect">Guest style</label>
+            <select id="styleSelect">
+              <option value="safe">Safe and easy</option>
+              <option value="bright">Bright and refreshing</option>
+              <option value="bold">Bigger and richer</option>
+              <option value="adventurous">Adventurous</option>
+              <option value="zero">Skipping alcohol</option>
+            </select>
+          </div>
+          <div>
+            <label for="formatSelect">Format</label>
+            <select id="formatSelect">
+              <option value="glass">By the glass</option>
+              <option value="bottle">Bottle upgrade</option>
+              <option value="cocktail">Cocktail</option>
+              <option value="zero">Zero-proof</option>
+            </select>
+          </div>
+          <div>
+            <label for="budgetSelect">Budget cue</label>
+            <select id="budgetSelect">
+              <option value="normal">Comfortable</option>
+              <option value="value">Value-focused</option>
+              <option value="premium">Special occasion</option>
+            </select>
+          </div>
+        </div>
+        <div class="result-panel" id="pairingResult" aria-live="polite"></div>
+        <h3 class="subsection-title">Quick Pairing Matrix</h3>
+        <div class="scroll-wrap" role="region" aria-label="Quick pairing matrix" tabindex="0">
+          <table class="matrix" id="pairingMatrix"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="drinks">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Drinks</p>
+          <h2 class="section-title">Cocktails, Beer & Zero-Proof</h2>
+          <p class="section-sub">Sell cocktails by flavour, not by listing every ingredient. The guest usually wants a lane: spicy, floral, tropical, bitter, rich, crisp, or no alcohol.</p>
+        </div>
+        <button class="btn primary" type="button" data-print="drinks">Print drinks map</button>
+      </div>
+      <div class="section-body">
+        <h3 class="subsection-title compact">Cocktail Map</h3>
+        <div class="cards" id="cocktailCards"></div>
+        <div class="two-col stack-top">
+          <div class="callout">
+            <h3>Beer and zero-proof lanes</h3>
+            <div id="beerZero"></div>
+          </div>
+          <div class="callout">
+            <h3>Dessert & Digestifs</h3>
+            <p><strong>Chocolate Pot de Creme:</strong> Domaine Pouderoux Vendage; premium backup Taylor Fladgate Tawny 40yr.</p>
+            <p><strong>Apple Tatin:</strong> Barbeito Madeira Rainwater Reserva 5yr; spirit-forward backup Boulard XO or Christian Drouin XO.</p>
+            <p><strong>The Banana Pie:</strong> Valdespino Cream Sherry Isabela; cozy backup Quevado Tawny 10yr or Averna.</p>
+            <p><strong>After richer plates:</strong> Montenegro, Averna, Nonino, or Fernet Branca.</p>
+          </div>
+        </div>
+        <div class="callout stack-top">
+          <h3>Safety notes to confirm with the team</h3>
+          <ul class="plain-list">
+            <li><strong>Spaghetti Western</strong> contains nuts.</li>
+            <li><strong>Short Film</strong> carries a sesame allergy note.</li>
+            <li><strong>Heartbreak Mountain</strong> and <strong>Lovers Mountain</strong> are milk washed.</li>
+            <li><strong>Cloud 9</strong> lists egg whites; confirm egg-white allergy and vegan language before recommending.</li>
+            <li><strong>Oysters</strong> and <strong>Tuna Crudo</strong> are raw seafood; <strong>Wood Roasted Cod</strong> includes shellfish broth; <strong>Shrimp & Crab</strong> contains shellfish.</li>
+            <li>Food nut flags include Cashews, Burrata Cheese with pine nuts, Spiced Beet Salad with pistachio, Endive with pecan, Smashed Cucumbers with almond, and Winter Squash with peanut pesto.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="notes">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Notes and print</p>
+          <h2 class="section-title">Your Study Notebook</h2>
+          <p class="section-sub">Saved items and notes stay in this browser. Use this for staff training notes, tastings, menu changes, and phrases that work at real tables.</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <h3 class="subsection-title compact">Saved cards</h3>
+            <div class="saved-list" id="savedList">No saved cards yet.</div>
+          </div>
+          <div class="print-actions">
+            <h3 class="subsection-title compact">Print modes</h3>
+            <div class="chip-row">
+              <button class="btn primary" type="button" data-print="cheat">Quick cheat sheet</button>
+              <button class="btn" type="button" data-print="wine">Wine BTG</button>
+              <button class="btn" type="button" data-print="food">Food matrix</button>
+              <button class="btn" type="button" data-print="drinks">Drinks map</button>
+              <button class="btn" type="button" data-print="all">Full dashboard</button>
+            </div>
+          </div>
+        </div>
+        <div class="notes-field">
+          <label for="notesArea" class="eyebrow notes-label">Personal notes</label>
+          <textarea id="notesArea" placeholder="Example: Taste the Riesling before calling it dry. Ask about milk-wash allergy language. Confirm which wines are organic/biodynamic."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Sources: <a href="https://www.bridgettebar.com/calgary">Bridgette Bar Calgary</a>, current public Calgary menu PDFs, WSET food-and-wine pairing guidance, WSET spice pairing guidance, and official/regional wine education sources. Built as a personal study dashboard for menu learning.</p>
+    </footer>
+  </main>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

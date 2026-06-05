@@ -3,7 +3,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = ROOT / "Bridgette_Bar_Calgary_Menu_Wine_Pairing_Dashboard.html"
+HTML = ROOT / "dist" / "Bridgette_Training.html"
 
 
 def parse_vars(css: str) -> dict[str, str]:
