@@ -1,0 +1,1776 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bridgette Bar Calgary Menu, Wine & Pairing Dashboard</title>
+  <meta name="description" content="A Calgary-only Bridgette Bar menu, wine, cocktail, and pairing study dashboard.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #ffeed7;
+      --paper: #ffeed7;
+      --paper-2: #f7dfbf;
+      --paper-3: #f3e0c5;
+      --ink: #1e384b;
+      --ink-2: #1e384b;
+      --ink-3: #132b3b;
+      --orange: #f15623;
+      --accent-dark: #a83212;
+      --label-light: #8f2a12;
+      --gold: #fcb539;
+      --blue: #437c93;
+      --green: #506f5f;
+      --brown: #5b351e;
+      --muted-paper: #506272;
+      --muted-dark: #d0c6b8;
+      --line-dark: rgba(30, 56, 75, .22);
+      --line-light: rgba(255, 238, 215, .26);
+      --shadow: 0 18px 50px rgba(5, 18, 27, .28);
+      --radius: 6px;
+      --max: 1440px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% -10%, rgba(241,86,35,.12), transparent 32%),
+        linear-gradient(180deg, var(--ink), var(--ink-3));
+      color: var(--cream);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(255,238,215,.03) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,238,215,.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      opacity: .5;
+    }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    button, select, input[type="search"] {
+      min-height: 42px;
+    }
+    button {
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    ::selection {
+      background: var(--gold);
+      color: var(--ink);
+    }
+    :focus-visible {
+      outline: 3px solid var(--accent-dark);
+      outline-offset: 3px;
+    }
+    .site-header :focus-visible,
+    .top-nav :focus-visible,
+    .section.dark :focus-visible {
+      outline-color: var(--gold);
+    }
+    .skip-link:focus-visible {
+      outline-color: var(--ink);
+    }
+    :target, button, input, select, textarea, summary {
+      scroll-margin-top: 96px;
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      left: 16px;
+      top: 12px;
+      transform: translateY(-140%);
+      background: var(--gold);
+      color: var(--ink);
+      padding: 10px 14px;
+      z-index: 20;
+      font-weight: 800;
+    }
+    .skip-link:focus { transform: translateY(0); }
+    .site-header {
+      position: relative;
+      border-bottom: 1px solid var(--line-light);
+      background:
+        linear-gradient(135deg, rgba(241,86,35,.14), transparent 42%),
+        linear-gradient(0deg, rgba(0,0,0,.18), rgba(0,0,0,.18)),
+        var(--ink);
+    }
+    .header-inner {
+      width: min(var(--max), calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 24px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1.1fr) minmax(280px, .9fr);
+      gap: 28px;
+      align-items: end;
+    }
+    .eyebrow {
+      color: var(--label-light);
+      font-family: "Oswald", Arial, sans-serif;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0;
+      margin: 0 0 10px;
+    }
+    .site-header .eyebrow,
+    .section.dark .eyebrow,
+    main > .eyebrow {
+      color: var(--gold);
+    }
+    h1, h2, h3, h4 {
+      font-family: "Oswald", Impact, "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      line-height: 1;
+      margin: 0;
+    }
+    h1 {
+      font-size: clamp(44px, 8vw, 112px);
+      max-width: 900px;
+    }
+    .lede {
+      margin: 16px 0 0;
+      color: var(--muted-dark);
+      font-size: 18px;
+      max-width: 780px;
+    }
+    .source-panel {
+      background: rgba(255, 238, 215, .07);
+      border: 1px solid var(--line-light);
+      border-left: 5px solid var(--orange);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .source-panel strong { color: var(--cream); }
+    .source-panel p { margin: 0 0 10px; color: var(--muted-dark); }
+    .source-panel p:last-child { margin-bottom: 0; }
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(30, 56, 75, .97);
+      border-bottom: 1px solid var(--line-light);
+      backdrop-filter: blur(10px);
+    }
+    .nav-inner {
+      width: min(var(--max), calc(100vw - 32px));
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+    .nav-link, .chip, .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      min-height: 40px;
+      padding: 9px 12px;
+      white-space: nowrap;
+      font-weight: 800;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+    .nav-link, .chip {
+      border: 1px solid var(--line-light);
+      color: var(--cream);
+      background: rgba(255,238,215,.06);
+    }
+    .btn {
+      border: 1px solid var(--line-dark);
+      color: var(--ink);
+      background: rgba(255,255,255,.72);
+    }
+    .section.dark .btn:not(.primary):not(.gold),
+    .site-header .btn:not(.primary):not(.gold) {
+      border-color: var(--line-light);
+      color: var(--cream);
+      background: rgba(255,238,215,.08);
+    }
+    .nav-link:hover, .chip:hover {
+      border-color: var(--orange);
+      background: rgba(241,86,35,.18);
+    }
+    .btn:hover {
+      border-color: var(--accent-dark);
+      background: rgba(168,50,18,.12);
+    }
+    .section.dark .btn:hover,
+    .site-header .btn:hover {
+      border-color: var(--orange);
+      background: rgba(241,86,35,.18);
+    }
+    .btn.primary, .chip.active {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      color: var(--cream);
+    }
+    .btn.primary:hover, .chip.active:hover {
+      background: var(--label-light);
+      border-color: var(--label-light);
+    }
+    .btn.gold {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--ink);
+    }
+    .btn.gold:hover {
+      background: #ffd06d;
+      border-color: #ffd06d;
+      color: var(--ink);
+    }
+    main {
+      position: relative;
+      width: min(var(--max), calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 26px 0 72px;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      margin-bottom: 24px;
+      align-items: end;
+    }
+    .field label, .select-grid label {
+      display: block;
+      color: var(--muted-dark);
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+    .section:not(.dark) .field label,
+    .section:not(.dark) .select-grid label {
+      color: var(--brown);
+    }
+    input[type="search"], select, textarea {
+      width: 100%;
+      border: 1px solid rgba(30, 56, 75, .42);
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 0;
+      padding: 11px 12px;
+    }
+    .global-search {
+      border: 1px solid var(--line-light);
+      background: rgba(255,238,215,.08);
+      padding: 14px;
+    }
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .section {
+      scroll-margin-top: 92px;
+      margin: 0 0 28px;
+      background: var(--cream);
+      color: var(--ink);
+      border: 1px solid rgba(30,56,75,.18);
+      box-shadow: var(--shadow);
+    }
+    .section.dark {
+      background: var(--ink);
+      color: var(--cream);
+      border-color: var(--line-light);
+    }
+    .section-head {
+      padding: 24px;
+      border-bottom: 1px solid var(--line-dark);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: end;
+    }
+    .section-head > .btn {
+      justify-self: end;
+    }
+    .section:not(.dark) .section-head {
+      background:
+        linear-gradient(90deg, rgba(168,50,18,.08), transparent 42%),
+        var(--paper-3);
+    }
+    .dark .section-head {
+      border-bottom-color: var(--line-light);
+      background: rgba(15,30,41,.34);
+    }
+    .section-title {
+      font-size: clamp(30px, 4vw, 58px);
+    }
+    .section-sub {
+      margin: 8px 0 0;
+      max-width: 820px;
+      color: var(--muted-paper);
+    }
+    .dark .section-sub { color: var(--muted-dark); }
+    .section-body { padding: 24px; }
+    .subsection-title {
+      margin: 24px 0 12px;
+      font-size: 28px;
+    }
+    .subsection-title.compact { margin: 0 0 12px; }
+    .scroll-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line-dark);
+    }
+    .section.dark .scroll-wrap {
+      border-color: rgba(255,238,215,.18);
+    }
+    .stack-top { margin-top: 16px; }
+    .notes-field { margin-top: 18px; }
+    .notes-label {
+      display: block;
+      color: var(--brown);
+    }
+    .start-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+    }
+    .callout {
+      border: 1px solid var(--line-dark);
+      border-left: 5px solid var(--accent-dark);
+      padding: 16px;
+      background: rgba(255,255,255,.58);
+    }
+    .dark .callout {
+      border-color: var(--line-light);
+      border-left-color: var(--orange);
+      background: rgba(255,238,215,.08);
+    }
+    .callout h3 { font-size: 24px; margin-bottom: 8px; }
+    .callout p, .card-body p, .result-panel p, footer p {
+      margin: 0;
+    }
+    .callout p + p, .result-panel p + p {
+      margin-top: 10px;
+    }
+    .plain-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .plain-list li { margin: 6px 0; }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .mini {
+      border: 1px solid var(--line-dark);
+      padding: 14px;
+      background: rgba(255,255,255,.62);
+      min-height: 112px;
+    }
+    .mini b {
+      display: block;
+      font-family: "Oswald", Arial, sans-serif;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-size: 18px;
+    }
+    .practice-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px solid var(--line-light);
+      background: rgba(15,30,41,.48);
+    }
+    .practice-step {
+      border-left: 4px solid var(--gold);
+      padding: 10px 12px;
+      background: rgba(255,238,215,.07);
+      min-height: 94px;
+    }
+    .practice-step b {
+      display: block;
+      font-family: "Oswald", Arial, sans-serif;
+      text-transform: uppercase;
+      font-size: 18px;
+      margin-bottom: 6px;
+      color: var(--gold);
+    }
+    .drill-shell {
+      display: grid;
+      grid-template-columns: minmax(0, .85fr) minmax(320px, 1.15fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+    .drill-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .drill-card {
+      border: 1px solid var(--line-dark);
+      background: var(--cream);
+      min-height: 310px;
+      display: flex;
+      flex-direction: column;
+    }
+    .drill-card-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--line-dark);
+      background: var(--paper-2);
+    }
+    .drill-card-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+    .drill-label {
+      color: var(--label-light);
+      font-family: "Oswald", Arial, sans-serif;
+      font-size: 13px;
+      text-transform: uppercase;
+      margin: 0 0 8px;
+    }
+    .drill-prompt {
+      font-family: "Oswald", Arial, sans-serif;
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.04;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .answer-box {
+      border: 1px solid rgba(67,124,147,.36);
+      border-left: 5px solid var(--blue);
+      background: rgba(67,124,147,.11);
+      padding: 14px;
+    }
+    .answer-box[hidden] { display: none; }
+    .answer-box p { margin: 0; }
+    .answer-box p + p { margin-top: 10px; }
+    .drill-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .drill-checklist {
+      border: 1px solid var(--line-dark);
+      border-left: 5px solid var(--accent-dark);
+      background: rgba(255,255,255,.44);
+      padding: 16px;
+    }
+    .drill-checklist h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .study-card {
+      border: 1px solid var(--line-dark);
+      background: var(--cream);
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 0 rgba(30,56,75,.08);
+      overflow: hidden;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .study-card:hover,
+    .study-card:focus-within {
+      border-color: rgba(168,50,18,.46);
+      box-shadow: 0 8px 22px rgba(30,56,75,.12);
+      transform: translateY(-1px);
+    }
+    .dark .study-card {
+      background: rgba(255,238,215,.07);
+      border-color: var(--line-light);
+      color: var(--cream);
+    }
+    .card-head {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line-dark);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      background: var(--paper-2);
+    }
+    .dark .card-head {
+      border-bottom-color: var(--line-light);
+      background: rgba(15,30,41,.34);
+    }
+    .card-title {
+      font-size: 24px;
+      line-height: 1.02;
+      overflow-wrap: anywhere;
+    }
+    .meta {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--muted-paper);
+    }
+    .dark .meta { color: var(--muted-dark); }
+    .save-btn {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      background: transparent;
+      border: 1px solid var(--line-dark);
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1;
+    }
+    .dark .save-btn {
+      color: var(--cream);
+      border-color: var(--line-light);
+    }
+    .save-btn[aria-pressed="true"] {
+      background: var(--gold);
+      color: var(--ink);
+      border-color: var(--gold);
+    }
+    .card-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      flex: 1;
+    }
+    .lead-line {
+      border: 1px solid rgba(67,124,147,.38);
+      border-left: 5px solid var(--blue);
+      background: rgba(67,124,147,.13);
+      padding: 11px 12px;
+      font-weight: 700;
+    }
+    .confirm-line {
+      border: 1px solid rgba(168,50,18,.28);
+      border-left: 5px solid var(--accent-dark);
+      background: rgba(168,50,18,.08);
+      padding: 10px 12px;
+      overflow-wrap: anywhere;
+    }
+    .confirm-line b {
+      display: block;
+      color: var(--label-light);
+      font-family: "Oswald", Arial, sans-serif;
+      text-transform: uppercase;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    .badge-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border: 1px solid rgba(30,56,75,.18);
+      color: var(--ink);
+      background: rgba(67,124,147,.15);
+      padding: 3px 7px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: none;
+    }
+    .badge.orange { background: rgba(241,86,35,.14); }
+    .badge.gold { background: rgba(252,181,57,.24); }
+    .badge.green { background: rgba(80,111,95,.18); }
+    .dark .badge {
+      color: var(--cream);
+      border-color: var(--line-light);
+      background: rgba(255,238,215,.08);
+    }
+    .pair-line {
+      border-left: 4px solid var(--accent-dark);
+      padding-left: 10px;
+      overflow-wrap: anywhere;
+    }
+    .pair-line b {
+      display: block;
+      font-size: 13px;
+      text-transform: none;
+      color: var(--label-light);
+    }
+    .dark .pair-line { border-left-color: var(--orange); }
+    .dark .pair-line b { color: var(--gold); }
+    details {
+      border-top: 1px solid rgba(30,56,75,.14);
+      padding-top: 8px;
+    }
+    .dark details { border-top-color: var(--line-light); }
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      text-transform: none;
+      font-size: 13px;
+    }
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--cream);
+    }
+    .matrix caption {
+      caption-side: top;
+      text-align: left;
+      color: var(--ink);
+      background: var(--cream);
+      padding: 10px;
+      font-weight: 700;
+      border: 1px solid rgba(30,56,75,.16);
+      border-bottom: 0;
+    }
+    .matrix th, .matrix td {
+      border: 1px solid rgba(30,56,75,.16);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+    .matrix th {
+      background: var(--ink-2);
+      color: var(--cream);
+      font-family: "Oswald", Arial, sans-serif;
+      text-transform: uppercase;
+      font-size: 15px;
+    }
+    .matrix tbody th {
+      background: rgba(67,124,147,.14);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: none;
+      min-width: 150px;
+    }
+    .translator-intro {
+      margin-bottom: 18px;
+    }
+    .translator-table {
+      min-width: 1100px;
+    }
+    .translator-table td,
+    .translator-table th {
+      line-height: 1.45;
+    }
+    .translator-table strong {
+      color: var(--label-light);
+    }
+    .matrix tbody tr:nth-child(even) {
+      background: rgba(30,56,75,.045);
+    }
+    .matrix tbody tr:hover {
+      background: rgba(168,50,18,.08);
+    }
+    .select-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .result-panel {
+      border: 1px solid var(--line-dark);
+      background: var(--paper);
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .result-main {
+      grid-column: span 2;
+      border-left: 5px solid var(--accent-dark);
+      padding-left: 14px;
+    }
+    .result-panel h3 { font-size: 32px; margin-bottom: 8px; }
+    .result-item {
+      border: 1px solid rgba(30,56,75,.14);
+      border-top: 4px solid var(--blue);
+      padding: 12px;
+      background: rgba(67,124,147,.12);
+      overflow-wrap: anywhere;
+    }
+    .result-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--brown);
+    }
+    .quote {
+      font-size: 18px;
+      line-height: 1.45;
+      color: var(--brown);
+      font-weight: 700;
+    }
+    .dark .quote { color: var(--cream); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .saved-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 44px;
+      padding: 12px;
+      border: 1px solid var(--line-dark);
+      background: rgba(255,255,255,.62);
+    }
+    .saved-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ink);
+      color: var(--cream);
+      padding: 7px 9px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+    .print-only { display: none; }
+    footer {
+      color: var(--muted-dark);
+      padding: 24px 0;
+      border-top: 1px solid var(--line-light);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1120px) {
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .mini-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .select-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .header-inner, .toolbar, .start-grid, .two-col, .result-panel {
+        grid-template-columns: 1fr;
+      }
+      .drill-shell {
+        grid-template-columns: 1fr;
+      }
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+      .cards, .mini-grid, .select-grid {
+        grid-template-columns: 1fr;
+      }
+      .practice-strip {
+        grid-template-columns: 1fr;
+      }
+      .nav-inner {
+        overflow-x: visible;
+        flex-wrap: wrap;
+      }
+      .nav-link {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 150px;
+      }
+      .section-head > .btn {
+        justify-self: stretch;
+        width: 100%;
+      }
+      .result-main { grid-column: auto; }
+      .nav-inner { padding-bottom: 12px; }
+      h1 { font-size: 50px; }
+      .section-body, .section-head { padding: 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+      .study-card:hover,
+      .study-card:focus-within {
+        transform: none;
+      }
+    }
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+      }
+      body::before, .top-nav, .toolbar, .save-btn, .print-actions, footer {
+        display: none !important;
+      }
+      main, .header-inner {
+        width: 100%;
+        padding: 0;
+      }
+      .site-header, .section, .section.dark {
+        box-shadow: none;
+        background: #fff;
+        color: #000;
+        border-color: #000;
+      }
+      .section {
+        page-break-inside: avoid;
+      }
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      details { display: none; }
+      body[data-print-mode="wine"] .section:not(#wine),
+      body[data-print-mode="food"] .section:not(#food):not(#pairing),
+      body[data-print-mode="drinks"] .section:not(#drinks),
+      body[data-print-mode="cheat"] .section:not(#start):not(#pairing) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to dashboard</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div>
+        <p class="eyebrow">Calgary-only reference dashboard</p>
+        <h1>Bridgette Bar Calgary</h1>
+        <p class="lede">Menu, Wine & Pairing Dashboard for learning the food, talking about the wines, recommending cocktails, and making confident table-friendly pairings.</p>
+      </div>
+      <aside class="source-panel" aria-label="Source note">
+        <p><strong>Menu reference checked: June 4, 2026</strong></p>
+        <p>Built from the public Calgary food, drink, dessert/digestif, and matinee/late-night menus. Verify nightly menu changes, 86s, BTG availability, and allergy language with the team.</p>
+        <p>Use it to learn patterns, then confirm details, allergies, stock, and staff language with the Bridgette team.</p>
+      </aside>
+    </div>
+  </header>
+
+  <nav class="top-nav" aria-label="Dashboard sections">
+    <div class="nav-inner">
+      <a class="nav-link" href="#start">Start</a>
+      <a class="nav-link" href="#drill">Service Drill</a>
+      <a class="nav-link" href="#wine">Wine Guide</a>
+      <a class="nav-link" href="#food">Food Guide</a>
+      <a class="nav-link" href="#pairing">Pairing Dashboard</a>
+      <a class="nav-link" href="#drinks">Cocktails, Beer & Zero-Proof</a>
+      <a class="nav-link" href="#notes">Notes & Print</a>
+    </div>
+  </nav>
+
+  <main id="main">
+    <div class="toolbar" aria-label="Search and filters">
+      <div class="global-search">
+        <div class="field">
+          <label for="globalSearch">Search the dashboard</label>
+          <input id="globalSearch" type="search" placeholder="Try riesling, oysters, steak, spicy, zero-proof, dessert..." autocomplete="off">
+        </div>
+      </div>
+      <div class="chip-row" role="group" aria-label="Quick filters">
+        <button class="chip active" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-filter="safe" aria-pressed="false">First Shift</button>
+        <button class="chip" type="button" data-filter="wine" aria-pressed="false">Wine</button>
+        <button class="chip" type="button" data-filter="food" aria-pressed="false">Food</button>
+        <button class="chip" type="button" data-filter="cocktail" aria-pressed="false">Cocktails</button>
+        <button class="chip" type="button" data-filter="seafood" aria-pressed="false">Seafood</button>
+        <button class="chip" type="button" data-filter="steak" aria-pressed="false">Steak</button>
+        <button class="chip" type="button" data-filter="spice" aria-pressed="false">Spice</button>
+        <button class="chip" type="button" data-filter="zero-proof" aria-pressed="false">Zero-Proof</button>
+      </div>
+    </div>
+    <p id="liveStatus" class="eyebrow" aria-live="polite">Showing all dashboard cards.</p>
+
+    <section class="section dark" id="start">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Start here</p>
+          <h2 class="section-title">What To Learn First</h2>
+          <p class="section-sub">This is the high-yield version: learn a few safe wines, learn why they work, then connect them to the plates guests actually order.</p>
+        </div>
+        <button class="btn gold" type="button" data-print="cheat">Print quick cheat sheet</button>
+      </div>
+      <div class="section-body">
+        <div class="start-grid">
+          <div class="callout">
+            <h3>Five safe first recommendations</h3>
+            <ul class="plain-list">
+              <li><strong>Blue Mountain Brut:</strong> oysters, fries, crudo, burrata, seafood. Bubbles plus acid makes salt and fat feel lighter.</li>
+              <li><strong>Hiedler Loss Gruner Veltliner:</strong> green, tangy, spicy, yogurt, tahini, cucumber, herbs. Crisp and peppery without being weird.</li>
+              <li><strong>Darting Durkheimer Fronhof Riesling:</strong> chili, jalapeno, honey spice, pickle, sausage. Do not oversell sweetness until tasted.</li>
+              <li><strong>Bindi Sergardi La Boncia Sangiovese:</strong> tomato, pizza, pasta, salami, steak. Sour-cherry acidity is your tomato friend.</li>
+              <li><strong>St. John Claret:</strong> steak, ribeye, mushrooms, duck, richer pasta. Black-fruit Bordeaux shape without needing a speech.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h3>Server wine translator</h3>
+            <ul class="plain-list">
+              <li><strong>High acid:</strong> fresh, bright, mouthwatering.</li>
+              <li><strong>Tannin:</strong> dry grip, like strong black tea.</li>
+              <li><strong>Mineral:</strong> salty, stony, clean.</li>
+              <li><strong>Medium body:</strong> not heavy, not thin.</li>
+              <li><strong>Fruit-forward:</strong> fruity does not automatically mean sweet.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-grid">
+          <div class="mini"><b>Salt</b> Salt makes wine taste softer and fruitier. Fries, oysters, olives, and salami love bright wine.</div>
+          <div class="mini"><b>Fat</b> Fat wants acid, bubbles, tannin, or bitterness. Cheese, steak, duck, and fried food need a reset.</div>
+          <div class="mini"><b>Spice</b> Heat can make alcohol and tannin feel hotter. Use Riesling, rose, beer, or fruit-forward cocktails.</div>
+          <div class="mini"><b>Intensity</b> Match weight. Light seafood wants fresh whites; ribeye wants Claret, Nebbiolo, Monastrell, or richer cocktails.</div>
+        </div>
+        <div class="practice-strip" aria-label="Table recommendation rhythm">
+          <div class="practice-step"><b>Ask</b> Find the lane first: crisp, richer, red, cocktail, or no alcohol.</div>
+          <div class="practice-step"><b>Match</b> Use the dish weight, salt, fat, spice, and sauce before naming a drink.</div>
+          <div class="practice-step"><b>Explain</b> Give one reason only: acid cuts fat, bubbles refresh, tannin handles steak, or Riesling calms heat.</div>
+          <div class="practice-step"><b>Confirm</b> Mention allergies, sweetness, stock, or premium bottle details only after checking when needed.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="drill">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Service Drill</p>
+          <h2 class="section-title">Practice The Table Moment</h2>
+          <p class="section-sub">Use this when you want active recall instead of reading. Pick a lane, answer out loud, then reveal the pairing, table phrase, and confirm note.</p>
+        </div>
+        <button class="btn primary" type="button" id="newDrillTop">New prompt</button>
+      </div>
+      <div class="section-body">
+        <div class="drill-shell">
+          <div class="drill-checklist">
+            <h3>How to answer</h3>
+            <ul class="plain-list">
+              <li><strong>Name the lane:</strong> crisp white, richer white, light red, steak red, cocktail, beer, or zero-proof.</li>
+              <li><strong>Give one reason:</strong> acid, bubbles, tannin, salt, fat, spice, or intensity.</li>
+              <li><strong>Say it like service:</strong> short, confident, and easy for the guest to understand.</li>
+              <li><strong>Confirm:</strong> allergies, 86s, sweetness, egg whites, milk wash, raw seafood, and bottle details.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="drill-tabs" role="group" aria-label="Service drill type">
+              <button class="chip active" type="button" data-drill-type="food" aria-pressed="true">Food Pairing</button>
+              <button class="chip" type="button" data-drill-type="wine" aria-pressed="false">Wine Talk</button>
+              <button class="chip" type="button" data-drill-type="cocktail" aria-pressed="false">Cocktail Lane</button>
+              <button class="chip" type="button" data-drill-type="safety" aria-pressed="false">Safety Check</button>
+            </div>
+            <article class="drill-card" aria-live="polite">
+              <div class="drill-card-head">
+                <p class="drill-label" id="drillTypeLabel">Food Pairing</p>
+                <p class="drill-prompt" id="drillPrompt">Loading prompt...</p>
+              </div>
+              <div class="drill-card-body">
+                <div class="answer-box" id="drillAnswer" hidden></div>
+                <div class="drill-actions">
+                  <button class="btn primary" type="button" id="revealDrill" aria-expanded="false" aria-controls="drillAnswer">Reveal answer</button>
+                  <button class="btn" type="button" id="newDrill">New prompt</button>
+                  <button class="btn" type="button" id="jumpToPairing">Use pairing builder</button>
+                </div>
+                <p id="drillStatus" class="meta" aria-live="polite">Prompt ready.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="wine">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Wine Guide</p>
+          <h2 class="section-title">By-The-Glass Confidence Builder</h2>
+          <p class="section-sub">The goal is not to sound like a textbook. The goal is to know the style, know the best foods, and have one natural sentence ready.</p>
+        </div>
+        <button class="btn primary" type="button" data-print="wine">Print wine guide</button>
+      </div>
+      <div class="section-body">
+        <div class="callout translator-intro" id="guestAskTranslator">
+          <h3>Common guest ask translator</h3>
+          <p>When a guest asks for a familiar varietal, anchor them first: "We do not have that exact glass, but I can put you in the same lane." Then choose by weight: crisp white, round white, light red, juicy red, steak red, bubbles, or rose.</p>
+          <p class="meta">Search helpers: Cab, Cabernet, Merlot, Malbec, Shiraz, Syrah, Sauvignon Blanc, Pinot Grigio, Pinot Gris, Chardonnay, Chablis, Prosecco, Champagne, Riesling, Moscato, Chianti, Rioja, Zinfandel, house white, house red.</p>
+        </div>
+        <div class="scroll-wrap" role="region" aria-label="Common wine varietal substitute table" tabindex="0">
+          <table class="matrix translator-table">
+            <caption>Use this table when a guest asks for a common varietal and the Calgary list uses a more niche wine.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Guest asks for</th>
+                <th scope="col">Best Bridgette answer</th>
+                <th scope="col">Second or bottle option</th>
+                <th scope="col">What feels familiar</th>
+                <th scope="col">What feels different / phrase</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Chardonnay</th>
+                <td><strong>Bodega Cerron Remordimiento Blanco</strong> by the glass.</td>
+                <td><strong>Eleonore Moreau Petit Chablis</strong>, <strong>Mount Eden Wolff Vineyard</strong>, or <strong>Meursault</strong> for a bottle.</td>
+                <td>Same grape. Fuller white lane with pear, ripe lemon, and enough roundness for seafood, butter, trout, cod, crab, and creamy pasta.</td>
+                <td>It may not read as a heavy butter-and-vanilla Chardonnay. Say: "This is our fuller Chardonnay-style glass; if you want a more classic premium Chardonnay bottle, I can show you Chablis, Mount Eden, or Meursault."</td>
+              </tr>
+              <tr>
+                <th scope="row">Oaky or buttery Chardonnay</th>
+                <td><strong>Bodega Cerron Blanco</strong> if they want a glass and food-friendly richness.</td>
+                <td><strong>Mount Eden Wolff Vineyard</strong>, <strong>Domaine de la Rochette Macon-Bussieres</strong>, or <strong>Meursault</strong>.</td>
+                <td>Rounder body, ripe citrus, pear, and texture. Works with garlic bread, shrimp and crab, cod, trout, and ricotta dumplings.</td>
+                <td>Be honest: "It is the richer white lane, but not a sweet butter bomb. If you want more premium Chardonnay depth, the bottles are stronger."</td>
+              </tr>
+              <tr>
+                <th scope="row">Sauvignon Blanc</th>
+                <td><strong>Hiedler Loss Gruner Veltliner</strong> for a crisp, bright glass.</td>
+                <td><strong>Denizot Sancerre</strong> if they want Sauvignon Blanc by the bottle; <strong>Landron Muscadet</strong> for seafood crispness.</td>
+                <td>High freshness, citrus, green/herbal lift, and a clean finish. Great for cucumber, herbs, seafood, oysters, and tangy dishes.</td>
+                <td>Gruner is less grassy and more white-peppery. Say: "If you like Sauvignon for crispness, I would go Gruner by the glass; if you want the exact grape, Sancerre is our bottle lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Pinot Grigio / Pinot Gris</th>
+                <td><strong>Wagner Stempel Weissburgunder</strong> for a soft, easy white.</td>
+                <td><strong>Hiedler Loss</strong> for a brighter crisp style; <strong>Maloof Where Ya Pjs At?</strong> for a skin-contact Pinot Gris bottle.</td>
+                <td>Light-to-medium feel, pear/apple fruit, and an easy-drinking shape. Good with chicken, cheese, potatoes, salads, and lighter snacks.</td>
+                <td>Pinot Blanc is softer and calmer than many sharp Pinot Grigios. Say: "This is the comfortable easy white; if you want more zip, I would move you to the Gruner."</td>
+              </tr>
+              <tr>
+                <th scope="row">Riesling</th>
+                <td><strong>Darting Durkheimer Fronhof Riesling</strong> by the glass.</td>
+                <td><strong>Donnhoff Feinherb</strong> by the bottle for a more classic German Riesling lane.</td>
+                <td>Peach, lime, racy freshness, and a strong match for chili, pickle, honey spice, pork sausage, sprouts, and salty food.</td>
+                <td>Do not promise bone-dry or sweet until tasted. Say: "Riesling is our best problem solver for spice; it has fruit and freshness, and I can confirm the sweetness level for you."</td>
+              </tr>
+              <tr>
+                <th scope="row">Moscato / sweet white</th>
+                <td><strong>Darting Riesling</strong> if they want fruit and freshness with a table wine.</td>
+                <td><strong>Valdespino Cream Sherry</strong>, <strong>Tawny Port</strong>, or dessert wine lanes after food.</td>
+                <td>Riesling gives peachy fruit and aromatic lift, which can satisfy guests asking for a softer white.</td>
+                <td>There is not a true Moscato-style glass. Say: "We do not have a sweet Moscato, but Riesling is the closest fruity white. For dessert, I can move you into sherry or port."</td>
+              </tr>
+              <tr>
+                <th scope="row">Rose</th>
+                <td><strong>Ameztoi Rubentis</strong> for bright, dry, coastal rose with a tiny spritz.</td>
+                <td><strong>Leitz Eins Zwei Dry Rose</strong> for cleaner red berry and less salty/spritzy character.</td>
+                <td>Dry, refreshing, pink, seafood-friendly, and easy with salads, crudo, burrata, pizza, squash, and chicken.</td>
+                <td>Ameztoi is more saline and energetic; Leitz is more classic and easy. Say: "Ameztoi is the fun coastal rose; Leitz is the clean dry rose."</td>
+              </tr>
+              <tr>
+                <th scope="row">Prosecco / Champagne</th>
+                <td><strong>Blue Mountain Brut</strong> for dry, crisp bubbles by the glass.</td>
+                <td><strong>Griesel Blanc de Noirs</strong> or <strong>Christophe Mignon Adn de Meunier Brut Nature</strong> for a premium bottle; <strong>Fattoria Moretto Lambrusco</strong> for sparkling red.</td>
+                <td>Bubbles, acid, freshness, and celebration feel. Great with oysters, fries, crudo, burrata, seafood, and salty snacks.</td>
+                <td>Blue Mountain is drier and more Champagne-shaped than Prosecco. Say: "If you want bubbles, Blue Mountain is our crisp BC brut; if you want Champagne energy in a bottle, I can show you the Blanc de Noirs or Meunier."</td>
+              </tr>
+              <tr>
+                <th scope="row">Pinot Noir</th>
+                <td><strong>Deinhard Deidesheim Pinot Noir</strong> by the glass.</td>
+                <td><strong>Pierre Thibert Chorey-les-Beaune</strong> for Burgundy; <strong>Kistler</strong> for premium Russian River Pinot.</td>
+                <td>Light red body, cherry/strawberry fruit, soft tannin, and an earthy lane for mushrooms, carpaccio, duck, trout, and lighter red drinkers.</td>
+                <td>The German Pinot is lighter and brighter than many California Pinots. Say: "This is the soft, lighter red. If you want a richer Pinot bottle, I would go Burgundy or Kistler."</td>
+              </tr>
+              <tr>
+                <th scope="row">Cabernet Sauvignon</th>
+                <td><strong>St. John Claret</strong> by the glass.</td>
+                <td><strong>White Rock Cabernet Sauvignon</strong>, <strong>Chateau Larose Perganson</strong>, or <strong>Aia Vecchia Sor Ugo</strong> by the bottle.</td>
+                <td>Dark fruit, structure, cedar/savoury Bordeaux shape, and enough grip for strip steak, ribeye, mushrooms, duck, and richer pasta.</td>
+                <td>Claret is Cabernet blended with Merlot, so it is a little softer than a big Napa Cab. Say: "For a Cab drinker, Claret is the safest glass; if you want true Napa Cabernet, White Rock is the bottle."</td>
+              </tr>
+              <tr>
+                <th scope="row">Merlot</th>
+                <td><strong>St. John Claret</strong> for the glass, because it includes Merlot and Cabernet Sauvignon.</td>
+                <td><strong>Whitehall Lane Merlot</strong> for the exact grape by the bottle.</td>
+                <td>Plum, dark fruit, smoother texture than straight Cabernet, and a steak-friendly red that is not too aggressive.</td>
+                <td>Claret is more savoury/Bordeaux than plush California Merlot. Say: "This is the Merlot-Cab blend by the glass; if you want a true Merlot bottle, Whitehall Lane is the move."</td>
+              </tr>
+              <tr>
+                <th scope="row">Malbec</th>
+                <td><strong>Bodega Cerron Remordimiento Tinto</strong> for a darker, fuller red glass.</td>
+                <td><strong>St. John Claret</strong> for a more classic steak-red shape; <strong>Gulfi Nerojbleo</strong> for a bigger dark-fruit bottle.</td>
+                <td>Plum, blackberry, spice, fuller body, and a good match for lamb, sausage, ribeye, squash, and smoky richness.</td>
+                <td>It is Monastrell/Garnacha, not Malbec, so it is more Spanish, smoky, and savoury. Say: "If you like Malbec for dark fruit and body, this Spanish red is the closest glass."</td>
+              </tr>
+              <tr>
+                <th scope="row">Shiraz / Syrah</th>
+                <td><strong>Bodega Cerron Tinto</strong> if they want a dark, spicy red by the glass.</td>
+                <td><strong>Texier Brezeme Syrah</strong> for the exact grape by the bottle; <strong>Gigondas</strong> for a Southern Rhone blend with Grenache/Syrah/Mourvedre.</td>
+                <td>Dark fruit, spice, savoury depth, and enough weight for lamb, sausage, ribeye, and smoky dishes.</td>
+                <td>Australian Shiraz is often plusher; Texier Syrah is more savoury and peppery. Say: "By the glass I would use the Spanish red; for true Syrah, Texier is the bottle lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Chianti / Sangiovese</th>
+                <td><strong>Bindi Sergardi La Boncia</strong> by the glass.</td>
+                <td><strong>Castello di Potentino Sacromonte</strong> or <strong>Aia Vecchia Sor Ugo</strong> if they want a richer Italian bottle.</td>
+                <td>Exact Sangiovese lane: sour cherry, herbs, tomato-friendly acidity, and a natural fit for Margherita, pasta, salami, and ricotta dumplings.</td>
+                <td>It is fresher and more food-driven than jammy. Say: "This is the classic tomato-and-pizza red; if the table is going richer, I can move you into a bigger Italian bottle."</td>
+              </tr>
+              <tr>
+                <th scope="row">Zinfandel</th>
+                <td><strong>Sindicat la Figuera Grenache</strong> for juicy red fruit and warm spice.</td>
+                <td><strong>Bodega Cerron Tinto</strong> for darker fruit and more body.</td>
+                <td>Generous fruit, spice, and comfort with salami, sausage, lamb, duck, and honey-chili pizza.</td>
+                <td>These are less jammy and less high-alcohol than many Zinfandels. Say: "We do not have Zin, but this Grenache gives you the juicy, spicy red-fruit lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Rioja / Tempranillo</th>
+                <td><strong>Bindi Sergardi Sangiovese</strong> for red fruit, herbs, and food-friendly acidity by the glass.</td>
+                <td><strong>Algre Valgañon</strong> for Tempranillo & Grenache by the bottle.</td>
+                <td>Red-fruit savoury profile, herbs, and a flexible pairing lane for tomato, salami, roasted meat, and mushrooms.</td>
+                <td>No Tempranillo by the glass. Say: "For Rioja energy by the glass, I would use Sangiovese for freshness or Grenache for warmth; the exact Rioja-style bottle is Algre Valgañon."</td>
+              </tr>
+              <tr>
+                <th scope="row">Chablis</th>
+                <td><strong>Hiedler Loss Gruner Veltliner</strong> if they need a crisp, mineral-feeling glass.</td>
+                <td><strong>Eleonore Moreau Petit Chablis</strong> for the exact Chablis lane by bottle.</td>
+                <td>Freshness, citrus, clean seafood compatibility, and a leaner feel than round Chardonnay.</td>
+                <td>Gruner is not Chardonnay, but it solves the same crisp seafood-white request. Say: "If Chablis is the ask, the bottle is exact; for a glass, I would put you in the crisp Gruner lane."</td>
+              </tr>
+              <tr>
+                <th scope="row">Bordeaux / red blend</th>
+                <td><strong>St. John Claret</strong> by the glass.</td>
+                <td><strong>Chateau Larose Perganson</strong> for Bordeaux; <strong>Aia Vecchia Sor Ugo</strong> for a polished Super Tuscan blend.</td>
+                <td>Merlot/Cabernet structure, dark fruit, savoury edges, and steak-table confidence.</td>
+                <td>This is one of the cleanest matches. Say: "Claret is the Bordeaux-style blend by the glass; if you want to build the table around a bottle, Larose Perganson is the direct upgrade."</td>
+              </tr>
+              <tr>
+                <th scope="row">House white / easy white</th>
+                <td><strong>Wagner Stempel Weissburgunder</strong> for soft and easy; <strong>Hiedler Loss</strong> for crisp and bright.</td>
+                <td><strong>Dona Matilde Branco</strong> for a flexible food white with citrus, herbs, and texture.</td>
+                <td>Approachable white wine without needing a long explanation.</td>
+                <td>Ask one question: "Do you want softer and pear-like, or crisp and bright?" Then choose Wagner for soft or Gruner for crisp.</td>
+              </tr>
+              <tr>
+                <th scope="row">House red / easy red</th>
+                <td><strong>Bindi Sergardi Sangiovese</strong> for pizza/pasta; <strong>Deinhard Pinot Noir</strong> for lighter red.</td>
+                <td><strong>St. John Claret</strong> if the table is ordering steak, mushrooms, or richer mains.</td>
+                <td>Easy red choices by food lane: tomato, light red, or steak red.</td>
+                <td>Ask one question: "Are we pairing with pizza/pasta, or something richer like steak?" Then move them to Sangiovese, Pinot, or Claret.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3 class="subsection-title">By-The-Glass Cards</h3>
+        <div class="cards" id="wineCards"></div>
+      </div>
+    </section>
+
+    <section class="section" id="food">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Food Guide</p>
+          <h2 class="section-title">Menu Cards With Pairing Ideas</h2>
+          <p class="section-sub">Each card is built around what matters at the table: flavour, allergy/safety flags, a wine, a cocktail, a zero-proof/beer option, and the guest-friendly recommendation angle.</p>
+        </div>
+        <button class="btn primary" type="button" data-print="food">Print food matrix</button>
+      </div>
+      <div class="section-body">
+        <div class="cards" id="foodCards"></div>
+      </div>
+    </section>
+
+    <section class="section dark" id="pairing">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Pairing Dashboard</p>
+          <h2 class="section-title">Pick A Dish, Build The Recommendation</h2>
+          <p class="section-sub">Use this when you need one smart answer quickly. It gives a glass, a bottle lane, a cocktail, a zero-proof option, the reason, and a table phrase.</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="select-grid">
+          <div>
+            <label for="dishSelect">Dish</label>
+            <select id="dishSelect"></select>
+          </div>
+          <div>
+            <label for="styleSelect">Guest style</label>
+            <select id="styleSelect">
+              <option value="safe">Safe and easy</option>
+              <option value="bright">Bright and refreshing</option>
+              <option value="bold">Bigger and richer</option>
+              <option value="adventurous">Adventurous</option>
+              <option value="zero">Skipping alcohol</option>
+            </select>
+          </div>
+          <div>
+            <label for="formatSelect">Format</label>
+            <select id="formatSelect">
+              <option value="glass">By the glass</option>
+              <option value="bottle">Bottle upgrade</option>
+              <option value="cocktail">Cocktail</option>
+              <option value="zero">Zero-proof</option>
+            </select>
+          </div>
+          <div>
+            <label for="budgetSelect">Budget cue</label>
+            <select id="budgetSelect">
+              <option value="normal">Comfortable</option>
+              <option value="value">Value-focused</option>
+              <option value="premium">Special occasion</option>
+            </select>
+          </div>
+        </div>
+        <div class="result-panel" id="pairingResult" aria-live="polite"></div>
+        <h3 class="subsection-title">Quick Pairing Matrix</h3>
+        <div class="scroll-wrap" role="region" aria-label="Quick pairing matrix" tabindex="0">
+          <table class="matrix" id="pairingMatrix"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="drinks">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Drinks</p>
+          <h2 class="section-title">Cocktails, Beer & Zero-Proof</h2>
+          <p class="section-sub">Sell cocktails by flavour, not by listing every ingredient. The guest usually wants a lane: spicy, floral, tropical, bitter, rich, crisp, or no alcohol.</p>
+        </div>
+        <button class="btn primary" type="button" data-print="drinks">Print drinks map</button>
+      </div>
+      <div class="section-body">
+        <h3 class="subsection-title compact">Cocktail Map</h3>
+        <div class="cards" id="cocktailCards"></div>
+        <div class="two-col stack-top">
+          <div class="callout">
+            <h3>Beer and zero-proof lanes</h3>
+            <div id="beerZero"></div>
+          </div>
+          <div class="callout">
+            <h3>Dessert & Digestifs</h3>
+            <p><strong>Chocolate Pot de Creme:</strong> Domaine Pouderoux Vendage; premium backup Taylor Fladgate Tawny 40yr.</p>
+            <p><strong>Apple Tatin:</strong> Barbeito Madeira Rainwater Reserva 5yr; spirit-forward backup Boulard XO or Christian Drouin XO.</p>
+            <p><strong>The Banana Pie:</strong> Valdespino Cream Sherry Isabela; cozy backup Quevado Tawny 10yr or Averna.</p>
+            <p><strong>After richer plates:</strong> Montenegro, Averna, Nonino, or Fernet Branca.</p>
+          </div>
+        </div>
+        <div class="callout stack-top">
+          <h3>Safety notes to confirm with the team</h3>
+          <ul class="plain-list">
+            <li><strong>Spaghetti Western</strong> contains nuts.</li>
+            <li><strong>Short Film</strong> carries a sesame allergy note.</li>
+            <li><strong>Heartbreak Mountain</strong> and <strong>Lovers Mountain</strong> are milk washed.</li>
+            <li><strong>Cloud 9</strong> lists egg whites; confirm egg-white allergy and vegan language before recommending.</li>
+            <li><strong>Oysters</strong> and <strong>Tuna Crudo</strong> are raw seafood; <strong>Wood Roasted Cod</strong> includes shellfish broth; <strong>Shrimp & Crab</strong> contains shellfish.</li>
+            <li>Food nut flags include Cashews, Burrata Cheese with pine nuts, Spiced Beet Salad with pistachio, Endive with pecan, Smashed Cucumbers with almond, and Winter Squash with peanut pesto.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="notes">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Notes and print</p>
+          <h2 class="section-title">Your Study Notebook</h2>
+          <p class="section-sub">Saved items and notes stay in this browser. Use this for staff training notes, tastings, menu changes, and phrases that work at real tables.</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <h3 class="subsection-title compact">Saved cards</h3>
+            <div class="saved-list" id="savedList">No saved cards yet.</div>
+          </div>
+          <div class="print-actions">
+            <h3 class="subsection-title compact">Print modes</h3>
+            <div class="chip-row">
+              <button class="btn primary" type="button" data-print="cheat">Quick cheat sheet</button>
+              <button class="btn" type="button" data-print="wine">Wine BTG</button>
+              <button class="btn" type="button" data-print="food">Food matrix</button>
+              <button class="btn" type="button" data-print="drinks">Drinks map</button>
+              <button class="btn" type="button" data-print="all">Full dashboard</button>
+            </div>
+          </div>
+        </div>
+        <div class="notes-field">
+          <label for="notesArea" class="eyebrow notes-label">Personal notes</label>
+          <textarea id="notesArea" placeholder="Example: Taste the Riesling before calling it dry. Ask about milk-wash allergy language. Confirm which wines are organic/biodynamic."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Sources: <a href="https://www.bridgettebar.com/calgary">Bridgette Bar Calgary</a>, current public Calgary menu PDFs, WSET food-and-wine pairing guidance, WSET spice pairing guidance, and official/regional wine education sources. Built as a personal study dashboard for menu learning.</p>
+    </footer>
+  </main>
+
+  <script>
+    const WINE = [
+      {name:"Blue Mountain Brut", group:"wine", category:"Bubbly BTG", price:"18 | 29 | 90", grape:"Chardonnay & Pinot Noir", region:"Okanagan Falls, British Columbia", structure:"dry, crisp, high freshness, light toast", profile:"Lemon, green apple, fine bubbles, and a clean finish. This is the easiest seafood/fried-food reset on the list.", pair:"Oysters, French Fries, Burrata Cheese, Tuna Crudo, Wood Roasted Cod", avoid:"Very heavy red-meat-only tables may want a red after the first round.", say:"If you want something bright to start, the Blue Mountain Brut is crisp BC bubbles. It is great with oysters, fries, and anything salty or creamy.", tags:["wine","bubbly","seafood","fries","safe"], upgrade:"Raventos i Blanc de Nit Rose or Griesel Blanc de Noirs"},
+      {name:"Fattoria Moretto Semprebon", group:"wine", category:"Bubbly BTG", price:"18 | 29 | 90", grape:"Lambrusco Grasparossa", region:"Emilia-Romagna, Italy", structure:"sparkling red, darker fruit, more body and tannin than many Lambruscos", profile:"Black cherry, blackberry, violet, almond, fizz, and enough grip for sausage and cheese.", pair:"Fennel Salami, Italian Sausage, Lamb Sausage, Burrata Cheese, Chicken Sausage pizza", avoid:"Do not describe it as sweet unless you taste and confirm the exact sweetness.", say:"This is a chilled sparkling red. It is fruity, not silly, and it is excellent with sausage, salami, cheese, and pizza.", tags:["wine","bubbly","red","pizza","spice","sausage"], upgrade:"A fun bottle stays in this lane; for a richer red move to Sindicat la Figuera or Bodega Cerron Tinto."},
+      {name:"Hiedler Loss", group:"wine", category:"White BTG", price:"15 | 24 | 75", grape:"Gruner Veltliner", region:"Niederosterreich, Austria", structure:"dry, bright, herbal, peppery", profile:"Lime, green apple, white pepper, herbs, and a very food-friendly snap.", pair:"Smashed Cucumbers, Eggplant Fries, Hummus Chips, Bibb Lettuce, Tuna Crudo", avoid:"Not the best match for ribeye or very rich mushroom pasta.", say:"This is the crisp, peppery white I would use for green, tangy, spicy, or herb-driven dishes.", tags:["wine","white","gruner","spice","green","seafood","safe"], upgrade:"Landron Muscadet for seafood or Denizot Sancerre for a premium crisp-white lane."},
+      {name:"Vini be Good Hip Hop Chenin", group:"wine", category:"White BTG", price:"16 | 26 | 80", grape:"Chenin Blanc", region:"Loire Valley, France", structure:"fresh but textured, apple, quince, honeyed citrus", profile:"A flexible white with brightness and some roundness. It can handle seafood richness and sweet-savory dishes.", pair:"Grilled Octopus Salad, Maple BBQ Rainbow Trout, Wood Roasted Cod, Wood Grilled Winter Squash, Burrata Cheese", avoid:"Sweetness is not confirmed; avoid saying bone dry until tasted.", say:"The Chenin is a great middle lane: fresh enough for seafood, but textured enough for trout, squash, and burrata.", tags:["wine","white","chenin","seafood","trout","texture"], upgrade:"Domaine Breton Pierres Rousses for the bottle Chenin lane."},
+      {name:"Wagner Stempel Weissburgunder", group:"wine", category:"White BTG", price:"17 | 27 | 85", grape:"Pinot Blanc", region:"Rheinhessen, Germany", structure:"soft, pear, apple, gentle acidity, creamy feel", profile:"Calm, clean, and easy. A good white for guests who do not want sharp, oaky, or aromatic.", pair:"Grilled Farm Chicken, Five Cheese, Endive, Crispy Smashed Potatoes, Ricotta Dumplings", avoid:"Can feel too quiet beside oysters or high-chili plates.", say:"If you want an easy white that is not too sharp, this Pinot Blanc is soft, pear-like, and very comfortable with chicken, cheese, and creamy dishes.", tags:["wine","white","pinot blanc","chicken","cheese","safe"], upgrade:"Eleonore Moreau Petit Chablis or Mount Eden Wolff Vineyard for a more premium white."},
+      {name:"Darting Durkheimer Fronhof", group:"wine", category:"White BTG", price:"14 | 23 | 70", grape:"Riesling", region:"Pfalz, Germany", structure:"peach, lime, racy freshness; sweetness not confirmed", profile:"Riesling is the problem solver for spice, pickle, honey, jalapeno, and salty food. It can be dry or off-dry depending on the wine.", pair:"Oysters, Brussels Sprouts, Bibb Lettuce, Chicken Sausage, Italian Pork Sausage", avoid:"Do not promise it is bone dry until tasted.", say:"Riesling is one of the safest pairing wines here, especially with chili, pickle, jalapeno, honey spice, and salty dishes.", tags:["wine","white","riesling","spice","pickle","safe"], upgrade:"Donnhoff Feinherb for a bottle with more Riesling character."},
+      {name:"Dona Matilde Branco", group:"wine", category:"White BTG", price:"14 | 23 | 70", grape:"Arinto, Rabigato, Viosinho, Gouveio", region:"Douro, Portugal", structure:"citrus, stone fruit, herbs, medium texture", profile:"A flexible Portuguese white that works with olives, preserved lemon, caper, seafood, and brown butter.", pair:"Roasted Olives, Hummus Chips, Grilled Octopus Salad, Shrimp & Crab, Bigoli", avoid:"Less obvious for guests asking for very crisp Sauvignon Blanc style.", say:"This is a really useful food white: citrusy, a bit herbal, and good with olives, preserved lemon, seafood, and pasta.", tags:["wine","white","seafood","olive","pasta"], upgrade:"Clos Bellane Valreas or Domaine de la Rochette Macon-Bussieres for more body."},
+      {name:"Bodega Cerron Remordimiento Blanco", group:"wine", category:"White BTG", price:"16 | 26 | 80", grape:"Chardonnay", region:"Jumilla, Spain", structure:"ripe lemon, pear, rounder texture; oak not confirmed", profile:"A richer white lane for buttery, creamy, smoked, or seafood dishes with weight.", pair:"Maple BBQ Rainbow Trout, Wood Roasted Cod, Shrimp & Crab, Ricotta Dumplings, Garlic Bread", avoid:"If a guest wants very lean and crisp, steer to Gruner or bubbles.", say:"For a fuller white, I would use the Spanish Chardonnay. It has enough roundness for trout, cod, crab, and buttery pasta.", tags:["wine","white","chardonnay","seafood","trout","rich"], upgrade:"Eleonore Moreau Petit Chablis, Mount Eden Wolff Vineyard, or Meursault for a premium Chardonnay lane."},
+      {name:"Ameztoi Rubentis", group:"wine", category:"Rose BTG", price:"17 | 27 | 85", grape:"Hondarrabi Zuri & Beltza", region:"Getariako Txakolina, Spain", structure:"dry, grapefruit, strawberry, sea-spray freshness, slight spritz", profile:"A salty, bright Basque rose that is excellent with seafood, crudo, cucumber, salami, and salty-spicy plates.", pair:"Oysters, Tuna Crudo, Grilled Octopus Salad, Smashed Cucumbers, Fennel Salami", avoid:"Not the richest choice for steak or duck.", say:"This rose is bright, dry, a little coastal, and excellent with seafood or anything salty and fresh.", tags:["wine","rose","seafood","salty","spice","safe"], upgrade:"Raventos i Blanc de Nit Rose for a bottle in a sparkling rose lane."},
+      {name:"Leitz Eins Zwei Dry Rose", group:"wine", category:"Rose BTG", price:"16 | 26 | 80", grape:"Pinot Noir", region:"Rheingau, Germany", structure:"dry, red berry, clean, bright", profile:"A clean dry rose for guests who want refreshing without the spritzy/salty Txakoli character.", pair:"Spiced Beet Salad, Endive, Margherita, Wood Grilled Winter Squash, Grilled Farm Chicken", avoid:"Too light for ribeye as the main pairing.", say:"This is the easy dry rose: clean red berry, refreshing, and very friendly with salad, pizza, squash, and chicken.", tags:["wine","rose","pizza","chicken","safe"], upgrade:"Light red bottle lane: Domaine de Colette or Alta Mora Etna Rosso."},
+      {name:"Deinhard Deidesheim", group:"wine", category:"Red BTG", price:"17 | 27 | 85", grape:"Pinot Noir", region:"Pfalz, Germany", structure:"light red, cherry, strawberry, earth, soft tannin", profile:"A flexible lighter red for mushrooms, carpaccio, duck, trout, and red-leaning guests who do not want a heavy wine.", pair:"Wagyu Beef Carpaccio, Mushrooms on Toast, Rigatoni, Wood Roasted Half Duck, Maple BBQ Rainbow Trout", avoid:"May feel too light for ribeye guests expecting Cabernet weight.", say:"This Pinot is lighter and softer, so it works with mushrooms, carpaccio, duck, and even trout without overpowering the food.", tags:["wine","red","pinot noir","mushroom","duck"], upgrade:"Domaine de Colette, Alta Mora Etna Rosso, Pierre Thibert Chorey-les-Beaune, or Kistler."},
+      {name:"Ca' del Baio Langhe", group:"wine", category:"Red BTG", price:"16 | 26 | 80", grape:"Nebbiolo", region:"Piedmont, Italy", structure:"rose, red cherry, anise, high freshness, firm tannin", profile:"A serious but not huge red. The tannin grip works with beef, lamb, mushrooms, and rich sauces.", pair:"Wagyu Beef Carpaccio, Wood Grilled Beef Strip Steak, Grilled Lamb Saddle, Mushrooms on Toast, 26oz Wood Grilled Beef Ribeye", avoid:"Tannin can fight spicy heat or delicate seafood.", say:"Nebbiolo has red cherry, rose, and a dry tea-like grip. It is excellent with beef, lamb, and mushrooms.", tags:["wine","red","nebbiolo","steak","lamb","mushroom"], upgrade:"Brandini Langhe Filari Corti or Fletcher Barbaresco Recta Pete."},
+      {name:"Sindicat la Figuera", group:"wine", category:"Red BTG", price:"16 | 26 | 80", grape:"Grenache", region:"Montsant, Spain", structure:"juicy cherry, herbs, warm spice, soft tannin", profile:"A generous red that is easier than Nebbiolo and great with sausage, salami, lamb, duck, and warm spice.", pair:"Burrata Cheese, Fennel Salami, Italian Sausage, Grilled Lamb Saddle, Wood Roasted Half Duck", avoid:"Not as structured as Claret for guests wanting Cabernet style.", say:"This Grenache is juicy and warm-spiced. I like it with salami, sausage, lamb, and duck.", tags:["wine","red","grenache","spice","sausage","lamb"], upgrade:"Terroir Sense Fronteres Negre de Montsant or Domaine Gour de Chaule Gigondas."},
+      {name:"Bindi Sergardi La Boncia", group:"wine", category:"Red BTG", price:"15 | 24 | 75", grape:"Sangiovese", region:"Chianti Classico, Tuscany, Italy", structure:"sour cherry, dried herbs, tomato-friendly acidity, moderate tannin", profile:"This is the tomato and pizza red. The acidity keeps tomato sauce, salami, and pasta lively.", pair:"Margherita, Bigoli, Ricotta Dumplings, Fennel Salami, Wood Grilled Beef Strip Steak", avoid:"Not the deepest ribeye bottle substitute.", say:"Sangiovese is the classic tomato-and-pizza red: cherry, herbs, and enough freshness for pasta or salami.", tags:["wine","red","sangiovese","pizza","pasta","tomato","safe"], upgrade:"Castello di Potentino Sacromonte or Aia Vecchia Sor Ugo for a richer Italian red lane."},
+      {name:"Bodega Cerron Remordimiento Tinto", group:"wine", category:"Red BTG", price:"15 | 24 | 75", grape:"Monastrell & Garnacha", region:"Jumilla, Spain", structure:"plum, blackberry, spice, smoky earth, fuller body", profile:"A fuller, darker red for lamb, sausage, ribeye, roasted squash, and smoky or spicy richness.", pair:"Lamb Sausage, Italian Sausage, Wood Grilled Winter Squash, Grilled Lamb Saddle, 26oz Wood Grilled Beef Ribeye", avoid:"Can be too much for delicate seafood.", say:"This is the darker Spanish red: plum, spice, and smoky earth. It is a good call for lamb, sausage, or ribeye.", tags:["wine","red","monastrell","steak","lamb","spice"], upgrade:"Gulfi Nerojbleo, Texier Brezeme, or Gigondas for bigger red drinkers."},
+      {name:"St. John Claret", group:"wine", category:"Red BTG", price:"16 | 26 | 80", grape:"Merlot & Cabernet Sauvignon", region:"Bordeaux, France", structure:"plum, blackcurrant, cedar, savoury Bordeaux shape", profile:"The safest classic steak red by the glass. Merlot softens, Cabernet adds structure.", pair:"Wood Grilled Beef Strip Steak, 26oz Wood Grilled Beef Ribeye, Mushrooms on Toast, Rigatoni, Wood Roasted Half Duck", avoid:"Tannin and structure can feel heavy with chili heat or crudo.", say:"For steak, I would go Claret. It has dark fruit and enough structure for beef without feeling over the top.", tags:["wine","red","claret","bordeaux","steak","mushroom","safe"], upgrade:"Chateau Larose Perganson, Whitehall Lane Merlot, Aia Vecchia Sor Ugo, or White Rock Cabernet Sauvignon."},
+      {name:"Gallina de Piel Neverwine", group:"wine", category:"No-Alcohol Wine", price:"10 | 12 | 50", grape:"Albarino", region:"Spain", structure:"0.0%, citrusy, light, saline", profile:"A useful non-alcoholic white-style option for guests who still want a pairing shape.", pair:"Oysters, Tuna Crudo, Hummus Chips, Bibb Lettuce", avoid:"Not a full replacement for rich Chardonnay or red wine.", say:"If you are skipping alcohol but still want something wine-like, the Neverwine is citrusy and saline, so it works with seafood and lighter plates.", tags:["wine","zero-proof","seafood","non-alc"], upgrade:"Freixenet Sparkling Wine for bubbles or Noughty Rouge for a red-style option."}
+    ];
+
+    const FOOD = [
+      {name:"French Fries", group:"food", category:"Snacks", price:"9", menu:"Garlic Aioli", flavor:"salty, crisp, creamy aioli", wine:"Blue Mountain Brut", cocktail:"Spicy Sandia", zero:"Freixenet Sparkling Wine or Ol' Beautiful Okami Kasu Japanese Lager", why:"Salt and crunch want bubbles, citrus, or cold crisp beer.", flags:"contains garlic aioli; confirm fryer details", tags:["food","fries","salt","safe"]},
+      {name:"Hummus Chips", group:"food", category:"Snacks", price:"9", menu:"Marash Chili, Preserved Lemon", flavor:"tangy, chili, lemon, creamy chickpea", wine:"Hiedler Loss", cocktail:"Short Film or Spicy Sandia", zero:"Short Film", why:"Citrus and chili need a fresh white or zesty zero-proof.", flags:"confirm sesame/tahini details", tags:["food","spice","vegetarian"]},
+      {name:"Garlic Bread", group:"food", category:"Snacks", price:"12", menu:"Cheese Curd", flavor:"rich, cheesy, garlic, salty", wine:"Bodega Cerron Remordimiento Blanco", cocktail:"Cloud 9", zero:"Peroni Pilsner 0.0", why:"Round Chardonnay or crisp beer handles garlic and melted cheese.", flags:"dairy, gluten", tags:["food","cheese","rich"]},
+      {name:"Cashews", group:"food", category:"Snacks", price:"10", menu:"Salt & Vinegar", flavor:"salty, tangy, nutty", wine:"Blue Mountain Brut", cocktail:"White Peach Negroni", zero:"Freixenet Sparkling Wine", why:"Acid, bubbles, and bitterness balance salt and nuts.", flags:"tree nuts", tags:["food","nuts","salt"]},
+      {name:"Eggplant Fries", group:"food", category:"Snacks", price:"9", menu:"Green Harissa Yogurt", flavor:"fried, tangy yogurt, green spice", wine:"Hiedler Loss", cocktail:"Spicy Sandia", zero:"Short Film", why:"Peppery Gruner and citrusy cocktails keep fried yogurt spice fresh.", flags:"dairy; confirm spice heat", tags:["food","spice","fried"]},
+      {name:"Roasted Olives", group:"food", category:"Snacks", price:"10", menu:"Herbs, Orange, Chili", flavor:"salty, herbal, orange, chili", wine:"Dona Matilde Branco", cocktail:"White Peach Negroni", zero:"Sunrise Spritz", why:"Herbal citrus whites and bitter cocktails work with olive brine.", flags:"confirm pits", tags:["food","olive","spice"]},
+      {name:"Bread & Butter", group:"food", category:"Snacks", price:"10", menu:"Smoked Tallow, Charred Onion", flavor:"smoky, fatty, savory", wine:"St. John Claret", cocktail:"Rolling Canoe", zero:"Noughty Rouge", why:"Smoke and tallow can handle darker red fruit or whiskey-port richness.", flags:"beef tallow, gluten, dairy", tags:["food","rich","smoke"]},
+      {name:"Oysters 1/2 dozen", group:"food", category:"Small Plates", price:"26", menu:"Dill Pickle Granita", flavor:"briny, cold, pickle, raw seafood", wine:"Blue Mountain Brut", cocktail:"Spicy Sandia", zero:"Gallina de Piel Neverwine", why:"Brine, pickle, and raw seafood need fresh acid, bubbles, saline, or citrus.", flags:"raw shellfish", tags:["food","seafood","raw","salt","safe"]},
+      {name:"Tuna Crudo", group:"food", category:"Small Plates", price:"20", menu:"Smoked Tonnato, Puttanesca Vinaigrette, Fried Caper, Mint", flavor:"raw tuna, salty caper, smoky, mint, vinaigrette", wine:"Ameztoi Rubentis", cocktail:"Cloud 9", zero:"Gallina de Piel Neverwine", why:"Salty seafood and vinaigrette love dry rose, bubbles, or saline no-alcohol wine.", flags:"raw seafood, fish", tags:["food","seafood","raw"]},
+      {name:"Wagyu Beef Carpaccio", group:"food", category:"Small Plates", price:"20", menu:"Mushroom Vinaigrette, Mushroom Salad", flavor:"beef, mushroom, umami, vinaigrette", wine:"Ca' del Baio Langhe", cocktail:"White Peach Negroni", zero:"Noughty Rouge", why:"Nebbiolo grip and mushroom-friendly Pinot-style reds flatter beef and umami.", flags:"raw/rare beef; confirm preparation", tags:["food","beef","mushroom"]},
+      {name:"Lamb Sausage", group:"food", category:"Small Plates", price:"18", menu:"Cilantro Vinaigrette, Labneh, Fried Egg", flavor:"lamb, herb, tangy labneh, egg richness", wine:"Bodega Cerron Remordimiento Tinto", cocktail:"Doctor Jones", zero:"Noughty Rouge", why:"Lamb and tangy dairy need dark fruit, spice, or amaro bitterness.", flags:"egg, dairy", tags:["food","lamb","spice"]},
+      {name:"Burrata Cheese", group:"food", category:"Small Plates", price:"23", menu:"Red Pepper Jelly, Pine Nuts, Calabrian Chili", flavor:"creamy cheese, sweet pepper, nuts, chili", wine:"Fattoria Moretto Semprebon", cocktail:"Paradise City", zero:"Sunrise Spritz", why:"Cream, chili, and sweet pepper work with fizz, fruit, or tropical acidity.", flags:"dairy, pine nuts, chili", tags:["food","cheese","nuts","spice"]},
+      {name:"Grilled Octopus Salad", group:"food", category:"Small Plates", price:"19", menu:"Orange, Fennel, Sherry Vinaigrette", flavor:"grilled seafood, orange, fennel, sherry tang", wine:"Vini be Good Hip Hop Chenin", cocktail:"French Export", zero:"Gallina de Piel Neverwine", why:"Orange and sherry vinaigrette need fresh texture, not heavy tannin.", flags:"seafood", tags:["food","seafood","orange"]},
+      {name:"Mushrooms on Toast", group:"food", category:"Small Plates", price:"19", menu:"Mushroom Parfait, Black Truffle, Chervil", flavor:"deep mushroom, truffle, toast, creamy umami", wine:"Deinhard Deidesheim", cocktail:"Spaghetti Western", zero:"Noughty Rouge", why:"Earthy Pinot or rich nutty cocktails mirror mushroom depth.", flags:"gluten; confirm dairy", tags:["food","mushroom","rich"]},
+      {name:"Spiced Beet Salad", group:"food", category:"Vegetables", price:"16", menu:"Whipped Feta, Pickled Shallots, Herbs, Pistachio", flavor:"earthy beet, salty feta, pickle, herbs, nuts", wine:"Leitz Eins Zwei Dry Rose", cocktail:"Heartbreak Mountain", zero:"Sunrise Spritz", why:"Dry rose and floral citrus keep beet sweetness and feta salt balanced.", flags:"dairy, pistachio", tags:["food","vegetable","nuts","salad"]},
+      {name:"Endive", group:"food", category:"Vegetables", price:"16", menu:"Apple Vinaigrette, Fontina, Pecan", flavor:"bitter greens, apple acid, cheese, nuts", wine:"Wagner Stempel Weissburgunder", cocktail:"French Export", zero:"Short Film", why:"Gentle white wine handles bitter greens, apple, and Fontina without adding harshness.", flags:"dairy, pecan", tags:["food","salad","nuts"]},
+      {name:"Crispy Smashed Potatoes", group:"food", category:"Vegetables", price:"15", menu:"Charred Shallot Aioli, Avonlea Cheddar, Chive", flavor:"crispy, cheesy, aioli, onion", wine:"Wagner Stempel Weissburgunder", cocktail:"Cloud 9", zero:"Peroni Pilsner 0.0", why:"Creamy potato wants a soft white, citrus cocktail, or crisp beer.", flags:"dairy, egg in aioli possible", tags:["food","potato","cheese"]},
+      {name:"Brussels Sprouts", group:"food", category:"Vegetables", price:"17", menu:"Tagine Spiced Honey, Pickled Raisins, Crispy Chickpeas, Goats Gouda", flavor:"sweet-spiced, pickle, bitter greens, cheese", wine:"Darting Durkheimer Fronhof", cocktail:"Cruel Summer", zero:"Sunrise Spritz", why:"Riesling-style freshness is a safe answer for honey spice and bitter sprouts.", flags:"dairy", tags:["food","spice","vegetable"]},
+      {name:"Smashed Cucumbers", group:"food", category:"Vegetables", price:"18", menu:"Green Tahini Dressing, Toasted Almond, Chili", flavor:"fresh cucumber, tahini, almond, chili", wine:"Hiedler Loss", cocktail:"Spicy Sandia", zero:"Short Film", why:"Fresh, peppery, citrusy drinks match cucumber and tame chili.", flags:"sesame/tahini, almond, chili", tags:["food","spice","nuts","green"]},
+      {name:"Bibb Lettuce", group:"food", category:"Vegetables", price:"16", menu:"Jalapeno Cream, Puffed Grains, Alpine Cheese", flavor:"green, creamy, jalapeno, cheese", wine:"Darting Durkheimer Fronhof", cocktail:"Lovers Mountain", zero:"Lovers Mountain", why:"Jalapeno cream wants freshness and a little aromatic lift.", flags:"dairy, jalapeno", tags:["food","green","spice"]},
+      {name:"Wood Grilled Winter Squash", group:"food", category:"Vegetables", price:"17", menu:"Peanut Pesto, Pickled Cranberry, Guanciale, Fried Herbs", flavor:"smoky squash, peanut, pickle, pork, herbs", wine:"Bodega Cerron Remordimiento Tinto", cocktail:"Cruel Summer", zero:"Noughty Rouge", why:"Sweet squash, smoke, peanut, and guanciale need fruit, spice, and enough body.", flags:"peanut, pork", tags:["food","spice","smoke","nuts"]},
+      {name:"Margherita", group:"food", category:"Pizza", price:"20", menu:"Tomato, Mozzarella, Basil", flavor:"tomato, cheese, basil", wine:"Bindi Sergardi La Boncia", cocktail:"Eat, Apres, Love", zero:"Noughty Rouge", why:"Sangiovese acidity is built for tomato and mozzarella.", flags:"dairy, gluten", tags:["food","pizza","tomato"]},
+      {name:"Chicken Sausage", group:"food", category:"Pizza", price:"24", menu:"Bacon, Garlic Bechamel, Mushroom, Jalapeno", flavor:"creamy, bacon, mushroom, jalapeno", wine:"Fattoria Moretto Semprebon", cocktail:"Paradise City", zero:"Peroni Pilsner 0.0", why:"Fizz and fruit cut cream, bacon, mushroom, and jalapeno heat.", flags:"pork, dairy, gluten, jalapeno", tags:["food","pizza","spice","mushroom"]},
+      {name:"Five Cheese", group:"food", category:"Pizza", price:"23", menu:"Provolone, Fontina, Fior di Latte, Oka, Parmesan", flavor:"rich cheese, salt, creamy", wine:"Wagner Stempel Weissburgunder", cocktail:"Spaghetti Western", zero:"Freixenet Sparkling Wine", why:"Soft white works for comfort; bubbles or rich cocktails cut the cheese.", flags:"dairy, gluten", tags:["food","pizza","cheese"]},
+      {name:"Fennel Salami", group:"food", category:"Pizza", price:"25", menu:"Onion, Calabrian Chili, Caramelized Honey", flavor:"salami, chili, honey, onion", wine:"Fattoria Moretto Semprebon", cocktail:"Spicy Sandia", zero:"Sunrise Spritz", why:"Salty meat, chili, and honey are made for sparkling red, Riesling, or spicy citrus.", flags:"pork, chili, gluten", tags:["food","pizza","spice","sausage"]},
+      {name:"Italian Sausage", group:"food", category:"Pizza", price:"24", menu:"Confit Garlic, Charred Kale, Roasted Pepper, Pecorino", flavor:"sausage, garlic, kale, pepper, cheese", wine:"Sindicat la Figuera", cocktail:"Doctor Jones", zero:"Noughty Rouge", why:"Grenache fruit and spice loves sausage, roasted pepper, and pecorino.", flags:"pork, dairy, gluten", tags:["food","pizza","sausage"]},
+      {name:"Italian Pork Sausage", group:"food", category:"Pasta", price:"23", menu:"Conchiglie, Calabrian Chili", flavor:"pork sausage, shell pasta, chili", wine:"Darting Durkheimer Fronhof", cocktail:"Spicy Sandia", zero:"Peroni Pilsner 0.0", why:"Chili heat is safer with Riesling-style freshness, beer, or bright cocktails.", flags:"pork, gluten, chili", tags:["food","pasta","spice","sausage"]},
+      {name:"Ricotta Dumplings", group:"food", category:"Pasta", price:"22", menu:"Vodka Tomato Sauce, Basil", flavor:"ricotta, tomato cream, basil", wine:"Bindi Sergardi La Boncia", cocktail:"White Peach Negroni", zero:"Noughty Rouge", why:"Tomato cream wants acidity; Sangiovese is the clean answer.", flags:"dairy, gluten", tags:["food","pasta","tomato","cheese"]},
+      {name:"Shrimp & Crab", group:"food", category:"Pasta", price:"25", menu:"Linguini, Brown Butter, Chili", flavor:"shellfish, brown butter, chili", wine:"Bodega Cerron Remordimiento Blanco", cocktail:"Cloud 9", zero:"Gallina de Piel Neverwine", why:"Round Chardonnay handles brown butter; citrus keeps shellfish and chili awake.", flags:"shellfish, gluten, dairy, chili", tags:["food","pasta","seafood","shellfish"]},
+      {name:"Bigoli", group:"food", category:"Pasta", price:"23", menu:"Pomodoro, Crushed Olive, Caper, Parsley", flavor:"tomato, olive, caper, parsley", wine:"Dona Matilde Branco", cocktail:"White Peach Negroni", zero:"Noughty Rouge", why:"Tomato plus olive/caper can go Sangiovese, but the Portuguese white is excellent with briny pasta.", flags:"gluten", tags:["food","pasta","tomato","olive"]},
+      {name:"Rigatoni", group:"food", category:"Pasta", price:"22", menu:"Truffled Mushroom, Parmesan Sauce", flavor:"mushroom, truffle, parmesan, creamy", wine:"Deinhard Deidesheim", cocktail:"Spaghetti Western", zero:"Noughty Rouge", why:"Earthy reds and nutty spirit-forward cocktails fit truffle and parmesan.", flags:"dairy, gluten", tags:["food","pasta","mushroom","rich"]},
+      {name:"Grilled Farm Chicken", group:"food", category:"Main", price:"40", menu:"Chicken Sausage, Dill Gravy, Fries", flavor:"chicken, sausage, gravy, fries, dill", wine:"Wagner Stempel Weissburgunder", cocktail:"Rolling Canoe", zero:"Peroni Pilsner 0.0", why:"Soft white keeps the plate easy; rye-port cocktail works if the guest wants richer.", flags:"confirm sausage ingredients", tags:["food","chicken","main"]},
+      {name:"Maple BBQ Rainbow Trout", group:"food", category:"Main", price:"38", menu:"Creamed Kale, Smoked Potato Puree", flavor:"trout, maple BBQ, smoke, creamy kale", wine:"Vini be Good Hip Hop Chenin", cocktail:"Heartbreak Mountain", zero:"Gallina de Piel Neverwine", why:"Chenin handles sweet-savory maple, smoke, seafood, and creamy sides.", flags:"fish, dairy", tags:["food","seafood","trout","main","smoke"]},
+      {name:"Wood Grilled Beef Strip Steak", group:"food", category:"Main", price:"52", menu:"Bearnaise, Charred Shallot, Pommes Paillasson, Wild Mushroom Jus", flavor:"beef, butter sauce, mushroom jus, char", wine:"St. John Claret", cocktail:"Rolling Canoe", zero:"Noughty Rouge", why:"Beef fat and mushroom jus want tannin, dark fruit, or a whiskey-port cocktail.", flags:"beef, dairy/egg in Bearnaise", tags:["food","steak","beef","mushroom","main"]},
+      {name:"Wood Roasted Cod", group:"food", category:"Main", price:"57", menu:"Shellfish Broth, Choron Emulsion, Sourdough, Bitter Greens", flavor:"cod, shellfish broth, tomato emulsion, greens", wine:"Bodega Cerron Remordimiento Blanco", cocktail:"Cloud 9", zero:"Gallina de Piel Neverwine", why:"Richer seafood needs a fuller white with enough freshness.", flags:"fish, shellfish, gluten, dairy/egg possible", tags:["food","seafood","shellfish","main"]},
+      {name:"Grilled Lamb Saddle", group:"food", category:"Main", price:"47", menu:"Warm Merguez Potato Salad, Tender Greens, Labneh, Mint", flavor:"lamb, merguez spice, potato, labneh, mint", wine:"Ca' del Baio Langhe", cocktail:"Doctor Jones", zero:"Noughty Rouge", why:"Lamb and merguez can use Nebbiolo grip, dark Spanish red, or amaro depth.", flags:"lamb, dairy, spice", tags:["food","lamb","spice","main"]},
+      {name:"Wood Roasted Half Duck", group:"food", category:"Main", price:"46", menu:"Turnips, Bitter Greens, Black Garlic Emulsion", flavor:"duck, bitter greens, black garlic, roasted richness", wine:"Deinhard Deidesheim", cocktail:"White Peach Negroni", zero:"Noughty Rouge", why:"Duck loves Pinot-style reds; bitter greens and garlic also like aperitivo bitterness.", flags:"confirm sauce allergens", tags:["food","duck","main","rich"]},
+      {name:"26oz Wood Grilled Beef Ribeye", group:"food", category:"Main", price:"125", menu:"Pomme Aligot, Green Peppercorn, Smoked Bone Marrow Jus", flavor:"big beef, cheese potato, peppercorn, bone marrow, smoke", wine:"St. John Claret", cocktail:"Spaghetti Western", zero:"Noughty Rouge", why:"This is the biggest red-wine lane: tannin, dark fruit, structure, and fat-cutting grip.", flags:"beef, dairy, bone marrow", tags:["food","steak","beef","main","rich"]},
+      {name:"The Banana Pie", group:"food", category:"Dessert", price:"16", menu:"Coffee, Pretzel, Rum Caramel", flavor:"banana, coffee, pretzel, rum caramel", wine:"Valdespino Cream Sherry Isabela", cocktail:"Rolling Canoe", zero:"Sunrise Spritz", why:"Cream sherry echoes toffee, orange, and pudding-like warmth.", flags:"gluten, dairy; confirm nuts", tags:["food","dessert"]},
+      {name:"Apple Tatin", group:"food", category:"Dessert", price:"15", menu:"Armagnac, Cider Caramel, Toasted Hay", flavor:"apple, caramel, cider, Armagnac", wine:"Barbeito Madeira Rainwater Reserva 5yr", cocktail:"French Export", zero:"Sunrise Spritz", why:"Madeira and Calvados-style flavours match apple, caramel, and toasted notes.", flags:"dairy/gluten possible", tags:["food","dessert"]},
+      {name:"Chocolate Pot de Creme", group:"food", category:"Dessert", price:"15", menu:"Salted Chocolate, Sour Cherry", flavor:"chocolate, salt, sour cherry", wine:"Domaine Pouderoux Vendage", cocktail:"Spaghetti Western", zero:"Noughty Rouge", why:"Black cherry fortified wine and tawny port flavours flatter chocolate and salt.", flags:"dairy; confirm egg", tags:["food","dessert","chocolate"]},
+      {name:"Matinee Snack Menu", group:"food", category:"Matinee / Late Night", price:"varies", menu:"Snack menu daily 2pm to 5pm; late-night window listed on public Calgary page", flavor:"quick share plates, pizza, snacks, salads", wine:"Blue Mountain Brut", cocktail:"Spicy Sandia", zero:"Lovers Mountain", why:"For fast snack ordering, lead with bubbles, a crisp beer, or a signature cocktail.", flags:"availability changes by time", tags:["food","matinee","late night","snacks"]}
+    ];
+
+    const COCKTAILS = [
+      {name:"Spicy Sandia", group:"cocktail", category:"Bright, spicy, smoky", price:"20", profile:"tequila, mezcal, watermelon, dry curacao, lime, saline", pair:"Oysters, Tuna Crudo, Fennel Salami, Italian Pork Sausage", caveat:"Smoky/spicy profile; confirm heat tolerance.", say:"If you like a spicy margarita, Spicy Sandia is the Bridgette version: tequila, mezcal, watermelon, lime, and saline.", tags:["cocktail","spice","seafood"]},
+      {name:"Heartbreak Mountain", group:"cocktail", category:"Floral, tea, citrus", price:"18", profile:"gin, Earl Grey tea, lemon, lavender, milk washed", pair:"Bibb Lettuce, Spiced Beet Salad, Maple BBQ Rainbow Trout, Wood Roasted Cod", caveat:"Milk washed; confirm dairy-allergy language.", say:"This is floral, tea-driven, and very polished. It works well when a guest wants refreshing but not basic.", tags:["cocktail","floral","seafood"]},
+      {name:"Doctor Jones", group:"cocktail", category:"Bitter, aperitivo, amaro", price:"17", profile:"Averna amaro, red vermouth, orange, Dr. Pepper, lemon, mint", pair:"Lamb Sausage, Bigoli, Rigatoni, Wood Roasted Half Duck", caveat:"Amaro bitterness; better for adventurous guests.", say:"Doctor Jones is the fun amaro lane: bitter, citrusy, cola-spiced, and great with richer savory plates.", tags:["cocktail","bitter","rich"]},
+      {name:"Jr. Stargazer", group:"cocktail", category:"Bright, spicy, smoky", price:"17", profile:"tequila, mezcal, apricot, pickled celery, lime", pair:"Oysters, Tuna Crudo, Smashed Cucumbers, Fennel Salami", caveat:"Pickled celery and mezcal profile; not for every guest.", say:"Jr. Stargazer is bright and a little savory, with tequila, mezcal, apricot, pickled celery, and lime.", tags:["cocktail","spice","seafood"]},
+      {name:"Eat, Apres, Love", group:"cocktail", category:"Fruity, tropical, sparkling", price:"17", profile:"rose gin, strawberry cordial, sparkling rose", pair:"Burrata Cheese, Margherita, Spiced Beet Salad, dessert starters", caveat:"Fruit-forward and sparkling.", say:"This is the softer sparkling rose cocktail: great if someone wants fruit and bubbles without going heavy.", tags:["cocktail","sparkling","rose"]},
+      {name:"French Export", group:"cocktail", category:"Floral, tea, citrus", price:"17", profile:"vanilla vodka, calvados, jasmine, lemon, pernod", pair:"Apple Tatin, Endive, Grilled Octopus Salad, Maple BBQ Rainbow Trout", caveat:"Pernod/anise note may be polarizing.", say:"French Export has apple, jasmine, lemon, and a little anise. It is lovely with apple, fennel, seafood, and lighter plates.", tags:["cocktail","floral","dessert"]},
+      {name:"Cruel Summer", group:"cocktail", category:"Fruity, tropical, sparkling", price:"17", profile:"sage vodka, arancione aperitivo, rhubarb, strawberry, lemon", pair:"Burrata Cheese, Brussels Sprouts, Chicken Sausage pizza, Wood Grilled Winter Squash", caveat:"Aperitivo and fruit balance.", say:"Cruel Summer is rhubarb-strawberry with sage and citrus. It is bright enough for spice and rich enough for share plates.", tags:["cocktail","fruit","spice"]},
+      {name:"Paradise City", group:"cocktail", category:"Fruity, tropical, sparkling", price:"17", profile:"tequila, pineapple rum, Cointreau, toasted coconut, lime, cinnamon", pair:"Burrata Cheese, Grilled Octopus Salad, Margherita, Chicken Sausage", caveat:"Tropical and coconut-forward.", say:"Paradise City is the tropical lane: pineapple, coconut, lime, and cinnamon. Great with cheese, spice, and pizza.", tags:["cocktail","tropical","pizza"]},
+      {name:"White Peach Negroni", group:"cocktail", category:"Bitter, aperitivo, amaro", price:"17", profile:"gin, peach liqueur, blanc aperitif, Campari", pair:"Lamb Sausage, Bigoli, Rigatoni, Wood Roasted Half Duck", caveat:"Bitter Campari profile.", say:"This is a softer Negroni direction with peach, but it still has that bitter aperitivo backbone.", tags:["cocktail","bitter","aperitivo"]},
+      {name:"Spaghetti Western", group:"cocktail", category:"Rich, spirit-forward", price:"17", profile:"bourbon, cognac, amaro Montenegro, hazelnut, basil", pair:"Wood Grilled Beef Strip Steak, 26oz Wood Grilled Beef Ribeye, Mushrooms on Toast, Chocolate Pot de Creme", caveat:"Contains nuts.", say:"Spaghetti Western is richer and nuttier, with bourbon, cognac, Montenegro, hazelnut, and basil. It does contain nuts.", tags:["cocktail","rich","steak","nuts"]},
+      {name:"Cloud 9", group:"cocktail", category:"Floral, tea, citrus", price:"17", profile:"gin, elderflower, grapefruit, lime, egg whites", pair:"Wood Roasted Cod, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes", caveat:"Confirm egg-white allergy and vegan language before recommending.", say:"Cloud 9 is citrusy, floral, and lifted. I would use it for seafood, creamy garlic, or lighter fried plates.", tags:["cocktail","citrus","seafood"]},
+      {name:"Rolling Canoe", group:"cocktail", category:"Rich, spirit-forward", price:"17", profile:"rye, ruby port, ginger, lemon", pair:"Wood Grilled Beef Strip Steak, Grilled Farm Chicken, The Banana Pie, Apple Tatin", caveat:"Whiskey-forward but brightened with ginger and lemon.", say:"Rolling Canoe is whiskey, port, ginger, and lemon. It is a strong call for steak or a richer after-dinner drink.", tags:["cocktail","rich","steak","dessert"]},
+      {name:"Lovers Mountain", group:"cocktail", category:"Zero-proof cocktail", price:"12", profile:"NOA dry gin, Earl Grey tea, lemon, lavender, milk washed | 0.04%", pair:"Bibb Lettuce, Spiced Beet Salad, Maple BBQ Rainbow Trout", caveat:"Milk washed; very low alcohol listed.", say:"If you are skipping alcohol, Lovers Mountain feels like a real cocktail: tea, lemon, lavender, and a polished finish.", tags:["cocktail","zero-proof","floral"]},
+      {name:"Short Film", group:"cocktail", category:"Zero-proof cocktail", price:"10", profile:"Caleno light & zesty, Martini Floreale, za'atar, spiced white cranberry, lemon", pair:"Hummus Chips, Smashed Cucumbers, Endive, Eggplant Fries", caveat:"Sesame allergy note on menu.", say:"Short Film is zesty and spiced, with white cranberry and lemon. Great for a no-alcohol guest who wants complexity.", tags:["cocktail","zero-proof","spice"]},
+      {name:"Sunrise Spritz", group:"cocktail", category:"Zero-proof cocktail", price:"10", profile:"rhubarb, strawberry, non-alcoholic sparkling wine | 0.05%", pair:"Burrata Cheese, Spiced Beet Salad, Apple Tatin, The Banana Pie", caveat:"Very low alcohol listed.", say:"Sunrise Spritz is the lighter fruit-sparkling no-alcohol option: rhubarb, strawberry, and bubbles.", tags:["cocktail","zero-proof","sparkling"]}
+    ];
+
+    const BEER_ZERO = [
+      "<p><strong>Crisp beer:</strong> Ol' Beautiful Okami Kasu Japanese Lager, Banded Peak Mount Crushmore Pilsner, Stella Artois, Michelob Ultra. Use for fries, oysters, garlic bread, and Margherita.</p>",
+      "<p><strong>Hoppy beer:</strong> Establishment Afternoon Delight NEPA, 33 Acres Ocean Pale Ale, Superflux Happyness IPA, Banded Peak Microburst Hazy IPA. Use for salami, sausage, hummus chips, eggplant fries.</p>",
+      "<p><strong>Sour/fruity:</strong> Four Winds Nectarous, Dandy The Julia Peach Cobbler Sour, Polyrhythm Matinee Lemon Cream Tart Ale, Uncommon Tropical Cider. Use for burrata, octopus, Apple Tatin, Banana Pie.</p>",
+      "<p><strong>Rich beer:</strong> Born Arm Candy Milk Stout or Chimay Blue. Use for steak, ribeye, or Chocolate Pot de Creme.</p>",
+      "<p><strong>No-alcohol wine:</strong> Gallina de Piel Neverwine for seafood, Freixenet Sparkling Wine for bubbles, Noughty Rouge for soft red-fruit pairings.</p>"
+    ];
+
+    const bottleLadders = [
+      ["Bubbles", "Blue Mountain Brut -> Raventos i Blanc de Nit Rose -> Griesel Blanc de Noirs -> Christophe Mignon Adn de Meunier Brut Nature"],
+      ["Crisp seafood whites", "Hiedler Loss -> Landron Muscadet -> Denizot Sancerre"],
+      ["Rounder whites", "Bodega Cerron Blanco -> Eleonore Moreau Petit Chablis -> Mount Eden Wolff Vineyard -> Domaine Buisson-Charles Meursault"],
+      ["Light reds", "Deinhard Deidesheim -> Domaine de Colette -> Alta Mora Etna Rosso -> Pierre Thibert Chorey-les-Beaune"],
+      ["Steak reds", "St. John Claret -> Chateau Larose Perganson -> Whitehall Lane Merlot -> Aia Vecchia Sor Ugo -> White Rock Cabernet Sauvignon"]
+    ];
+
+    const bottleMap = [
+      ["Bubbly bottles", "Raventos i Blanc de Nit Rose; Cirelli Frizzante Bianco; Griesel Blanc de Noirs; Christophe Mignon Adn de Meunier Brut Nature."],
+      ["Crisp white bottles", "Denizot Sancerre; Ciro Picariello Bru Emm; Donnhoff Feinherb; Landron Muscadet-Sevre et Maine Amphibolite; Claire Naudin Mallon; Bideona Cabezadas; Cusumano Lucido."],
+      ["Textured white bottles", "Domaine Breton Pierres Rousses; Maloof Where Ya Pjs At? skin contact Pinot Gris; Clos Bellane Valreas; Domaine de la Rochette Macon-Bussieres Mont Sard; Domaine Buisson-Charles Meursault Vieilles Vignes; Mount Eden Wolff Vineyard."],
+      ["Light and medium red bottles", "Terroir Sense Fronteres Negre de Montsant; Charlotte & Jean Baptiste Senat Amalgame; Malahierba Vinos Maleza; Alta Mora Etna Rosso; Pierre Thibert Chorey-les-Beaune; Sandrine & Fabrice Gasnier Chinon Pierres Chaudes; Domaine de Colette Coteaux de Colette; Castello di Verduno Alba; Brandini Langhe Filari Corti."],
+      ["Structured red bottles", "Kistler Pinot Noir; Castello di Potentino Sacromonte; Fletcher Barbaresco Recta Pete; Texier Brezeme; Algre Valgañon; Gulfi Nerojbleo; Domaine Gour de Chaule Gigondas Les Jardinieres; Chateau Larose Perganson; Whitehall Lane Merlot; Aia Vecchia Sor Ugo Bolgheri Superiore; White Rock Cabernet Sauvignon."]
+    ];
+
+    const savedKey = "bb_calgary_saved_cards_v1";
+    const notesKey = "bb_calgary_notes_v1";
+    let activeFilter = "all";
+    let activeDrillType = "food";
+    let currentDrill = null;
+    let lastDrillKey = "";
+    let saved = new Set(JSON.parse(localStorage.getItem(savedKey) || "[]"));
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      }[char]));
+    }
+
+    function tokenText(item) {
+      return Object.values(item).flat().join(" ").toLowerCase();
+    }
+
+    function renderCard(item, type) {
+      const tags = (item.tags || []).map(tag => `<span class="badge">${escapeHtml(tag)}</span>`).join("");
+      const pressed = saved.has(item.name) ? "true" : "false";
+      const saveLabel = saved.has(item.name) ? `Remove ${item.name} from saved` : `Save ${item.name}`;
+      const text = escapeHtml(tokenText(item));
+      const isWine = type === "wine";
+      const isFood = type === "food";
+      const caveat = item.flags || item.avoid || item.caveat || "Confirm with the team if unsure.";
+      const lead = isWine
+        ? item.say
+        : isFood
+          ? `${item.wine}. ${item.why}`
+          : item.say;
+      return `
+        <article class="study-card" data-group="${escapeHtml(item.group)}" data-category="${escapeHtml(item.category)}" data-tags="${escapeHtml((item.tags || []).join(" "))}" data-text="${text}">
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">${escapeHtml(item.name)}</h3>
+              <p class="meta">${escapeHtml(item.category)}${item.price ? " / " + escapeHtml(item.price) : ""}</p>
+            </div>
+            <button class="save-btn" type="button" aria-pressed="${pressed}" aria-label="${escapeHtml(saveLabel)}" data-save="${escapeHtml(item.name)}">${pressed === "true" ? "★" : "☆"}</button>
+          </div>
+          <div class="card-body">
+            <div class="lead-line">${escapeHtml(lead)}</div>
+            <div class="confirm-line"><b>Confirm</b>${escapeHtml(caveat)}</div>
+            <div class="badge-row">${tags}</div>
+            ${isWine ? `<p><strong>${escapeHtml(item.grape)}</strong><br>${escapeHtml(item.region)}</p>` : ""}
+            ${isFood ? `<p><strong>Menu:</strong> ${escapeHtml(item.menu)}</p>` : ""}
+            <p>${escapeHtml(item.profile || item.flavor)}</p>
+            <div class="pair-line"><b>${isWine ? "Best food pairings" : "Wine match"}</b>${escapeHtml(isWine ? item.pair : item.wine)}</div>
+            <div class="pair-line"><b>${isWine ? "Table language" : "Cocktail / drink match"}</b>${escapeHtml(isWine ? item.say : item.cocktail)}</div>
+            ${isFood ? `<div class="pair-line"><b>Zero-proof / beer</b>${escapeHtml(item.zero)}</div>` : ""}
+            <details>
+              <summary>Why it works and caveats</summary>
+              <p>${escapeHtml(item.why || item.structure || "")}</p>
+              <p><strong>Caveat:</strong> ${escapeHtml(caveat)}</p>
+              ${isWine ? `<p><strong>Bottle lane:</strong> ${escapeHtml(item.upgrade)}</p>` : ""}
+            </details>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderWine() {
+      const bottleHtml = `
+        <article class="study-card" data-group="wine" data-category="bottle ladder" data-tags="wine bottle upsell" data-text="${escapeHtml(bottleLadders.flat().join(" ").toLowerCase())}">
+          <div class="card-head"><div><h3 class="card-title">Bottle Ladder</h3><p class="meta">Bottle upgrade paths that feel natural</p></div></div>
+          <div class="card-body">
+            ${bottleLadders.map(([title, lane]) => `<div class="pair-line"><b>${escapeHtml(title)}</b>${escapeHtml(lane)}</div>`).join("")}
+            <p class="quote">Try: "If you want to turn that glass into a bottle, this is the same lane but a little more special."</p>
+          </div>
+        </article>
+        <article class="study-card" data-group="wine" data-category="bottle map" data-tags="wine bottle list upsell" data-text="${escapeHtml(bottleMap.flat().join(" ").toLowerCase())}">
+          <div class="card-head"><div><h3 class="card-title">Bottle Map</h3><p class="meta">Recognize the rest of the Calgary wine list by lane</p></div></div>
+          <div class="card-body">
+            ${bottleMap.map(([title, lane]) => `<div class="pair-line"><b>${escapeHtml(title)}</b>${escapeHtml(lane)}</div>`).join("")}
+            <details>
+              <summary>How to use the bottle map</summary>
+              <p>When you do not know a bottle deeply yet, sell the lane honestly: crisp seafood white, textured white, light red, structured steak red, or bubbles. Then confirm with a lead, bartender, or manager before making a high-price promise.</p>
+            </details>
+          </div>
+        </article>`;
+      document.getElementById("wineCards").innerHTML = WINE.map(item => renderCard(item, "wine")).join("") + bottleHtml;
+    }
+
+    function renderFood() {
+      document.getElementById("foodCards").innerHTML = FOOD.map(item => renderCard(item, "food")).join("");
+    }
+
+    function renderCocktails() {
+      document.getElementById("cocktailCards").innerHTML = COCKTAILS.map(item => renderCard(item, "cocktail")).join("");
+      document.getElementById("beerZero").innerHTML = BEER_ZERO.join("");
+    }
+
+    function renderMatrix() {
+      const rows = FOOD.filter(item => ["Small Plates","Pizza","Pasta","Main","Dessert","Vegetables"].includes(item.category)).map(item => `
+        <tr>
+          <td><strong>${escapeHtml(item.name)}</strong><br><span>${escapeHtml(item.flavor)}</span></td>
+          <td>${escapeHtml(item.wine)}</td>
+          <td>${escapeHtml(item.cocktail)}</td>
+          <td>${escapeHtml(item.zero)}</td>
+          <td>${escapeHtml(item.why)}</td>
+        </tr>
+      `).join("");
+      document.getElementById("pairingMatrix").innerHTML = `
+        <caption>Fast pairing reference for common Calgary food-menu items.</caption>
+        <thead><tr><th scope="col">Dish</th><th scope="col">Wine</th><th scope="col">Cocktail</th><th scope="col">Zero-proof / beer</th><th scope="col">Why</th></tr></thead>
+        <tbody>${rows}</tbody>
+      `;
+    }
+
+    function populateSelects() {
+      const dishSelect = document.getElementById("dishSelect");
+      dishSelect.innerHTML = FOOD.map(item => `<option value="${escapeHtml(item.name)}">${escapeHtml(item.name)}</option>`).join("");
+      dishSelect.value = "Wood Grilled Beef Strip Steak";
+    }
+
+    function buildDrillDeck(type) {
+      if (type === "wine") {
+        return WINE.map(wine => ({
+          key: `wine:${wine.name}`,
+          label: "Wine Talk",
+          prompt: `Describe ${wine.name} without sounding like a textbook.`,
+          lines: [
+            ["Style", `${wine.grape}; ${wine.structure}`],
+            ["Table phrase", wine.say],
+            ["Best pairings", wine.pair],
+            ["Confirm", wine.avoid],
+            ["Bottle lane", wine.upgrade]
+          ]
+        }));
+      }
+      if (type === "cocktail") {
+        return COCKTAILS.map(cocktail => ({
+          key: `cocktail:${cocktail.name}`,
+          label: "Cocktail Lane",
+          prompt: `What guest lane does ${cocktail.name} fit, and what food would you pair it with?`,
+          lines: [
+            ["Lane", `${cocktail.category}; ${cocktail.profile}`],
+            ["Table phrase", cocktail.say],
+            ["Food pairings", cocktail.pair],
+            ["Confirm", cocktail.caveat]
+          ]
+        }));
+      }
+      if (type === "safety") {
+        return FOOD.concat(COCKTAILS).map(item => ({
+          key: `safety:${item.name}`,
+          label: "Safety Check",
+          prompt: `What needs confirming before recommending ${item.name}?`,
+          lines: [
+            ["Confirm", item.flags || item.caveat || item.avoid || "Confirm availability and details with the team."],
+            ["Service move", "Name the caveat calmly, then offer a nearby safe lane if needed."],
+            ["Pairing note", item.wine || item.pair || item.say || "Use the main card for the best pairing lane."]
+          ],
+          dish: item.group === "food" ? item.name : ""
+        }));
+      }
+      return FOOD.map(food => ({
+        key: `food:${food.name}`,
+        label: "Food Pairing",
+        prompt: `Guest orders ${food.name}. What would you recommend, and why?`,
+        lines: [
+          ["Wine", food.wine],
+          ["Cocktail", food.cocktail],
+          ["Zero-proof / beer", food.zero],
+          ["Why it works", food.why],
+          ["Confirm", food.flags]
+        ],
+        dish: food.name
+      }));
+    }
+
+    function renderDrillAnswer(lines) {
+      return lines.map(([label, value]) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`).join("");
+    }
+
+    function setDrill(drill, reveal = false) {
+      currentDrill = drill;
+      document.getElementById("drillTypeLabel").textContent = drill.label;
+      document.getElementById("drillPrompt").textContent = drill.prompt;
+      const answer = document.getElementById("drillAnswer");
+      answer.innerHTML = renderDrillAnswer(drill.lines);
+      answer.toggleAttribute("hidden", !reveal);
+      const revealButton = document.getElementById("revealDrill");
+      revealButton.setAttribute("aria-expanded", String(reveal));
+      revealButton.textContent = reveal ? "Hide answer" : "Reveal answer";
+      document.getElementById("drillStatus").textContent = reveal ? "Answer shown." : "Prompt ready. Answer out loud before revealing.";
+    }
+
+    function nextDrill() {
+      const deck = buildDrillDeck(activeDrillType);
+      if (!deck.length) return;
+      let index = Math.floor(Math.random() * deck.length);
+      if (deck.length > 1) {
+        while (deck[index].key === lastDrillKey) index = Math.floor(Math.random() * deck.length);
+      }
+      lastDrillKey = deck[index].key;
+      setDrill(deck[index], false);
+    }
+
+    function recommendationFor(food, style, format, budget) {
+      let wine = food.wine;
+      let bottle = "Use the bottle ladder in the same style as the glass.";
+      if (food.tags.includes("steak")) bottle = budget === "premium" ? "White Rock Cabernet Sauvignon or Aia Vecchia Sor Ugo" : "Chateau Larose Perganson or Whitehall Lane Merlot";
+      else if (food.tags.includes("seafood")) bottle = budget === "premium" ? "Denizot Sancerre, Griesel Blanc de Noirs, or Mount Eden Wolff Vineyard" : "Landron Muscadet or Raventos i Blanc de Nit Rose";
+      else if (food.tags.includes("pizza") || food.tags.includes("tomato")) bottle = "Castello di Potentino Sacromonte or Domaine de Colette";
+      else if (food.tags.includes("lamb")) bottle = "Brandini Langhe Filari Corti, Gigondas, or Terroir Sense Fronteres";
+      else if (food.tags.includes("dessert")) bottle = "Domaine Pouderoux, Barbeito Madeira, Valdespino Cream Sherry, or Tawny Port";
+
+      if (style === "bright") wine = food.tags.includes("steak") ? "Ca' del Baio Langhe" : (food.tags.includes("seafood") ? "Blue Mountain Brut or Ameztoi Rubentis" : wine);
+      if (style === "bold") wine = food.tags.includes("steak") || food.tags.includes("lamb") ? "St. John Claret or Bodega Cerron Remordimiento Tinto" : wine;
+      if (style === "adventurous") wine = food.tags.includes("spice") ? "Fattoria Moretto Semprebon or Darting Durkheimer Fronhof" : wine;
+      if (style === "zero") wine = food.zero;
+
+      const lead = format === "bottle" ? bottle : format === "cocktail" ? food.cocktail : format === "zero" ? food.zero : wine;
+      return {lead, wine, bottle, cocktail: food.cocktail, zero: food.zero};
+    }
+
+    function updatePairing() {
+      const dish = document.getElementById("dishSelect").value;
+      const style = document.getElementById("styleSelect").value;
+      const format = document.getElementById("formatSelect").value;
+      const budget = document.getElementById("budgetSelect").value;
+      const food = FOOD.find(item => item.name === dish) || FOOD[0];
+      const rec = recommendationFor(food, style, format, budget);
+      document.getElementById("pairingResult").innerHTML = `
+        <div class="result-main">
+          <h3>${escapeHtml(food.name)}</h3>
+          <p><strong>Lead recommendation:</strong> ${escapeHtml(rec.lead)}</p>
+          <p>${escapeHtml(food.why)}</p>
+          <p class="quote">"For ${escapeHtml(food.name)}, I would steer you toward ${escapeHtml(rec.lead)}. It works because ${escapeHtml(food.why.toLowerCase())}"</p>
+        </div>
+        <div class="result-item"><strong>By the glass</strong><br>${escapeHtml(rec.wine)}</div>
+        <div class="result-item"><strong>Bottle lane</strong><br>${escapeHtml(rec.bottle)}</div>
+        <div class="result-item"><strong>Cocktail</strong><br>${escapeHtml(rec.cocktail)}</div>
+        <div class="result-item"><strong>Zero-proof / beer</strong><br>${escapeHtml(rec.zero)}</div>
+        <div class="result-item"><strong>Caveat</strong><br>${escapeHtml(food.flags)}</div>
+      `;
+    }
+
+    function applyFilters() {
+      const query = document.getElementById("globalSearch").value.trim().toLowerCase();
+      const cards = Array.from(document.querySelectorAll(".study-card"));
+      let shown = 0;
+      cards.forEach(card => {
+        const groupMatch = activeFilter === "all" || card.dataset.group === activeFilter || card.dataset.tags.includes(activeFilter) || card.dataset.category.toLowerCase().includes(activeFilter);
+        const queryMatch = !query || card.dataset.text.includes(query) || card.dataset.tags.includes(query);
+        const visible = groupMatch && queryMatch;
+        card.style.display = visible ? "" : "none";
+        if (visible) shown++;
+      });
+      document.getElementById("liveStatus").textContent = `Showing ${shown} dashboard cards.`;
+    }
+
+    function bindEvents() {
+      document.getElementById("globalSearch").addEventListener("input", applyFilters);
+      document.querySelectorAll("[data-filter]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeFilter = button.dataset.filter;
+          document.querySelectorAll("[data-filter]").forEach(btn => {
+            const isActive = btn === button;
+            btn.classList.toggle("active", isActive);
+            btn.setAttribute("aria-pressed", String(isActive));
+          });
+          applyFilters();
+        });
+      });
+      document.querySelectorAll("[data-drill-type]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeDrillType = button.dataset.drillType;
+          document.querySelectorAll("[data-drill-type]").forEach(btn => {
+            const isActive = btn === button;
+            btn.classList.toggle("active", isActive);
+            btn.setAttribute("aria-pressed", String(isActive));
+          });
+          nextDrill();
+        });
+      });
+      document.getElementById("newDrill").addEventListener("click", nextDrill);
+      document.getElementById("newDrillTop").addEventListener("click", nextDrill);
+      document.getElementById("revealDrill").addEventListener("click", () => {
+        if (!currentDrill) return;
+        const answer = document.getElementById("drillAnswer");
+        const reveal = answer.hasAttribute("hidden");
+        setDrill(currentDrill, reveal);
+      });
+      document.getElementById("jumpToPairing").addEventListener("click", () => {
+        if (currentDrill && currentDrill.dish) {
+          const dishSelect = document.getElementById("dishSelect");
+          dishSelect.value = currentDrill.dish;
+          updatePairing();
+        }
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        document.getElementById("pairing").scrollIntoView({
+          behavior: prefersReducedMotion ? "auto" : "smooth",
+          block: "start"
+        });
+      });
+      document.querySelectorAll("select").forEach(select => select.addEventListener("change", updatePairing));
+      document.body.addEventListener("click", event => {
+        const button = event.target.closest("[data-save]");
+        if (!button) return;
+        const name = button.dataset.save;
+        if (saved.has(name)) saved.delete(name);
+        else saved.add(name);
+        localStorage.setItem(savedKey, JSON.stringify(Array.from(saved)));
+        updateSaveButtons();
+        renderSaved();
+      });
+      document.querySelectorAll("[data-print]").forEach(button => {
+        button.addEventListener("click", () => {
+          const mode = button.dataset.print;
+          document.body.dataset.printMode = mode === "all" ? "" : mode;
+          window.print();
+          setTimeout(() => { document.body.dataset.printMode = ""; }, 500);
+        });
+      });
+      const notes = document.getElementById("notesArea");
+      notes.value = localStorage.getItem(notesKey) || "";
+      notes.addEventListener("input", () => localStorage.setItem(notesKey, notes.value));
+    }
+
+    function updateSaveButtons() {
+      document.querySelectorAll("[data-save]").forEach(button => {
+        const isSaved = saved.has(button.dataset.save);
+        button.setAttribute("aria-pressed", String(isSaved));
+        button.textContent = isSaved ? "★" : "☆";
+        button.setAttribute("aria-label", `${isSaved ? "Remove" : "Save"} ${button.dataset.save}`);
+      });
+    }
+
+    function renderSaved() {
+      const list = document.getElementById("savedList");
+      if (!saved.size) {
+        list.textContent = "No saved cards yet.";
+        return;
+      }
+      list.innerHTML = Array.from(saved).sort().map(name => `<span class="saved-pill">${escapeHtml(name)}</span>`).join("");
+    }
+
+    function init() {
+      renderWine();
+      renderFood();
+      renderCocktails();
+      renderMatrix();
+      populateSelects();
+      bindEvents();
+      nextDrill();
+      updatePairing();
+      updateSaveButtons();
+      renderSaved();
+      applyFilters();
+    }
+
+    init();
+  </script>
+</body>
+</html>

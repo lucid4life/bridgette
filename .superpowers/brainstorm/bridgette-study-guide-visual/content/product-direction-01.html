@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bridgette Study Guide Direction</title>
+  <style>
+    :root {
+      --cream: #ffeed7;
+      --ink: #1e384b;
+      --orange: #f15623;
+      --gold: #fcb539;
+      --blue: #437c93;
+      --paper: #fff8ec;
+      --muted: rgba(255, 238, 215, .72);
+      --line: rgba(255, 238, 215, .18);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--ink);
+      color: var(--cream);
+    }
+    .wrap {
+      min-height: 100vh;
+      padding: 28px;
+      background:
+        linear-gradient(135deg, rgba(241, 86, 35, .18), transparent 38%),
+        radial-gradient(circle at 86% 10%, rgba(252, 181, 57, .18), transparent 28%),
+        var(--ink);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 22px;
+      margin-bottom: 24px;
+    }
+    .brand {
+      font-family: Impact, "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      font-size: clamp(42px, 8vw, 104px);
+      line-height: .86;
+      color: var(--cream);
+    }
+    .tag {
+      max-width: 520px;
+      font-size: 17px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+    .tag strong { color: var(--cream); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .option {
+      min-height: 590px;
+      border: 1px solid var(--line);
+      background: rgba(255, 238, 215, .06);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .option:hover {
+      transform: translateY(-3px);
+      border-color: rgba(241, 86, 35, .85);
+      background: rgba(255, 238, 215, .09);
+    }
+    .option[data-choice="b"] {
+      border-color: rgba(241, 86, 35, .62);
+      box-shadow: inset 0 0 0 1px rgba(241, 86, 35, .28);
+    }
+    .choice {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      background: var(--orange);
+      color: var(--cream);
+      font-weight: 900;
+    }
+    .mock {
+      height: 310px;
+      border-bottom: 1px solid var(--line);
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+    .mock.top-heavy { grid-template-columns: 84px 1fr; }
+    .rail {
+      background: rgba(0, 0, 0, .2);
+      border: 1px solid rgba(255, 238, 215, .14);
+      min-height: 254px;
+      padding: 12px 8px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+    .rail span, .pill, .tab {
+      height: 24px;
+      background: rgba(255, 238, 215, .14);
+      display: block;
+    }
+    .rail span:first-child { background: var(--orange); height: 34px; }
+    .panel {
+      border: 1px solid rgba(255, 238, 215, .14);
+      background: rgba(255, 238, 215, .07);
+      padding: 12px;
+      min-height: 60px;
+    }
+    .bars { display: grid; gap: 8px; }
+    .bar { height: 14px; background: rgba(255, 238, 215, .14); }
+    .bar.short { width: 66%; }
+    .bar.orange { background: var(--orange); }
+    .cards2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .mini-card { min-height: 70px; background: rgba(255, 238, 215, .12); border-top: 5px solid var(--gold); }
+    .phone {
+      width: 142px;
+      height: 266px;
+      margin: 4px auto 0;
+      border: 8px solid rgba(0, 0, 0, .36);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+    .phone .topline { height: 22px; background: var(--orange); }
+    .phone .row { height: 30px; background: rgba(30, 56, 75, .14); }
+    .phone .row.blue { background: rgba(67, 124, 147, .45); }
+    .phone .nav { margin-top: auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .phone .nav i { height: 18px; background: var(--ink); display: block; }
+    .sim {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 10px;
+    }
+    .table {
+      min-height: 240px;
+      background: rgba(255, 238, 215, .08);
+      border: 1px solid rgba(255, 238, 215, .14);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+    .bubble { background: var(--paper); color: var(--ink); padding: 9px; font-size: 12px; }
+    .decision { background: rgba(241, 86, 35, .18); border: 1px solid rgba(241, 86, 35, .5); padding: 9px; }
+    .body { padding: 20px; }
+    h2 {
+      margin: 0 0 10px;
+      font-family: Impact, "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    .recommended {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 7px 10px;
+      background: var(--orange);
+      color: var(--cream);
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    p {
+      color: var(--muted);
+      line-height: 1.45;
+      margin: 0 0 14px;
+    }
+    ul {
+      padding-left: 18px;
+      margin: 0;
+      color: var(--cream);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .footer {
+      margin-top: 22px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      font-size: 14px;
+    }
+    @media (max-width: 980px) {
+      header { display: block; }
+      .grid { grid-template-columns: 1fr; }
+      .option { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="brand">Bridgette<br>Training</div>
+      <div class="tag">
+        <strong>Pick the backbone for V5.</strong> All three remove interview content, use the Calgary PDFs as source of truth, and use Bridgette's site palette: deep blue-black, cream, orange, gold, and cool blue.
+      </div>
+    </header>
+
+    <section class="grid" aria-label="Product direction choices">
+      <article class="option" data-choice="a" onclick="window.toggleSelect && window.toggleSelect(this)">
+        <div class="choice">A</div>
+        <div class="mock top-heavy">
+          <div class="rail"><span></span><span></span><span></span><span></span><span></span></div>
+          <div>
+            <div class="panel bars">
+              <div class="bar orange"></div>
+              <div class="bar"></div>
+              <div class="bar short"></div>
+            </div>
+            <div class="cards2" style="margin-top:10px">
+              <div class="mini-card"></div>
+              <div class="mini-card"></div>
+              <div class="mini-card"></div>
+              <div class="mini-card"></div>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <h2>Reference Dashboard</h2>
+          <p>Best if the main goal is fast lookup: food cards, wine cards, cocktail cards, filters, print sheets, saved notes.</p>
+          <ul>
+            <li>Fastest to build from V4</li>
+            <li>Good for coworkers checking facts</li>
+            <li>Weaker for real memorization and practice</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="option" data-choice="b" onclick="window.toggleSelect && window.toggleSelect(this)">
+        <div class="choice">B</div>
+        <div class="mock">
+          <div class="phone">
+            <div class="topline"></div>
+            <div class="row blue"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row blue"></div>
+            <div class="nav"><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+        <div class="body">
+          <span class="recommended">Recommended</span>
+          <h2>First-30-Days Training App</h2>
+          <p>Best if the goal is to become shift-ready: daily drills, mastery states, pairing recommender, flashcards, quiz explanations, saved weak spots.</p>
+          <ul>
+            <li>Feels like a real staff training tool</li>
+            <li>Strongest for wine, food, cocktails, and service language</li>
+            <li>Still includes a full searchable menu reference</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="option" data-choice="c" onclick="window.toggleSelect && window.toggleSelect(this)">
+        <div class="choice">C</div>
+        <div class="mock sim">
+          <div class="table">
+            <div class="bubble">“We’re sharing seafood and steak. Bottle under $140?”</div>
+            <div class="bubble">“One guest is not drinking.”</div>
+            <div class="decision">Choose pairing path</div>
+          </div>
+          <div class="table">
+            <span class="pill"></span>
+            <span class="pill"></span>
+            <span class="pill"></span>
+            <span class="pill"></span>
+          </div>
+        </div>
+        <div class="body">
+          <h2>Shift Simulator</h2>
+          <p>Best if the guide is mostly roleplay: table scenarios, guest objections, budget decisions, allergy caveats, and upsell practice.</p>
+          <ul>
+            <li>Most memorable and fun</li>
+            <li>Great for service confidence</li>
+            <li>Less complete as a day-to-day reference unless paired with B</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer">
+      My recommendation: use B as the main product, borrow C's scenario drills, and keep A as the underlying menu library.
+    </div>
+  </main>
+</body>
+</html>
