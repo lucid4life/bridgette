@@ -16,6 +16,11 @@ DATA = SRC / "data.js"
 DIST = ROOT / "dist" / "Bridgette_Training.html"
 MENUS = ROOT / "source_menus"
 
+# S1b data-contract allowed values
+ALLOWED_LMH = {"low", "medium", "high"}
+ALLOWED_SWEET = {"dry", "off-dry", "medium-dry", "medium-sweet", "sweet"}
+TRANSLATOR_KEYS = ("ask", "aliases", "bestGlass", "bottleOptions", "familiar", "different", "phrase")
+
 
 def loose(text: str) -> str:
     """ASCII-fold, lowercase, and strip all non-alphanumerics.
@@ -83,6 +88,77 @@ def main() -> int:
         name = wine.get("name", "")
         if loose(name) not in menu_loose:
             failures.append(f"wine name not found in source_menus: {name!r}")
+
+    # 5. wine enrichment contract (S1b)
+    for wine in data.get("wines", []):
+        wid = wine.get("id", "?")
+        pron = wine.get("pronunciation")
+        if not isinstance(pron, dict) or not str(pron.get("respell", "")).strip():
+            failures.append(f"wine {wid}: missing pronunciation.respell")
+        if not isinstance(pron, dict) or not str(pron.get("say", "")).strip():
+            failures.append(f"wine {wid}: missing pronunciation.say")
+        st = wine.get("structure")
+        if not isinstance(st, dict):
+            failures.append(f"wine {wid}: structure must be an object {{acidity,body,tannin,sweetness}}")
+        else:
+            for k in ("acidity", "body", "tannin"):
+                if st.get(k) not in ALLOWED_LMH:
+                    failures.append(f"wine {wid}: structure.{k}={st.get(k)!r} not in {sorted(ALLOWED_LMH)}")
+            if st.get("sweetness") not in ALLOWED_SWEET:
+                failures.append(f"wine {wid}: structure.sweetness={st.get('sweetness')!r} not in {sorted(ALLOWED_SWEET)}")
+        if not str(wine.get("tenSecond", "")).strip():
+            failures.append(f"wine {wid}: missing tenSecond pitch")
+        if not str(wine.get("country", "")).strip():
+            failures.append(f"wine {wid}: missing country")
+        if not isinstance(wine.get("vegan"), bool):
+            failures.append(f"wine {wid}: vegan must be a boolean")
+        if not isinstance(wine.get("glass"), bool):
+            failures.append(f"wine {wid}: glass must be a boolean")
+        if not isinstance(wine.get("pair"), list) or not wine.get("pair"):
+            failures.append(f"wine {wid}: pair must be a non-empty array")
+
+    # 6. translator contract (S1b) — replaces the static HTML table
+    translator = data.get("translator", [])
+    if not translator:
+        failures.append("translator is empty (static table not migrated to data)")
+    wine_names_loose = {loose(w.get("name", "")) for w in data.get("wines", [])}
+    for t in translator:
+        ask = t.get("ask", "?")
+        for k in TRANSLATOR_KEYS:
+            if k not in t:
+                failures.append(f"translator {ask!r}: missing key {k!r}")
+        if not isinstance(t.get("aliases"), list):
+            failures.append(f"translator {ask!r}: aliases must be an array")
+        if not isinstance(t.get("bottleOptions"), list):
+            failures.append(f"translator {ask!r}: bottleOptions must be an array")
+        bg = str(t.get("bestGlass", "")).strip()
+        if not bg:
+            failures.append(f"translator {ask!r}: empty bestGlass")
+        elif loose(bg) not in wine_names_loose:
+            failures.append(f"translator {ask!r}: bestGlass {bg!r} is not a known wines[].name")
+
+    # 7. lesson stubs (S1b) — learnLink anchors for S3/S4
+    lessons = data.get("lessons", [])
+    if not lessons:
+        failures.append("lessons is empty (no learnLink anchors)")
+    seen_lessons = set()
+    for lesson in lessons:
+        lid = lesson.get("id", "")
+        if not lid:
+            failures.append("a lesson is missing an id")
+        elif lid in seen_lessons:
+            failures.append(f"duplicate lesson id: {lid}")
+        seen_lessons.add(lid)
+        if not str(lesson.get("title", "")).strip():
+            failures.append(f"lesson {lid!r}: missing title")
+
+    # 8. food contract (S1b): structural why + flags array
+    for food in data.get("foods", []):
+        fid = food.get("id", "?")
+        if not str(food.get("why", "")).strip():
+            failures.append(f"food {fid}: missing why (structural pairing reason)")
+        if not isinstance(food.get("flags"), list):
+            failures.append(f"food {fid}: flags must be an array")
 
     # 4. bundler byte-sync: dist must equal a fresh build
     if not DIST.exists():
