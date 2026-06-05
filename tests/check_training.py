@@ -3,6 +3,7 @@
 #   2. wines/foods/cocktails ids are present and unique
 #   3. wine names appear in source_menus/*.txt (loose: accent/punct/space-insensitive)
 #   4. dist/Bridgette_Training.html is byte-identical to a fresh bundler build (shipped file in sync with src)
+import base64
 import json
 import re
 import subprocess
@@ -35,16 +36,21 @@ def loose(text: str) -> str:
 
 
 def node_data():
-    """Evaluate src/data.js in Node and return the parsed BB.data as a dict."""
+    """Evaluate src/data.js in Node and return the parsed BB.data as a dict.
+
+    The JSON is base64-encoded for transport so UTF-8 bytes (accents like ö/ó/é)
+    survive Windows console/locale decoding intact — a plain stdout string gets
+    mangled (ö -> Ã¶) by the locale codec on some setups.
+    """
     snippet = (
         "global.window={};const fs=require('fs');"
         f"eval(fs.readFileSync({json.dumps(str(DATA))},'utf8'));"
-        "process.stdout.write(JSON.stringify(global.window.BB.data));"
+        "process.stdout.write(Buffer.from(JSON.stringify(global.window.BB.data),'utf8').toString('base64'));"
     )
     res = subprocess.run(["node", "-e", snippet], capture_output=True, text=True)
     if res.returncode != 0:
         raise RuntimeError("node failed to evaluate data.js:\n" + res.stderr)
-    return json.loads(res.stdout)
+    return json.loads(base64.b64decode(res.stdout.strip()).decode("utf-8"))
 
 
 def main() -> int:
