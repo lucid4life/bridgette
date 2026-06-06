@@ -111,7 +111,100 @@
     mountDeductiveGrid();
   }
 
-  function mountDeductiveGrid() { /* implemented in Task 4 */ }
+  // Build the option set for one clue axis. Category options come from the data;
+  // the structure axes use the fixed 3-point scale (+ the dry sweetness scale).
+  function dgOptions(dim, wines) {
+    if (dim === "category") {
+      var seen = {}, cats = [];
+      (wines || []).forEach(function (w) { if (w.category && !seen[w.category]) { seen[w.category] = 1; cats.push(w.category); } });
+      return cats;
+    }
+    if (dim === "sweetness") return ["dry", "off-dry", "medium-dry", "medium-sweet", "sweet"];
+    return ["low", "medium", "high"];
+  }
+
+  var DG_LABEL = { category: "Colour / style", acidity: "Acidity", body: "Body", tannin: "Tannin", sweetness: "Sweetness" };
+
+  function dgControl(dim, wines) {
+    var opts = dgOptions(dim, wines).map(function (o) {
+      return '<option value="' + esc(o) + '">' + esc(o) + '</option>';
+    }).join("");
+    var id = "dg-" + dim;
+    return '<div class="dg-field">' +
+      '<label for="' + id + '">' + esc(DG_LABEL[dim] || dim) + '</label>' +
+      '<select id="' + id + '" class="dg-select" data-dim="' + dim + '">' +
+        '<option value="">Any</option>' + opts +
+      '</select></div>';
+  }
+
+  function readClues() {
+    var clues = {};
+    DG_DIMS.forEach(function (d) {
+      var el = document.getElementById("dg-" + d);
+      if (el && el.value) clues[d] = el.value;
+    });
+    return clues;
+  }
+
+  function renderDgResult(out, anyClues) {
+    var box = document.getElementById("dgResult");
+    if (!box) return;
+    if (!anyClues) {
+      box.className = "dg-result";
+      box.textContent = "Pick at least one clue, then reveal a likely grape.";
+      return;
+    }
+    if (!out.length) {
+      box.className = "dg-result is-empty";
+      box.textContent = "No wine on this list matches those clues — try loosening one (set it back to Any).";
+      return;
+    }
+    var top = out.slice(0, 4);
+    var rows = top.map(function (r, i) {
+      var lead = i === 0 ? (r.exact ? "Most likely" : "Closest") : "Also possible";
+      return '<li class="dg-hit' + (i === 0 ? " is-top" : "") + '">' +
+        '<span class="dg-hit-lead">' + esc(lead) + '</span>' +
+        '<span class="dg-hit-grape">' + esc(r.wine.grape) + '</span>' +
+        '<span class="dg-hit-name">' + esc(r.wine.name) + '</span>' +
+        '<span class="dg-hit-score">matches ' + r.matched + ' of ' + r.total + ' clues</span>' +
+      '</li>';
+    }).join("");
+    box.className = "dg-result";
+    box.innerHTML = '<ul class="dg-hits">' + rows + '</ul>';
+  }
+
+  function mountDeductiveGrid() {
+    var host = document.getElementById("deductive-grid");
+    if (!host || !window.BB.data) return;
+    var wines = window.BB.data.wines || [];
+    var controls = DG_DIMS.map(function (d) { return dgControl(d, wines); }).join("");
+    var tool = document.createElement("div");
+    tool.className = "deductive-grid";
+    tool.innerHTML =
+      '<p class="dg-intro">Set the clues you taste, then reveal the likely grape and the exact glass.</p>' +
+      '<div class="dg-fields">' + controls + '</div>' +
+      '<div class="dg-actions">' +
+        '<button class="btn gold" type="button" id="dgReveal">Reveal likely match</button>' +
+        '<button class="btn" type="button" id="dgReset">Reset clues</button>' +
+      '</div>' +
+      '<div class="dg-result" id="dgResult" aria-live="polite" role="status">Pick at least one clue, then reveal a likely grape.</div>';
+    host.appendChild(tool);
+
+    function run() {
+      var clues = readClues();
+      renderDgResult(deduce(wines, clues), Object.keys(clues).length > 0);
+    }
+    document.getElementById("dgReveal").addEventListener("click", run);
+    tool.querySelectorAll(".dg-select").forEach(function (sel) {
+      sel.addEventListener("change", run); // live-update as clues change
+    });
+    document.getElementById("dgReset").addEventListener("click", function () {
+      tool.querySelectorAll(".dg-select").forEach(function (sel) { sel.value = ""; });
+      renderDgResult([], false);
+      var first = tool.querySelector(".dg-select");
+      if (first) first.focus();
+    });
+  }
 
   function init() {
     if (!window.BB || !window.BB.data) return;
