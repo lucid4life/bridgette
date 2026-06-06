@@ -147,4 +147,49 @@ test("updateStreak: two or more missed days resets to 1", () => {
   assert.deepStrictEqual(s, { current: 1, lastStudyDate: 103 });
 });
 
+const DECK_IDS = ["translator", "wine-identity", "pronunciation", "pairing", "structure"];
+
+test("generateDeck: each deck yields >=1 card with non-empty prompt+answer", () => {
+  DECK_IDS.forEach(function (id) {
+    const cards = T.generateDeck(id, DATA);
+    assert.ok(cards.length >= 1, id + " produced no cards");
+    cards.forEach(function (c) {
+      assert.ok(c.prompt && c.prompt.trim(), id + " card has empty prompt: " + c.id);
+      assert.ok(c.answer && c.answer.trim(), id + " card has empty answer: " + c.id);
+      assert.strictEqual(c.deck, id);
+      assert.ok(c.learnLink, id + " card missing learnLink: " + c.id);
+    });
+  });
+});
+
+test("allCards: ids are unique and follow <deck>:<item>:<type>", () => {
+  const cards = T.allCards(DATA);
+  const ids = cards.map(function (c) { return c.id; });
+  assert.strictEqual(ids.length, new Set(ids).size, "duplicate card ids exist");
+  ids.forEach(function (id) { assert.strictEqual(id.split(":").length, 3, "bad id shape: " + id); });
+});
+
+test("generateDeck: MC cards (recall/discriminate) include the answer among unique choices", () => {
+  ["translator", "wine-identity", "pairing", "structure"].forEach(function (id) {
+    T.generateDeck(id, DATA).forEach(function (c) {
+      assert.ok(Array.isArray(c.choices) && c.choices.length >= 2, id + " missing choices: " + c.id);
+      assert.ok(c.choices.indexOf(c.answer) !== -1, id + " choices omit answer: " + c.id);
+      assert.strictEqual(c.choices.length, new Set(c.choices).size, id + " duplicate choices: " + c.id);
+    });
+  });
+});
+
+test("generateDeck pronunciation: flip cards carry audioText + lang, no choices", () => {
+  const cards = T.generateDeck("pronunciation", DATA);
+  cards.forEach(function (c) {
+    assert.strictEqual(c.kind, "pronounce");
+    assert.ok(c.audioText, "missing audioText: " + c.id);
+    assert.ok(c.lang, "missing lang: " + c.id);
+  });
+});
+
+test("generateDeck unknown id returns empty array", () => {
+  assert.deepStrictEqual(T.generateDeck("nope", DATA), []);
+});
+
 module.exports = { T, DATA };
