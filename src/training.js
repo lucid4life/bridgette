@@ -17,11 +17,36 @@
     return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
   }
 
+  function clampBox(b) { return Math.max(1, Math.min(5, b)); }
+
+  // Pure. Returns a NEW card state. `today` is a day integer (dayNumber()).
+  function grade(state, correct, today) {
+    var s = {
+      box: state.box, due: state.due, lastSeen: state.lastSeen,
+      correct: state.correct || 0, wrong: state.wrong || 0,
+      consecutiveWrong: state.consecutiveWrong || 0
+    };
+    if (correct) {
+      s.box = clampBox(s.box + 1);
+      s.correct += 1;
+      s.consecutiveWrong = 0;
+    } else {
+      s.wrong += 1;
+      s.consecutiveWrong += 1;
+      // Gentle lapse: one miss demotes a single box; box 1 only after TWO in a row.
+      s.box = s.consecutiveWrong >= 2 ? 1 : clampBox(s.box - 1);
+    }
+    s.lastSeen = today;
+    s.due = today + BOX_DUE_DAYS[s.box];
+    return s;
+  }
+
   // Public API (filled in by later tasks).
   window.BB.training = {
     BOX_DUE_DAYS: BOX_DUE_DAYS,
     NEW_CAP: NEW_CAP,
     SIZE_CAP: SIZE_CAP,
-    dayNumber: dayNumber
+    dayNumber: dayNumber,
+    grade: grade
   };
 })();
