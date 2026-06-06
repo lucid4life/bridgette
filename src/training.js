@@ -41,6 +41,46 @@
     return s;
   }
 
+  var ARTICLES = { the: 1, a: 1, an: 1, le: 1, la: 1, les: 1, el: 1, il: 1, "of": 1, and: 1 };
+
+  function normalizeAnswer(s) {
+    s = String(s == null ? "" : s);
+    s = s.normalize("NFKD").replace(/[̀-ͯ]/g, ""); // strip accents
+    s = s.toLowerCase();
+    s = s.replace(/[^a-z0-9\s]+/g, " ");      // drop punctuation
+    var tokens = s.split(/\s+/).filter(function (t) { return t && !ARTICLES[t]; });
+    return tokens.join(" ").trim();
+  }
+
+  function tokenSet(s) {
+    var out = {};
+    normalizeAnswer(s).split(" ").forEach(function (t) { if (t) out[t] = 1; });
+    return out;
+  }
+
+  // Pure boolean. The UI still always offers an "I got it / I didn't" override.
+  function gradeTyped(card, input) {
+    var norm = normalizeAnswer(input);
+    if (!norm) return false;
+    var candidates = [card.answer].concat(card.aliases || []);
+    for (var i = 0; i < candidates.length; i++) {
+      var target = normalizeAnswer(candidates[i]);
+      if (!target) continue;
+      if (norm === target) return true;
+      // token-subset: every meaningful token the learner typed appears in the target,
+      // AND they covered a distinctive chunk (>=2 tokens, or the whole single-token target).
+      var targetTokens = tokenSet(target);
+      var inTokens = norm.split(" ");
+      var covered = inTokens.length > 0 && inTokens.every(function (t) { return targetTokens[t]; });
+      if (covered && (inTokens.length >= 2 || Object.keys(targetTokens).length === 1)) return true;
+      // reverse: learner typed a superset that contains the full short target
+      var allInputTokens = tokenSet(norm);
+      var targetCovered = target.split(" ").every(function (t) { return allInputTokens[t]; });
+      if (targetCovered) return true;
+    }
+    return false;
+  }
+
   function isDue(state, today) {
     if (today == null) today = dayNumber();
     return today >= state.due;
@@ -59,6 +99,8 @@
     dayNumber: dayNumber,
     grade: grade,
     isDue: isDue,
-    newState: newState
+    newState: newState,
+    normalizeAnswer: normalizeAnswer,
+    gradeTyped: gradeTyped
   };
 })();

@@ -86,4 +86,40 @@ test("newState: a fresh card starts in box 1, due today", () => {
   assert.strictEqual(s.consecutiveWrong, 0);
 });
 
+test("normalizeAnswer: lowercases, strips accents/punct/articles, collapses space", () => {
+  assert.strictEqual(T.normalizeAnswer("Hiedler Löss"), "hiedler loss");
+  assert.strictEqual(T.normalizeAnswer("  the St. John  Claret! "), "st john claret");
+  assert.strictEqual(T.normalizeAnswer("Grüner Veltliner"), "gruner veltliner");
+  assert.strictEqual(T.normalizeAnswer("A Pinot Grigio"), "pinot grigio");
+});
+
+test("gradeTyped: exact (normalized) match is correct", () => {
+  const card = { answer: "Hiedler Löss", aliases: [] };
+  assert.strictEqual(T.gradeTyped(card, "hiedler loss"), true);
+  assert.strictEqual(T.gradeTyped(card, "Hiedler  Löss"), true);
+});
+
+test("gradeTyped: alias match is correct", () => {
+  const card = { answer: "Wagner Stempel Weissburgunder", aliases: ["pinot blanc", "weissburgunder"] };
+  assert.strictEqual(T.gradeTyped(card, "Pinot Blanc"), true);
+  assert.strictEqual(T.gradeTyped(card, "weissburgunder"), true);
+});
+
+test("gradeTyped: a distinctive token subset matches (e.g. just the grape)", () => {
+  const card = { answer: "Grüner Veltliner — Niederösterreich, Austria", aliases: [] };
+  assert.strictEqual(T.gradeTyped(card, "gruner veltliner"), true);
+});
+
+test("gradeTyped: wrong answer is incorrect; empty input is incorrect", () => {
+  const card = { answer: "St. John Claret", aliases: ["claret"] };
+  assert.strictEqual(T.gradeTyped(card, "Blue Mountain Brut"), false);
+  assert.strictEqual(T.gradeTyped(card, ""), false);
+  assert.strictEqual(T.gradeTyped(card, "   "), false);
+});
+
+test("gradeTyped: a single short stopword-like token does not match", () => {
+  const card = { answer: "Bindi Sergardi La Boncia", aliases: [] };
+  assert.strictEqual(T.gradeTyped(card, "la"), false);
+});
+
 module.exports = { T, DATA };
