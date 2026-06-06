@@ -311,6 +311,82 @@
     return session;
   }
 
+  // ---------------- progress layer (pure transforms) ----------------
+  var STORAGE_KEY = "bb_progress_v1";
+  var SCHEMA = 1;
+
+  function migrateProgress(raw, validIds) {
+    var base = defaultProgressShape();
+    if (!raw || typeof raw !== "object") return base;
+    base.schema = SCHEMA;
+    if (raw.cards && typeof raw.cards === "object") {
+      Object.keys(raw.cards).forEach(function (id) {
+        if (!validIds || validIds.has(id)) base.cards[id] = raw.cards[id];
+      });
+    }
+    if (raw.streak && typeof raw.streak === "object") {
+      base.streak = {
+        current: raw.streak.current || 0,
+        lastStudyDate: raw.streak.lastStudyDate != null ? raw.streak.lastStudyDate : null
+      };
+    }
+    if (raw.settings && typeof raw.settings === "object") {
+      base.settings.difficulty = raw.settings.difficulty || base.settings.difficulty;
+      base.settings.audio = raw.settings.audio !== false;
+    }
+    if (raw.readiness) base.readiness = raw.readiness;
+    return base;
+  }
+
+  // mastery for a deck id OR a tag: mean of (box-1)/4*100 over matching cards (unseen=box1=0).
+  function masteryFor(progress, key, data) {
+    data = data || (window.BB && window.BB.data);
+    var all = allCards(data);
+    var matching = all.filter(function (c) { return c.deck === key || (c.tags && c.tags.indexOf(key) !== -1); });
+    if (!matching.length) return 0;
+    var sum = 0;
+    matching.forEach(function (c) {
+      var st = progress.cards[c.id];
+      var box = st ? st.box : 1;
+      sum += ((box - 1) / 4) * 100;
+    });
+    return Math.round(sum / matching.length);
+  }
+
+  function recomputeMastery(progress, data) {
+    data = data || (window.BB && window.BB.data);
+    progress.decks = {};
+    Object.keys(DECKS).forEach(function (id) { progress.decks[id] = { mastery: masteryFor(progress, id, data) }; });
+    progress.tags = {};
+    var tags = {};
+    allCards(data).forEach(function (c) { (c.tags || []).forEach(function (t) { tags[t] = 1; }); });
+    Object.keys(tags).forEach(function (t) { progress.tags[t] = { mastery: masteryFor(progress, t, data) }; });
+    return progress;
+  }
+
+  // Pure: returns a new progress object with the card graded + streak updated.
+  function recordResult(progress, card, correct, today) {
+    if (today == null) today = dayNumber();
+    var next = JSON.parse(JSON.stringify(progress));
+    var prev = next.cards[card.id] || newState(today);
+    next.cards[card.id] = grade(prev, correct, today);
+    next.streak = updateStreak(next.streak, today);
+    return next;
+  }
+
+  function exportProgress(progress) {
+    if (!progress) progress = loadProgress();
+    recomputeMastery(progress, window.BB && window.BB.data);
+    return JSON.stringify(progress, null, 2);
+  }
+
+  function importProgress(json, validIds) {
+    var raw;
+    try { raw = JSON.parse(json); } catch (e) { return null; }
+    if (!raw || typeof raw !== "object" || !raw.cards || typeof raw.cards !== "object") return null;
+    return migrateProgress(raw, validIds);
+  }
+
   // Public API (filled in by later tasks).
   window.BB.training = {
     BOX_DUE_DAYS: BOX_DUE_DAYS,
@@ -329,6 +405,14 @@
     langFor: langFor,
     slug: slug,
     buildSession: buildSession,
-    shuffle: shuffle
+    shuffle: shuffle,
+    STORAGE_KEY: STORAGE_KEY,
+    defaultProgress: defaultProgressShape,
+    migrateProgress: migrateProgress,
+    masteryFor: masteryFor,
+    recomputeMastery: recomputeMastery,
+    recordResult: recordResult,
+    exportProgress: exportProgress,
+    importProgress: importProgress
   };
 })();

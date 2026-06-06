@@ -236,4 +236,54 @@ test("buildSession: weak (low-box) due cards are prioritized over higher-box due
   assert.strictEqual(session[0].id, cards[cards.length - 1].id, "weakest card should come first");
 });
 
+test("migrateProgress: drops orphan card ids, keeps valid ones, sets schema", () => {
+  const validIds = new Set(T.allCards(DATA).map(function (c) { return c.id; }));
+  const someValid = T.allCards(DATA)[0].id;
+  const dirty = { cards: { "dead:card:x": { box: 3, due: 0 }, [someValid]: { box: 4, due: 0 } } };
+  const clean = T.migrateProgress(dirty, validIds);
+  assert.strictEqual(clean.schema, 1);
+  assert.ok(!clean.cards["dead:card:x"], "orphan kept");
+  assert.strictEqual(clean.cards[someValid].box, 4, "valid state lost");
+  assert.ok(clean.streak && "current" in clean.streak);
+});
+
+test("masteryFor: a deck with all cards in box 5 is 100, fresh deck is 0", () => {
+  const p = emptyProgress();
+  assert.strictEqual(T.masteryFor(p, "structure", DATA), 0);
+  T.generateDeck("structure", DATA).forEach(function (c) { p.cards[c.id] = { box: 5, due: 0, lastSeen: 0, correct: 5, wrong: 0, consecutiveWrong: 0 }; });
+  assert.strictEqual(T.masteryFor(p, "structure", DATA), 100);
+});
+
+test("masteryFor: works per tag too", () => {
+  const p = emptyProgress();
+  T.generateDeck("structure", DATA).forEach(function (c) {
+    if (c.tags.indexOf("acidity") !== -1) p.cards[c.id] = { box: 3, due: 0, lastSeen: 0, correct: 2, wrong: 0, consecutiveWrong: 0 };
+  });
+  assert.strictEqual(T.masteryFor(p, "acidity", DATA), 50);
+});
+
+test("recordResult: grades a card, updates streak, persists state into progress", () => {
+  const p = emptyProgress();
+  const card = T.generateDeck("structure", DATA)[0];
+  const out = T.recordResult(p, card, true, 1000);
+  assert.strictEqual(out.cards[card.id].box, 2);
+  assert.strictEqual(out.streak.current, 1);
+  assert.strictEqual(out.streak.lastStudyDate, 1000);
+});
+
+test("exportProgress / importProgress round-trips the whole object", () => {
+  const p = emptyProgress();
+  const card = T.generateDeck("pairing", DATA)[0];
+  const withState = T.recordResult(p, card, false, 500);
+  const json = T.exportProgress(withState);
+  const back = T.importProgress(json, new Set(T.allCards(DATA).map(function (c) { return c.id; })));
+  assert.deepStrictEqual(back.cards, withState.cards);
+  assert.deepStrictEqual(back.streak, withState.streak);
+});
+
+test("importProgress: rejects malformed JSON by returning null", () => {
+  assert.strictEqual(T.importProgress("{not json", new Set()), null);
+  assert.strictEqual(T.importProgress(JSON.stringify({ nope: true }), new Set()), null);
+});
+
 module.exports = { T, DATA };
