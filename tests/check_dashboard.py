@@ -35,6 +35,11 @@ REQUIRED_TEXT = [
     "Mastery by attribute",
     "Export progress",
     "Guided first-run path",
+    "Fundamentals, One Lesson At A Time",
+    "Worked example",
+    "Quick check",
+    "Reveal likely match",
+    "The pairing levers",
 ]
 
 REQUIRED_IDS = [
@@ -58,6 +63,10 @@ REQUIRED_IDS = [
     "weakList",
     "exportProgress",
     "importFile",
+    "learn",
+    "lessonList",
+    "dgReveal",
+    "dgResult",
 ]
 
 FORBIDDEN = [
