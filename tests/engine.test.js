@@ -362,4 +362,59 @@ test("genWineIdentity: yields BOTH forward (name->grape) and reverse (grape->nam
   });
 });
 
+// --- S4: Readiness Check ---
+
+test("buildReadiness: samples across all five decks, capped per deck, interleaved", () => {
+  const cards = T.buildReadiness(DATA, { perDeck: 2, rng: () => 0 });
+  const ids = Object.keys(T.DECKS);
+  const seen = {};
+  cards.forEach(c => { seen[c.deck] = (seen[c.deck] || 0) + 1; });
+  ids.forEach(id => {
+    assert.ok(seen[id] >= 1, "readiness sample missing deck: " + id);
+    assert.ok(seen[id] <= 2, "readiness sample exceeded perDeck for: " + id);
+  });
+  const again = T.buildReadiness(DATA, { perDeck: 2, rng: () => 0 });
+  assert.deepStrictEqual(again.map(c => c.id), cards.map(c => c.id), "fixed rng should be deterministic");
+});
+
+test("scoreReadiness: percent + weak tags ranked by miss count, deck-name tags excluded", () => {
+  const results = [
+    { card: { deck: "structure", tags: ["structure", "acidity"] }, correct: false },
+    { card: { deck: "structure", tags: ["structure", "acidity"] }, correct: false },
+    { card: { deck: "pairing", tags: ["pairing", "steak"] }, correct: false },
+    { card: { deck: "translator", tags: ["translator", "white"] }, correct: true }
+  ];
+  const s = T.scoreReadiness(results);
+  assert.strictEqual(s.total, 4);
+  assert.strictEqual(s.correct, 1);
+  assert.strictEqual(s.score, 25);
+  assert.deepStrictEqual(s.weakAreas, ["acidity", "steak"]); // acidity(2) before steak(1); deck tags excluded
+  assert.strictEqual(s.byDeck.structure.total, 2);
+  assert.strictEqual(s.byDeck.structure.correct, 0);
+});
+
+test("scoreReadiness: empty results -> 0% and no weak areas", () => {
+  const s = T.scoreReadiness([]);
+  assert.strictEqual(s.score, 0);
+  assert.deepStrictEqual(s.weakAreas, []);
+});
+
+test("recordReadiness: writes readiness summary, does not mutate input", () => {
+  const p = emptyProgress();
+  const scored = { score: 72, weakAreas: ["acidity", "regions"], byDeck: { structure: { total: 3, correct: 2 } } };
+  const out = T.recordReadiness(p, scored, 1234);
+  assert.strictEqual(out.readiness.lastScore, 72);
+  assert.strictEqual(out.readiness.lastTaken, 1234);
+  assert.deepStrictEqual(out.readiness.weakAreas, ["acidity", "regions"]);
+  assert.deepStrictEqual(out.readiness.byDeck, { structure: { total: 3, correct: 2 } });
+  assert.strictEqual(p.readiness, null, "recordReadiness mutated its input");
+});
+
+test("recordReadiness: caps weakAreas at 8", () => {
+  const many = [];
+  for (let i = 0; i < 12; i++) many.push("t" + i);
+  const out = T.recordReadiness(emptyProgress(), { score: 0, weakAreas: many, byDeck: {} }, 1);
+  assert.strictEqual(out.readiness.weakAreas.length, 8);
+});
+
 module.exports = { T, DATA };

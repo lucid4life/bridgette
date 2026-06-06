@@ -274,6 +274,62 @@
     return all;
   }
 
+  // ---------------- Readiness Check (pure: a mixed gauntlet across live decks) ----------------
+  // Sample up to perDeck cards from each live deck, then interleave. Deterministic given rng.
+  function buildReadiness(data, opts) {
+    data = data || (window.BB && window.BB.data);
+    opts = opts || {};
+    var perDeck = opts.perDeck != null ? opts.perDeck : 3;
+    var rng = opts.rng || Math.random;
+    var picked = [];
+    Object.keys(DECKS).forEach(function (id) {
+      var cards = generateDeck(id, data);
+      picked = picked.concat(shuffle(cards, rng).slice(0, perDeck));
+    });
+    return shuffle(picked, rng);
+  }
+
+  // Pure scorer. results: [{ card, correct }]. weakAreas exclude deck-name tags
+  // (those are redundant with byDeck), leaving attribute tags ranked by miss count.
+  function scoreReadiness(results) {
+    results = results || [];
+    var isDeckTag = {};
+    Object.keys(DECKS).forEach(function (id) { isDeckTag[id] = 1; });
+    var total = results.length, correct = 0, miss = {}, byDeck = {};
+    results.forEach(function (r) {
+      var card = r.card || {};
+      var d = card.deck;
+      if (d) {
+        byDeck[d] = byDeck[d] || { total: 0, correct: 0 };
+        byDeck[d].total += 1;
+        if (r.correct) byDeck[d].correct += 1;
+      }
+      if (r.correct) { correct += 1; return; }
+      (card.tags || []).forEach(function (t) { if (!isDeckTag[t]) miss[t] = (miss[t] || 0) + 1; });
+    });
+    var weakAreas = Object.keys(miss).sort(function (a, b) {
+      return (miss[b] - miss[a]) || (a < b ? -1 : a > b ? 1 : 0);
+    });
+    return {
+      total: total, correct: correct,
+      score: total ? Math.round((correct / total) * 100) : 0,
+      weakAreas: weakAreas, byDeck: byDeck
+    };
+  }
+
+  // Pure: returns a new progress object with the readiness summary written.
+  function recordReadiness(progress, scored, today) {
+    if (today == null) today = dayNumber();
+    var next = JSON.parse(JSON.stringify(progress));
+    next.readiness = {
+      lastScore: scored.score,
+      lastTaken: today,
+      weakAreas: (scored.weakAreas || []).slice(0, 8),
+      byDeck: scored.byDeck || {}
+    };
+    return next;
+  }
+
   // ---------------- session composition (pure) ----------------
   function defaultProgressShape() {
     return {
@@ -904,6 +960,9 @@
     DECKS: DECKS,
     generateDeck: generateDeck,
     allCards: allCards,
+    buildReadiness: buildReadiness,
+    scoreReadiness: scoreReadiness,
+    recordReadiness: recordReadiness,
     langFor: langFor,
     slug: slug,
     buildSession: buildSession,
