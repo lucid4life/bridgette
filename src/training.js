@@ -607,6 +607,205 @@
     session = null;
   }
 
+  // ---------------- Progress UI + guided path + export/import ----------------
+  function renderDeckHome() {
+    var grid = $("deckGrid");
+    if (!grid) return;
+    var p = loadProgress();
+    grid.innerHTML = "";
+    Object.keys(DECKS).forEach(function (id) {
+      var m = masteryFor(p, id, window.BB.data);
+      var count = generateDeck(id, window.BB.data).length;
+      var tile = document.createElement("button");
+      tile.type = "button"; tile.className = "deck-tile"; tile.dataset.session = id;
+      var name = document.createElement("span"); name.className = "deck-name"; name.textContent = DECKS[id].label;
+      var meta = document.createElement("span"); meta.className = "deck-meta"; meta.textContent = count + " cards";
+      var mast = document.createElement("span"); mast.className = "deck-mastery"; mast.textContent = m + "% mastered";
+      tile.appendChild(name); tile.appendChild(meta); tile.appendChild(mast);
+      grid.appendChild(tile);
+    });
+  }
+
+  function ringColor(pct) {
+    if (pct >= 80) return "var(--green)";
+    if (pct >= 40) return "var(--gold)";
+    return "var(--accent-dark)";
+  }
+  function ringEl(label, pct) {
+    var card = document.createElement("div");
+    card.className = "ring-card";
+    var ring = document.createElement("div");
+    ring.className = "ring";
+    ring.setAttribute("role", "img");
+    ring.setAttribute("aria-label", label + ": " + pct + "% mastered");
+    ring.style.background = "conic-gradient(" + ringColor(pct) + " " + (pct * 3.6) + "deg, var(--paper-2) 0)";
+    var inner = document.createElement("div");
+    inner.style.width = "70px"; inner.style.height = "70px"; inner.style.borderRadius = "50%";
+    inner.style.background = "var(--cream)"; inner.style.display = "grid"; inner.style.placeItems = "center";
+    var num = document.createElement("span"); num.className = "ring-num"; num.textContent = pct;
+    inner.appendChild(num);
+    ring.appendChild(inner);
+    var cap = document.createElement("div"); cap.className = "ring-label"; cap.textContent = label;
+    card.appendChild(ring); card.appendChild(cap);
+    return card;
+  }
+
+  var TAG_RINGS = ["acidity", "tannin", "body", "white", "red", "rose", "spice", "seafood", "steak"];
+
+  function renderProgress() {
+    if (!$("deckRings")) return;
+    var p = loadProgress();
+    var dr = $("deckRings"); dr.innerHTML = "";
+    Object.keys(DECKS).forEach(function (id) { dr.appendChild(ringEl(DECKS[id].label, masteryFor(p, id, window.BB.data))); });
+    var tr = $("tagRings"); tr.innerHTML = "";
+    TAG_RINGS.forEach(function (t) { tr.appendChild(ringEl(t, masteryFor(p, t, window.BB.data))); });
+
+    var sl = $("streakLine");
+    if (p.streak && p.streak.current > 0) {
+      sl.innerHTML = '<span aria-hidden="true">🔥</span> ' + p.streak.current +
+        " day streak. A single missed day is forgiven — keep it lenient.";
+    } else {
+      sl.textContent = "No study days yet — start a session to begin your streak.";
+    }
+
+    var weak = [];
+    allCards(window.BB.data).forEach(function (c) {
+      var st = p.cards[c.id];
+      if (st && st.box <= 2 && st.wrong > 0) weak.push(c);
+    });
+    var wl = $("weakList");
+    if (!weak.length) { wl.textContent = "Nothing flagged weak yet — good sign, or just early."; }
+    else {
+      wl.innerHTML = weak.slice(0, 24).map(function (c) {
+        return '<span class="weak-pill" title="' + esc(c.prompt) + '">' + esc(DECKS[c.deck].label) + ": " + esc(c.answer) + "</span>";
+      }).join("");
+    }
+    renderGuidedPath(p);
+    renderDeckHome();
+  }
+
+  var GUIDED = [
+    { type: "learn", label: "Read Wine School: what the structure words mean", target: "#start" },
+    { type: "deck", deck: "translator", label: "Focus: Translator (your #1 table priority)" },
+    { type: "deck", deck: "wine-identity", label: "Focus: Wine Identity (grape + region)" },
+    { type: "deck", deck: "pronunciation", label: "Focus: Pronunciation (say each name)" },
+    { type: "deck", deck: "pairing", label: "Focus: Pairing & Why (dish → glass + reason)" },
+    { type: "deck", deck: "structure", label: "Focus: Structure (highest acid/tannin/body)" },
+    { type: "smart", label: "Smart Review: mix it all together" }
+  ];
+  function renderGuidedPath(p) {
+    var host = $("guidedPath");
+    if (!host) return;
+    host.innerHTML = "";
+    var firstActive = true;
+    GUIDED.forEach(function (step, i) {
+      var done = false;
+      if (step.type === "deck") done = masteryFor(p, step.deck, window.BB.data) >= 40;
+      if (step.type === "smart") done = Object.keys(DECKS).every(function (d) { return masteryFor(p, d, window.BB.data) >= 40; });
+      var div = document.createElement("div");
+      div.className = "guided-step" + (done ? " done" : "");
+      var active = !done && firstActive;
+      if (active) { div.classList.add("active"); firstActive = false; }
+      var action = step.type === "deck"
+        ? '<button class="btn primary" type="button" data-session="' + step.deck + '">Start</button>'
+        : step.type === "smart"
+          ? '<button class="btn primary" type="button" data-session="smart">Start</button>'
+          : '<a class="btn" href="' + step.target + '">Open</a>';
+      div.innerHTML = '<span class="step-n">' + (i + 1) + '</span>' +
+        '<span class="step-text">' + esc(step.label) + '</span>' +
+        '<span class="step-state">' + (done ? "Done" : active ? "Do this next" : "Later") + "</span>" + action;
+      host.appendChild(div);
+    });
+  }
+
+  function setIoStatus(msg) { var el = $("ioStatus"); if (el) el.textContent = msg; }
+  function doExport() {
+    var json = exportProgress(loadProgress());
+    try {
+      var blob = new Blob([json], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "bridgette-progress.json";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      setIoStatus("Progress exported to bridgette-progress.json.");
+    } catch (e) { setIoStatus("Export not available in this browser context."); }
+  }
+  function doImport(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var imported = importProgress(String(reader.result), validIdSet());
+      if (!imported) { setIoStatus("Import failed — that file isn't valid progress JSON."); return; }
+      saveProgress(imported);
+      renderProgress();
+      setIoStatus("Progress imported and merged. Boxes, streak, and mastery restored.");
+    };
+    reader.readAsText(file);
+  }
+
+  function onKeydown(e) {
+    if (!session || $("sessionScreen").hidden) return;
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return; // typing flows; input has its own Enter
+    var fc = $("flashcard");
+    var flipped = fc.classList.contains("flipped");
+    var card = session.queue[session.idx];
+    if (/^[1-4]$/.test(e.key)) {
+      if (!flipped) {
+        var btns = $("quizArea").querySelectorAll(".choice-btn");
+        var idx = parseInt(e.key, 10) - 1;
+        if (btns[idx]) { e.preventDefault(); btns[idx].click(); }
+      } else if (e.key === "1") { e.preventDefault(); commit(card, true); }
+      else if (e.key === "2") { e.preventDefault(); commit(card, false); }
+      return;
+    }
+    if (tag === "button" || tag === "a") return; // let a focused control handle its own Space/Enter
+    if (e.code === "Space" || e.key === " ") { e.preventDefault(); flip(!flipped); return; }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (flipped && session.pendingCorrect != null) commit(card, session.pendingCorrect);
+    }
+  }
+
+  function bindUI() {
+    document.body.addEventListener("click", function (e) {
+      var trig = e.target.closest ? e.target.closest("[data-session]") : null;
+      if (!trig) return;
+      var v = trig.dataset.session;
+      startSession(v === "smart" ? null : v);
+      var prm = document.getElementById("practice");
+      if (prm) prm.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+    });
+    var end = $("endSession"); if (end) end.addEventListener("click", function () {
+      session = null; $("sessionScreen").hidden = true; $("practiceHome").hidden = false; renderDeckHome();
+    });
+    var again = $("summaryAgain"); if (again) again.addEventListener("click", function () {
+      $("summaryScreen").hidden = true; $("practiceHome").hidden = false; renderDeckHome();
+    });
+    var sp = $("summaryProgress"); if (sp) sp.addEventListener("click", function () {
+      document.getElementById("progress").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    });
+    [$("exportProgress"), $("exportProgress2")].forEach(function (b) { if (b) b.addEventListener("click", doExport); });
+    var imp = $("importProgress"); if (imp) imp.addEventListener("click", function () { $("importFile").click(); });
+    var impFile = $("importFile"); if (impFile) impFile.addEventListener("change", function (e) {
+      if (e.target.files && e.target.files[0]) doImport(e.target.files[0]);
+    });
+    document.addEventListener("keydown", onKeydown);
+  }
+
+  function init() {
+    if (!window.BB || !window.BB.data) return;
+    saveProgress(loadProgress()); // migrate/persist on boot: orphan ids dropped, new ids implicit box 1
+    bindUI();
+    renderDeckHome();
+    renderProgress();
+  }
+
+  if (typeof document !== "undefined" && document.getElementById) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+    else init();
+  }
+
   // Public API (filled in by later tasks).
   window.BB.training = {
     BOX_DUE_DAYS: BOX_DUE_DAYS,
@@ -635,6 +834,8 @@
     exportProgress: exportProgress,
     importProgress: importProgress,
     loadProgress: loadProgress,
-    saveProgress: saveProgress
+    saveProgress: saveProgress,
+    init: init,
+    renderProgress: renderProgress
   };
 })();

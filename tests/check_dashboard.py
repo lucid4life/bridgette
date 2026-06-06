@@ -29,6 +29,12 @@ REQUIRED_TEXT = [
     "Menu reference checked: June 4, 2026",
     "Verify nightly menu changes, 86s, BTG availability, and allergy language",
     "Answer out loud before revealing",
+    "Active Recall Sessions",
+    "Start Smart Review",
+    "Mastery by deck",
+    "Mastery by attribute",
+    "Export progress",
+    "Guided first-run path",
 ]
 
 REQUIRED_IDS = [
@@ -44,6 +50,14 @@ REQUIRED_IDS = [
     "guestAskTranslator",
     "notesArea",
     "liveStatus",
+    "practice",
+    "progress",
+    "deckGrid",
+    "flashcard",
+    "cardPrompt",
+    "weakList",
+    "exportProgress",
+    "importFile",
 ]
 
 FORBIDDEN = [
