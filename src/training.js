@@ -256,6 +256,61 @@
     return all;
   }
 
+  // ---------------- session composition (pure) ----------------
+  function defaultProgressShape() {
+    return {
+      schema: 1, cards: {}, decks: {}, tags: {}, readiness: null,
+      streak: { current: 0, lastStudyDate: null },
+      settings: { difficulty: "adaptive", audio: true }
+    };
+  }
+  // Real localStorage-backed version is installed in the storage shell below.
+  function loadProgress() { return defaultProgressShape(); }
+  function saveProgress() { /* upgraded by the storage shell */ }
+
+  function shuffle(arr, rng) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor((rng ? rng() : Math.random()) * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  // Pure session composer. ctx = { data, progress, today, newCap, sizeCap, rng }.
+  // deckId null => Smart Review (mixed across all decks, interleaved).
+  function buildSession(deckId, ctx) {
+    ctx = ctx || {};
+    var data = ctx.data || (window.BB && window.BB.data);
+    var progress = ctx.progress || loadProgress();
+    var today = ctx.today != null ? ctx.today : dayNumber();
+    var newCap = ctx.newCap != null ? ctx.newCap : NEW_CAP;
+    var sizeCap = ctx.sizeCap != null ? ctx.sizeCap : SIZE_CAP;
+    var rng = ctx.rng || Math.random;
+
+    var cards = deckId == null ? allCards(data) : generateDeck(deckId, data);
+
+    var due = [], fresh = [];
+    cards.forEach(function (c) {
+      var st = progress.cards[c.id];
+      if (!st) { fresh.push(c); return; }
+      if (isDue(st, today)) due.push({ card: c, st: st });
+    });
+
+    // weak-first: lower box, then more wrong, then least-recently seen
+    due.sort(function (a, b) {
+      return (a.st.box - b.st.box) || (b.st.wrong - a.st.wrong) || (a.st.lastSeen - b.st.lastSeen);
+    });
+
+    var review = due.slice(0, sizeCap).map(function (d) { return d.card; });
+    var newSlots = Math.max(0, Math.min(newCap, sizeCap - review.length, fresh.length));
+    var newest = fresh.slice(0, newSlots);
+
+    var session = review.concat(newest);
+    if (deckId == null) session = shuffle(session, rng); // interleave for Mixed practice
+    return session;
+  }
+
   // Public API (filled in by later tasks).
   window.BB.training = {
     BOX_DUE_DAYS: BOX_DUE_DAYS,
@@ -272,6 +327,8 @@
     generateDeck: generateDeck,
     allCards: allCards,
     langFor: langFor,
-    slug: slug
+    slug: slug,
+    buildSession: buildSession,
+    shuffle: shuffle
   };
 })();

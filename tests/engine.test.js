@@ -192,4 +192,48 @@ test("generateDeck unknown id returns empty array", () => {
   assert.deepStrictEqual(T.generateDeck("nope", DATA), []);
 });
 
+function emptyProgress() { return { schema: 1, cards: {}, decks: {}, tags: {}, readiness: null, streak: { current: 0, lastStudyDate: null }, settings: {} }; }
+
+test("buildSession Focus on a fresh deck: serves only NEW cards, capped at newCap", () => {
+  const p = emptyProgress();
+  const session = T.buildSession("translator", { data: DATA, progress: p, today: 1000 });
+  assert.ok(session.length <= T.NEW_CAP, "fresh focus exceeds newCap: " + session.length);
+  assert.ok(session.length >= 1);
+  session.forEach(function (c) { assert.strictEqual(c.deck, "translator"); });
+});
+
+test("buildSession: total never exceeds sizeCap", () => {
+  const p = emptyProgress();
+  T.allCards(DATA).forEach(function (c) {
+    p.cards[c.id] = { box: 2, due: 0, lastSeen: 0, correct: 1, wrong: 0, consecutiveWrong: 0 };
+  });
+  const session = T.buildSession(null, { data: DATA, progress: p, today: 1000 });
+  assert.ok(session.length <= T.SIZE_CAP, "exceeds sizeCap: " + session.length);
+});
+
+test("buildSession: new cards are capped even when the session has room", () => {
+  const p = emptyProgress(); // everything is new
+  const session = T.buildSession(null, { data: DATA, progress: p, today: 1000 });
+  const newCount = session.filter(function (c) { return !p.cards[c.id]; }).length;
+  assert.ok(newCount <= T.NEW_CAP, "new cards exceed newCap: " + newCount);
+});
+
+test("buildSession: not-yet-due review cards are excluded", () => {
+  const p = emptyProgress();
+  T.allCards(DATA).forEach(function (c) { p.cards[c.id] = { box: 4, due: 5000, lastSeen: 0, correct: 3, wrong: 0, consecutiveWrong: 0 }; });
+  const session = T.buildSession("structure", { data: DATA, progress: p, today: 1000 });
+  assert.strictEqual(session.length, 0);
+});
+
+test("buildSession: weak (low-box) due cards are prioritized over higher-box due cards", () => {
+  const p = emptyProgress();
+  const cards = T.generateDeck("structure", DATA);
+  cards.forEach(function (c, i) {
+    p.cards[c.id] = { box: i === cards.length - 1 ? 1 : 4, due: 0, lastSeen: 0, correct: 0, wrong: i === cards.length - 1 ? 3 : 0, consecutiveWrong: 0 };
+  });
+  const session = T.buildSession("structure", { data: DATA, progress: p, today: 1000, sizeCap: 1 });
+  assert.strictEqual(session.length, 1);
+  assert.strictEqual(session[0].id, cards[cards.length - 1].id, "weakest card should come first");
+});
+
 module.exports = { T, DATA };
