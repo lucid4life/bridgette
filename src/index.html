@@ -30,6 +30,8 @@
   <nav class="top-nav" aria-label="Dashboard sections">
     <div class="nav-inner">
       <a class="nav-link" href="#start">Start</a>
+      <a class="nav-link" href="#practice">Practice</a>
+      <a class="nav-link" href="#progress">Progress</a>
       <a class="nav-link" href="#drill">Service Drill</a>
       <a class="nav-link" href="#wine">Wine Guide</a>
       <a class="nav-link" href="#food">Food Guide</a>
@@ -60,6 +62,97 @@
       </div>
     </div>
     <p id="liveStatus" class="eyebrow" aria-live="polite">Showing all dashboard cards.</p>
+
+    <section class="section dark" id="practice">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Practice</p>
+          <h2 class="section-title">Active Recall Sessions</h2>
+          <p class="section-sub">Pick one deck to drill (Focus) or run a Smart Review that mixes what's due and weak. Sessions are short on purpose — a handful of new cards, the rest review. Space flips a card; 1–4 choose or grade; Enter goes next.</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div id="practiceHome">
+          <h3 class="subsection-title compact">Smart Review</h3>
+          <div class="practice-launch">
+            <button class="btn gold" type="button" data-session="smart">Start Smart Review (mixed)</button>
+            <p class="meta">Due + weak cards across every deck, interleaved. The durable-recall mode once you've drilled the basics.</p>
+          </div>
+          <h3 class="subsection-title">Focus a deck</h3>
+          <div class="deck-grid" id="deckGrid"></div>
+        </div>
+
+        <div id="sessionScreen" hidden>
+          <div class="session-bar">
+            <button class="btn" type="button" id="endSession">End session</button>
+            <p class="session-progress" id="sessionProgress" aria-live="polite">Card 1</p>
+            <a class="btn" id="cardLearnLink" href="#start">Stuck? Learn it</a>
+          </div>
+          <div class="flashcard" id="flashcard">
+            <div class="flashcard-inner">
+              <div class="flashcard-face flashcard-front">
+                <p class="card-deck-label" id="frontDeck">Deck</p>
+                <p class="flashcard-prompt" id="cardPrompt" tabindex="-1">Prompt</p>
+                <div class="quiz-area" id="quizArea"></div>
+              </div>
+              <div class="flashcard-face flashcard-back">
+                <p class="card-deck-label">Answer</p>
+                <p class="flashcard-answer" id="cardAnswer">Answer</p>
+                <p class="flashcard-why" id="cardWhy"></p>
+                <div class="grade-row" id="gradeRow"></div>
+              </div>
+            </div>
+          </div>
+          <p class="feedback" id="cardFeedback" role="status" aria-live="assertive"></p>
+        </div>
+
+        <div id="summaryScreen" hidden>
+          <div class="callout summary-callout">
+            <h3 id="summaryTitle">Session complete</h3>
+            <p id="summaryStats" class="quote"></p>
+            <p id="summaryWeak"></p>
+            <div class="chip-row">
+              <button class="btn primary" type="button" id="summaryAgain">Another session</button>
+              <button class="btn" type="button" id="summaryProgress">See progress</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="progress">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Progress</p>
+          <h2 class="section-title">Where You Stand</h2>
+          <p class="section-sub">Mastery by deck and by attribute, your weak list, your streak, and a first-run path that tells you exactly what to do next. Back up your progress any time.</p>
+        </div>
+        <button class="btn gold" type="button" id="exportProgress">Export progress</button>
+      </div>
+      <div class="section-body">
+        <div class="guided-path" id="guidedPath" aria-label="Guided first-run path"></div>
+
+        <h3 class="subsection-title">Streak</h3>
+        <p id="streakLine" class="streak-line">No study days yet — start a session to begin your streak.</p>
+
+        <h3 class="subsection-title">Mastery by deck</h3>
+        <div class="ring-grid" id="deckRings"></div>
+
+        <h3 class="subsection-title">Mastery by attribute</h3>
+        <div class="ring-grid" id="tagRings"></div>
+
+        <h3 class="subsection-title">Weak list — study these next</h3>
+        <div class="weak-list" id="weakList">Nothing logged yet.</div>
+
+        <h3 class="subsection-title">Back up &amp; restore</h3>
+        <div class="chip-row">
+          <button class="btn primary" type="button" id="exportProgress2">Export progress (JSON)</button>
+          <button class="btn" type="button" id="importProgress">Import progress</button>
+          <input type="file" id="importFile" accept="application/json,.json" hidden>
+        </div>
+        <p class="meta" id="ioStatus" aria-live="polite"></p>
+      </div>
+    </section>
 
     <section class="section dark" id="start">
       <div class="section-head">
@@ -319,5 +412,6 @@
   </main>
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="training.js"></script>
 </body>
 </html>
