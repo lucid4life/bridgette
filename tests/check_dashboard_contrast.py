@@ -46,6 +46,13 @@ def main() -> int:
         ("ink", "gold"),
         ("ink", "paper"),
         ("brown", "paper"),
+        # S3 Wine School components (lessons, quick checks, deductive grid)
+        ("green", "paper"),          # qc-result "correct" text
+        ("paper", "green"),          # qc-key cream-on-green chip
+        ("muted-paper", "paper"),    # dg-intro / dg-hit name + score
+        ("ink", "paper-2"),          # worked example + dg-result body text
+        ("accent-dark", "paper-2"),  # worked-example label
+        ("label-light", "paper-2"),  # dg-result "no match" state
     ]
     failures = []
     for foreground, background in required:
