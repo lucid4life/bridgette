@@ -1015,4 +1015,105 @@
         display: none;
       }
     }
+
+    /* ---- Wine School (S3) ---- */
+    .lesson-list { display: grid; gap: 18px; }
+    .lesson {
+      background: var(--paper);
+      color: var(--ink);
+      border: 1px solid var(--line-dark);
+      border-left: 5px solid var(--orange);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: 0 8px 26px rgba(5, 18, 27, .12);
+    }
+    .lesson:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 3px; }
+    .lesson-num {
+      font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .14em;
+      font-size: .72rem; color: var(--label-light); margin: 0 0 2px;
+    }
+    .lesson-title {
+      font-family: "Oswald", sans-serif; font-weight: 700; color: var(--ink);
+      margin: 0 0 10px; font-size: 1.32rem; line-height: 1.15;
+    }
+    .lesson-body { margin: 0 0 14px; }
+    .lesson-worked {
+      background: var(--paper-2);
+      border: 1px solid var(--line-dark);
+      border-radius: var(--radius);
+      padding: 12px 14px; margin: 0 0 16px;
+    }
+    .lesson-worked-label {
+      font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .12em;
+      font-size: .72rem; color: var(--accent-dark); margin: 0 0 6px;
+    }
+    .lesson-worked p { margin: 0; }
+
+    .quick-check {
+      border-top: 1px dashed var(--line-dark);
+      padding-top: 14px; margin-top: 4px;
+    }
+    .qc-q { font-weight: 700; color: var(--ink); margin: 0 0 10px; }
+    .qc-tag {
+      display: inline-block; font-family: "Oswald", sans-serif; text-transform: uppercase;
+      letter-spacing: .1em; font-size: .66rem; color: var(--paper);
+      background: var(--ink); border-radius: 3px; padding: 2px 7px; margin-right: 6px;
+      vertical-align: middle;
+    }
+    .qc-choices { display: grid; gap: 8px; }
+    .qc-choice {
+      display: flex; align-items: center; gap: 10px; text-align: left;
+      background: var(--paper); color: var(--ink);
+      border: 1px solid var(--ink); border-radius: var(--radius);
+      padding: 10px 12px; font-weight: 500;
+    }
+    .qc-choice:hover { background: var(--paper-2); }
+    .qc-key {
+      flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--ink); color: var(--paper); font-weight: 700; font-size: .8rem;
+    }
+    .qc-choice.is-correct { border-color: var(--green); background: rgba(80, 111, 95, .16); }
+    .qc-choice.is-correct .qc-key { background: var(--green); }
+    .qc-choice.is-wrong { border-color: var(--accent-dark); background: rgba(168, 50, 18, .12); }
+    .qc-choice.is-wrong .qc-key { background: var(--accent-dark); }
+    .qc-result { margin: 10px 0 0; font-weight: 600; min-height: 1.2em; }
+    .qc-result.is-correct { color: var(--green); }
+    .qc-result.is-wrong { color: var(--accent-dark); }
+
+    /* deductive grid lives inside the deductive-grid lesson */
+    .deductive-grid { margin-top: 16px; }
+    .dg-intro { margin: 0 0 12px; font-style: italic; color: var(--muted-paper); }
+    .dg-fields {
+      display: grid; gap: 12px; margin-bottom: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    .dg-field { display: grid; gap: 4px; }
+    .dg-field label {
+      font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .1em;
+      font-size: .72rem; color: var(--accent-dark);
+    }
+    .dg-select {
+      background: var(--paper); color: var(--ink);
+      border: 1px solid var(--ink); border-radius: var(--radius); padding: 8px 10px;
+    }
+    .dg-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .dg-result {
+      background: var(--paper-2); border: 1px solid var(--line-dark);
+      border-radius: var(--radius); padding: 12px 14px; color: var(--ink); min-height: 1.4em;
+    }
+    .dg-result.is-empty { color: var(--label-light); }
+    .dg-hits { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .dg-hit {
+      display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: baseline;
+      padding: 8px 10px; background: var(--paper); border: 1px solid var(--line-dark); border-radius: var(--radius);
+    }
+    .dg-hit.is-top { border-color: var(--gold); border-left: 4px solid var(--gold); }
+    .dg-hit-lead {
+      font-family: "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .08em;
+      font-size: .68rem; color: var(--label-light); grid-column: 1 / -1;
+    }
+    .dg-hit-grape { font-weight: 700; color: var(--ink); }
+    .dg-hit-name { color: var(--muted-paper); }
+    .dg-hit-score { font-size: .82rem; color: var(--muted-paper); grid-column: 1 / -1; }
   
