@@ -122,4 +122,29 @@ test("gradeTyped: a single short stopword-like token does not match", () => {
   assert.strictEqual(T.gradeTyped(card, "la"), false);
 });
 
+test("updateStreak: first ever study starts at 1", () => {
+  const s = T.updateStreak({ current: 0, lastStudyDate: null }, 100);
+  assert.deepStrictEqual(s, { current: 1, lastStudyDate: 100 });
+});
+
+test("updateStreak: studying again the same day does not change the count", () => {
+  const s = T.updateStreak({ current: 3, lastStudyDate: 100 }, 100);
+  assert.deepStrictEqual(s, { current: 3, lastStudyDate: 100 });
+});
+
+test("updateStreak: consecutive day increments", () => {
+  const s = T.updateStreak({ current: 3, lastStudyDate: 100 }, 101);
+  assert.deepStrictEqual(s, { current: 4, lastStudyDate: 101 });
+});
+
+test("updateStreak: ONE missed day is forgiven (grace) and still increments", () => {
+  const s = T.updateStreak({ current: 3, lastStudyDate: 100 }, 102); // skipped day 101
+  assert.deepStrictEqual(s, { current: 4, lastStudyDate: 102 });
+});
+
+test("updateStreak: two or more missed days resets to 1", () => {
+  const s = T.updateStreak({ current: 9, lastStudyDate: 100 }, 103); // skipped 101 and 102
+  assert.deepStrictEqual(s, { current: 1, lastStudyDate: 103 });
+});
+
 module.exports = { T, DATA };

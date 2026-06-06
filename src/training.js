@@ -81,6 +81,17 @@
     return false;
   }
 
+  // Lenient streak: a single missed day (gap of 2) is forgiven; 2+ missed days reset.
+  function updateStreak(streak, today) {
+    var last = streak && streak.lastStudyDate;
+    var current = (streak && streak.current) || 0;
+    if (last == null) return { current: 1, lastStudyDate: today };
+    var gap = today - last;
+    if (gap === 0) return { current: current, lastStudyDate: last };
+    if (gap <= 2) return { current: current + 1, lastStudyDate: today }; // gap 1 or 2 (grace)
+    return { current: 1, lastStudyDate: today };
+  }
+
   function isDue(state, today) {
     if (today == null) today = dayNumber();
     return today >= state.due;
@@ -101,6 +112,7 @@
     isDue: isDue,
     newState: newState,
     normalizeAnswer: normalizeAnswer,
-    gradeTyped: gradeTyped
+    gradeTyped: gradeTyped,
+    updateStreak: updateStreak
   };
 })();
