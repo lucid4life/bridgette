@@ -345,4 +345,21 @@ test("exportProgress: does not mutate the input progress object", () => {
   assert.strictEqual(JSON.stringify(withState), before, "exportProgress mutated its input");
 });
 
+// --- S4: Wine Identity reverse direction ---
+
+test("genWineIdentity: yields BOTH forward (name->grape) and reverse (grape->name) cards", () => {
+  const cards = T.generateDeck("wine-identity", DATA);
+  const fwd = cards.filter(c => c.id.endsWith(":grape"));
+  const rev = cards.filter(c => c.id.endsWith(":name"));
+  assert.ok(fwd.length >= 1, "no forward cards");
+  assert.strictEqual(rev.length, fwd.length, "one reverse card per forward card");
+  rev.forEach(c => {
+    assert.strictEqual(c.deck, "wine-identity");
+    assert.ok(DATA.wines.some(w => w.name === c.answer), "reverse answer is not a wine name: " + c.id);
+    assert.ok(Array.isArray(c.choices) && c.choices.indexOf(c.answer) !== -1, "reverse choices omit answer: " + c.id);
+    assert.strictEqual(c.choices.length, new Set(c.choices).size, "reverse choices have a duplicate: " + c.id);
+    assert.ok(c.learnLink, "reverse card missing learnLink: " + c.id);
+  });
+});
+
 module.exports = { T, DATA };

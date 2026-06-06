@@ -162,10 +162,12 @@
   }
 
   function genWineIdentity(data) {
+    var wineNames = data.wines.map(function (w) { return w.name; });
     var ident = data.wines.map(function (w) { return w.grape + " — " + w.region; });
-    return data.wines.map(function (w, i) {
+    var cards = [];
+    data.wines.forEach(function (w, i) {
       var ans = w.grape + " — " + w.region;
-      return {
+      cards.push({
         id: "wine-identity:" + w.id + ":grape",
         deck: "wine-identity", kind: "recall",
         prompt: w.name + ": what grape and region?",
@@ -176,8 +178,21 @@
         scenario: "A regular asks what " + w.name + " actually is. Give the grape and region and one line of character.",
         learnLink: DECKS["wine-identity"].learnLink,
         tags: (w.tags || []).slice()
-      };
+      });
+      cards.push({
+        id: "wine-identity:" + w.id + ":name",
+        deck: "wine-identity", kind: "recall",
+        prompt: w.grape + " from " + w.region + " — which wine on our list?",
+        answer: w.name,
+        why: w.tenSecond || w.profile || "",
+        choices: [w.name].concat(pickDistractors(wineNames, w.name, 3, i)),
+        aliases: (w.aliases || []).slice(),
+        scenario: "A guest wants the " + w.grape + " from " + w.region + ". Name the exact pour on our list.",
+        learnLink: DECKS["wine-identity"].learnLink,
+        tags: (w.tags || []).slice()
+      });
     });
+    return cards;
   }
 
   function genPronunciation(data) {
