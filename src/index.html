@@ -30,6 +30,7 @@
   <nav class="top-nav" aria-label="Dashboard sections">
     <div class="nav-inner">
       <a class="nav-link" href="#start">Start</a>
+      <a class="nav-link" href="#learn">Wine School</a>
       <a class="nav-link" href="#practice">Practice</a>
       <a class="nav-link" href="#progress">Progress</a>
       <a class="nav-link" href="#drill">Service Drill</a>
@@ -62,6 +63,19 @@
       </div>
     </div>
     <p id="liveStatus" class="eyebrow" aria-live="polite">Showing all dashboard cards.</p>
+
+    <section class="section" id="learn">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Wine School</p>
+          <h2 class="section-title">Fundamentals, One Lesson At A Time</h2>
+          <p class="section-sub">Short lessons built from this list: what the structure words mean, how to taste, the pairing levers, the names, and the table rhythm. Read the body, study the worked example, then take the one-question quick check. Finish with the deductive grid to turn clues into a likely grape.</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="lesson-list" id="lessonList"></div>
+      </div>
+    </section>
 
     <section class="section dark" id="practice">
       <div class="section-head">
@@ -414,5 +428,6 @@
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="training.js"></script>
+  <script src="wineschool.js"></script>
 </body>
 </html>
