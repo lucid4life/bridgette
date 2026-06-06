@@ -860,6 +860,16 @@
         return '<span class="weak-pill" title="' + esc(c.prompt) + '">' + esc(DECKS[c.deck].label) + ": " + esc(c.answer) + "</span>";
       }).join("");
     }
+    var rr = $("readinessResult");
+    if (rr) {
+      if (p.readiness && typeof p.readiness.lastScore === "number") {
+        var rWeak = (p.readiness.weakAreas || []).slice(0, 6);
+        rr.textContent = "Last check: " + p.readiness.lastScore + "% shift-ready"
+          + (rWeak.length ? " · weak areas: " + rWeak.join(", ") : " · no weak areas flagged") + ".";
+      } else {
+        rr.textContent = "Not taken yet — run a mixed gauntlet across all decks to see your % shift-ready.";
+      }
+    }
     renderGuidedPath(p);
     renderDeckHome();
   }
@@ -959,6 +969,11 @@
     });
     var end = $("endSession"); if (end) end.addEventListener("click", function () {
       session = null; $("sessionScreen").hidden = true; $("practiceHome").hidden = false; renderDeckHome();
+    });
+    var rb = $("startReadiness"); if (rb) rb.addEventListener("click", function () {
+      startReadiness();
+      var prm = document.getElementById("practice");
+      if (prm) prm.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
     });
     var again = $("summaryAgain"); if (again) again.addEventListener("click", function () {
       $("summaryScreen").hidden = true; $("practiceHome").hidden = false; renderDeckHome();
