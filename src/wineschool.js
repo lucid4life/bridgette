@@ -39,10 +39,6 @@
     return !!lesson && !!lesson.quickCheck && choiceIndex === lesson.quickCheck.answer;
   }
 
-  function slug(s) {
-    return String(s == null ? "" : s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  }
-
   // ---------------- rendering (DOM-guarded) ----------------
   function esc(v) {
     return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
@@ -221,7 +217,6 @@
     DG_DIMS: DG_DIMS,
     deduce: deduce,
     checkQuickCheck: checkQuickCheck,
-    slug: slug,
     wineValue: wineValue,
     renderLessons: renderLessons,
     init: init
