@@ -807,10 +807,121 @@
       font-style: italic;
     }
 
+    /* S2: Practice + Progress (extends the Bridgette system — no new palette) */
+    .practice-launch {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      border: 1px solid var(--line-light); border-left: 5px solid var(--gold);
+      background: rgba(255,238,215,.07); padding: 14px; margin-bottom: 8px;
+    }
+    .practice-launch .meta { flex: 1 1 240px; }
+    .deck-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+    }
+    .deck-tile {
+      display: flex; flex-direction: column; gap: 8px; text-align: left;
+      border: 1px solid var(--line-light); background: rgba(255,238,215,.06);
+      color: var(--cream); padding: 14px; min-height: 120px; align-items: stretch;
+    }
+    .deck-tile:hover, .deck-tile:focus-visible { border-color: var(--orange); background: rgba(241,86,35,.16); }
+    .deck-tile .deck-name { font-family: "Oswald", Arial, sans-serif; text-transform: uppercase; font-size: 20px; }
+    .deck-tile .deck-meta { font-size: 13px; color: var(--muted-dark); }
+    .deck-tile .deck-mastery { font-weight: 800; color: var(--gold); font-size: 13px; }
+
+    .session-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .session-progress { margin: 0; font-weight: 800; color: var(--gold); }
+
+    /* flip card */
+    .flashcard { perspective: 1400px; }
+    .flashcard-inner {
+      position: relative; transform-style: preserve-3d;
+      transition: transform .5s ease; min-height: 320px;
+    }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-face {
+      position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      border: 1px solid var(--line-light); background: var(--cream); color: var(--ink);
+      box-shadow: var(--shadow);
+      padding: 22px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .flashcard-back { transform: rotateY(180deg); }
+    .card-deck-label {
+      margin: 0; color: var(--label-light); font-family: "Oswald", Arial, sans-serif;
+      text-transform: uppercase; font-size: 13px; letter-spacing: .04em;
+    }
+    .flashcard-prompt {
+      margin: 0; font-family: "Oswald", Arial, sans-serif; text-transform: uppercase;
+      font-size: clamp(22px, 3vw, 34px); line-height: 1.05;
+    }
+    .flashcard-prompt:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 4px; }
+    .flashcard-answer { margin: 0; font-size: 24px; font-weight: 800; color: var(--accent-dark); }
+    .flashcard-why { margin: 0; color: var(--brown); }
+
+    .quiz-area { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+    .choice-btn {
+      display: flex; align-items: center; gap: 10px; text-align: left;
+      border: 1px solid var(--line-dark); background: rgba(255,255,255,.7); color: var(--ink);
+      padding: 12px 14px; font-weight: 700; min-height: 46px;
+    }
+    .choice-btn .choice-key {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border: 1px solid var(--accent-dark); color: var(--accent-dark);
+      font-weight: 800; flex: none;
+    }
+    .choice-btn:hover { border-color: var(--accent-dark); background: rgba(168,50,18,.1); }
+    .choice-btn.correct { border-color: var(--green); background: rgba(80,111,95,.2); color: var(--ink); }
+    .choice-btn.correct .choice-key { border-color: var(--green); color: var(--green); }
+    .choice-btn.wrong { border-color: var(--accent-dark); background: rgba(168,50,18,.16); }
+    .choice-btn[disabled] { cursor: default; opacity: .92; }
+
+    .typed-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .typed-row input[type="text"] { flex: 1 1 220px; }
+    .speak-btn {
+      border: 1px solid var(--accent-dark); background: rgba(168,50,18,.08); color: var(--ink);
+      padding: 8px 12px; font-weight: 800;
+    }
+    .speak-btn:hover { background: rgba(168,50,18,.16); }
+    .scenario-note { font-size: 13px; color: var(--brown); margin: 0; }
+
+    .grade-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+    .feedback { min-height: 24px; font-weight: 800; margin: 12px 0 0; }
+    .feedback.ok { color: var(--green); }
+    .feedback.no { color: var(--accent-dark); }
+
+    /* mastery rings */
+    .ring-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .ring-card { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+      border: 1px solid var(--line-dark); background: rgba(255,255,255,.55); padding: 14px; }
+    .ring { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; background: var(--paper-2); }
+    .ring-num { font-family: "Oswald", Arial, sans-serif; font-size: 24px; color: var(--ink); }
+    .ring-label { font-weight: 800; font-size: 13px; text-transform: uppercase; color: var(--brown); }
+
+    /* guided path */
+    .guided-path { display: grid; gap: 8px; margin-bottom: 8px; }
+    .guided-step {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      border: 1px solid var(--line-dark); border-left: 5px solid var(--blue);
+      background: rgba(67,124,147,.1); padding: 12px 14px;
+    }
+    .guided-step.done { border-left-color: var(--green); background: rgba(80,111,95,.14); }
+    .guided-step.active { border-left-color: var(--gold); background: rgba(252,181,57,.16); }
+    .guided-step .step-n { font-family: "Oswald", Arial, sans-serif; font-weight: 700; color: var(--accent-dark); min-width: 18px; }
+    .guided-step .step-text { flex: 1 1 240px; }
+    .guided-step .step-state { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--brown); }
+
+    .streak-line { font-size: 18px; font-weight: 700; }
+    .weak-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .weak-pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--accent-dark);
+      background: rgba(168,50,18,.1); color: var(--ink); padding: 6px 10px; font-weight: 700; font-size: 13px; }
+    .summary-callout { border-left-color: var(--gold); }
+
     @media (max-width: 1120px) {
       .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .mini-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .select-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .deck-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 760px) {
       .header-inner, .toolbar, .start-grid, .two-col, .result-panel {
@@ -823,6 +934,9 @@
         grid-template-columns: 1fr;
       }
       .cards, .mini-grid, .select-grid {
+        grid-template-columns: 1fr;
+      }
+      .deck-grid {
         grid-template-columns: 1fr;
       }
       .practice-strip {
@@ -856,6 +970,12 @@
       .study-card:focus-within {
         transform: none;
       }
+      /* flip becomes an instant face-swap — no rotateY, no motion-dependent meaning */
+      .flashcard-inner { transition: none !important; transform: none !important; min-height: 0; }
+      .flashcard-face { position: static; backface-visibility: visible; -webkit-backface-visibility: visible; }
+      .flashcard-back { transform: none; display: none; }
+      .flashcard.flipped .flashcard-front { display: none; }
+      .flashcard.flipped .flashcard-back { display: flex; }
     }
     @media print {
       body {
