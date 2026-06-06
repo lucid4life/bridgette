@@ -530,6 +530,19 @@
     showCard();
   }
 
+  // Readiness Check: a mixed gauntlet across all decks. Reuses the session UI but
+  // is a MEASUREMENT — it never grades Leitner boxes or re-queues misses; at the end
+  // it scores, writes progress.readiness, and counts as a study day (streak).
+  function startReadiness() {
+    var cards = buildReadiness(window.BB.data, {});
+    if (!cards.length) { renderCaughtUp(null); return; }
+    session = { kind: "readiness", queue: cards, idx: 0, baseTotal: cards.length, results: [], deckId: null, requeued: {}, correct: 0, total: 0, pendingCorrect: null };
+    $("practiceHome").hidden = true;
+    $("summaryScreen").hidden = true;
+    $("sessionScreen").hidden = false;
+    showCard();
+  }
+
   function renderCaughtUp(deckId) {
     $("practiceHome").hidden = true;
     $("sessionScreen").hidden = true;
@@ -569,7 +582,9 @@
     learn.setAttribute("href", (card.learnLink && document.getElementById(card.learnLink)) ? "#" + card.learnLink : "#start");
     // Stable denominator: the original session size. Re-shown misses are labelled
     // as quick reviews so the count never silently grows past where it started.
-    if (session.idx >= session.baseTotal) {
+    if (session.kind === "readiness") {
+      $("sessionProgress").textContent = "Readiness " + (session.idx + 1) + " of " + session.baseTotal;
+    } else if (session.idx >= session.baseTotal) {
       var rTotal = session.queue.length - session.baseTotal;
       var rNum = session.idx - session.baseTotal + 1;
       $("sessionProgress").textContent = "Quick review " + rNum + " of " + rTotal;
@@ -710,6 +725,16 @@
   }
 
   function commit(card, correct) {
+    // Readiness gauntlet: collect the result only — never touch Leitner state or re-queue.
+    if (session.kind === "readiness") {
+      session.total += 1;
+      if (correct) session.correct += 1;
+      session.results.push({ card: card, correct: correct });
+      session.idx += 1;
+      if (session.idx >= session.queue.length) finishReadiness();
+      else showCard();
+      return;
+    }
     // A re-shown (already-requeued) card is a brief practice repetition only —
     // it must NOT write Leitner state a second time (no double-grade / over-lapse).
     var isReshow = !!session.requeued[card.id];
@@ -740,6 +765,24 @@
     $("summaryWeak").textContent = weak.length
       ? "Re-queued for soon: " + weak.length + " card" + (weak.length === 1 ? "" : "s") + ". They'll resurface in Smart Review."
       : "Clean run — those cards move up a box.";
+    renderProgress();
+    session = null;
+  }
+
+  function finishReadiness() {
+    var scored = scoreReadiness(session.results);
+    var prog = recordReadiness(loadProgress(), scored, dayNumber());
+    prog.streak = updateStreak(prog.streak, dayNumber());
+    saveProgress(prog);
+    $("sessionScreen").hidden = true;
+    var s = $("summaryScreen");
+    s.hidden = false;
+    $("summaryTitle").textContent = "Readiness Check: " + scored.score + "% shift-ready";
+    $("summaryStats").textContent = scored.correct + " of " + scored.total + " correct across all decks.";
+    var weak = scored.weakAreas;
+    $("summaryWeak").textContent = weak.length
+      ? "Weak areas to drill next: " + weak.slice(0, 6).join(", ") + "."
+      : "No weak areas flagged — a strong run across the board.";
     renderProgress();
     session = null;
   }
@@ -978,6 +1021,7 @@
     loadProgress: loadProgress,
     saveProgress: saveProgress,
     init: init,
+    startReadiness: startReadiness,
     renderProgress: renderProgress,
     whyDisplay: whyDisplay
   };
