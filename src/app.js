@@ -88,8 +88,8 @@ const savedKey = "bb_calgary_saved_cards_v1";
             ${isWine && item.tenSecond ? `<div class="pair-line"><b>10-second pour</b>${escapeHtml(item.tenSecond)}</div>` : ""}
             ${isFood ? `<p><strong>Menu:</strong> ${escapeHtml(item.menu)}</p>` : ""}
             <p>${escapeHtml(item.profile || item.flavor)}</p>
-            <div class="pair-line"><b>${isWine ? "Best food pairings" : "Wine match"}</b>${escapeHtml(isWine ? joinList(item.pair) : item.wine)}</div>
-            <div class="pair-line"><b>${isWine ? "Table language" : "Cocktail / drink match"}</b>${escapeHtml(isWine ? item.say : item.cocktail)}</div>
+            <div class="pair-line"><b>${isWine ? "Best food pairings" : isFood ? "Wine match" : "Food pairings"}</b>${escapeHtml(isWine ? joinList(item.pair) : isFood ? item.wine : joinList(item.pair))}</div>
+            ${isWine || isFood ? `<div class="pair-line"><b>${isWine ? "Table language" : "Cocktail / drink match"}</b>${escapeHtml(isWine ? item.say : item.cocktail)}</div>` : ""}
             ${isFood ? `<div class="pair-line"><b>Zero-proof / beer</b>${escapeHtml(item.zero)}</div>` : ""}
             <details>
               <summary>Why it works and caveats</summary>
