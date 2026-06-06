@@ -41,12 +41,24 @@
     return s;
   }
 
+  function isDue(state, today) {
+    if (today == null) today = dayNumber();
+    return today >= state.due;
+  }
+
+  function newState(today) {
+    if (today == null) today = dayNumber();
+    return { box: 1, due: today, lastSeen: today, correct: 0, wrong: 0, consecutiveWrong: 0 };
+  }
+
   // Public API (filled in by later tasks).
   window.BB.training = {
     BOX_DUE_DAYS: BOX_DUE_DAYS,
     NEW_CAP: NEW_CAP,
     SIZE_CAP: SIZE_CAP,
     dayNumber: dayNumber,
-    grade: grade
+    grade: grade,
+    isDue: isDue,
+    newState: newState
   };
 })();

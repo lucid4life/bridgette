@@ -71,4 +71,19 @@ test("grade: does not mutate the input state", () => {
   assert.notStrictEqual(out, s);
 });
 
+test("isDue: due when today >= due day", () => {
+  assert.strictEqual(T.isDue({ due: 100 }, 100), true);
+  assert.strictEqual(T.isDue({ due: 100 }, 101), true);
+  assert.strictEqual(T.isDue({ due: 100 }, 99), false);
+});
+
+test("newState: a fresh card starts in box 1, due today", () => {
+  const s = T.newState(42);
+  assert.strictEqual(s.box, 1);
+  assert.strictEqual(s.due, 42);
+  assert.strictEqual(s.correct, 0);
+  assert.strictEqual(s.wrong, 0);
+  assert.strictEqual(s.consecutiveWrong, 0);
+});
+
 module.exports = { T, DATA };
