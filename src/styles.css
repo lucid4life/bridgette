@@ -753,6 +753,60 @@
       font-size: 14px;
     }
 
+    /* S1b: structure meters (low/medium/high) + data-driven translator */
+    .structure-meters {
+      display: grid;
+      gap: 6px;
+      margin: 10px 0;
+    }
+    .smeter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .smeter-label {
+      min-width: 84px;
+      color: var(--label-light);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .smeter-track {
+      display: inline-flex;
+      gap: 3px;
+    }
+    .smeter-seg {
+      width: 20px;
+      height: 9px;
+      border: 1px solid var(--accent-dark);
+      border-radius: 2px;
+      background: transparent;
+    }
+    .smeter-seg.on { background: var(--accent-dark); }
+    .smeter-value {
+      color: var(--ink);
+      text-transform: capitalize;
+    }
+    .smeter-value.chip {
+      border: 1px solid var(--accent-dark);
+      border-radius: 999px;
+      padding: 1px 10px;
+      font-weight: 700;
+    }
+    .smeter-note {
+      font-size: 12px;
+      color: var(--brown);
+      margin: 4px 0 0;
+    }
+    .card-body .pron { font-size: 14px; margin: 6px 0; }
+    .translator-table .say {
+      display: block;
+      margin-top: 6px;
+      color: var(--brown);
+      font-style: italic;
+    }
+
     @media (max-width: 1120px) {
       .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .mini-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
