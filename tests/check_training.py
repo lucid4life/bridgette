@@ -157,6 +157,31 @@ def main() -> int:
         seen_lessons.add(lid)
         if not str(lesson.get("title", "")).strip():
             failures.append(f"lesson {lid!r}: missing title")
+        # S3: each lesson needs a body, a worked example, and one quick check
+        if not str(lesson.get("body", "")).strip():
+            failures.append(f"lesson {lid!r}: missing body (S3)")
+        if not str(lesson.get("workedExample", "")).strip():
+            failures.append(f"lesson {lid!r}: missing workedExample (S3)")
+        qc = lesson.get("quickCheck")
+        if not isinstance(qc, dict):
+            failures.append(f"lesson {lid!r}: missing quickCheck object (S3)")
+        else:
+            if not str(qc.get("q", "")).strip():
+                failures.append(f"lesson {lid!r}: quickCheck.q is empty")
+            choices = qc.get("choices")
+            if not isinstance(choices, list) or len(choices) < 2:
+                failures.append(f"lesson {lid!r}: quickCheck.choices must have >=2 options")
+            ans = qc.get("answer")
+            if not isinstance(ans, int) or isinstance(ans, bool) or not isinstance(choices, list) or not (0 <= ans < len(choices)):
+                failures.append(f"lesson {lid!r}: quickCheck.answer must index a choice")
+
+    REQUIRED_LESSONS = {
+        "structure-words", "how-to-taste", "pairing-levers",
+        "deductive-grid", "pronunciation-primer", "talking-to-a-guest",
+    }
+    missing_lessons = REQUIRED_LESSONS - seen_lessons
+    if missing_lessons:
+        failures.append(f"missing required §10 lessons: {sorted(missing_lessons)}")
 
     # 8. food contract (S1b): structural why + flags array
     for food in data.get("foods", []):

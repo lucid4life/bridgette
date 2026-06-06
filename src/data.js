@@ -42,13 +42,83 @@ window.BB.data = {
       {ask:"House red / easy red", aliases:["house red","easy red","red wine"], bestGlass:"Bindi Sergardi La Boncia", bottleOptions:["St. John Claret"], familiar:"Easy red choices by food lane: tomato, light red, or steak red.", different:"Bindi Sergardi Sangiovese suits pizza/pasta; Deinhard Pinot Noir is the lighter red.", phrase:"Are we pairing with pizza/pasta, or something richer like steak? Then I move you to Sangiovese, Pinot, or Claret."}
     ],
   lessons: [
-      {id:"structure-words", title:"What the structure words mean"},
-      {id:"how-to-taste", title:"How to taste in four steps"},
-      {id:"pairing-levers", title:"The pairing levers (fat, salt, acid, sweet, heat, intensity)"},
-      {id:"deductive-grid", title:"A beginner deductive grid (structure clues to likely grape/style)"},
-      {id:"pronunciation-primer", title:"Pronunciation primer for these names"},
-      {id:"talking-to-a-guest", title:"Talking to a guest: Ask, Match, Explain, Confirm"},
-      {id:"common-substitutions", title:"Common guest-ask substitutions"}
+      {
+        id:"structure-words",
+        title:"What the structure words mean",
+        body:"Four words describe almost any wine: acidity, body, tannin, sweetness — and we rate each one low, medium, or high (the beginner WSET scale; skip 1–5 numbers). ACIDITY is the fresh, mouth-watering zing — Hiedler Löss Grüner and Bindi Sergardi Sangiovese are high-acid. BODY is the weight on your tongue, like skim vs. whole milk — Ameztoi Rubentis rosé is light-bodied, Bodega Cerrón Tinto is full. TANNIN is the dry, tea-like grip you feel on your gums, and it only comes from reds — Ca' del Baio Nebbiolo is high-tannin, a white like Wagner Stempel has none to speak of. SWEETNESS is sugar left in the wine; most of our list is dry, with Darting Riesling sitting off-dry.",
+        workedExample:"Take Hiedler Löss Grüner Veltliner. Acidity HIGH (it makes you salivate), body MEDIUM, tannin LOW (it's a white), sweetness DRY. That profile is why it cuts through tahini, yogurt, and green-herb dishes: the high acid does the work. Now compare Ca' del Baio Nebbiolo: acidity HIGH, body MEDIUM, tannin HIGH, dry — the tannin grip is what lets it stand up to beef and lamb.",
+        quickCheck:{
+          q:"Which by-the-glass wine has the firmest tannin — that dry, tea-like grip?",
+          choices:["Hiedler Löss Grüner Veltliner","Ca' del Baio Langhe Nebbiolo","Blue Mountain Brut"],
+          answer:1
+        }
+      },
+      {
+        id:"how-to-taste",
+        title:"How to taste in four steps",
+        body:"You don't need a special palate — you need a routine. Step 1, LOOK: note the colour and depth (pale lemon vs. deep ruby) — it hints at age and grape. Step 2, SMELL: swirl, then take a short sniff. Name two or three things — citrus, red cherry, pepper, smoke. Step 3, TASTE: take a small sip and judge the structure on your tongue — acidity (how much you salivate), body (the weight), tannin (the grip, reds only), sweetness (any sugar). Step 4, CONCLUDE: turn it into one service sentence — what is it, and what food does it want? Structure is judged in step 3; that's the step that drives pairing.",
+        workedExample:"Darting Dürkheimer Fronhof Riesling, four steps: LOOK — pale lemon. SMELL — peach, lime, a little honey. TASTE — acidity HIGH, body MEDIUM, tannin none, sweetness OFF-DRY. CONCLUDE — 'a fresh, slightly off-dry white; perfect for chili, pickle, and honey-spiced plates because the touch of sweetness tames heat.' Four steps, one usable sentence.",
+        quickCheck:{
+          q:"In the four-step routine, which step is where you judge acidity, body, and tannin?",
+          choices:["Step 1, Look","Step 2, Smell","Step 3, Taste","Step 4, Conclude"],
+          answer:2
+        }
+      },
+      {
+        id:"pairing-levers",
+        title:"The pairing levers (fat, salt, acid, sweet, heat, intensity)",
+        body:"Six WSET levers explain why a pairing works — learn the exact phrases. 1) ACIDITY CUTS FAT: a high-acid wine refreshes the palate against rich, fried, or creamy food (Blue Mountain Brut with fries). 2) TANNIN BINDS PROTEIN AND FAT: tannin softens against steak and lamb (St. John Claret or Ca' del Baio Nebbiolo with ribeye). 3) SALT SOFTENS TANNIN AND LIFTS FRUIT: salty food makes a wine taste smoother and fruitier (olives, salami). 4) SWEETNESS TAMES CHILI HEAT: an off-dry wine calms spice (Darting Riesling with Calabrian-chili dishes). 5) AVOID HIGH-TANNIN RED WITH SPICE: tannin and alcohol amplify chili burn — steer spice toward Riesling, rosé, or bubbles instead. 6) MATCH INTENSITY: light dish wants a light wine, bold dish wants a bold wine (delicate crudo → Ameztoi rosé; 26oz ribeye → Claret).",
+        workedExample:"A guest orders the Five Cheese pizza — rich, salty, fatty. Reach for lever 1 (acidity cuts fat): the bubbles and acid of Blue Mountain Brut scrub the cream off your palate. They add Fennel Salami with Calabrian chili and honey? Lever 4 (sweetness tames heat) plus lever 3 (salt lifts fruit) point you to off-dry Darting Riesling or the chilled sparkling-red Fattoria Moretto. Notice you never reached for a big tannic red — that's lever 5 protecting you from amplifying the chili.",
+        quickCheck:{
+          q:"A guest orders the spicy Italian Pork Sausage pasta with Calabrian chili. Which lever keeps the pairing safe?",
+          choices:["A high-tannin red to match the spice","Off-dry Riesling — a little sweetness tames chili heat","The biggest, highest-alcohol red on the list"],
+          answer:1
+        }
+      },
+      {
+        id:"deductive-grid",
+        title:"A beginner deductive grid (structure clues to likely grape/style)",
+        body:"Sommeliers work backwards: from what they taste to what the wine probably is. You can too, with a simple grid. Pick the clues you notice — is it white, red, rosé, or bubbly? Is the acidity low/medium/high? The body? The tannin? Any sweetness? — and the grid points you to the wines on THIS list that fit. It's not magic; it's matching structure to style. Use the tool below the lesson: choose a clue or two, hit reveal, and see the most likely grape and the exact by-the-glass wine. The more clues you set, the tighter the match.",
+        workedExample:"You taste a white: HIGH acidity, LOW tannin, light-to-medium body, dry, with a white-pepper snap. Set those clues in the grid (Colour: White, Acidity: high, Tannin: low) and it surfaces Grüner Veltliner — Hiedler Löss — as the top match. Switch Colour to Red and Tannin to high, and the same logic lands you on Nebbiolo — Ca' del Baio Langhe. Structure clues in, likely grape out.",
+        quickCheck:{
+          q:"You taste a white with high acidity, low tannin, and a white-pepper snap. On this list it's most likely…",
+          choices:["Grüner Veltliner (Hiedler Löss)","Nebbiolo (Ca' del Baio)","Monastrell (Bodega Cerrón Tinto)"],
+          answer:0
+        }
+      },
+      {
+        id:"pronunciation-primer",
+        title:"Pronunciation primer for these names",
+        body:"A few sounds unlock most of our list — and the respelling on each wine card is always your authority (the speak button is just a backup). GERMAN: 'ö' is a rounded 'ur' sound — Löss is 'LURSS', not 'loss'; 'ei' sounds like 'eye' (Leitz = 'LITES'); 'w' sounds like 'v' (Weissburgunder = 'VICE-boor-goon-der'). ITALIAN: 'ch' is a hard 'k' (Ca' del Baio = 'kah del BY-oh'); every vowel is pronounced. SPANISH: 'rr' is rolled and 'll' is a 'y' (Cerrón = 'seh-RROHN', Gallina = 'gah-YEE-nah'). FRENCH/BASQUE: final consonants often go silent, and Rubentis is Basque ('roo-BEN-tees'). When unsure, read the respelling slowly and land the CAPITALISED syllable hardest.",
+        workedExample:"Hiedler Löss. Ignore the spelling and read the respelling: HEED-ler LURSS. 'Hied' → 'HEED' (German 'ie' = 'ee'), and 'Löss' → 'LURSS' (round your lips, say 'ur', add 'ss'). Stress the capitals: HEED-ler. Say it twice out loud and it'll stick — and if a guest looks unsure, the respelling is what you trust, not the printed name.",
+        quickCheck:{
+          q:"How do you say the 'ö' in Hiedler Löss (respelled HEED-ler LURSS)?",
+          choices:["Like 'oss' in 'toss'","Like 'urss' — round your lips and say 'ur'","Like 'oh' in 'go'"],
+          answer:1
+        }
+      },
+      {
+        id:"talking-to-a-guest",
+        title:"Talking to a guest: Ask, Match, Explain, Confirm",
+        body:"A confident recommendation is a four-beat rhythm. ASK: find the lane first — 'Are you thinking crisp and fresh, something richer, a red, or a cocktail?' Let the guest narrow it. MATCH: use the dish — its weight, salt, fat, spice, and sauce — to pick the drink, not a memorised list. EXPLAIN: give ONE reason, a structural one — 'the acidity cuts the fat' or 'a touch of sweetness calms the chili.' One reason sounds expert; three sounds nervous. CONFIRM: close the loop on anything that matters — sweetness level, allergies, a raw item, or a premium bottle option — only when relevant. Ask, Match, Explain, Confirm: it works at every table.",
+        workedExample:"Table orders the 26oz Ribeye. ASK: 'Red drinker? Big and structured, or smoother?' MATCH: ribeye is heavy, fatty, charred — it wants tannin and weight. EXPLAIN: 'I'd pour the St. John Claret; its tannin binds the beef fat and resets your palate between bites.' CONFIRM: 'If you want to build the table around a bottle, the White Rock Cabernet is the upgrade.' Four beats, no rambling — and every beat maps to a lever you already know.",
+        quickCheck:{
+          q:"In Ask → Match → Explain → Confirm, what belongs in the 'Explain' beat?",
+          choices:["List every ingredient in the wine","One structural reason — e.g. 'the acidity cuts the fat'","The price of every bottle on the list"],
+          answer:1
+        }
+      },
+      {
+        id:"common-substitutions",
+        title:"Common guest-ask substitutions",
+        body:"Most guests ask for a grape we don't pour by the glass — so anchor, don't apologise: 'We don't have that exact glass, but I can put you in the same lane.' The big ones: SAUVIGNON BLANC → Hiedler Löss Grüner (crisp, high-acid; less grassy, more white-pepper). PINOT GRIGIO → Wagner Stempel Pinot Blanc (soft, pear, easy). CHARDONNAY → Bodega Cerrón Blanco (the rounder white). CABERNET / MERLOT / BORDEAUX → St. John Claret (the safe steak red). MALBEC / SHIRAZ → Bodega Cerrón Tinto (dark, full, smoky). CHIANTI → Bindi Sergardi Sangiovese (exact lane). PROSECCO / CHAMPAGNE → Blue Mountain Brut. The full translator table lives in the Wine Guide; these seven cover most of the floor.",
+        workedExample:"Guest: 'Do you have a Sauvignon Blanc?' You: 'Not that exact grape by the glass, but the Hiedler Löss Grüner Veltliner is the same crisp, high-acid lane — a little less grassy, with a white-pepper note instead. If you want the real grape, our Sancerre is the bottle.' You anchored to the lane, named the glass, gave one point of difference, and offered the bottle upgrade — exactly what the Translator deck drills.",
+        quickCheck:{
+          q:"A guest asks for Sauvignon Blanc. Your by-the-glass move is…",
+          choices:["Hiedler Löss Grüner Veltliner","St. John Claret","Bodega Cerrón Remordimiento Tinto"],
+          answer:0
+        }
+      }
     ],
   foods: [
       {id:"french-fries", name:"French Fries", group:"food", category:"Snacks", price:"9", menu:"Garlic Aioli", flavor:"salty, crisp, creamy aioli", wine:"Blue Mountain Brut", cocktail:"Spicy Sandia", zero:"Freixenet Sparkling Wine or Ol' Beautiful Okami Kasu Japanese Lager", why:"Salt and fried fat want high acid and bubbles to scrub the palate clean (acid cuts fat; bubbles refresh).", flags:["garlic aioli","confirm fryer details"], tags:["food","fries","salt","safe"]},
