@@ -286,4 +286,42 @@ test("importProgress: rejects malformed JSON by returning null", () => {
   assert.strictEqual(T.importProgress(JSON.stringify({ nope: true }), new Set()), null);
 });
 
+// --- code-review fixes ---
+
+test("gradeTyped: rejects a verbose answer that merely embeds the target word(s)", () => {
+  assert.strictEqual(T.gradeTyped({ answer: "Merlot", aliases: [] }, "cabernet merlot syrah whatever"), false);
+  assert.strictEqual(T.gradeTyped({ answer: "Riesling", aliases: [] }, "this is probably the riesling i think"), false);
+});
+
+test("gradeTyped: still accepts the answer with a single extra qualifier word", () => {
+  assert.strictEqual(T.gradeTyped({ answer: "Riesling", aliases: [] }, "german riesling"), true);
+});
+
+test("migrateProgress: normalizes a partial card state so it stays schedulable (no missing due)", () => {
+  const clean = T.migrateProgress({ cards: { "x:y:z": { box: 3 } } }, new Set(["x:y:z"]));
+  const st = clean.cards["x:y:z"];
+  assert.strictEqual(typeof st.due, "number");
+  assert.strictEqual(typeof st.lastSeen, "number");
+  assert.strictEqual(st.correct, 0);
+  assert.strictEqual(st.wrong, 0);
+  assert.strictEqual(st.consecutiveWrong, 0);
+  assert.strictEqual(st.box, 3);
+  assert.strictEqual(typeof T.isDue(st, 999999), "boolean");
+});
+
+test("migrateProgress: clamps an out-of-range box into 1..5", () => {
+  const clean = T.migrateProgress({ cards: { "a:b:c": { box: 99 }, "d:e:f": { box: 0 } } }, new Set(["a:b:c", "d:e:f"]));
+  assert.ok(clean.cards["a:b:c"].box >= 1 && clean.cards["a:b:c"].box <= 5);
+  assert.ok(clean.cards["d:e:f"].box >= 1 && clean.cards["d:e:f"].box <= 5);
+});
+
+test("exportProgress: does not mutate the input progress object", () => {
+  const p = emptyProgress();
+  const card = T.generateDeck("structure", DATA)[0];
+  const withState = T.recordResult(p, card, true, 1000);
+  const before = JSON.stringify(withState);
+  T.exportProgress(withState);
+  assert.strictEqual(JSON.stringify(withState), before, "exportProgress mutated its input");
+});
+
 module.exports = { T, DATA };

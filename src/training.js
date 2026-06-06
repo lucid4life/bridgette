@@ -73,10 +73,13 @@
       var inTokens = norm.split(" ");
       var covered = inTokens.length > 0 && inTokens.every(function (t) { return targetTokens[t]; });
       if (covered && (inTokens.length >= 2 || Object.keys(targetTokens).length === 1)) return true;
-      // reverse: learner typed a superset that contains the full short target
+      // reverse: learner typed the full target plus at most one extra qualifier word
+      // (bounded so a verbose/wrong answer that merely embeds the target is rejected)
       var allInputTokens = tokenSet(norm);
-      var targetCovered = target.split(" ").every(function (t) { return allInputTokens[t]; });
-      if (targetCovered) return true;
+      var targetToks = target.split(" ");
+      var inputLen = inTokens.length;
+      var targetCovered = targetToks.every(function (t) { return allInputTokens[t]; });
+      if (targetCovered && (inputLen - targetToks.length) <= 1) return true;
     }
     return false;
   }
@@ -324,13 +327,32 @@
   var STORAGE_KEY = "bb_progress_v1";
   var SCHEMA = 1;
 
+  // Coerce a (possibly partial / hand-edited / older-schema) card state into a
+  // valid, schedulable shape so it can never silently disappear (missing `due`)
+  // or corrupt the engine (out-of-range box).
+  function normalizeCardState(s, today) {
+    s = s || {};
+    var box = Math.round(Number(s.box));
+    if (!isFinite(box)) box = 1;
+    box = clampBox(box);
+    var due = Number(s.due); if (!isFinite(due)) due = today;
+    var lastSeen = Number(s.lastSeen); if (!isFinite(lastSeen)) lastSeen = today;
+    return {
+      box: box, due: due, lastSeen: lastSeen,
+      correct: Number(s.correct) || 0,
+      wrong: Number(s.wrong) || 0,
+      consecutiveWrong: Number(s.consecutiveWrong) || 0
+    };
+  }
+
   function migrateProgress(raw, validIds) {
     var base = defaultProgressShape();
     if (!raw || typeof raw !== "object") return base;
     base.schema = SCHEMA;
+    var today = dayNumber();
     if (raw.cards && typeof raw.cards === "object") {
       Object.keys(raw.cards).forEach(function (id) {
-        if (!validIds || validIds.has(id)) base.cards[id] = raw.cards[id];
+        if (!validIds || validIds.has(id)) base.cards[id] = normalizeCardState(raw.cards[id], today);
       });
     }
     if (raw.streak && typeof raw.streak === "object") {
@@ -385,8 +407,9 @@
 
   function exportProgress(progress) {
     if (!progress) progress = loadProgress();
-    recomputeMastery(progress, window.BB && window.BB.data);
-    return JSON.stringify(progress, null, 2);
+    var snap = JSON.parse(JSON.stringify(progress)); // never mutate the caller's object
+    recomputeMastery(snap, window.BB && window.BB.data);
+    return JSON.stringify(snap, null, 2);
   }
 
   function importProgress(json, validIds) {
@@ -419,7 +442,7 @@
   function startSession(deckId) {
     var cards = buildSession(deckId, {});
     if (!cards.length) { renderCaughtUp(deckId); return; }
-    session = { queue: cards, idx: 0, results: [], deckId: deckId, requeued: {}, correct: 0, total: 0, pendingCorrect: null };
+    session = { queue: cards, idx: 0, baseTotal: cards.length, results: [], deckId: deckId, requeued: {}, correct: 0, total: 0, pendingCorrect: null };
     $("practiceHome").hidden = true;
     $("summaryScreen").hidden = true;
     $("sessionScreen").hidden = false;
@@ -450,6 +473,7 @@
     session.pendingCorrect = null;
     var flashcard = $("flashcard");
     flashcard.classList.remove("flipped");
+    setActiveFace(false);
     $("frontDeck").textContent = (DECKS[card.deck] ? DECKS[card.deck].label : card.deck) + " · box " + box;
     $("cardPrompt").textContent = card.prompt;
     $("cardAnswer").textContent = card.answer;
@@ -459,7 +483,15 @@
     // learnLink: deep-link to the lesson section if it exists (S3), else the fundamentals Start section.
     var learn = $("cardLearnLink");
     learn.setAttribute("href", (card.learnLink && document.getElementById(card.learnLink)) ? "#" + card.learnLink : "#start");
-    $("sessionProgress").textContent = "Card " + (session.idx + 1) + " of " + session.queue.length;
+    // Stable denominator: the original session size. Re-shown misses are labelled
+    // as quick reviews so the count never silently grows past where it started.
+    if (session.idx >= session.baseTotal) {
+      var rTotal = session.queue.length - session.baseTotal;
+      var rNum = session.idx - session.baseTotal + 1;
+      $("sessionProgress").textContent = "Quick review " + rNum + " of " + rTotal;
+    } else {
+      $("sessionProgress").textContent = "Card " + (session.idx + 1) + " of " + session.baseTotal;
+    }
     buildQuiz(card, mode);
     buildGradeRow(card, mode);
     $("cardPrompt").focus();
@@ -547,7 +579,12 @@
     });
     announce(correct);
     session.pendingCorrect = correct;
-    setTimeout(function () { flip(true); }, prefersReducedMotion() ? 0 : 220);
+    // Defer the reveal slightly so the right/wrong colours register — but guard
+    // against the session being ended/replaced during the delay.
+    var snapSession = session, snapCard = card;
+    setTimeout(function () {
+      if (session === snapSession && session.queue[session.idx] === snapCard && !$("sessionScreen").hidden) flip(true);
+    }, prefersReducedMotion() ? 0 : 220);
   }
 
   function submitTyped(card) {
@@ -564,28 +601,44 @@
     f.className = "feedback " + (correct ? "ok" : "no");
   }
 
+  // Keep the inactive face out of the tab order AND the accessibility tree while
+  // it is only visually hidden by backface-visibility (animated path).
+  function setActiveFace(flipped) {
+    var front = document.querySelector(".flashcard-front");
+    var back = document.querySelector(".flashcard-back");
+    if (front) front.inert = !!flipped;
+    if (back) back.inert = !flipped;
+  }
+
   function flip(toBack) {
     var fc = $("flashcard");
+    if (toBack) fc.classList.add("flipped"); else fc.classList.remove("flipped");
+    setActiveFace(toBack);
     if (toBack) {
-      fc.classList.add("flipped");
-      var got = $("gradeRow").querySelector(".btn.primary");
-      if (got) got.focus();
+      // Focus (and thereby announce) the revealed answer so screen-reader users
+      // hear what they are self-grading; the "why" is linked via aria-describedby.
+      var ans = $("cardAnswer");
+      if (ans) ans.focus();
     } else {
-      fc.classList.remove("flipped");
+      var prompt = $("cardPrompt");
+      if (prompt) prompt.focus();
     }
   }
 
   function commit(card, correct) {
-    var p = loadProgress();
-    var next = recordResult(p, card, correct, dayNumber());
-    saveProgress(next);
-    session.total += 1;
-    if (correct) session.correct += 1;
-    session.results.push({ id: card.id, correct: correct, deck: card.deck });
-    // gentle same-session re-show on a miss (once)
-    if (!correct && !session.requeued[card.id]) {
-      session.requeued[card.id] = true;
-      session.queue.push(card);
+    // A re-shown (already-requeued) card is a brief practice repetition only —
+    // it must NOT write Leitner state a second time (no double-grade / over-lapse).
+    var isReshow = !!session.requeued[card.id];
+    if (!isReshow) {
+      saveProgress(recordResult(loadProgress(), card, correct, dayNumber()));
+      session.total += 1;
+      if (correct) session.correct += 1;
+      session.results.push({ id: card.id, correct: correct, deck: card.deck });
+      // gentle same-session re-show on a miss (once)
+      if (!correct) {
+        session.requeued[card.id] = true;
+        session.queue.push(card);
+      }
     }
     session.idx += 1;
     if (session.idx >= session.queue.length) finishSession();
@@ -733,6 +786,7 @@
   }
   function doImport(file) {
     var reader = new FileReader();
+    reader.onerror = function () { setIoStatus("Import failed — couldn't read that file."); };
     reader.onload = function () {
       var imported = importProgress(String(reader.result), validIdSet());
       if (!imported) { setIoStatus("Import failed — that file isn't valid progress JSON."); return; }
@@ -789,6 +843,7 @@
     var imp = $("importProgress"); if (imp) imp.addEventListener("click", function () { $("importFile").click(); });
     var impFile = $("importFile"); if (impFile) impFile.addEventListener("change", function (e) {
       if (e.target.files && e.target.files[0]) doImport(e.target.files[0]);
+      e.target.value = ""; // allow re-selecting the same file to re-trigger import
     });
     document.addEventListener("keydown", onKeydown);
   }
