@@ -63,6 +63,7 @@ const savedKey = "bb_calgary_saved_cards_v1";
       const text = escapeHtml(tokenText(item));
       const isWine = type === "wine";
       const isFood = type === "food";
+      const isCocktail = type === "cocktail";
       const caveat = joinList(item.flags) || item.avoid || item.caveat || "Confirm with the team if unsure.";
       const lead = isWine
         ? item.say
@@ -87,7 +88,9 @@ const savedKey = "bb_calgary_saved_cards_v1";
             ${isWine ? structureMeters(item.structure, item.structureNote) : ""}
             ${isWine && item.tenSecond ? `<div class="pair-line"><b>10-second pour</b>${escapeHtml(item.tenSecond)}</div>` : ""}
             ${isFood ? `<p><strong>Menu:</strong> ${escapeHtml(item.menu)}</p>` : ""}
-            <p>${escapeHtml(item.profile || item.flavor)}</p>
+            ${isCocktail
+              ? `<p><strong>Profile:</strong> ${escapeHtml(item.profile || "")}</p>`
+              : `<p>${escapeHtml(item.profile || item.flavor || "")}</p>`}
             <div class="pair-line"><b>${isWine ? "Best food pairings" : isFood ? "Wine match" : "Food pairings"}</b>${escapeHtml(isWine ? joinList(item.pair) : isFood ? item.wine : joinList(item.pair))}</div>
             ${isWine || isFood ? `<div class="pair-line"><b>${isWine ? "Table language" : "Cocktail / drink match"}</b>${escapeHtml(isWine ? item.say : item.cocktail)}</div>` : ""}
             ${isFood ? `<div class="pair-line"><b>Zero-proof / beer</b>${escapeHtml(item.zero)}</div>` : ""}
