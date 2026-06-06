@@ -213,6 +213,43 @@ def main() -> int:
         if info["dupes"]:
             failures.append(f"duplicate card ids: {sorted(set(info['dupes']))[:5]}")
 
+    # 9b. per-deck >=1 card + correct answer keys (MC: answer in unique choices) + Readiness Check
+    deck_snippet = (
+        "global.window={};const fs=require('fs');"
+        f"eval(fs.readFileSync({json.dumps(str(DATA))},'utf8'));"
+        f"eval(fs.readFileSync({json.dumps(str(SRC / 'training.js'))},'utf8'));"
+        "const T=global.window.BB.training;const D=global.window.BB.data;"
+        "const ids=Object.keys(T.DECKS);const perDeck={};const badKeys=[];"
+        "ids.forEach(function(id){var cs=T.generateDeck(id,D);perDeck[id]=cs.length;"
+        "cs.forEach(function(c){if(c.choices){if(c.choices.indexOf(c.answer)===-1||"
+        "new Set(c.choices).size!==c.choices.length)badKeys.push(c.id);}});});"
+        "const r=T.buildReadiness(D,{perDeck:3});"
+        "const rDecks=Array.from(new Set(r.map(function(c){return c.deck;})));"
+        "const scored=T.scoreReadiness(r.map(function(c,i){return {card:c,correct:i%2===0};}));"
+        "const rec=T.recordReadiness(T.defaultProgress(),scored,1000);"
+        "process.stdout.write(JSON.stringify({perDeck:perDeck,badKeys:badKeys,rN:r.length,"
+        "rDecks:rDecks,hasReadiness:!!(rec.readiness&&typeof rec.readiness.lastScore==='number'),"
+        "weakIsArray:Array.isArray(scored.weakAreas)}));"
+    )
+    deck = subprocess.run(["node", "-e", deck_snippet], capture_output=True, text=True)
+    if deck.returncode != 0:
+        failures.append("deck/readiness assertions failed under Node:\n" + deck.stderr)
+    else:
+        info = json.loads(deck.stdout)
+        for did, n in info["perDeck"].items():
+            if n < 1:
+                failures.append(f"deck {did} generated 0 cards")
+        if info["badKeys"]:
+            failures.append(f"MC cards whose choices omit/duplicate the answer: {info['badKeys'][:5]}")
+        if info["rN"] < 1:
+            failures.append("buildReadiness produced no cards")
+        if len(info["rDecks"]) < len(info["perDeck"]):
+            failures.append(f"Readiness sample missing decks: got {sorted(info['rDecks'])}")
+        if not info["hasReadiness"]:
+            failures.append("recordReadiness did not write a numeric readiness.lastScore")
+        if not info["weakIsArray"]:
+            failures.append("scoreReadiness.weakAreas is not an array")
+
     # 4. bundler byte-sync: dist must equal a fresh build
     if not DIST.exists():
         failures.append(f"missing built bundle {DIST} (run `python build_single_file.py`)")
