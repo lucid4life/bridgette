@@ -13,7 +13,47 @@ const savedKey = "bb_calgary_saved_cards_v1";
     }
 
     function tokenText(item) {
-      return Object.values(item).flat().join(" ").toLowerCase();
+      const out = [];
+      const walk = value => {
+        if (value == null) return;
+        if (Array.isArray(value)) value.forEach(walk);
+        else if (typeof value === "object") Object.values(value).forEach(walk);
+        else out.push(String(value));
+      };
+      walk(item);
+      return out.join(" ").toLowerCase();
+    }
+
+    function joinList(value) {
+      return Array.isArray(value) ? value.join(", ") : (value == null ? "" : String(value));
+    }
+
+    function structureText(structure) {
+      if (!structure || typeof structure !== "object") return joinList(structure);
+      const parts = [];
+      if (structure.acidity) parts.push(structure.acidity + " acidity");
+      if (structure.body) parts.push(structure.body + " body");
+      if (structure.tannin) parts.push(structure.tannin + " tannin");
+      if (structure.sweetness) parts.push(structure.sweetness);
+      return parts.join(", ");
+    }
+
+    function structureMeters(structure, note) {
+      if (!structure || typeof structure !== "object") return "";
+      const levels = {low: 1, medium: 2, high: 3};
+      const row = (label, value) => {
+        const filled = levels[value] || 0;
+        const segs = [1, 2, 3].map(i => `<span class="smeter-seg${i <= filled ? " on" : ""}" aria-hidden="true"></span>`).join("");
+        return `<div class="smeter" role="img" aria-label="${escapeHtml(label)}: ${escapeHtml(value || "not rated")}">
+          <span class="smeter-label">${escapeHtml(label)}</span>
+          <span class="smeter-track">${segs}</span>
+          <span class="smeter-value">${escapeHtml(value || "")}</span></div>`;
+      };
+      const sweet = structure.sweetness
+        ? `<div class="smeter"><span class="smeter-label">Sweetness</span><span class="smeter-value chip">${escapeHtml(structure.sweetness)}</span></div>`
+        : "";
+      const noteHtml = note ? `<p class="smeter-note">≈ ${escapeHtml(note)}</p>` : "";
+      return `<div class="structure-meters" aria-label="Structure, low to high">${row("Acidity", structure.acidity)}${row("Body", structure.body)}${row("Tannin", structure.tannin)}${sweet}</div>${noteHtml}`;
     }
 
     function renderCard(item, type) {
@@ -23,7 +63,7 @@ const savedKey = "bb_calgary_saved_cards_v1";
       const text = escapeHtml(tokenText(item));
       const isWine = type === "wine";
       const isFood = type === "food";
-      const caveat = item.flags || item.avoid || item.caveat || "Confirm with the team if unsure.";
+      const caveat = joinList(item.flags) || item.avoid || item.caveat || "Confirm with the team if unsure.";
       const lead = isWine
         ? item.say
         : isFood
@@ -43,14 +83,17 @@ const savedKey = "bb_calgary_saved_cards_v1";
             <div class="confirm-line"><b>Confirm</b>${escapeHtml(caveat)}</div>
             <div class="badge-row">${tags}</div>
             ${isWine ? `<p><strong>${escapeHtml(item.grape)}</strong><br>${escapeHtml(item.region)}</p>` : ""}
+            ${isWine && item.pronunciation ? `<p class="pron"><strong>Say it:</strong> ${escapeHtml(item.pronunciation.respell)}</p>` : ""}
+            ${isWine ? structureMeters(item.structure, item.structureNote) : ""}
+            ${isWine && item.tenSecond ? `<div class="pair-line"><b>10-second pour</b>${escapeHtml(item.tenSecond)}</div>` : ""}
             ${isFood ? `<p><strong>Menu:</strong> ${escapeHtml(item.menu)}</p>` : ""}
             <p>${escapeHtml(item.profile || item.flavor)}</p>
-            <div class="pair-line"><b>${isWine ? "Best food pairings" : "Wine match"}</b>${escapeHtml(isWine ? item.pair : item.wine)}</div>
+            <div class="pair-line"><b>${isWine ? "Best food pairings" : "Wine match"}</b>${escapeHtml(isWine ? joinList(item.pair) : item.wine)}</div>
             <div class="pair-line"><b>${isWine ? "Table language" : "Cocktail / drink match"}</b>${escapeHtml(isWine ? item.say : item.cocktail)}</div>
             ${isFood ? `<div class="pair-line"><b>Zero-proof / beer</b>${escapeHtml(item.zero)}</div>` : ""}
             <details>
               <summary>Why it works and caveats</summary>
-              <p>${escapeHtml(item.why || item.structure || "")}</p>
+              <p>${escapeHtml(item.why || structureText(item.structure) || "")}</p>
               <p><strong>Caveat:</strong> ${escapeHtml(caveat)}</p>
               ${isWine ? `<p><strong>Bottle lane:</strong> ${escapeHtml(item.upgrade)}</p>` : ""}
             </details>
@@ -90,6 +133,31 @@ const savedKey = "bb_calgary_saved_cards_v1";
       document.getElementById("beerZero").innerHTML = window.BB.data.beerZero.join("");
     }
 
+    function renderTranslator() {
+      const container = document.getElementById("translatorTable");
+      if (!container) return;
+      const rows = window.BB.data.translator.map(item => `
+        <tr>
+          <th scope="row">${escapeHtml(item.ask)}</th>
+          <td><strong>${escapeHtml(item.bestGlass)}</strong></td>
+          <td>${escapeHtml(joinList(item.bottleOptions))}</td>
+          <td>${escapeHtml(item.familiar)}</td>
+          <td>${escapeHtml(item.different)} <span class="say">Say: "${escapeHtml(item.phrase)}"</span></td>
+        </tr>`).join("");
+      container.innerHTML = `
+        <caption>Use this table when a guest asks for a common varietal and the Calgary list uses a more niche wine.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Guest asks for</th>
+            <th scope="col">Best Bridgette answer</th>
+            <th scope="col">Second or bottle option</th>
+            <th scope="col">What feels familiar</th>
+            <th scope="col">What feels different / phrase</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>`;
+    }
+
     function renderMatrix() {
       const rows = window.BB.data.foods.filter(item => ["Small Plates","Pizza","Pasta","Main","Dessert","Vegetables"].includes(item.category)).map(item => `
         <tr>
@@ -120,9 +188,10 @@ const savedKey = "bb_calgary_saved_cards_v1";
           label: "Wine Talk",
           prompt: `Describe ${wine.name} without sounding like a textbook.`,
           lines: [
-            ["Style", `${wine.grape}; ${wine.structure}`],
+            ["Say it", wine.pronunciation ? wine.pronunciation.respell : ""],
+            ["Style", `${wine.grape}; ${structureText(wine.structure)}`],
             ["Table phrase", wine.say],
-            ["Best pairings", wine.pair],
+            ["Best pairings", joinList(wine.pair)],
             ["Confirm", wine.avoid],
             ["Bottle lane", wine.upgrade]
           ]
@@ -147,7 +216,7 @@ const savedKey = "bb_calgary_saved_cards_v1";
           label: "Safety Check",
           prompt: `What needs confirming before recommending ${item.name}?`,
           lines: [
-            ["Confirm", item.flags || item.caveat || item.avoid || "Confirm availability and details with the team."],
+            ["Confirm", joinList(item.flags) || item.caveat || item.avoid || "Confirm availability and details with the team."],
             ["Service move", "Name the caveat calmly, then offer a nearby safe lane if needed."],
             ["Pairing note", item.wine || item.pair || item.say || "Use the main card for the best pairing lane."]
           ],
@@ -233,7 +302,7 @@ const savedKey = "bb_calgary_saved_cards_v1";
         <div class="result-item"><strong>Bottle lane</strong><br>${escapeHtml(rec.bottle)}</div>
         <div class="result-item"><strong>Cocktail</strong><br>${escapeHtml(rec.cocktail)}</div>
         <div class="result-item"><strong>Zero-proof / beer</strong><br>${escapeHtml(rec.zero)}</div>
-        <div class="result-item"><strong>Caveat</strong><br>${escapeHtml(food.flags)}</div>
+        <div class="result-item"><strong>Caveat</strong><br>${escapeHtml(joinList(food.flags))}</div>
       `;
     }
 
@@ -341,6 +410,7 @@ const savedKey = "bb_calgary_saved_cards_v1";
       renderWine();
       renderFood();
       renderCocktails();
+      renderTranslator();
       renderMatrix();
       populateSelects();
       bindEvents();
