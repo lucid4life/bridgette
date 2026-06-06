@@ -437,6 +437,16 @@
     return "typed";
   }
 
+  // Guidance scaffolding that fades as expertise grows (worked-example /
+  // expertise-reversal effect, spec §3): boxes 1-2 get a labelled "Worked example"
+  // (pronounce cards get a "Memory hook"), 3-4 a lighter "Why it works", and at
+  // box 5 (production) the explanation is removed entirely. Pure → unit-tested.
+  function whyDisplay(card, box) {
+    if (box >= 5 || !card.why) return { label: "", text: "" };
+    var label = card.kind === "pronounce" ? "Memory hook" : (box <= 2 ? "Worked example" : "Why it works");
+    return { label: label, text: card.why };
+  }
+
   var session = null; // { queue, idx, results, deckId, requeued, correct, total, pendingCorrect }
 
   function startSession(deckId) {
@@ -477,7 +487,10 @@
     $("frontDeck").textContent = (DECKS[card.deck] ? DECKS[card.deck].label : card.deck) + " · box " + box;
     $("cardPrompt").textContent = card.prompt;
     $("cardAnswer").textContent = card.answer;
-    $("cardWhy").textContent = card.why || "";
+    var wd = whyDisplay(card, box);
+    var whyLabel = $("cardWhyLabel"), whyText = $("cardWhy");
+    if (whyLabel) { whyLabel.textContent = wd.label; whyLabel.hidden = !wd.label; }
+    whyText.textContent = wd.text; whyText.hidden = !wd.text;
     var fb = $("cardFeedback");
     fb.textContent = ""; fb.className = "feedback";
     // learnLink: deep-link to the lesson section if it exists (S3), else the fundamentals Start section.
@@ -891,6 +904,7 @@
     loadProgress: loadProgress,
     saveProgress: saveProgress,
     init: init,
-    renderProgress: renderProgress
+    renderProgress: renderProgress,
+    whyDisplay: whyDisplay
   };
 })();

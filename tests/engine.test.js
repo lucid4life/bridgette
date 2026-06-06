@@ -315,6 +315,27 @@ test("migrateProgress: clamps an out-of-range box into 1..5", () => {
   assert.ok(clean.cards["d:e:f"].box >= 1 && clean.cards["d:e:f"].box <= 5);
 });
 
+test("whyDisplay: box 1-2 labels the explanation as a Worked example, box 3-4 as Why it works, box 5 fades it", () => {
+  const recall = { kind: "recall", why: "acid cuts fat" };
+  assert.deepStrictEqual(T.whyDisplay(recall, 1), { label: "Worked example", text: "acid cuts fat" });
+  assert.deepStrictEqual(T.whyDisplay(recall, 2), { label: "Worked example", text: "acid cuts fat" });
+  assert.deepStrictEqual(T.whyDisplay(recall, 3), { label: "Why it works", text: "acid cuts fat" });
+  assert.deepStrictEqual(T.whyDisplay(recall, 4), { label: "Why it works", text: "acid cuts fat" });
+  assert.deepStrictEqual(T.whyDisplay(recall, 5), { label: "", text: "" }); // faded at expert/production level
+});
+
+test("whyDisplay: pronounce cards show a Memory hook, also faded at box 5", () => {
+  const p = { kind: "pronounce", why: "Löss = loess = chalky-crisp" };
+  assert.deepStrictEqual(T.whyDisplay(p, 1), { label: "Memory hook", text: "Löss = loess = chalky-crisp" });
+  assert.deepStrictEqual(T.whyDisplay(p, 4), { label: "Memory hook", text: "Löss = loess = chalky-crisp" });
+  assert.deepStrictEqual(T.whyDisplay(p, 5), { label: "", text: "" });
+});
+
+test("whyDisplay: a card with no why is hidden at every box", () => {
+  assert.deepStrictEqual(T.whyDisplay({ kind: "recall", why: "" }, 1), { label: "", text: "" });
+  assert.deepStrictEqual(T.whyDisplay({ kind: "pronounce" }, 2), { label: "", text: "" });
+});
+
 test("exportProgress: does not mutate the input progress object", () => {
   const p = emptyProgress();
   const card = T.generateDeck("structure", DATA)[0];
