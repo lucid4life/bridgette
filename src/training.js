@@ -264,9 +264,18 @@
       settings: { difficulty: "adaptive", audio: true }
     };
   }
-  // Real localStorage-backed version is installed in the storage shell below.
-  function loadProgress() { return defaultProgressShape(); }
-  function saveProgress() { /* upgraded by the storage shell */ }
+  // localStorage-backed persistence (file://-safe; degrades silently if denied/quota).
+  function validIdSet() { return new Set(allCards(window.BB.data).map(function (c) { return c.id; })); }
+  function loadProgress() {
+    if (typeof localStorage === "undefined") return defaultProgressShape();
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { raw = null; }
+    return migrateProgress(raw, validIdSet());
+  }
+  function saveProgress(progress) {
+    if (typeof localStorage === "undefined") return;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch (e) { /* ignore */ }
+  }
 
   function shuffle(arr, rng) {
     var a = arr.slice();
@@ -413,6 +422,8 @@
     recomputeMastery: recomputeMastery,
     recordResult: recordResult,
     exportProgress: exportProgress,
-    importProgress: importProgress
+    importProgress: importProgress,
+    loadProgress: loadProgress,
+    saveProgress: saveProgress
   };
 })();

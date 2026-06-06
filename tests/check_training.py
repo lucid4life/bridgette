@@ -166,6 +166,28 @@ def main() -> int:
         if not isinstance(food.get("flags"), list):
             failures.append(f"food {fid}: flags must be an array")
 
+    # 9. S2 engine: every deck generates >=1 card with non-empty prompt+answer, unique ids
+    gen_snippet = (
+        "global.window={};const fs=require('fs');"
+        f"eval(fs.readFileSync({json.dumps(str(DATA))},'utf8'));"
+        f"eval(fs.readFileSync({json.dumps(str(SRC / 'training.js'))},'utf8'));"
+        "const T=global.window.BB.training;const cards=T.allCards(global.window.BB.data);"
+        "const bad=cards.filter(c=>!c.prompt||!c.prompt.trim()||!c.answer||!c.answer.trim());"
+        "const ids=cards.map(c=>c.id);const dupes=ids.filter((id,i)=>ids.indexOf(id)!==i);"
+        "process.stdout.write(JSON.stringify({n:cards.length,bad:bad.map(c=>c.id),dupes:dupes}));"
+    )
+    gen = subprocess.run(["node", "-e", gen_snippet], capture_output=True, text=True)
+    if gen.returncode != 0:
+        failures.append("training.js failed to generate decks under Node:\n" + gen.stderr)
+    else:
+        info = json.loads(gen.stdout)
+        if info["n"] < 1:
+            failures.append("training.js generated zero cards")
+        if info["bad"]:
+            failures.append(f"cards with empty prompt/answer: {info['bad'][:5]}")
+        if info["dupes"]:
+            failures.append(f"duplicate card ids: {sorted(set(info['dupes']))[:5]}")
+
     # 4. bundler byte-sync: dist must equal a fresh build
     if not DIST.exists():
         failures.append(f"missing built bundle {DIST} (run `python build_single_file.py`)")
