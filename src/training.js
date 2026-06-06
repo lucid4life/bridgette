@@ -396,6 +396,217 @@
     return migrateProgress(raw, validIds);
   }
 
+  // ---------------- Practice UI (DOM-guarded) ----------------
+  function esc(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c];
+    });
+  }
+  function $(id) { return document.getElementById(id); }
+  function prefersReducedMotion() {
+    return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+  function modeForBox(card, box) {
+    if (card.kind === "pronounce") return "flip";
+    if (card.kind === "discriminate") return "mc";
+    if (box <= 2) return "mc";
+    if (box >= 5) return "scenario";
+    return "typed";
+  }
+
+  var session = null; // { queue, idx, results, deckId, requeued, correct, total, pendingCorrect }
+
+  function startSession(deckId) {
+    var cards = buildSession(deckId, {});
+    if (!cards.length) { renderCaughtUp(deckId); return; }
+    session = { queue: cards, idx: 0, results: [], deckId: deckId, requeued: {}, correct: 0, total: 0, pendingCorrect: null };
+    $("practiceHome").hidden = true;
+    $("summaryScreen").hidden = true;
+    $("sessionScreen").hidden = false;
+    showCard();
+  }
+
+  function renderCaughtUp(deckId) {
+    $("practiceHome").hidden = true;
+    $("sessionScreen").hidden = true;
+    var s = $("summaryScreen");
+    s.hidden = false;
+    $("summaryTitle").textContent = "You're caught up";
+    $("summaryStats").textContent = deckId
+      ? "No cards are due in this deck right now. Come back later, or drill another deck."
+      : "Nothing is due across your decks right now. Nicely done — rest is part of spacing.";
+    $("summaryWeak").textContent = "";
+  }
+
+  function currentState(card) {
+    var p = loadProgress();
+    return p.cards[card.id] || newState(dayNumber());
+  }
+
+  function showCard() {
+    var card = session.queue[session.idx];
+    var box = currentState(card).box;
+    var mode = modeForBox(card, box);
+    session.pendingCorrect = null;
+    var flashcard = $("flashcard");
+    flashcard.classList.remove("flipped");
+    $("frontDeck").textContent = (DECKS[card.deck] ? DECKS[card.deck].label : card.deck) + " · box " + box;
+    $("cardPrompt").textContent = card.prompt;
+    $("cardAnswer").textContent = card.answer;
+    $("cardWhy").textContent = card.why || "";
+    var fb = $("cardFeedback");
+    fb.textContent = ""; fb.className = "feedback";
+    // learnLink: deep-link to the lesson section if it exists (S3), else the fundamentals Start section.
+    var learn = $("cardLearnLink");
+    learn.setAttribute("href", (card.learnLink && document.getElementById(card.learnLink)) ? "#" + card.learnLink : "#start");
+    $("sessionProgress").textContent = "Card " + (session.idx + 1) + " of " + session.queue.length;
+    buildQuiz(card, mode);
+    buildGradeRow(card, mode);
+    $("cardPrompt").focus();
+  }
+
+  function buildQuiz(card, mode) {
+    var area = $("quizArea");
+    area.innerHTML = "";
+    area.dataset.mode = mode;
+    if (mode === "mc") {
+      var choices = shuffle(card.choices || [card.answer], Math.random);
+      choices.forEach(function (choice, i) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "choice-btn"; b.dataset.choice = choice;
+        b.innerHTML = '<span class="choice-key" aria-hidden="true">' + (i + 1) + '</span><span>' + esc(choice) + "</span>";
+        b.addEventListener("click", function () { chooseMC(card, choice); });
+        area.appendChild(b);
+      });
+    } else if (mode === "typed" || mode === "scenario") {
+      if (mode === "scenario" && card.scenario) {
+        var note = document.createElement("p");
+        note.className = "scenario-note"; note.textContent = card.scenario;
+        area.appendChild(note);
+      }
+      var row = document.createElement("div");
+      row.className = "typed-row";
+      var input = document.createElement("input");
+      input.type = "text"; input.id = "typedInput";
+      input.setAttribute("aria-label", "Type your answer"); input.autocomplete = "off";
+      var submit = document.createElement("button");
+      submit.type = "button"; submit.className = "btn primary"; submit.textContent = "Check";
+      submit.addEventListener("click", function () { submitTyped(card); });
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); submitTyped(card); } });
+      row.appendChild(input); row.appendChild(submit);
+      area.appendChild(row);
+    } else { // flip (pronounce)
+      var hint = document.createElement("p");
+      hint.className = "scenario-note";
+      hint.textContent = "Say it out loud, then flip to check the respelling.";
+      area.appendChild(hint);
+      if (card.audioText) area.appendChild(makeSpeakButton(card));
+      var flipBtn = document.createElement("button");
+      flipBtn.type = "button"; flipBtn.className = "btn gold"; flipBtn.textContent = "Flip to answer";
+      flipBtn.addEventListener("click", function () { flip(true); });
+      area.appendChild(flipBtn);
+    }
+  }
+
+  function makeSpeakButton(card) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "speak-btn";
+    b.setAttribute("aria-label", "Hear " + card.answer + " spoken aloud");
+    b.textContent = "🔊 Hear it";
+    b.addEventListener("click", function () { speak(card.audioText, card.lang); });
+    return b;
+  }
+  function speak(text, lang) {
+    if (typeof window.speechSynthesis === "undefined" || typeof window.SpeechSynthesisUtterance === "undefined") return;
+    var u = new window.SpeechSynthesisUtterance(text);
+    if (lang) u.lang = lang;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  }
+
+  function buildGradeRow(card, mode) {
+    var row = $("gradeRow");
+    row.innerHTML = "";
+    if (card.audioText) row.appendChild(makeSpeakButton(card));
+    var got = document.createElement("button");
+    got.type = "button"; got.className = "btn primary"; got.textContent = "I got it (1)";
+    got.addEventListener("click", function () { commit(card, true); });
+    var missed = document.createElement("button");
+    missed.type = "button"; missed.className = "btn"; missed.textContent = "I didn't (2)";
+    missed.addEventListener("click", function () { commit(card, false); });
+    row.appendChild(got); row.appendChild(missed);
+  }
+
+  function chooseMC(card, choice) {
+    var correct = choice === card.answer;
+    var buttons = $("quizArea").querySelectorAll(".choice-btn");
+    Array.prototype.forEach.call(buttons, function (b) {
+      b.disabled = true;
+      if (b.dataset.choice === card.answer) b.classList.add("correct");
+      else if (b.dataset.choice === choice) b.classList.add("wrong");
+    });
+    announce(correct);
+    session.pendingCorrect = correct;
+    setTimeout(function () { flip(true); }, prefersReducedMotion() ? 0 : 220);
+  }
+
+  function submitTyped(card) {
+    var input = $("typedInput");
+    var correct = gradeTyped(card, input.value);
+    announce(correct);
+    session.pendingCorrect = correct;
+    flip(true);
+  }
+
+  function announce(correct) {
+    var f = $("cardFeedback");
+    f.textContent = correct ? "Correct." : "Not quite — check the answer, then grade yourself.";
+    f.className = "feedback " + (correct ? "ok" : "no");
+  }
+
+  function flip(toBack) {
+    var fc = $("flashcard");
+    if (toBack) {
+      fc.classList.add("flipped");
+      var got = $("gradeRow").querySelector(".btn.primary");
+      if (got) got.focus();
+    } else {
+      fc.classList.remove("flipped");
+    }
+  }
+
+  function commit(card, correct) {
+    var p = loadProgress();
+    var next = recordResult(p, card, correct, dayNumber());
+    saveProgress(next);
+    session.total += 1;
+    if (correct) session.correct += 1;
+    session.results.push({ id: card.id, correct: correct, deck: card.deck });
+    // gentle same-session re-show on a miss (once)
+    if (!correct && !session.requeued[card.id]) {
+      session.requeued[card.id] = true;
+      session.queue.push(card);
+    }
+    session.idx += 1;
+    if (session.idx >= session.queue.length) finishSession();
+    else showCard();
+  }
+
+  function finishSession() {
+    $("sessionScreen").hidden = true;
+    var s = $("summaryScreen");
+    s.hidden = false;
+    var pct = session.total ? Math.round((session.correct / session.total) * 100) : 0;
+    $("summaryTitle").textContent = "Session complete";
+    $("summaryStats").textContent = session.correct + " of " + session.total + " correct (" + pct + "%).";
+    var weak = session.results.filter(function (r) { return !r.correct; });
+    $("summaryWeak").textContent = weak.length
+      ? "Re-queued for soon: " + weak.length + " card" + (weak.length === 1 ? "" : "s") + ". They'll resurface in Smart Review."
+      : "Clean run — those cards move up a box.";
+    renderProgress();
+    session = null;
+  }
+
   // Public API (filled in by later tasks).
   window.BB.training = {
     BOX_DUE_DAYS: BOX_DUE_DAYS,
