@@ -16,7 +16,21 @@ connected ElevenLabs MCP, which holds auth out-of-band.
 All of this is recorded machine-readably in `tools/audio_manifest.json` (`wines.<id>.text`,
 `.language`, `.source`).
 
-## How to (re)generate a clip
+## How to (re)generate — standalone (no MCP)
+
+`tools/generate_audio.py` reproduces the whole batch from `audio_manifest.json` via the
+ElevenLabs REST API, for anyone without the MCP. It reads the key from
+`ELEVENLABS_API_KEY` or the gitignored `tools/.elevenlabs.key` — **never commit the key**.
+
+```
+echo sk_... > tools/.elevenlabs.key            # untracked / gitignored
+python tools/generate_audio.py                  # -> tools/audio_clips/<id>.mp3 (all 17)
+python tools/generate_audio.py ameztoi-rubentis # or just specific ids
+python tools/build_audio_js.py                  # embed -> src/audio.js
+python build_single_file.py                     # rebuild the bundle
+```
+
+## How to (re)generate a clip — via the connected MCP (how the S4.5 batch was made)
 
 1. Call the ElevenLabs MCP `text_to_speech` with:
    - `text` = `audio_manifest.json` → `wines.<id>.text`
