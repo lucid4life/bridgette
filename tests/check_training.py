@@ -253,16 +253,7 @@ def main() -> int:
     # --- audio (S4.5): audio.js parses; clip-or-whitelist coverage; valid data URIs; build reproducible ---
     AUDIO = SRC / "audio.js"
     # Wines deliberately left to Web-Speech fallback (no clip). Empty = a clip is REQUIRED for every wine.
-    # TEMP until S4.5 generation (Task 5 reverts this to set() once the 17 clips exist).
-    APPROVED_WEB_SPEECH_FALLBACK = {
-        "blue-mountain-brut", "fattoria-moretto-semprebon", "hiedler-loss",
-        "vini-be-good-hip-hop-chenin", "wagner-stempel-weissburgunder",
-        "darting-durkheimer-fronhof", "dona-matilde-branco",
-        "bodega-cerron-remordimiento-blanco", "ameztoi-rubentis",
-        "leitz-eins-zwei-dry-rose", "deinhard-deidesheim", "ca-del-baio-langhe",
-        "sindicat-la-figuera", "bindi-sergardi-la-boncia",
-        "bodega-cerron-remordimiento-tinto", "st-john-claret", "gallina-de-piel-neverwine",
-    }
+    APPROVED_WEB_SPEECH_FALLBACK = set()
 
     if not AUDIO.exists():
         failures.append("missing src/audio.js (run python tools/build_audio_js.py)")
