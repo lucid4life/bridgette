@@ -27,7 +27,7 @@
   let idx = $state(0);
   let baseTotal = $state(0);
   let requeued = $state<Record<string, boolean>>({});
-  let results = $state<{ id: string; correct: boolean; deck: string }[]>([]);
+  let results = $state<{ id: string; correct: boolean; deck: string; confidence?: Conf }[]>([]);
   let correct = $state(0);
   let total = $state(0);
 
@@ -38,7 +38,7 @@
   let typedValue = $state('');
   let shuffledChoices = $state<string[]>([]);
   let hypercorrection = $state(false);
-  let summary = $state<{ correct: number; total: number; pct: number; weak: string[] } | null>(null);
+  let summary = $state<{ correct: number; total: number; pct: number; weak: string[]; sureWrong?: number } | null>(null);
   let missed = $state<Card[]>([]);
 
   const card = $derived(queue[idx] as Card | undefined);
@@ -98,7 +98,7 @@
   function doReveal(isCorrect: boolean) {
     revealed = true;
     pendingCorrect = isCorrect;
-    if (confidence === 'sure' && !isCorrect) hypercorrection = true; // loud correction (spec §9)
+    if (kind !== 'readiness' && confidence === 'sure' && !isCorrect) hypercorrection = true; // loud correction (spec §9), practice only
     tick().then(() => revealEl?.focus()); // move focus to the answer (spec §6/§14)
   }
 
@@ -107,7 +107,7 @@
     const c = card;
     if (kind === 'readiness') {
       total += 1; if (isCorrect) correct += 1;
-      results.push({ id: c.id, correct: isCorrect, deck: c.deck });
+      results.push({ id: c.id, correct: isCorrect, deck: c.deck, confidence });
       advance();
       return;
     }
@@ -127,9 +127,9 @@
   }
   function finish() {
     if (kind === 'readiness') {
-      const scored = engine.scoreReadiness(queue.map((cd, i) => ({ card: cd, correct: results[i]?.correct ?? false })));
+      const scored = engine.scoreReadiness(queue.map((cd, i) => ({ card: cd, correct: results[i]?.correct ?? false, confidence: results[i]?.confidence })));
       progressStore.recordReadiness(scored);
-      summary = { correct: scored.correct, total: scored.total, pct: scored.score, weak: scored.weakAreas.slice(0, 6) };
+      summary = { correct: scored.correct, total: scored.total, pct: scored.score, weak: scored.weakAreas.slice(0, 6), sureWrong: scored.sureWrong };
     } else {
       const pct = total ? Math.round((correct / total) * 100) : 0;
       const byId = new Map(engine.allCards(data).map((c: Card) => [c.id, c] as const));
@@ -243,13 +243,11 @@
       <p class="q">{card.prompt}</p>
 
       {#if !revealed}
-        {#if kind !== 'readiness'}
-          <div class="conf" role="group" aria-label="How sure are you?">
-            <span class="meta">How sure?</span>
-            <button class="chip" type="button" aria-pressed={confidence === 'sure'} onclick={() => (confidence = 'sure')}>Sure</button>
-            <button class="chip" type="button" aria-pressed={confidence === 'shaky'} onclick={() => (confidence = 'shaky')}>Shaky</button>
-          </div>
-        {/if}
+        <div class="conf" role="group" aria-label="How sure are you?">
+          <span class="meta">How sure?</span>
+          <button class="chip" type="button" aria-pressed={confidence === 'sure'} onclick={() => (confidence = 'sure')}>Sure</button>
+          <button class="chip" type="button" aria-pressed={confidence === 'shaky'} onclick={() => (confidence = 'shaky')}>Shaky</button>
+        </div>
 
         {#if cardMode === 'mc'}
           <div class="gradebar choices">
@@ -308,6 +306,12 @@
       <p class="sub">Nothing is due right now — rest is part of spacing. Drill a deck below or come back later.</p>
     {:else}
       <p class="sub">{summary.correct} of {summary.total} correct.{summary.weak.length ? ' Weak areas: ' + summary.weak.join(', ') + '.' : ''}</p>
+    {/if}
+    {#if kind === 'readiness' && summary.sureWrong}
+      <p class="meta"><span aria-hidden="true">⚠</span> You were sure but missed {summary.sureWrong} — those confident-wrong answers are the dangerous ones; re-learn them first.</p>
+    {/if}
+    {#if kind === 'readiness' && !caughtUp}
+      <p class="meta">Confidence-weighted: a shaky-but-right answer counts less than a sure-and-right one — so this number is honest.</p>
     {/if}
     <div class="gradebar" style="justify-content:flex-start">
       {#if hadMisses && kind === 'practice'}

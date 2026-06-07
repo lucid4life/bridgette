@@ -357,11 +357,12 @@ describe('engine', () => {
     });
   });
 
-  it('buildReadiness: samples across all five decks, capped per deck, interleaved', () => {
+  it('buildReadiness: samples the OBJECTIVE decks (excludes self-graded pronunciation), capped per deck', () => {
     const cards = T.buildReadiness(DATA, { perDeck: 2, rng: () => 0 });
-    const ids = Object.keys(T.DECKS);
+    const ids = Object.keys(T.DECKS).filter((id) => id !== 'pronunciation');
     const seen: Record<string, number> = {};
     cards.forEach((c: any) => { seen[c.deck] = (seen[c.deck] || 0) + 1; });
+    expect(seen['pronunciation'] || 0, 'pronunciation must be excluded from the objective gauntlet').toBe(0);
     ids.forEach((id) => {
       expect(seen[id] >= 1, 'readiness sample missing deck: ' + id).toBeTruthy();
       expect(seen[id] <= 2, 'readiness sample exceeded perDeck for: ' + id).toBeTruthy();
@@ -384,6 +385,32 @@ describe('engine', () => {
     expect(s.weakAreas).toEqual(['acidity', 'steak']);
     expect(s.byDeck.structure.total).toBe(2);
     expect(s.byDeck.structure.correct).toBe(0);
+  });
+
+  it('scoreReadiness: confidence weights the score (sure-right full, shaky-right partial, sure-wrong flagged)', () => {
+    const results = [
+      { card: { deck: 'translator', tags: ['translator'] }, correct: true, confidence: 'sure' },
+      { card: { deck: 'pairing', tags: ['pairing'] }, correct: true, confidence: 'shaky' },
+      { card: { deck: 'structure', tags: ['structure', 'acidity'] }, correct: false, confidence: 'sure' },
+      { card: { deck: 'upsell', tags: ['upsell'] }, correct: false, confidence: null }
+    ];
+    const s = T.scoreReadiness(results as any);
+    expect(s.correct).toBe(2); // raw correct count is honest
+    // weighted = 1 (sure-right) + 0.6 (shaky-right) + 0 + 0 = 1.6 / 4 = 40%
+    expect(s.score).toBe(40);
+    expect(s.sureWrong).toBe(1);
+  });
+
+  it('scoreReadiness: with no confidence on any result, reduces to the raw percent (back-compat)', () => {
+    const results = [
+      { card: { deck: 'translator', tags: ['translator'] }, correct: true },
+      { card: { deck: 'pairing', tags: ['pairing'] }, correct: true },
+      { card: { deck: 'structure', tags: ['structure'] }, correct: false },
+      { card: { deck: 'upsell', tags: ['upsell'] }, correct: true }
+    ];
+    const s = T.scoreReadiness(results as any);
+    expect(s.score).toBe(75);
+    expect(s.sureWrong).toBe(0);
   });
 
   it('scoreReadiness: empty results -> 0% and no weak areas', () => {

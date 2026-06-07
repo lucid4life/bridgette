@@ -471,20 +471,29 @@ export function buildReadiness(data, opts) {
   const rng = opts.rng || Math.random;
   let picked = [];
   Object.keys(DECKS).forEach((id) => {
+    // Pronunciation is self-graded (flip), so it can't be part of an OBJECTIVE
+    // shift-ready %. It stays in Smart Review + its own Focus deck (spec §9 honesty).
+    if (id === 'pronunciation') return;
     const cards = generateDeck(id, data);
     picked = picked.concat(shuffle(cards, rng).slice(0, perDeck));
   });
   return shuffle(picked, rng);
 }
 
-// Pure scorer. results: [{ card, correct }]. weakAreas exclude deck-name tags.
-/** @returns {{ total:number, correct:number, score:number, weakAreas:string[], byDeck:Record<string,{total:number,correct:number}> }} */
+// Pure scorer. results: [{ card, correct, confidence? }]. weakAreas exclude deck-name
+// tags. Confidence-weighted (spec §9) so lucky/unsure guesses don't inflate the headline:
+// a confident-correct or unrated-correct = full credit, a shaky-correct = 0.6, any wrong
+// = 0. A confident-WRONG answer is counted in sureWrong — a dangerous floor belief to fix
+// first. With no confidence on any result (older callers/tests) this reduces to raw %.
+/** @returns {{ total:number, correct:number, score:number, weakAreas:string[], byDeck:Record<string,{total:number,correct:number}>, sureWrong:number }} */
 export function scoreReadiness(results) {
   results = results || [];
   const isDeckTag = {};
   Object.keys(DECKS).forEach((id) => { isDeckTag[id] = 1; });
   const total = results.length;
   let correct = 0;
+  let weighted = 0;
+  let sureWrong = 0;
   const miss = {};
   const byDeck = {};
   results.forEach((r) => {
@@ -495,14 +504,19 @@ export function scoreReadiness(results) {
       byDeck[d].total += 1;
       if (r.correct) byDeck[d].correct += 1;
     }
-    if (r.correct) { correct += 1; return; }
+    if (r.correct) {
+      correct += 1;
+      weighted += (r.confidence === 'shaky') ? 0.6 : 1;
+      return;
+    }
+    if (r.confidence === 'sure') sureWrong += 1;
     (card.tags || []).forEach((t) => { if (!isDeckTag[t]) miss[t] = (miss[t] || 0) + 1; });
   });
   const weakAreas = Object.keys(miss).sort((a, b) => (miss[b] - miss[a]) || (a < b ? -1 : a > b ? 1 : 0));
   return {
     total: total, correct: correct,
-    score: total ? Math.round((correct / total) * 100) : 0,
-    weakAreas: weakAreas, byDeck: byDeck
+    score: total ? Math.round((weighted / total) * 100) : 0,
+    weakAreas: weakAreas, byDeck: byDeck, sureWrong: sureWrong
   };
 }
 
