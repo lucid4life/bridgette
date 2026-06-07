@@ -45,7 +45,7 @@ def _rgb(hex_color: str):
 
 
 def _hex(rgb) -> str:
-    return "#%02x%02x%02x" % tuple(int(round(c)) for c in rgb)
+    return "#%02x%02x%02x" % tuple(max(0, min(255, int(round(c)))) for c in rgb)
 
 
 def composite(layers):
@@ -75,7 +75,8 @@ def rule_decl(css: str, selector: str, prop: str):
     for sel_list, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
         sels = [s.strip() for s in sel_list.split(",")]
         if selector in sels:
-            matches = re.findall(r"(?<![-\w])" + re.escape(prop) + r"\s*:\s*([^;]+);", body)
+            # value runs to the next ';' OR the end of the block (last decl may omit ';')
+            matches = re.findall(r"(?<![-\w])" + re.escape(prop) + r"\s*:\s*([^;]+?)\s*(?:;|$)", body)
             if matches:
                 found = matches[-1].strip()
     return found
@@ -125,9 +126,11 @@ def main() -> int:
         # solid cream matrix body
         "matrix-cell": [(colors.get("cream", "#ffeed7"), 1.0)],
         # light section-head: orange tint (accent-dark @ 8%) over paper-3 (worst left edge)
-        "section-head-light": [(colors.get("paper-3", "#f3e0c5"), 1.0), ("#a83212", 0.08)],
+        # resolve tint colours from the live tokens so retuning --accent-dark/--green
+        # keeps the test's composited surface honest (alphas are CSS literals, kept).
+        "section-head-light": [(colors.get("paper-3", "#f3e0c5"), 1.0), (colors.get("accent-dark", "#a83212"), 0.08)],
         # correct MC choice: cream face -> 70% white button -> 20% green correct state
-        "choice-correct": [(colors.get("cream", "#ffeed7"), 1.0), ("#ffffff", 0.7), ("#506f5f", 0.2)],
+        "choice-correct": [(colors.get("cream", "#ffeed7"), 1.0), ("#ffffff", 0.7), (colors.get("green", "#506f5f"), 0.2)],
         # Wine School lesson body: solid paper
         "lesson": [(colors.get("paper", "#ffeed7"), 1.0)],
     }
