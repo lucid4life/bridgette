@@ -14,6 +14,20 @@ new Function('window', src).call(sandbox, sandbox.window);
 const data = sandbox.window.BB.data;
 if (!data || !Array.isArray(data.wines)) throw new Error('failed to extract BB.data from src/data.js');
 
+// Merge the curated full-menu sections (the ~38 by-the-bottle wines, beer, dessert +
+// digestif fortifieds) — web-sourced + verified in Phase B (docs/research/
+// 2026-06-07-v2-content-sourced.json) and curated by tools/curate_sourced.mjs. Display
+// fields only; the per-field sources + accuracy flags live in the research doc and
+// docs/v2-open-questions.md, not in the shipped client bundle.
+const full = JSON.parse(readFileSync(root + 'src/data-fullmenu.json', 'utf8'));
+data.bottles = full.bottles;
+data.beers = full.beers;
+data.fortifieds = full.fortifieds;
+// The 10 new guest-ask translator rows (Gamay, Viognier, Albariño, Barolo, Cava, the
+// honest "sweet plush red" expectation-setter, …) are merged at build time so v1's
+// src/data.js stays untouched while the app translator deck + Reference get them.
+data.translator = data.translator.concat(full.translatorRows);
+
 const header =
   '// app/src/lib/data/data.js — GENERATED from src/data.js by tools/build_app_data.mjs.\n' +
   '// Do NOT edit by hand. Edit src/data.js and re-run: node tools/build_app_data.mjs\n';

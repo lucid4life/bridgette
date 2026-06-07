@@ -6,6 +6,9 @@ export const data = raw as unknown as BridgetteData;
 export type {
   BridgetteData,
   Wine,
+  Bottle,
+  Beer,
+  Fortified,
   Food,
   Cocktail,
   Translator,
