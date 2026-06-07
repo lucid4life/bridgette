@@ -283,7 +283,7 @@ export const data = {
       "vintage": "2024",
       "exclusive": true,
       "vegan": null,
-      "climate": "moderate",
+      "climate": "cool",
       "family": "Round Whites",
       "objections": [
         {
@@ -305,6 +305,7 @@ export const data = {
         "tannin": "low",
         "sweetness": "dry"
       },
+      "structureNote": "Siefersheim is a cool, porphyry-soil pocket of Rheinhessen — the cool site keeps the soft pear and apple fruit fresh, so 'cool climate' and 'round, easy white' aren't a contradiction.",
       "tenSecond": "The easy, soft white — pear and apple, no sharp edges, great with chicken, cheese, and creamy plates.",
       "profile": "Calm, clean, and easy. A good white for guests who do not want sharp, oaky, or aromatic.",
       "pair": [

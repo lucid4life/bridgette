@@ -8,7 +8,7 @@ Produced by a 17-agent parallel web-verification workflow (run `wf_702b0cdd-c22`
 | Fattoria Moretto Semprebon | **warm** (med) | ok (precise DOC = Lambrusco Grasparossa di Castelvetro) | unconfirmed (organic since 1997) | Wine-Searcher; Consorzio Lambrusco — continental, Apennine foothills S of Modena |
 | Hiedler Löss | **cool** (high) | ok (source subregion = Kamptal) | unconfirmed (organic/native-yeast) | austrianwine.com (Kamptal), Wine-Searcher |
 | Vini be Good Hip Hop Chenin | **cool** (high) | ok (Loire collective; Vin de France) | unconfirmed (often unfined) | The Wine Doctor; Wine Folly — Loire cool-climate |
-| Wagner-Stempel Weissburgunder | **moderate** (high) | **FIX: producer → "Wagner-Stempel" (hyphen)** | unconfirmed (organic since 2008) | Producer estate (Siefersheim); Howard Ripley; Wine-Searcher Rheinhessen |
+| Wagner-Stempel Weissburgunder | **cool** (high) — *corrected 2026-06-07 from "moderate" (ACC-01): Siefersheim is a cool porphyry pocket* | **FIX: producer → "Wagner-Stempel" (hyphen)** | unconfirmed (organic since 2008) | GWC (thegwc.com/wagner-stempel: "cool climate… inordinately cool by Rheinhessen standards"); VDP Rheinhessen; Metrovino porphyry note |
 | Darting Dürkheimer Fronhof | **warm** (high) | ok | unconfirmed | Wine-Searcher/wein.plus — Pfalz, Haardt rain-shadow, near-Mediterranean |
 | Dona Matilde Branco | **warm** (high) | ok (4 grapes confirmed) | unconfirmed | Wikipedia Douro DOC; Jancis Robinson — hot dry summers (40°C+) |
 | Bodega Cerrón Remordimiento Blanco | **warm** (high) | ok (ñ/é correct) | reported vegan by retailers, unconfirmed at producer | Wikipedia Jumilla DO; ~840m altitude tempers warmth |
