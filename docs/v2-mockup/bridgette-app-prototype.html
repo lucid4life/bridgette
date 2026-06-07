@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridgette Training — v2 App Shell Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#ffeed7; --paper:#fff8ec; --ink:#1e384b; --ink-2:#162d3d; --ink-3:#102230;
+    --orange:#f15623; --accent-dark:#a83212; --gold:#fcb539; --blue:#437c93; --green:#3f6b54;
+    --line:rgba(255,238,215,.14); --line-dark:rgba(30,56,75,.16); --muted:#c9bca9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--ink-3);color:var(--cream);-webkit-font-smoothing:antialiased}
+  h1,h2,h3,.brand,.nav-label,.eyebrow{font-family:"Oswald",Impact,"Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.02em}
+  .eyebrow{color:var(--gold);font-size:12px;margin:0 0 6px}
+  button{font:inherit;cursor:pointer}
+
+  /* ---- App shell ---- */
+  .app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+  .sidebar{background:linear-gradient(180deg,var(--ink),var(--ink-3));border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+  .brand{font-size:26px;line-height:.95;color:var(--cream);padding:6px 10px 18px}
+  .brand small{display:block;font-size:11px;color:var(--gold);letter-spacing:.18em;margin-top:6px}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:12px 12px;border:1px solid transparent;border-radius:8px;color:var(--cream);background:none;width:100%;text-align:left;min-height:46px}
+  .nav-item .ico{width:22px;height:22px;flex:none;opacity:.9}
+  .nav-item .nav-label{font-size:15px;font-weight:600}
+  .nav-item:hover{background:rgba(255,238,215,.06);border-color:var(--line)}
+  .nav-item.active{background:rgba(241,86,35,.16);border-color:var(--orange)}
+  .nav-item.active .ico{opacity:1}
+  .sidebar .spacer{flex:1}
+  .sidebar .foot{padding:10px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+
+  .main{min-width:0;display:flex;flex-direction:column}
+  .topbar{display:none}
+  .screen-wrap{padding:30px 34px 60px;max-width:1100px;width:100%;margin:0 auto}
+  .screen{display:none;animation:fade .25s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .tabbar{display:none}
+
+  /* ---- shared bits ---- */
+  .h-eyebrow{color:var(--gold);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin:0 0 4px}
+  .screen h1{font-size:clamp(30px,4vw,46px);margin:0 0 4px;color:var(--cream)}
+  .sub{color:var(--muted);margin:0 0 22px;max-width:60ch}
+  .grid{display:grid;gap:16px}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .cols-2{grid-template-columns:repeat(2,1fr)}
+  .card{background:rgba(255,238,215,.05);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card.light{background:var(--cream);color:var(--ink);border-color:var(--line-dark)}
+  .card h3{margin:0 0 8px;font-size:18px}
+  .pill{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:999px;background:rgba(252,181,57,.18);color:var(--gold);border:1px solid rgba(252,181,57,.4)}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--accent-dark);background:var(--accent-dark);color:var(--cream);padding:12px 18px;border-radius:9px;font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.04em}
+  .btn.ghost{background:transparent;border-color:var(--line);color:var(--cream)}
+  .btn.gold{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+  .meta{color:var(--muted);font-size:13px}
+
+  /* Today */
+  .hero{display:grid;grid-template-columns:1.3fr .7fr;gap:16px;margin-bottom:18px}
+  .ring{--p:78;width:128px;height:128px;border-radius:50%;display:grid;place-items:center;margin:4px auto;
+        background:conic-gradient(var(--gold) calc(var(--p)*1%),rgba(255,238,215,.12) 0)}
+  .ring span{width:96px;height:96px;border-radius:50%;background:var(--ink-2);display:grid;place-items:center;font-family:"Oswald";font-size:30px}
+  .stat{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}
+  .stat b{font-family:"Oswald";font-size:30px;display:block;line-height:1}
+  .streak{color:var(--orange);font-weight:800}
+
+  /* Reference: chips + matrix */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .chip{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,238,215,.05);color:var(--cream);font-size:13px;font-weight:700}
+  .chip.active{background:var(--orange);border-color:var(--orange);color:var(--cream)}
+  .winecard{display:grid;gap:8px}
+  .winecard .name{font-family:"Oswald";font-size:20px}
+  .struct{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+  .struct b{color:var(--cream)}
+  .speak{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(255,238,215,.06);color:var(--gold);display:inline-grid;place-items:center}
+  table.matrix{width:100%;border-collapse:collapse;background:var(--cream);color:var(--ink);border-radius:10px;overflow:hidden;font-size:13px}
+  .matrix th,.matrix td{border:1px solid var(--line-dark);padding:10px;text-align:left;vertical-align:top;color:var(--ink)}
+  .matrix thead th{background:var(--ink-2);color:var(--cream);font-family:"Oswald";text-transform:uppercase}
+  .matrix tbody th{background:rgba(67,124,147,.14);font-weight:800}
+
+  /* Practice flashcard */
+  .flash{max-width:520px;margin:0 auto;background:var(--cream);color:var(--ink);border-radius:16px;padding:28px;text-align:center;min-height:230px;display:grid;align-content:center;gap:16px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+  .flash .q{font-size:22px;font-weight:700;font-family:"Oswald"}
+  .flash .ans{color:var(--accent-dark);font-weight:800}
+  .gradebar{display:flex;gap:10px;justify-content:center;margin-top:14px}
+
+  /* lessons */
+  .lesson{border-left:4px solid var(--gold)}
+  .lesson .we{background:rgba(252,181,57,.1);border:1px solid rgba(252,181,57,.3);border-radius:8px;padding:10px;margin-top:8px;font-size:14px}
+
+  /* ---- responsive: tablet rail + mobile tab bar ---- */
+  @media (max-width:1000px){
+    .app{grid-template-columns:74px 1fr}
+    .brand{font-size:0;padding:6px 0 16px;text-align:center}
+    .brand:before{content:"BB";font-size:24px;font-family:"Oswald";color:var(--cream)}
+    .brand small{display:none}
+    .nav-item{justify-content:center;padding:12px 0}
+    .nav-item .nav-label{display:none}
+    .sidebar .foot{display:none}
+    .hero{grid-template-columns:1fr}
+    .cols-3{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:680px){
+    .app{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--ink);z-index:5}
+    .topbar .brand{font-size:22px;padding:0}.topbar .brand:before{content:"Bridgette Training"}
+    .topbar .brand small{display:none}
+    .screen-wrap{padding:20px 16px 96px}
+    .cols-3,.cols-2,.hero{grid-template-columns:1fr}
+    .tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--ink);border-top:1px solid var(--line);z-index:10}
+    .tab{flex:1;background:none;border:none;color:var(--muted);padding:9px 0 10px;display:grid;justify-items:center;gap:3px;min-height:58px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+    .tab .ico{width:24px;height:24px}
+    .tab.active{color:var(--gold)}
+    .matrix{font-size:12px}
+  }
+  .note{margin:26px auto 0;max-width:1100px;padding:14px 18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR (desktop) / RAIL (tablet) -->
+  <aside class="sidebar">
+    <div class="brand">Bridgette<br>Training<small>Calgary</small></div>
+    <button class="nav-item active" data-go="today"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><span class="nav-label">Today</span></button>
+    <button class="nav-item" data-go="practice"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16l-7-4-7 4z"/></svg><span class="nav-label">Practice</span></button>
+    <button class="nav-item" data-go="school"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4z"/><path d="M7 10v5c0 1 2 3 5 3s5-2 5-3v-5"/></svg><span class="nav-label">Wine School</span></button>
+    <button class="nav-item" data-go="reference"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h12a2 2 0 012 2v14H7a2 2 0 01-2-2z"/><path d="M9 4v16"/></svg><span class="nav-label">Reference</span></button>
+    <button class="nav-item" data-go="progress"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="nav-label">Progress</span></button>
+    <div class="spacer"></div>
+    <div class="foot">v2 prototype · offline-ready PWA</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar"><div class="brand"></div><span class="streak">🔥 6</span></div>
+    <div class="screen-wrap">
+
+      <!-- TODAY -->
+      <section class="screen active" id="today">
+        <p class="h-eyebrow">Wednesday · Source checked Jun 4</p>
+        <h1>Good evening, Adrian</h1>
+        <p class="sub">Here's your launchpad. Small, consistent sessions beat cramming — let's keep the streak alive.</p>
+        <div class="hero">
+          <div class="card">
+            <h3>Ready to study</h3>
+            <div class="stat">
+              <div><b>14</b><span class="meta">cards due</span></div>
+              <div><b class="streak">6</b><span class="meta">day streak 🔥</span></div>
+              <div><b>108</b><span class="meta">cards total</span></div>
+            </div>
+            <p style="margin:16px 0 0"><button class="btn" data-go="practice">▶ Start Smart Review (10 min)</button></p>
+            <p class="meta" style="margin-top:14px">Up next after this: <strong style="color:var(--cream)">Focus — Reds</strong> (your weakest deck)</p>
+          </div>
+          <div class="card" style="text-align:center">
+            <h3 style="text-align:left">Shift-ready</h3>
+            <div class="ring"><span>78%</span></div>
+            <p class="meta">Weakest: <strong style="color:var(--cream)">Regions</strong>, Pronunciation</p>
+            <button class="btn ghost" data-go="practice" style="margin-top:6px">Run Readiness Check</button>
+          </div>
+        </div>
+        <div class="grid cols-3">
+          <div class="card"><span class="pill">Guided path</span><h3 style="margin-top:10px">2 · The Substitution Translator</h3><p class="meta">Cab → Claret, Sauv Blanc → Grüner. Your #1 on-the-floor skill.</p></div>
+          <div class="card"><span class="pill">Wine School</span><h3 style="margin-top:10px">Pairing levers</h3><p class="meta">Acid cuts fat · tannin needs protein · sweet tames heat.</p></div>
+          <div class="card"><span class="pill">Tip</span><h3 style="margin-top:10px">Taste before you call it dry</h3><p class="meta">Riesling sweetness varies — confirm with the team.</p></div>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="screen" id="practice">
+        <p class="h-eyebrow">Practice</p>
+        <h1>Build the muscle memory</h1>
+        <p class="sub">Smart Review mixes what's due and weak. Or focus a single deck. Cards get harder as you master them.</p>
+        <div class="grid cols-3" style="margin-bottom:24px">
+          <div class="card"><h3>⚡ Smart Review</h3><p class="meta">14 due · mixed decks</p><button class="btn" style="margin-top:10px">Start</button></div>
+          <div class="card"><h3>🎯 Focus a deck</h3><p class="meta">Translator · Wine ID · Pronunciation · Pairing · Structure</p><button class="btn ghost" style="margin-top:10px">Choose</button></div>
+          <div class="card"><h3>🏁 Readiness Check</h3><p class="meta">Mixed exam → % shift-ready</p><button class="btn ghost" style="margin-top:10px">Run</button></div>
+        </div>
+        <div class="flash">
+          <p class="meta">Translator · box 2 of 5</p>
+          <p class="q">A guest asks for <strong>Cabernet Sauvignon</strong>. What's your by-the-glass answer?</p>
+          <p class="ans">▼ tap to reveal · or pick below</p>
+          <div class="gradebar"><button class="btn ghost">St. John Claret</button><button class="btn ghost">Hiedler Löss</button><button class="btn ghost">Ameztoi Rubentis</button></div>
+        </div>
+      </section>
+
+      <!-- WINE SCHOOL -->
+      <section class="screen" id="school">
+        <p class="h-eyebrow">Wine School</p>
+        <h1>The fundamentals</h1>
+        <p class="sub">Seven short lessons, each with a worked example and a quick check — taught with this list's own wines.</p>
+        <div class="grid cols-2">
+          <div class="card lesson"><h3>1 · What the structure words mean</h3><p class="meta" style="color:#5b4636">Acidity, body, tannin, sweetness — low / medium / high.</p><div class="we"><strong>Worked example:</strong> Hiedler Löss = high acidity (mouth-watering) + low tannin → bright & food-friendly.</div></div>
+          <div class="card lesson"><h3>3 · The 6 pairing levers</h3><p class="meta" style="color:#5b4636">Fat, salt, acid, sweet, heat, intensity.</p><div class="we"><strong>Try it:</strong> fatty ribeye + high-tannin Claret → tannin binds the fat, both taste smoother.</div></div>
+          <div class="card lesson"><h3>5 · Deductive grid</h3><p class="meta" style="color:#5b4636">Pick clues → guess the grape/style, like a somm.</p><div class="we">white · high acid · low tannin · light body → <strong>Grüner / Hiedler Löss</strong></div></div>
+          <div class="card lesson"><h3>6 · Saying the names</h3><p class="meta" style="color:#5b4636">Grüner Veltliner = "GROO-ner FELT-lee-ner" 🔊</p><div class="we">Now with real human audio (ElevenLabs) on every wine.</div></div>
+        </div>
+      </section>
+
+      <!-- REFERENCE -->
+      <section class="screen" id="reference">
+        <p class="h-eyebrow">Reference</p>
+        <h1>Look it up fast</h1>
+        <p class="sub">Filter to what you need — no endless scroll. (Showing how the matrix reads correctly now.)</p>
+        <div class="chips"><button class="chip active">Wine</button><button class="chip">Food</button><button class="chip">Cocktails</button><button class="chip">Translator</button><button class="chip">Pairing matrix</button></div>
+        <div class="grid cols-2" style="margin-bottom:22px">
+          <div class="card light winecard">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span class="name">Hiedler Löss</span><button class="speak" title="Hear it">🔊</button></div>
+            <div class="meta" style="color:#5b4636">Grüner Veltliner · Niederösterreich, Austria · 15 | 24 | 75</div>
+            <div class="struct"><span>Acidity <b>high</b></span><span>Body <b>medium</b></span><span>Tannin <b>low</b></span><span>Sweet <b>dry</b></span></div>
+            <p style="margin:6px 0 0;font-size:14px">The crisp, peppery white — my pick for green, tangy, spicy, or herb-driven plates.</p>
+          </div>
+          <div class="card light winecard">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span class="name">St. John Claret</span><button class="speak" title="Hear it">🔊</button></div>
+            <div class="meta" style="color:#5b4636">Merlot &amp; Cab Sauv · Bordeaux, France · 16 | 26 | 80</div>
+            <div class="struct"><span>Acidity <b>medium</b></span><span>Body <b>full</b></span><span>Tannin <b>high</b></span><span>Sweet <b>dry</b></span></div>
+            <p style="margin:6px 0 0;font-size:14px">The safest steak red by the glass — dark fruit + structure for beef.</p>
+          </div>
+        </div>
+        <table class="matrix">
+          <thead><tr><th>Dish</th><th>Wine</th><th>Cocktail</th><th>Zero-proof</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><th>Wood Grilled Ribeye</th><td>St. John Claret</td><td>Spaghetti Western</td><td>Noughty Rouge</td><td>Tannin + dark fruit cut beef fat.</td></tr>
+            <tr><th>Oysters</th><td>Blue Mountain Brut</td><td>Spicy Sandia</td><td>Neverwine</td><td>Brine wants acid, bubbles, saline.</td></tr>
+            <tr><th>Margherita</th><td>Bindi Sergardi Sangiovese</td><td>Eat, Apres, Love</td><td>Noughty Rouge</td><td>Sangiovese acidity loves tomato.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- PROGRESS -->
+      <section class="screen" id="progress">
+        <p class="h-eyebrow">Progress</p>
+        <h1>Where you stand</h1>
+        <p class="sub">Mastery by deck and by topic, your weak list, and a JSON backup so you never lose progress.</p>
+        <div class="grid cols-3" style="margin-bottom:20px">
+          <div class="card" style="text-align:center"><div class="ring" style="--p:64;width:96px;height:96px"><span style="width:70px;height:70px;font-size:20px">64%</span></div><h3 style="margin-top:8px">Translator</h3></div>
+          <div class="card" style="text-align:center"><div class="ring" style="--p:41;width:96px;height:96px"><span style="width:70px;height:70px;font-size:20px">41%</span></div><h3 style="margin-top:8px">Reds</h3></div>
+          <div class="card" style="text-align:center"><div class="ring" style="--p:82;width:96px;height:96px"><span style="width:70px;height:70px;font-size:20px">82%</span></div><h3 style="margin-top:8px">Pronunciation</h3></div>
+        </div>
+        <div class="grid cols-2">
+          <div class="card"><h3>Weak spots</h3><p class="meta">Most-missed: <strong style="color:var(--cream)">Spanish regions</strong>, Nebbiolo tannin, Txakolina pronunciation.</p></div>
+          <div class="card"><h3>Backup</h3><p class="meta">Keep your streak safe across devices.</p><div style="display:flex;gap:10px;margin-top:10px"><button class="btn ghost">Export</button><button class="btn ghost">Import</button></div></div>
+        </div>
+      </section>
+
+      <div class="note">📐 <strong>Prototype.</strong> Resize the window: sidebar → icon rail (≤1000px) → bottom tab bar (≤680px). Click the nav to switch screens — this is the "proper app, not a giant scroll" model. Colors/typography are the Bridgette system; the real build is SvelteKit + PWA.</div>
+    </div>
+
+    <!-- MOBILE TAB BAR -->
+    <nav class="tabbar">
+      <button class="tab active" data-go="today"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>Today</button>
+      <button class="tab" data-go="practice"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16l-7-4-7 4z"/></svg>Practice</button>
+      <button class="tab" data-go="school"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4z"/></svg>School</button>
+      <button class="tab" data-go="reference"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h12a2 2 0 012 2v14H7a2 2 0 01-2-2z"/></svg>Reference</button>
+      <button class="tab" data-go="progress"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7"/></svg>Progress</button>
+    </nav>
+  </div>
+</div>
+<script>
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
+    document.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('active',b.dataset.go===id));
+    document.querySelector('.screen-wrap').scrollTo(0,0);
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active')}));
+</script>
+</body>
+</html>
