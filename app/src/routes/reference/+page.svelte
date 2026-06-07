@@ -60,6 +60,9 @@
     {/each}
   </div>
 
+  <!-- a11y: gives the per-card h3s a parent h2 so the heading order is h1→h2→h3 (1.3.1). -->
+  <h2 class="visually-hidden" aria-live="polite">{filter}</h2>
+
   {#if filter === 'Wine'}
     <label class="search">
       <span class="visually-hidden">Search wines by grape, style, food, or region</span>
