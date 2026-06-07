@@ -33,13 +33,18 @@ window.BB.playPronunciation = function (wineId, fallbackText, lang) {
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   }
+  // Stop anything already playing/speaking so rapid clicks never overlap.
+  if (window.speechSynthesis && window.speechSynthesis.cancel) window.speechSynthesis.cancel();
+  if (window.BB._audioEl) { try { window.BB._audioEl.pause(); } catch (e) {} window.BB._audioEl = null; }
   if (!clip) { fallback(); return; }
   try {
-    if (window.speechSynthesis && window.speechSynthesis.cancel) window.speechSynthesis.cancel();
     var a = new Audio(clip);
-    var done = false;
-    a.addEventListener("error", function () { if (!done) { done = true; fallback(); } });
+    window.BB._audioEl = a;
+    var settled = false;  // once the clip actually starts, a later error must NOT speak over it
+    a.addEventListener("error", function () { if (!settled) { settled = true; fallback(); } });
     var p = a.play();
-    if (p && typeof p.catch === "function") p.catch(function () { if (!done) { done = true; fallback(); } });
+    if (p && typeof p.then === "function") {
+      p.then(function () { settled = true; }, function () { if (!settled) { settled = true; fallback(); } });
+    }
   } catch (e) { fallback(); }
 };

@@ -63,8 +63,14 @@ def synth(key, voice_id, model_id, fmt, settings, text):
             "Accept": "audio/mpeg",
         },
     )
-    with urllib.request.urlopen(req) as resp:
-        return resp.read()
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        ctype = (resp.headers.get("Content-Type") or "").lower()
+        audio = resp.read()
+    # A 200 with a non-audio body (quota JSON, HTML interstitial) must NOT be
+    # written as a .mp3 — it would embed as a corrupt clip that only fails at playback.
+    if "audio" not in ctype:
+        raise RuntimeError(f"expected an audio response but got Content-Type {ctype!r}; body starts {audio[:80]!r}")
+    return audio
 
 
 def main():
@@ -95,6 +101,8 @@ def main():
             audio = synth(key, voice_id, model_id, fmt, settings, text)
         except urllib.error.HTTPError as exc:
             sys.exit(f"FAIL {wid}: HTTP {exc.code} {exc.read().decode('utf-8', 'ignore')}")
+        except (urllib.error.URLError, RuntimeError) as exc:
+            sys.exit(f"FAIL {wid}: {exc}")
         out = CLIPS / (wid + ".mp3")
         out.write_bytes(audio)
         print(f"wrote {out.name} ({len(audio):,} bytes)  <- {text!r}")

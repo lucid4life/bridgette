@@ -663,7 +663,7 @@
   function makeSpeakButton(card) {
     var b = document.createElement("button");
     b.type = "button"; b.className = "speak-btn";
-    b.setAttribute("aria-label", "Hear " + card.answer + " spoken aloud");
+    b.setAttribute("aria-label", "Hear " + (card.audioText || card.answer) + " spoken aloud");
     b.textContent = "🔊 Hear it";
     b.addEventListener("click", function () {
       if (window.BB && window.BB.playPronunciation) window.BB.playPronunciation(card.wineId, card.audioText, card.lang);

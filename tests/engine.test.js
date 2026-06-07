@@ -444,11 +444,15 @@ test("genStructure recall: the recalled level matches the wine's actual structur
   });
 });
 
-test("pronunciation cards carry a bare wineId for audio lookup", () => {
+test("pronunciation cards carry a bare wineId that is a real wine id", () => {
   const cards = T.generateDeck("pronunciation", DATA);
+  const wineIds = new Set(DATA.wines.map(w => w.id));
   assert.ok(cards.length > 0);
   for (const c of cards) {
     assert.ok(c.wineId, "card " + c.id + " missing wineId");
+    // wineId is the audio-lookup key (window.BB.audio[wineId]) — it MUST be a real
+    // wine id, not the name or some other consistent-but-wrong value.
+    assert.ok(wineIds.has(c.wineId), "wineId is not a real wine id: " + c.wineId);
     assert.strictEqual(c.id, "pronunciation:" + c.wineId + ":say");
   }
 });

@@ -15,6 +15,7 @@ function loadAudio(opts) {
     this.src = src;
     this._listeners = {};
     this.addEventListener = (ev, cb) => { this._listeners[ev] = cb; };
+    this.pause = () => { calls.paused = (calls.paused || 0) + 1; };
     this.play = () => (opts.rejectPlay ? Promise.reject(new Error("blocked")) : Promise.resolve());
   };
   g.SpeechSynthesisUtterance = function (t) { this.text = t; this.lang = ""; };
@@ -41,14 +42,28 @@ test("audioFallback list and audio map both exist", () => {
   assert.equal(typeof BB.playPronunciation, "function");
 });
 
-// When a clip IS present, it plays via Audio (no Web-Speech). Skipped until clips
-// exist; auto-activates once tools/build_audio_js.py has embedded real mp3s.
+// When a clip IS present, it plays via Audio (no Web-Speech). The committed repo
+// always has the 17 clips embedded, so this asserts the map is non-empty rather
+// than silently passing on an empty map.
 test("present clip plays via Audio, not speechSynthesis", () => {
   const { BB, calls } = loadAudio();
   const ids = Object.keys(BB.audio || {});
-  if (ids.length === 0) return; // no clips embedded yet (Task 2 scaffold)
+  assert.ok(ids.length > 0, "expected embedded clips in src/audio.js (run tools/build_audio_js.py)");
   BB.playPronunciation(ids[0], "fallback text", "en");
   assert.equal(calls.audio.length, 1, "must construct an Audio for a present clip");
   assert.ok(String(calls.audio[0]).startsWith("data:audio/mpeg;base64,"));
   assert.equal(calls.speak.length, 0, "must not use Web Speech when a clip exists");
+});
+
+// A present clip whose play() is rejected (autoplay policy / no user gesture) must
+// fall back to Web Speech — the real-browser path that the .then(_, reject) handles.
+test("present clip whose play() is blocked falls back to speechSynthesis", async () => {
+  const { BB, calls } = loadAudio({ rejectPlay: true });
+  const ids = Object.keys(BB.audio || {});
+  assert.ok(ids.length > 0);
+  BB.playPronunciation(ids[0], "Blocked Fallback", "en");
+  await new Promise((r) => setTimeout(r, 10)); // let the rejected play() promise settle
+  assert.equal(calls.audio.length, 1, "constructed the Audio element");
+  assert.equal(calls.speak.length, 1, "fell back to Web Speech on play() rejection");
+  assert.equal(calls.speak[0].text, "Blocked Fallback");
 });

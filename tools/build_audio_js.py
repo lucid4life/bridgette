@@ -23,14 +23,19 @@ HELPER = """window.BB.playPronunciation = function (wineId, fallbackText, lang) 
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   }
+  // Stop anything already playing/speaking so rapid clicks never overlap.
+  if (window.speechSynthesis && window.speechSynthesis.cancel) window.speechSynthesis.cancel();
+  if (window.BB._audioEl) { try { window.BB._audioEl.pause(); } catch (e) {} window.BB._audioEl = null; }
   if (!clip) { fallback(); return; }
   try {
-    if (window.speechSynthesis && window.speechSynthesis.cancel) window.speechSynthesis.cancel();
     var a = new Audio(clip);
-    var done = false;
-    a.addEventListener("error", function () { if (!done) { done = true; fallback(); } });
+    window.BB._audioEl = a;
+    var settled = false;  // once the clip actually starts, a later error must NOT speak over it
+    a.addEventListener("error", function () { if (!settled) { settled = true; fallback(); } });
     var p = a.play();
-    if (p && typeof p.catch === "function") p.catch(function () { if (!done) { done = true; fallback(); } });
+    if (p && typeof p.then === "function") {
+      p.then(function () { settled = true; }, function () { if (!settled) { settled = true; fallback(); } });
+    }
   } catch (e) { fallback(); }
 };
 """
@@ -42,7 +47,10 @@ def wine_ids_in_order():
         f"eval(fs.readFileSync({json.dumps(str(DATA))},'utf8'));"
         "process.stdout.write(JSON.stringify(global.window.BB.data.wines.map(function(w){return w.id;})));"
     )
-    res = subprocess.run(["node", "-e", snippet], capture_output=True, text=True)
+    try:
+        res = subprocess.run(["node", "-e", snippet], capture_output=True, text=True)
+    except FileNotFoundError:
+        raise RuntimeError("Node.js is required to read wine ids from data.js, but `node` was not found on PATH.")
     if res.returncode != 0:
         raise RuntimeError("node failed to read wine ids:\n" + res.stderr)
     return json.loads(res.stdout)
@@ -55,7 +63,8 @@ def main():
         mp3 = CLIPS / (wid + ".mp3")
         if mp3.exists():
             b64 = base64.b64encode(mp3.read_bytes()).decode("ascii")
-            audio_lines.append('  "%s": "data:audio/mpeg;base64,%s"' % (wid, b64))
+            # json.dumps the key so an id with a quote/backslash can't emit invalid JS
+            audio_lines.append('  %s: "data:audio/mpeg;base64,%s"' % (json.dumps(wid), b64))
         else:
             fallback.append(wid)
     out = (
