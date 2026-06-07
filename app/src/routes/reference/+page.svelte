@@ -121,6 +121,8 @@
           <h3>{f.name}</h3>
           <div class="meta">{f.category} · {f.price}</div>
           {#if f.wine}<p class="winecard-body"><strong>{f.wine}</strong> — {f.why}</p>{/if}
+          {#if f.cocktail}<p class="meta">Cocktail: <strong>{f.cocktail}</strong></p>{/if}
+          {#if f.zero}<p class="meta">Zero-proof: <strong>{f.zero}</strong></p>{/if}
           {#if f.flags?.length}<p class="meta">Confirm: {f.flags.join(', ')}</p>{/if}
         </article>
       {/each}
@@ -132,7 +134,10 @@
         <article class="card light">
           <h3>{c.name}</h3>
           <div class="meta">{c.category} · {c.price}</div>
+          {#if c.profile}<p class="meta">{c.profile}</p>{/if}
           <p class="winecard-body">{c.say}</p>
+          {#if c.pair}<p class="meta">Great with: <strong>{c.pair}</strong></p>{/if}
+          {#if c.caveat}<p class="meta">Note: {c.caveat}</p>{/if}
         </article>
       {/each}
     </div>
