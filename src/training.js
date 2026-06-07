@@ -408,10 +408,15 @@
 
     var review = due.slice(0, sizeCap).map(function (d) { return d.card; });
     var newSlots = Math.max(0, Math.min(newCap, sizeCap - review.length, fresh.length));
-    var newest = fresh.slice(0, newSlots);
+    // Smart Review (deckId null) must draw NEW cards from across decks, not just the
+    // first deck in allCards order — otherwise a fresh user (no due cards) gets 9
+    // same-deck cards and the final shuffle has nothing to interleave. Focus keeps
+    // its deck's stable intro order.
+    var newPool = (deckId == null) ? shuffle(fresh, rng) : fresh;
+    var newest = newPool.slice(0, newSlots);
 
     var session = review.concat(newest);
-    if (deckId == null) session = shuffle(session, rng); // interleave for Mixed practice
+    if (deckId == null) session = shuffle(session, rng); // interleave review + new for Mixed practice
     return session;
   }
 

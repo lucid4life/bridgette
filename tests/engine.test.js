@@ -236,6 +236,21 @@ test("buildSession: weak (low-box) due cards are prioritized over higher-box due
   assert.strictEqual(session[0].id, cards[cards.length - 1].id, "weakest card should come first");
 });
 
+test("buildSession Smart Review: fresh new cards interleave across decks (not all one deck)", () => {
+  // deterministic seeded rng so the interleave assertion is stable
+  let seed = 0x9e3779b9;
+  const rng = function () {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const session = T.buildSession(null, { data: DATA, progress: T.defaultProgress(), today: 1000, rng: rng });
+  assert.ok(session.length >= 2, "smart review should serve cards");
+  const decks = new Set(session.map(function (c) { return c.deck; }));
+  assert.ok(decks.size >= 2, "Smart Review new cards should span >=2 decks, got: " + Array.from(decks).join());
+});
+
 test("migrateProgress: drops orphan card ids, keeps valid ones, sets schema", () => {
   const validIds = new Set(T.allCards(DATA).map(function (c) { return c.id; }));
   const someValid = T.allCards(DATA)[0].id;

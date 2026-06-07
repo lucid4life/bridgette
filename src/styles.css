@@ -71,8 +71,11 @@
     }
     /* The flashcard faces are light cream but live inside .section.dark #practice,
        where the rule above forces a gold outline (~1.4:1 on cream = invisible).
-       Restore the dark accent outline for focusables on the light faces. */
-    .flashcard-face :focus-visible {
+       Restore the dark accent outline for focusables on the light faces.
+       NOTE: must out-specify `.section.dark :focus-visible` (0,3,0), so scope with
+       `.section.dark` too → (0,4,0). A bare `.flashcard-face :focus-visible` (0,2,0)
+       loses the cascade and the gold stays. */
+    .section.dark .flashcard-face :focus-visible {
       outline-color: var(--accent-dark);
     }
     :target, button, input, select, textarea, summary {
