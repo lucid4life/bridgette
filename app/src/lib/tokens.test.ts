@@ -16,7 +16,9 @@ describe('design tokens (visual contract)', () => {
   it('keeps the contrast-safe accent value', () => {
     expect(css).toMatch(/--accent-dark:\s*#a83212/);
   });
-  it('preserves the v1 flashcard focus-outline fix', () => {
-    expect(css).toContain('.section.dark .flashcard-face :focus-visible');
+  it('preserves the flashcard focus-outline fix (accent-dark on the light face)', () => {
+    // v1 used `.section.dark .flashcard-face`; v2 scopes by `.flashcard-face` directly.
+    // The contrast guarantee (dark accent outline on the cream face) is what matters.
+    expect(css).toMatch(/\.flashcard-face :focus-visible\s*\{\s*outline-color:\s*var\(--accent-dark\)/);
   });
 });
