@@ -32,3 +32,29 @@ Do NOT "fix" it by changing the section — the same `.matrix` markup is reused 
 ## Confirmed OK (no action)
 
 `prefers-reduced-motion` handling (incl. a real flip-card fallback); matrix `scope` attributes + `role="region"`/`tabindex`/`aria-label` scroll wrappers; `aria-live` on `#cardFeedback` (assertive) and `#ioStatus`/`#readinessResult` (polite); matrix `<thead>` header (cream on ink, 10.7:1); translator `.say` (brown italic, 9.4:1).
+
+---
+
+# S5 audit results (2026-06-06) — `accessibility` (WCAG 2.2) + `web-quality-audit` skills
+
+Applied both skill checklists against the full `src/` read. **All §12 / §15 a11y criteria met after the S5 fixes below.**
+
+## Fixed this session
+- **A (contrast, CRITICAL):** matrix data cells — hotfix verified present + now guarded by a regression test (`check_dashboard_contrast.py` rule-aware check; temporarily removing the hotfix makes the test FAIL).
+- **B (contrast):** `.section-sub` 4.35→5.09:1 (darkened `--muted-paper` to `#44586a`).
+- **C (contrast):** correct-answer key glyph 4.09→≥7:1 (`--ink`).
+- **D (focus-visible 2.4.7/1.4.11, NEW — not in the cold review):** focusables on the light cream **flashcard faces** sat inside `.section.dark`, so the cascade gave them a gold outline ≈1.4:1 on cream (invisible). Scoped `.flashcard-face :focus-visible { outline-color: var(--accent-dark) }` (≥4.5:1).
+- **E (focus-visible):** explicit gold outline on `.deck-tile:focus-visible` (was cascade-only).
+- **F (consistency):** styled the previously-ruleless `.readiness-panel`/`.readiness-result`.
+
+## Verified compliant (POUR), no change needed
+- **Perceivable:** no `<img>` (CSS/text/emoji UI); icon buttons (`🔊`, `★/☆`) have `aria-label`; decorative emoji (`🔥`) and meter segments are `aria-hidden`; rings + structure meters carry `role="img"` + text `aria-label` (§15 "text-equivalent labels"); pronunciation respelling is always shown as the card answer (audio is supplementary). **Not color-alone:** quiz result also uses `aria-live` text + answer-face flip; guided path uses Done/Do-next/Later text; meters show the word low/medium/high.
+- **Operable:** every control is a native `<button>/<a>/<input>/<select>/<textarea>`; Practice keyboard (Space/1–4/Enter) layered over native activation without trapping Tab; inactive flashcard face is `inert` (out of tab order + a11y tree); skip-link → `#main`; `scroll-margin-top` clears the sticky nav (2.4.11); target sizes ≥40–46px on primary controls.
+- **Understandable:** `<html lang="en">`; consistent single nav; all inputs labelled (search/selects/typed-input `aria-label`/notes); import errors surface via `aria-live`.
+- **Robust:** native-first; correct ARIA (`role=region/group/img`, `aria-pressed/expanded/controls/describedby/labelledby`); multiple `aria-live` regions; logical h1→h2→h3 hierarchy; landmarks header/nav/main/footer + named `aside`.
+- **web-quality / best-practices:** `<!doctype html>`, `charset` first, viewport set, fonts `display=swap`; no `document.write`/deprecated APIs; `localStorage` guarded in try/catch (file://-safe). SEO/HTTPS/CWV-network checks are N/A for an offline single-file study tool.
+
+## Optional, low-priority (noted, not blocking AA — left to avoid scope creep)
+- `.pron .speak-btn` (Reference cards) renders ≈24px tall — meets 2.5.8 only via the inline-target exception; could bump min-height for comfort.
+- MC correct/wrong could add a ✓/✗ glyph for at-a-glance redundancy (already compliant via `aria-live` + flip).
+- `≈` in `.smeter-note` is read aloud; could `aria-hidden` it.
