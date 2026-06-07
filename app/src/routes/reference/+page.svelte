@@ -2,6 +2,7 @@
   import { data } from '$lib/data/index';
   import { langFor } from '$lib/engine/training.js';
   import { playPronunciation } from '$lib/audio/playPronunciation';
+  import StructureMeter from '$lib/components/StructureMeter.svelte';
 
   type Filter = 'Wine' | 'Food' | 'Cocktails' | 'Translator' | 'Pairing matrix';
   const FILTERS: Filter[] = ['Wine', 'Food', 'Cocktails', 'Translator', 'Pairing matrix'];
@@ -59,11 +60,11 @@
             >🔊</button>
           </div>
           <div class="meta">{w.grape} · {w.region} · {w.price}</div>
-          <div class="struct">
-            <span>Acidity <b>{w.structure.acidity}</b></span>
-            <span>Body <b>{w.structure.body}</b></span>
-            <span>Tannin <b>{w.structure.tannin}</b></span>
-            <span>Sweet <b>{w.structure.sweetness}</b></span>
+          <div class="meters">
+            <StructureMeter label="Acidity" level={w.structure.acidity} />
+            <StructureMeter label="Body" level={w.structure.body} />
+            <StructureMeter label="Tannin" level={w.structure.tannin} />
+            <div class="sweet"><span class="meta">Sweetness</span> <b>{w.structure.sweetness}</b></div>
           </div>
           <p class="winecard-pron meta">Say: <strong>{w.pronunciation.respell}</strong></p>
           <p class="winecard-body">{w.tenSecond}</p>
@@ -129,6 +130,10 @@
     border-radius: var(--radius-btn); border: 1px solid var(--line);
     background: rgba(255, 238, 215, .05); color: var(--cream); font-size: 15px;
   }
+  .meters { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; margin: 2px 0; }
+  .sweet { display: flex; align-items: center; gap: 8px; }
+  .sweet b { color: var(--ink); text-transform: capitalize; }
+  @media (max-width: 420px) { .meters { grid-template-columns: 1fr; } }
   .winecard-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .winecard-pron { margin: 2px 0 0; }
   .winecard-body { margin: 6px 0 0; font-size: 14px; }
