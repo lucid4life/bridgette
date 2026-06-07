@@ -24,7 +24,9 @@ export default defineConfig({
       },
       workbox: {
         // Precache the app shell + data + audio so the PWA works offline.
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff,woff2,mp3,json}']
+        // woff2 only — every SW-capable browser reads woff2, so the parallel .woff
+        // files are dead weight in the precache (PERF-01).
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2,mp3,json}']
       }
     })
   ],

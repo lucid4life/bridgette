@@ -1,10 +1,17 @@
 <script lang="ts">
   import '../app.css';
   // Self-hosted Oswald (offline-safe; precached by the SW) — the brand display face.
-  import '@fontsource/oswald/400.css';
-  import '@fontsource/oswald/500.css';
-  import '@fontsource/oswald/600.css';
-  import '@fontsource/oswald/700.css';
+  // Import ONLY the Latin subsets we use (drops cyrillic/cyrillic-ext/greek/vietnamese,
+  // which the SW would otherwise precache despite the browser never fetching them).
+  // latin-ext is required: the menu carries Löss / Grüner / Dürkheimer / Niederösterreich.
+  import '@fontsource/oswald/latin-400.css';
+  import '@fontsource/oswald/latin-ext-400.css';
+  import '@fontsource/oswald/latin-500.css';
+  import '@fontsource/oswald/latin-ext-500.css';
+  import '@fontsource/oswald/latin-600.css';
+  import '@fontsource/oswald/latin-ext-600.css';
+  import '@fontsource/oswald/latin-700.css';
+  import '@fontsource/oswald/latin-ext-700.css';
   import { page } from '$app/state';
   import PwaToast from '$lib/components/PwaToast.svelte';
 
