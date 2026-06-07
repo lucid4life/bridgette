@@ -264,6 +264,9 @@
             </p>
           {/if}
           {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
+          {#if pendingCorrect === false && card.learnLink}
+            <p class="explain"><a class="explain-link" href={'/school#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
+          {/if}
           <div class="gradebar">
             {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={speakCard}><span aria-hidden="true">🔊</span></button>{/if}
             <button class="btn" type="button" onclick={() => commit(true)}>I got it (1)</button>
@@ -313,6 +316,8 @@
   .feedback.no { color: var(--accent-dark); }
   .reveal:focus { outline: none; } /* focus moved here programmatically on reveal */
   .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
+  .explain { margin: 8px 0 0; }
+  .explain-link { color: var(--accent-dark); font-weight: 600; font-size: 14px; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; min-height: 24px; }
   .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent-dark); border-radius: var(--radius-card); background: rgba(168, 50, 18, .14); }
   .deck-tile { display: grid; gap: 4px; text-align: left; cursor: pointer; }
   .deck-name { font-family: var(--font-display); font-size: 17px; text-transform: uppercase; }
