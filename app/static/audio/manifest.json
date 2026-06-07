@@ -1,0 +1,87 @@
+{
+  "blue-mountain-brut": {
+    "text": "Blue Mountain Brut",
+    "respell": "BLOO MOWN-tin BROOT",
+    "lang": "en-CA"
+  },
+  "fattoria-moretto-semprebon": {
+    "text": "Fattoria Moretto Semprebon",
+    "respell": "fah-TOH-ree-ah moh-REH-toh sem-preh-BOHN",
+    "lang": "it-IT"
+  },
+  "hiedler-loss": {
+    "text": "Hiedler Löss",
+    "respell": "HEED-ler LURSS",
+    "lang": "de-AT"
+  },
+  "vini-be-good-hip-hop-chenin": {
+    "text": "Vini be Good Hip Hop Chenin",
+    "respell": "VEE-nee beh good hip hop SHEN-in",
+    "lang": "fr-FR"
+  },
+  "wagner-stempel-weissburgunder": {
+    "text": "Wagner-Stempel Weissburgunder",
+    "respell": "VAHG-ner SHTEM-pel VICE-boor-goon-der",
+    "lang": "de-DE"
+  },
+  "darting-durkheimer-fronhof": {
+    "text": "Darting Dürkheimer Fronhof",
+    "respell": "DAR-ting DEWRK-hy-mer FROHN-hohf",
+    "lang": "de-DE"
+  },
+  "dona-matilde-branco": {
+    "text": "Dona Matilde Branco",
+    "respell": "DOH-nah ma-TEEL-deh BRAHN-koo",
+    "lang": "pt-PT"
+  },
+  "bodega-cerron-remordimiento-blanco": {
+    "text": "Bodega Cerrón Remordimiento Blanco",
+    "respell": "boh-DEH-gah seh-RROHN reh-mor-dee-MYEN-toh BLAHN-koh",
+    "lang": "es-ES"
+  },
+  "ameztoi-rubentis": {
+    "text": "Ameztoi Rubentis",
+    "respell": "ah-MES-toy roo-BEN-tees",
+    "lang": "es-ES"
+  },
+  "leitz-eins-zwei-dry-rose": {
+    "text": "Leitz Eins Zwei Dry Rosé",
+    "respell": "LITES ines tsvy dry roh-ZAY",
+    "lang": "de-DE"
+  },
+  "deinhard-deidesheim": {
+    "text": "Deinhard Deidesheim",
+    "respell": "DINE-hart DY-des-hime",
+    "lang": "de-DE"
+  },
+  "ca-del-baio-langhe": {
+    "text": "Ca' del Baio Langhe",
+    "respell": "kah del BY-oh LAHN-geh",
+    "lang": "it-IT"
+  },
+  "sindicat-la-figuera": {
+    "text": "Sindicat la Figuera",
+    "respell": "sin-dee-KAHT lah fee-GEH-rah",
+    "lang": "es-ES"
+  },
+  "bindi-sergardi-la-boncia": {
+    "text": "Bindi Sergardi La Boncia",
+    "respell": "BEEN-dee ser-GAR-dee lah BOHN-chah",
+    "lang": "it-IT"
+  },
+  "bodega-cerron-remordimiento-tinto": {
+    "text": "Bodega Cerrón Remordimiento Tinto",
+    "respell": "boh-DEH-gah seh-RROHN reh-mor-dee-MYEN-toh TEEN-toh",
+    "lang": "es-ES"
+  },
+  "st-john-claret": {
+    "text": "St. John Claret",
+    "respell": "saynt jon KLA-ret",
+    "lang": "fr-FR"
+  },
+  "gallina-de-piel-neverwine": {
+    "text": "Gallina de Piel Neverwine",
+    "respell": "gah-YEE-nah deh pyel NEV-er-wine",
+    "lang": "es-ES"
+  }
+}
