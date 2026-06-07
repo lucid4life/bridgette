@@ -1,0 +1,83 @@
+/* app/src/app.css — Bridgette v2 design tokens. THE visual contract + the
+   visual-regression baseline for Phase 3. Extracted from
+   docs/v2-mockup/bridgette-app-prototype.html and reconciled with v1's
+   contrast/focus fixes (src/styles.css). Do NOT introduce generic-AI gradients;
+   extend the Bridgette workbook identity. */
+:root {
+  /* palette */
+  --cream: #ffeed7;
+  --paper: #fff8ec;
+  --paper-2: #f7dfbf;
+  --ink: #1e384b;
+  --ink-2: #162d3d;
+  --ink-3: #102230;
+  --orange: #f15623;
+  --accent-dark: #a83212;   /* contrast-safe action colour on cream */
+  --label-light: #8f2a12;   /* contrast-safe small label on cream (v1 fix) */
+  --gold: #fcb539;
+  --blue: #437c93;
+  --green: #3f6b54;
+  --muted: #c9bca9;         /* muted text on dark */
+  --muted-paper: #44586a;   /* muted text on cream — 5.09:1 (v1 fix) */
+  --line: rgba(255, 238, 215, .14);
+  --line-dark: rgba(30, 56, 75, .16);
+
+  /* type */
+  --font-display: "Oswald", Impact, "Arial Narrow", sans-serif;
+  --font-body: Arial, Helvetica, sans-serif;
+
+  /* radii */
+  --radius-nav: 8px;
+  --radius-btn: 9px;
+  --radius-chip: 999px;
+  --radius-card: 12px;
+  --radius-flash: 16px;
+
+  /* shadow + spacing scale */
+  --shadow-flash: 0 24px 60px rgba(0, 0, 0, .35);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 18px;
+  --space-6: 22px;
+  --space-7: 30px;
+  --space-8: 34px;
+
+  /* the 3 layouts: desktop sidebar / tablet rail (<=1000) / mobile tab-bar (<=680) */
+  --bp-tablet: 1000px;
+  --bp-mobile: 680px;
+
+  /* layout */
+  --rail-w: 74px;
+  --sidebar-w: 248px;
+  --screen-max: 1100px;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--ink-3);
+  color: var(--cream);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, .brand, .nav-label, .eyebrow {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+/* focus-visible choreography carried from v1: dark accent by default, gold on
+   dark surfaces, dark accent restored on the light flashcard faces (the v1
+   specificity fix: .section.dark .flashcard-face out-specifies .section.dark). */
+:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 3px; }
+.section.dark :focus-visible { outline-color: var(--gold); }
+.section.dark .flashcard-face :focus-visible { outline-color: var(--accent-dark); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
