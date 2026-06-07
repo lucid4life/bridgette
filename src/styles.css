@@ -13,7 +13,7 @@
       --blue: #437c93;
       --green: #506f5f;
       --brown: #5b351e;
-      --muted-paper: #506272;
+      --muted-paper: #44586a;
       --muted-dark: #d0c6b8;
       --line-dark: rgba(30, 56, 75, .22);
       --line-light: rgba(255, 238, 215, .26);
@@ -68,6 +68,12 @@
     }
     .skip-link:focus-visible {
       outline-color: var(--ink);
+    }
+    /* The flashcard faces are light cream but live inside .section.dark #practice,
+       where the rule above forces a gold outline (~1.4:1 on cream = invisible).
+       Restore the dark accent outline for focusables on the light faces. */
+    .flashcard-face :focus-visible {
+      outline-color: var(--accent-dark);
     }
     :target, button, input, select, textarea, summary {
       scroll-margin-top: 96px;
@@ -826,6 +832,7 @@
       color: var(--cream); padding: 14px; min-height: 120px; align-items: stretch;
     }
     .deck-tile:hover, .deck-tile:focus-visible { border-color: var(--orange); background: rgba(241,86,35,.16); }
+    .deck-tile:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; } /* on the dark section body, gold is correct */
     .deck-tile .deck-name { font-family: "Oswald", Arial, sans-serif; text-transform: uppercase; font-size: 20px; }
     .deck-tile .deck-meta { font-size: 13px; color: var(--muted-dark); }
     .deck-tile .deck-mastery { font-weight: 800; color: var(--gold); font-size: 13px; }
@@ -881,7 +888,7 @@
     }
     .choice-btn:hover { border-color: var(--accent-dark); background: rgba(168,50,18,.1); }
     .choice-btn.correct { border-color: var(--green); background: rgba(80,111,95,.2); color: var(--ink); }
-    .choice-btn.correct .choice-key { border-color: var(--green); color: var(--green); }
+    .choice-btn.correct .choice-key { border-color: var(--ink); color: var(--ink); }
     .choice-btn.wrong { border-color: var(--accent-dark); background: rgba(168,50,18,.16); }
     .choice-btn[disabled] { cursor: default; opacity: .92; }
 
@@ -926,6 +933,14 @@
     .weak-pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--accent-dark);
       background: rgba(168,50,18,.1); color: var(--ink); padding: 6px 10px; font-weight: 700; font-size: 13px; }
     .summary-callout { border-left-color: var(--gold); }
+
+    /* Readiness Check panel — matches .callout/.practice-launch in the light Progress section */
+    .readiness-panel {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      border: 1px solid var(--line-dark); border-left: 5px solid var(--accent-dark);
+      background: rgba(255, 255, 255, .55); padding: 14px; margin-bottom: 8px;
+    }
+    .readiness-result { margin: 0; flex: 1 1 260px; color: var(--ink); font-weight: 700; }
 
     @media (max-width: 1120px) {
       .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
