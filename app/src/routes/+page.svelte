@@ -111,6 +111,9 @@
       summary = { correct, total, pct, weak: [] };
     }
     view = 'summary';
+    // Signal a completed session so the PWA can offer a quiet, contextual install
+    // prompt (spec §13 — after the first session, never on load).
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('bb:session-complete'));
   }
   function speakCard() {
     if (card?.wineId) playPronunciation(card.wineId, card.audioText ?? card.answer, card.lang);

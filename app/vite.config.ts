@@ -16,7 +16,11 @@ export default defineConfig({
         orientation: 'portrait',
         theme_color: '#132b3b',
         background_color: '#132b3b',
-        icons: []
+        icons: [
+          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+        ]
       },
       workbox: {
         // Precache the app shell + data + audio so the PWA works offline.

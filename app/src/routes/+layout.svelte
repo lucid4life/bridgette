@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css';
   import { page } from '$app/state';
+  import PwaToast from '$lib/components/PwaToast.svelte';
 
   let { children } = $props();
 
@@ -56,3 +57,4 @@
     </nav>
   </div>
 </div>
+<PwaToast />
