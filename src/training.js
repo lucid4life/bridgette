@@ -593,6 +593,8 @@
     session.pendingCorrect = null;
     var flashcard = $("flashcard");
     flashcard.classList.remove("flipped");
+    // S5 flourish: replay the front-face "deal-in" for each new card (reduced-motion safe via CSS)
+    flashcard.classList.remove("bb-deal"); void flashcard.offsetWidth; flashcard.classList.add("bb-deal");
     setActiveFace(false);
     $("frontDeck").textContent = (DECKS[card.deck] ? DECKS[card.deck].label : card.deck) + " · box " + box;
     $("cardPrompt").textContent = card.prompt;

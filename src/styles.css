@@ -850,7 +850,7 @@
     .flashcard { perspective: 1400px; }
     .flashcard-inner {
       position: relative; transform-style: preserve-3d;
-      transition: transform .5s ease; min-height: 320px;
+      transition: transform .55s cubic-bezier(.2, .7, .2, 1); min-height: 320px;
     }
     .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
     .flashcard-face {
@@ -944,6 +944,35 @@
       background: rgba(255, 255, 255, .55); padding: 14px; margin-bottom: 8px;
     }
     .readiness-result { margin: 0; flex: 1 1 260px; color: var(--ink); font-weight: 700; }
+
+    /* ---- S5 visual flourish: additive in-system polish. All motion is auto-disabled
+       by the prefers-reduced-motion block below (animation/transition-duration → .01ms),
+       and nothing here changes a text/background colour token, so contrast is unaffected. ---- */
+    @keyframes bb-rise-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @keyframes bb-pop { 0% { transform: scale(1); } 45% { transform: scale(1.04); } 100% { transform: scale(1); } }
+
+    /* Each new card gently "deals in" (front face) — .bb-deal is re-added per showCard() */
+    .flashcard.bb-deal .flashcard-front { animation: bb-rise-in .32s ease both; }
+
+    /* Quiz feedback: a shape cue (✓/✗, not colour alone) + a gentle confirm pop */
+    .choice-btn.correct::after { content: "✓"; margin-left: auto; font-weight: 800; color: var(--ink); }
+    .choice-btn.wrong::after { content: "✗"; margin-left: auto; font-weight: 800; color: var(--accent-dark); }
+    .choice-btn.correct { animation: bb-pop .3s ease; }
+
+    /* Mastery rings: dial depth, a superscript "%", and a hover lift like .study-card */
+    .ring-card { transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+    .ring-card:hover { border-color: rgba(168, 50, 18, .4); box-shadow: 0 8px 22px rgba(30, 56, 75, .12); transform: translateY(-1px); }
+    .ring { box-shadow: inset 0 0 0 1px rgba(30, 56, 75, .10), 0 1px 0 rgba(30, 56, 75, .06); }
+    .ring-num::after { content: "%"; font-size: .58em; vertical-align: super; opacity: .65; margin-left: 1px; }
+
+    /* Structure-meter filled segments: subtle top highlight for depth */
+    .smeter-seg.on { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28); }
+
+    /* Deductive-grid results: gentle staggered reveal */
+    .dg-hit { animation: bb-rise-in .3s ease both; }
+    .dg-hit:nth-child(2) { animation-delay: .04s; }
+    .dg-hit:nth-child(3) { animation-delay: .08s; }
+    .dg-hit:nth-child(4) { animation-delay: .12s; }
 
     @media (max-width: 1120px) {
       .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
