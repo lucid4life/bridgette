@@ -38,6 +38,14 @@ describe('bb_progress_v1 migration (a real v1 user must not lose progress)', () 
     expect(out.readiness?.lastScore).toBe(78);
   });
 
+  it('backfills the v2 study-day log from a v1 user (keeps the streak alive on upgrade)', () => {
+    const out = T.migrateProgress(golden, validIds);
+    // golden has no studyDays; migration seeds it from streak.lastStudyDate
+    expect(out.studyDays).toEqual([20287]);
+    expect(out.settings.goal).toBe('daily');
+    expect(out.settings.weeklyTarget).toBe(3);
+  });
+
   it('round-trips through export/import without losing card state', () => {
     const migrated = T.migrateProgress(golden, validIds);
     const json = T.exportProgress(migrated, data);

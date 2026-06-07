@@ -1,6 +1,9 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
   import { deduce, DG_DIMS } from '$lib/engine/wineschool.js';
+  import FamiliesView from '$lib/components/FamiliesView.svelte';
+  import StyleMap from '$lib/components/StyleMap.svelte';
+  import RegionMap from '$lib/components/RegionMap.svelte';
 
   // quick-check state per lesson id
   let picked = $state<Record<string, number | null>>({});
@@ -29,6 +32,24 @@
   <h1>The fundamentals</h1>
   <p class="sub">Seven short lessons, each with a worked example and a quick check — taught with this list's own wines.</p>
 
+  <section class="reasoning" id="families-geography" aria-labelledby="fg-h">
+    <h2 id="fg-h" class="fg-h">Families &amp; geography</h2>
+    <p class="meta">Five families to steer by, and the map + style grid that explain why each wine tastes the way it does.</p>
+    <h3 class="sub-h">The 5 families</h3>
+    <FamiliesView />
+    <div class="maps">
+      <div class="map-card">
+        <h3 class="sub-h">Style map — body × acidity</h3>
+        <StyleMap />
+      </div>
+      <div class="map-card">
+        <h3 class="sub-h">Where it's from</h3>
+        <RegionMap />
+      </div>
+    </div>
+  </section>
+
+  <h2 class="fg-h">The seven lessons</h2>
   <div class="lessons">
     {#each data.lessons as l, i (l.id)}
       <article class="card lesson" id={l.id} aria-labelledby={l.id + '-h'}>
@@ -110,6 +131,12 @@
 </section>
 
 <style>
+  .reasoning { margin: 0 0 30px; }
+  .fg-h { font-size: clamp(20px, 2.4vw, 26px); margin: 18px 0 4px; color: var(--cream); }
+  .sub-h { font-size: 15px; margin: 18px 0 10px; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; }
+  .maps { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 8px; }
+  .map-card { background: rgba(255, 238, 215, .04); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 16px; }
+  @media (max-width: 800px) { .maps { grid-template-columns: 1fr; } }
   .lessons { display: grid; gap: 16px; }
   .lesson-num { margin: 0 0 2px; text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
   .lesson-body { margin: 6px 0; line-height: 1.55; }

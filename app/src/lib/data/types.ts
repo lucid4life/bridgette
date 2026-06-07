@@ -163,12 +163,14 @@ export interface Readiness {
   weakAreas: string[];
   byDeck: Record<string, { total: number; correct: number }>;
 }
+export type StreakGoal = 'daily' | 'weekly';
 export interface Progress {
   schema: number;
   cards: Record<string, CardState>;
   decks: Record<string, { mastery: number }>;
   tags: Record<string, { mastery: number }>;
   readiness: Readiness | null;
+  studyDays: number[];
   streak: Streak;
-  settings: { difficulty: string; audio: boolean };
+  settings: { difficulty: string; audio: boolean; goal: StreakGoal; weeklyTarget: number };
 }

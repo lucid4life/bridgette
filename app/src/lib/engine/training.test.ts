@@ -445,4 +445,29 @@ describe('engine', () => {
       expect(c.id).toBe('pronunciation:' + c.wineId + ':say');
     }
   });
+
+  it('buildMysteryPour: 2 directions per wine, 4 unique MC choices incl. the answer', () => {
+    const cards = T.generateDeck('mystery', DATA);
+    expect(cards.length).toBe(DATA.wines.length * 2);
+    cards.forEach((c: any) => {
+      expect(c.deck).toBe('mystery');
+      expect(c.kind).toBe('discriminate');
+      expect(c.choices.length, 'mystery card lacks 4 choices: ' + c.id).toBe(4);
+      expect(new Set(c.choices).size, 'mystery card has dup choices: ' + c.id).toBe(4);
+      expect(c.choices.indexOf(c.answer) !== -1, 'mystery choices omit answer: ' + c.id).toBeTruthy();
+      expect(c.id.split(':').length).toBe(3);
+      expect(c.wineId).toBeTruthy();
+    });
+  });
+
+  it('buildMysteryPour: name-direction distractors are real wine names (structurally adjacent)', () => {
+    const names = new Set(DATA.wines.map((w) => w.name));
+    T.generateDeck('mystery', DATA).filter((c: any) => c.id.endsWith(':name')).forEach((c: any) => {
+      c.choices.forEach((ch: string) => expect(names.has(ch), 'not a wine name: ' + ch).toBeTruthy());
+    });
+  });
+
+  it('buildMysteryPour is deterministic (same data → identical cards)', () => {
+    expect(T.generateDeck('mystery', DATA)).toEqual(T.generateDeck('mystery', DATA));
+  });
 });

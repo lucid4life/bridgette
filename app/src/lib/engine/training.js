@@ -112,7 +112,8 @@ export const DECKS = {
   'wine-identity': { label: 'Wine Identity', learnLink: 'deductive-grid' },
   pronunciation: { label: 'Pronunciation', learnLink: 'pronunciation-primer' },
   pairing: { label: 'Pairing & Why', learnLink: 'pairing-levers' },
-  structure: { label: 'Structure', learnLink: 'structure-words' }
+  structure: { label: 'Structure', learnLink: 'structure-words' },
+  mystery: { label: 'Mystery Pour', learnLink: 'deductive-grid' }
 };
 
 const COUNTRY_LANG = {
@@ -276,6 +277,98 @@ function genStructure(data) {
   return cards;
 }
 
+// ---------------- Mystery Pour (the deductive grid as a generated card, spec §8) ----------------
+// Structure fingerprint -> name our wine (and the reverse). Distractors are the
+// structurally-ADJACENT wines (L1 distance over acidity/body/tannin) so the learner
+// must reason on the fine axis differences, not category gestalt. Pure + deterministic
+// (choices are answer-first; the UI shuffles display order). Card ids are stable
+// functions of the wine id: "mystery:<wineId>:name" / ":grape".
+var FP_AXES = ['acidity', 'body', 'tannin'];
+function structDist(a, b) {
+  var d = 0;
+  for (var i = 0; i < FP_AXES.length; i++) {
+    var ax = FP_AXES[i];
+    d += Math.abs(LEVEL[a.structure[ax]] - LEVEL[b.structure[ax]]);
+  }
+  return d; // 0..6; sweetness intentionally excluded
+}
+function fpString(w) {
+  return w.structure.acidity + ' acidity · ' + w.structure.body + ' body · ' +
+    w.structure.tannin + ' tannin · ' + w.structure.sweetness;
+}
+function fpPrompt(w) {
+  return 'A ' + w.climate + '-climate ' + w.category.toLowerCase() + ': ' +
+    w.structure.acidity + ' acidity, ' + w.structure.body + ' body, ' +
+    w.structure.tannin + ' tannin, ' + w.structure.sweetness + '.';
+}
+function fullFp(w) {
+  return [w.category, w.climate, w.structure.acidity, w.structure.body, w.structure.tannin, w.structure.sweetness].join('|');
+}
+// deterministic ranking of every OTHER wine by structural adjacency (no rng)
+function adjacentWines(target, wines) {
+  return wines.filter(function (w) { return w.id !== target.id; })
+    .map(function (w) {
+      return { w: w, d: structDist(target, w), sameCat: w.category === target.category ? 0 : 1, sameClim: w.climate === target.climate ? 0 : 1 };
+    })
+    .sort(function (a, b) {
+      return (a.d - b.d) || (a.sameCat - b.sameCat) || (a.sameClim - b.sameClim) || (a.w.id < b.w.id ? -1 : a.w.id > b.w.id ? 1 : 0);
+    })
+    .map(function (x) { return x.w; });
+}
+
+export function buildMysteryPour(data) {
+  if (!data) throw new Error('engine.buildMysteryPour: data is required');
+  var wines = data.wines;
+  var cards = [];
+  wines.forEach(function (w) {
+    var ranked = adjacentWines(w, wines);
+    var distractorWines = ranked.slice(0, 3);
+
+    // dir 'grape': wine NAME -> its fingerprint STRING (always fair; dedupe collinear fps)
+    var answerFp = fpString(w);
+    var fpChoices = [answerFp];
+    for (var i = 0; i < ranked.length && fpChoices.length < 4; i++) {
+      var s = fpString(ranked[i]);
+      if (fpChoices.indexOf(s) === -1) fpChoices.push(s);
+    }
+    if (fpChoices.length === 4) {
+      cards.push({
+        id: 'mystery:' + w.id + ':grape',
+        deck: 'mystery', kind: 'discriminate', wineId: w.id,
+        prompt: w.name + ' — what is its structure signature?',
+        answer: answerFp,
+        why: w.name + ' (' + w.grape + ', ' + w.region + ') reads ' + answerFp + (w.structureNote ? ' — ' + w.structureNote : '') + '.',
+        choices: fpChoices,
+        aliases: [], learnLink: 'deductive-grid',
+        tags: ['mystery', 'grape', w.category.toLowerCase()].concat(w.tags || [])
+      });
+    }
+
+    // dir 'name': fingerprint -> our WINE (guard identical-fingerprint cohorts)
+    var cohort = wines.filter(function (x) { return fullFp(x) === fullFp(w); });
+    var hasTwin = distractorWines.some(function (d) { return fullFp(d) === fullFp(w); });
+    var prompt = fpPrompt(w) + ' Which wine on our list?';
+    var aliases = [];
+    if (hasTwin) {
+      prompt = fpPrompt(w) + ' (from ' + (w.region || w.country) + ') Which wine on our list?';
+      aliases = cohort.filter(function (x) { return x.id !== w.id; }).map(function (x) { return x.name; });
+    }
+    if (distractorWines.length === 3) {
+      cards.push({
+        id: 'mystery:' + w.id + ':name',
+        deck: 'mystery', kind: 'discriminate', wineId: w.id,
+        prompt: prompt,
+        answer: w.name,
+        why: 'It’s ' + w.grape + ' from ' + w.region + '. The tell: ' + fpString(w) + (hasTwin ? ' (others share this profile — region pins it).' : '.'),
+        choices: [w.name].concat(distractorWines.map(function (d) { return d.name; })),
+        aliases: aliases, learnLink: 'deductive-grid',
+        tags: ['mystery', 'name', w.category.toLowerCase()].concat(w.tags || [])
+      });
+    }
+  });
+  return cards;
+}
+
 export function generateDeck(deckId, data) {
   if (!data) throw new Error('engine.generateDeck: data is required');
   switch (deckId) {
@@ -284,6 +377,7 @@ export function generateDeck(deckId, data) {
     case 'pronunciation': return genPronunciation(data);
     case 'pairing': return genPairing(data);
     case 'structure': return genStructure(data);
+    case 'mystery': return buildMysteryPour(data);
     default: return [];
   }
 }
@@ -357,8 +451,9 @@ export function recordReadiness(progress, scored, today) {
 function defaultProgressShape() {
   return {
     schema: 1, cards: {}, decks: {}, tags: {}, readiness: null,
+    studyDays: [], // v2 forgiving-streak source of truth (sorted day-numbers)
     streak: { current: 0, lastStudyDate: null },
-    settings: { difficulty: 'adaptive', audio: true }
+    settings: { difficulty: 'adaptive', audio: true, goal: 'daily', weeklyTarget: 3 }
   };
 }
 export const defaultProgress = defaultProgressShape;
@@ -470,6 +565,17 @@ export function migrateProgress(raw, validIds) {
   if (raw.settings && typeof raw.settings === 'object') {
     base.settings.difficulty = raw.settings.difficulty || base.settings.difficulty;
     base.settings.audio = raw.settings.audio !== false;
+    base.settings.goal = raw.settings.goal === 'weekly' ? 'weekly' : 'daily';
+    if (isFinite(raw.settings.weeklyTarget)) {
+      base.settings.weeklyTarget = Math.max(1, Math.min(7, Math.round(Number(raw.settings.weeklyTarget))));
+    }
+  }
+  // v2 study-day log; backfill from the legacy lastStudyDate so upgrading users
+  // keep a streak. (Unknown to v1, so this restores continuity, never loses it.)
+  if (Array.isArray(raw.studyDays)) {
+    base.studyDays = Array.from(new Set(raw.studyDays.filter(function (d) { return isFinite(d); }).map(Number))).sort(function (a, b) { return a - b; });
+  } else if (base.streak.lastStudyDate != null) {
+    base.studyDays = [base.streak.lastStudyDate];
   }
   if (raw.readiness) base.readiness = raw.readiness;
   return base;

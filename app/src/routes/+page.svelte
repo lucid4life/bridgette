@@ -33,7 +33,7 @@
   const cardMode = $derived(card ? engine.modeForBox(card, box) : 'mc');
   const why = $derived(card ? engine.whyDisplay(card, box) : { label: '', text: '' });
   const progressPct = $derived(baseTotal ? Math.round((Math.min(idx, baseTotal) / baseTotal) * 100) : 0);
-  const focusDecks = Object.keys(engine.DECKS) as string[];
+  const focusDecks = (Object.keys(engine.DECKS) as string[]).filter((d) => d !== 'mystery');
 
   function reset() {
     revealed = false; pendingCorrect = null; confidence = null; chosen = null;
@@ -142,21 +142,26 @@
     <p class="h-eyebrow">Practice</p>
     <h1>Build the muscle memory</h1>
     <p class="sub">Smart Review mixes what's due and weak. Or focus a single deck. Cards get harder as you master them.</p>
-    <div class="grid cols-3" style="margin-bottom:24px">
+    <div class="grid cols-2" style="margin-bottom:24px">
       <div class="card">
         <h3>⚡ Smart Review</h3>
         <p class="meta">{progressStore.dueCount()} due · mixed decks</p>
         <button class="btn" type="button" style="margin-top:10px" onclick={() => startSession(null)}>Start</button>
       </div>
       <div class="card">
-        <h3>🏁 Readiness Check</h3>
-        <p class="meta">Mixed exam → % shift-ready</p>
-        <button class="btn ghost" type="button" style="margin-top:10px" onclick={startReadiness}>Run</button>
-      </div>
-      <div class="card">
         <h3>🍷 Guest Simulator</h3>
         <p class="meta">Ask → Match → Explain → Confirm</p>
         <a class="btn ghost" href="/practice/simulator" style="margin-top:10px">Start</a>
+      </div>
+      <div class="card">
+        <h3>🔮 Mystery Pour</h3>
+        <p class="meta">Read the structure → name the pour</p>
+        <button class="btn ghost" type="button" style="margin-top:10px" onclick={() => startSession('mystery')}>Deduce</button>
+      </div>
+      <div class="card">
+        <h3>🏁 Readiness Check</h3>
+        <p class="meta">Mixed exam → % shift-ready</p>
+        <button class="btn ghost" type="button" style="margin-top:10px" onclick={startReadiness}>Run</button>
       </div>
     </div>
     <h3 style="margin:0 0 10px">🎯 Focus a deck</h3>

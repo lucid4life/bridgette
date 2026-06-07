@@ -10,7 +10,9 @@
   const deckRings = $derived(decks.map((d) => ({ label: (engine.DECKS as any)[d].label, pct: progressStore.masteryFor(d) })));
   const tagRings = $derived(TAGS.map((t) => ({ label: t, pct: progressStore.masteryFor(t) })));
   const weak = $derived(progressStore.weakCards());
-  const streak = $derived(progressStore.streak);
+  const goal = $derived(progressStore.goal);
+  const daily = $derived(progressStore.dailyStreak());
+  const weekly = $derived(progressStore.weeklyStreak());
 
   function ringColor(p: number) { return p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--gold)' : 'var(--accent-dark)'; }
 
@@ -72,10 +74,18 @@
   <div class="grid cols-2" style="margin-top:22px">
     <div class="card">
       <h3>Streak</h3>
-      {#if streak.current > 0}
-        <p class="meta"><span aria-hidden="true">🔥</span> {streak.current}-day streak. A single missed day is forgiven — keep it lenient.</p>
+      <div class="goal-toggle" role="group" aria-label="Streak goal">
+        <button class="chip" type="button" aria-pressed={goal === 'daily'} onclick={() => progressStore.setGoal('daily')}>Daily</button>
+        <button class="chip" type="button" aria-pressed={goal === 'weekly'} onclick={() => progressStore.setGoal('weekly')}>Weekly goal</button>
+      </div>
+      {#if goal === 'daily'}
+        {#if daily.count > 0}
+          <p class="meta"><span aria-hidden="true">🔥</span> {daily.count}-day streak{daily.protectedRecently ? ' · ❄️ a missed day was forgiven' : ''}. A single missed day is always forgiven — no guilt.</p>
+        {:else}
+          <p class="meta">No active streak — study today to start one. Missed days are forgiven generously.</p>
+        {/if}
       {:else}
-        <p class="meta">No study days yet — start a session to begin your streak.</p>
+        <p class="meta"><span aria-hidden="true">📅</span> {weekly.weeks} week{weekly.weeks === 1 ? '' : 's'} hitting your goal. This week: {weekly.thisWeek}/{weekly.target} days{weekly.thisWeek >= weekly.target ? ' ✓' : ''}. Built for weekend shifts.</p>
       {/if}
       {#if progressStore.readiness}
         <p class="meta">Last Readiness: {progressStore.readiness.lastScore}% shift-ready{progressStore.readiness.weakAreas.length ? ' · weak: ' + progressStore.readiness.weakAreas.slice(0, 5).join(', ') : ''}.</p>
@@ -108,6 +118,7 @@
 </section>
 
 <style>
+  .goal-toggle { display: flex; gap: 8px; margin: 0 0 10px; }
   .rings { display: flex; flex-wrap: wrap; gap: 16px; }
   .ring-card { display: grid; justify-items: center; gap: 6px; }
   .ring.small { width: 92px; height: 92px; }

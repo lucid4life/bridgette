@@ -6,7 +6,8 @@
   const decks = Object.keys(engine.DECKS) as string[];
   const totalCards = $derived(engine.allCards(data).length);
   const due = $derived(progressStore.dueCount());
-  const streak = $derived(progressStore.streak.current);
+  const daily = $derived(progressStore.dailyStreak());
+  const streak = $derived(daily.count);
   const studied = $derived(Object.keys(progressStore.value.cards).length > 0);
 
   const deckMastery = $derived(decks.map((d) => ({ d, label: (engine.DECKS as any)[d].label, m: progressStore.masteryFor(d) })));
@@ -36,7 +37,7 @@
       <h3>Ready to study</h3>
       <div class="stat">
         <div><b>{due}</b><span class="meta">cards due</span></div>
-        <div><b class="streak">{streak}</b><span class="meta">day streak 🔥</span></div>
+        <div><b class="streak">{streak}</b><span class="meta">day streak {daily.protectedRecently ? '🔥❄️' : '🔥'}</span></div>
         <div><b>{totalCards}</b><span class="meta">cards total</span></div>
       </div>
       <p style="margin:16px 0 0"><a class="btn" href="/">▶ Start Smart Review</a></p>

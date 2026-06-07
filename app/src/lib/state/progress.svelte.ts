@@ -4,7 +4,8 @@
 import { browser } from '$app/environment';
 import { data } from '$lib/data/index';
 import * as engine from '$lib/engine/training.js';
-import type { Card, Progress } from '$lib/data/types';
+import { addStudyDay, dailyStreak, weeklyStreak } from '$lib/engine/streak.js';
+import type { Card, Progress, StreakGoal } from '$lib/data/types';
 
 function initial(): Progress {
   // SSR is off, but guard anyway: on the server use a fresh default.
@@ -29,9 +30,27 @@ export const progressStore = {
   save() {
     if (browser) engine.saveProgress(progress);
   },
+  get goal(): StreakGoal {
+    return progress.settings.goal;
+  },
+  /** Daily streak with silent freeze (spec §10): {count, protectedRecently}. */
+  dailyStreak() {
+    return dailyStreak(progress.studyDays, engine.dayNumber());
+  },
+  /** Weekly-goal streak: {weeks, thisWeek, target}. */
+  weeklyStreak() {
+    return weeklyStreak(progress.studyDays, engine.dayNumber(), progress.settings.weeklyTarget);
+  },
+  setGoal(g: StreakGoal) {
+    progress.settings.goal = g;
+    this.save();
+  },
   /** Grade a card and persist (skips re-shown cards — caller decides). */
   record(card: Card, correct: boolean, today?: number) {
-    progress = engine.recordResult(progress, card, correct, today);
+    const t = today ?? engine.dayNumber();
+    const next = engine.recordResult(progress, card, correct, t);
+    next.studyDays = addStudyDay(next.studyDays, t);
+    progress = next;
     this.save();
   },
   /**
@@ -49,6 +68,7 @@ export const progressStore = {
       st.box = boosted;
       st.due = t + (engine.BOX_DUE_DAYS as Record<number, number>)[boosted];
     }
+    next.studyDays = addStudyDay(next.studyDays, t);
     progress = next;
     this.save();
   },
@@ -56,6 +76,7 @@ export const progressStore = {
     const t = today ?? engine.dayNumber();
     const next = engine.recordReadiness(progress, scored, t);
     next.streak = engine.updateStreak(next.streak, t);
+    next.studyDays = addStudyDay(next.studyDays, t);
     progress = next;
     this.save();
   },
