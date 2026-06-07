@@ -16,7 +16,6 @@
   };
 
   const VIBES = ['a date night', 'a birthday table of 6', 'a quick after-work drink', 'a celebration', 'two regulars at the bar'];
-  const wineNames = data.wines.map((w) => w.name);
 
   function pick<T>(arr: T[], n: number, exclude: T[] = []): T[] {
     const pool = engine.shuffle(arr.filter((x) => !exclude.includes(x)), Math.random);
@@ -40,7 +39,7 @@
         answerWine: w.name,
         why: f.why,
         objection: obj,
-        wineChoices: engine.shuffle([w.name, ...pick(wineNames, 3, [w.name])], Math.random),
+        wineChoices: engine.shuffle([w.name, ...engine.wineDistractors(data, w.name, 3)], Math.random),
         replyChoices: engine.shuffle([obj.reply, ...otherReplies], Math.random)
       };
     });

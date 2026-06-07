@@ -156,7 +156,7 @@ function cocktailByName(data, name) {
 // Mystery-Pour adjacency ranking) so a steak red never offers a sparkling/rosé as a
 // plausible-but-silly foil. Falls back to deterministic rotation when the answer
 // isn't one of our 17 wines (e.g. a "grape — region" identity string).
-function wineDistractors(data, answerName, count, seed) {
+export function wineDistractors(data, answerName, count, seed) {
   const ans = wineByName(data, answerName);
   if (!ans) return pickDistractors(data.wines.map((w) => w.name), answerName, count, seed);
   return adjacentWines(ans, data.wines).slice(0, count).map((w) => w.name);
