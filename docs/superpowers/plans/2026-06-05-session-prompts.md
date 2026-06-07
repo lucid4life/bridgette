@@ -191,19 +191,41 @@ Runs AFTER S4 and BEFORE S5. Build only Session 4.5.
 ## S5 — Visual polish, accessibility & final QA
 
 ```
-You are building Session 5 — the final polish, accessibility pass, and QA for the Bridgette Bar Calgary wine-training tool. (Effort: run /effort xhigh first; for the accessibility/QA audit pass specifically, /effort max if it needs more depth.)
+You are building Session 5 — the FINAL polish, accessibility, contrast, and QA pass for the Bridgette Bar Calgary wine-training tool. (Effort: run /effort xhigh first; use /effort max for the accessibility/contrast audit if it needs more depth.)
 
 Read in full first:
-- docs/superpowers/specs/2026-06-05-bridgette-calgary-training-tool-design.md  (esp. §11, §12, §15 acceptance criteria)
+- docs/research/2026-06-06-pre-s5-contrast-a11y-audit.md  ← START HERE: a cold review with the EXACT contrast bugs + fixes
+- docs/superpowers/specs/2026-06-05-bridgette-calgary-training-tool-design.md  (esp. §11 visual, §12 a11y, §15 acceptance)
 - docs/superpowers/plans/2026-06-05-bridgette-training-tool.md  (focus: "Session S5")
 
 Then use superpowers:writing-plans to expand S5 into a plan at docs/superpowers/plans/2026-06-05-session-S5.md, then executing-plans.
 
-SCOPE: visual refinement within the Bridgette design system (progress rings, flashcard flip, quiz feedback states, focused study screen, structure meters low/med/high, deductive grid — laptop-first depth, no generic-AI gradients). Run a real accessibility audit using the accessibility and web-quality-audit skills (landmarks, focus order, no keyboard traps, aria-live regions, text-equivalent labels on rings/meters, contrast including gold-on-ink and the orange-on-cream rule). Verify prefers-reduced-motion everywhere. Confirm print modes still work. Rebuild dist/Bridgette_Training.html and confirm the bundler byte-diff test passes. Optionally delete the legacy root HTML once parity is confirmed.
+PRIORITY 1 — fix the known contrast bugs from the audit doc (confirmed, not hypothetical):
+- CRITICAL (the user's complaint): the Quick Pairing Matrix renders cream-on-cream inside the dark #pairing section — data <td> cells inherit cream text on a cream background (invisible; only the dish-name column shows). Fix: `.matrix td { color: var(--ink); }` plus `.section.dark .matrix { color: var(--ink); }`. The SAME .matrix markup is reused in the light Wine translator table — verify BOTH read ≥4.5:1 after the fix; do NOT "fix" it by changing the section.
+- `.section-sub` muted text on the section-head gradient (~4.35:1) → darken --muted-paper or use --brown in light sections.
+- generic focus ring on dark surfaces (1.82:1) → ensure the gold outline reaches EVERY dark-surface focusable (esp. .deck-tile, which has no outline today).
+- correct-answer key glyph green-on-green (3.79:1) → use --ink for the key on the correct state.
+- the unstyled .readiness-panel / .readiness-result → style like a .callout.
+Then do a broader contrast sweep yourself (accessibility + web-quality-audit skills) — every text/background pair must hit WCAG AA.
+
+PRIORITY 2 — visual refinement within the Bridgette design system (do NOT redesign — EXTEND): progress rings, flashcard flip, quiz feedback states, focused study screen, structure meters (low/med/high), deductive grid, Readiness panel. Laptop-first depth; no generic-AI gradients; keep the palette + Oswald.
+
+PRIORITY 3 — accessibility pass: landmarks, focus order, no keyboard traps, aria-live regions, text-equivalent labels on rings/meters, prefers-reduced-motion everywhere.
+
+AUDIO (S4.5 IS DONE — 17 ElevenLabs "Sarah" multilingual-v2 clips embedded in src/audio.js ≈650KB, routed through window.BB.playPronunciation with a Web Speech fallback): verify the human clips actually play in the browser, that src/audio.js is inlined into the bundle, and that the bundled dist stays a reasonable single-file size (already ~under 1MB — keep it emailable). The matrix contrast hotfix may already be applied in src/styles.css (`.matrix td { color: var(--ink) }`) — keep it and add the regression test below.
+
+TESTS: extend tests/check_dashboard_contrast.py to assert the matrix data cells and the light Wine School section use dark-on-light (so this bug class is caught automatically). Keep all existing Python + Node tests green. Rebuild dist/Bridgette_Training.html and confirm the bundler byte-diff test passes. Optionally delete the legacy root HTML once parity is confirmed.
 
 MUST OBEY: extend, don't replace, the Bridgette system; every spec §15 acceptance criterion must be demonstrably met.
 
-WHEN DONE: run the FULL manual smoke test from spec §13 (search, Focus session, Mixed session, Readiness Check, export→import, notes persist on reload, a Wine School quick check, a pronunciation speak button, all print modes) and ALL Python checks. Use superpowers:verification-before-completion and show evidence for each §15 criterion. Then /code-review, fix, final commit.
+WHEN DONE — run the FULL manual smoke test in a browser (if automation fails, ASK Adrian to confirm visual items rather than claim a pass):
+- Reference: search works; the Pairing Matrix is now fully readable (all columns); translator table readable.
+- Practice: a Focus session and a Mixed/Smart session grade + persist box/due/mastery/streak across reload.
+- Progress: deck + per-tag rings (with the contrast fixes), weak list, lenient streak, guided path, Export then Import round-trips.
+- Wine School: 7 lessons render, a quick check (wrong → reveals right), the deductive grid returns a sensible wine.
+- Readiness Check: full gauntlet → % ready + weak areas, persists after reload.
+- Notes persist on reload; all print modes; a pronunciation play (human clip if S4.5 done, else Web Speech).
+Run ALL Python + Node tests. Use superpowers:verification-before-completion and show evidence for each spec §15 criterion. Then /code-review, fix, final commit.
 
-Runs last, alone. Depends on all prior sessions.
+Runs LAST, alone. Depends on all prior sessions (and S4.5 if you ran it).
 ```

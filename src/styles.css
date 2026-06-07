@@ -659,6 +659,9 @@
       text-transform: none;
       min-width: 150px;
     }
+    /* hotfix: matrix data cells were cream-on-cream inside the dark Pairing section */
+    .matrix td { color: var(--ink); }
+    .section.dark .matrix { color: var(--ink); }
     .translator-intro {
       margin-bottom: 18px;
     }
