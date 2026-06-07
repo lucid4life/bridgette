@@ -113,7 +113,10 @@ export const DECKS = {
   pronunciation: { label: 'Pronunciation', learnLink: 'pronunciation-primer' },
   pairing: { label: 'Pairing & Why', learnLink: 'pairing-levers' },
   structure: { label: 'Structure', learnLink: 'structure-words' },
-  mystery: { label: 'Mystery Pour', learnLink: 'deductive-grid' }
+  mystery: { label: 'Mystery Pour', learnLink: 'deductive-grid' },
+  // v2 sprint1 — two under-served core areas finally get retrieval practice.
+  'cocktail-pairing': { label: 'Cocktail Pairing', learnLink: 'pairing-levers' },
+  upsell: { label: 'Upselling', learnLink: 'talking-to-a-guest' }
 };
 
 const COUNTRY_LANG = {
@@ -144,8 +147,22 @@ function wineByName(data, name) {
   return null;
 }
 
+function cocktailByName(data, name) {
+  for (let i = 0; i < data.cocktails.length; i++) if (data.cocktails[i].name === name) return data.cocktails[i];
+  return null;
+}
+
+// LS-05: MC distractors that are structurally NEAREST the answer wine (reuse the
+// Mystery-Pour adjacency ranking) so a steak red never offers a sparkling/rosé as a
+// plausible-but-silly foil. Falls back to deterministic rotation when the answer
+// isn't one of our 17 wines (e.g. a "grape — region" identity string).
+function wineDistractors(data, answerName, count, seed) {
+  const ans = wineByName(data, answerName);
+  if (!ans) return pickDistractors(data.wines.map((w) => w.name), answerName, count, seed);
+  return adjacentWines(ans, data.wines).slice(0, count).map((w) => w.name);
+}
+
 function genTranslator(data) {
-  const wineNames = data.wines.map((w) => w.name);
   return data.translator.map((t, i) => {
     const w = wineByName(data, t.bestGlass);
     return {
@@ -154,7 +171,7 @@ function genTranslator(data) {
       prompt: 'A guest asks for ' + t.ask + '. What’s your by-the-glass pour?',
       answer: t.bestGlass,
       why: t.phrase,
-      choices: [t.bestGlass].concat(pickDistractors(wineNames, t.bestGlass, 3, i)),
+      choices: [t.bestGlass].concat(wineDistractors(data, t.bestGlass, 3, i)),
       aliases: (w && w.aliases) ? w.aliases.slice() : [],
       scenario: 'A guest says “I usually drink ' + t.ask + '.” Name the by-the-glass pour and one sentence on why it fits.',
       learnLink: DECKS.translator.learnLink,
@@ -164,7 +181,6 @@ function genTranslator(data) {
 }
 
 function genWineIdentity(data) {
-  const wineNames = data.wines.map((w) => w.name);
   const ident = data.wines.map((w) => w.grape + ' — ' + w.region);
   const cards = [];
   data.wines.forEach((w, i) => {
@@ -187,7 +203,7 @@ function genWineIdentity(data) {
       prompt: w.grape + ' from ' + w.region + ' — which wine on our list?',
       answer: w.name,
       why: w.tenSecond || w.profile || '',
-      choices: [w.name].concat(pickDistractors(wineNames, w.name, 3, i)),
+      choices: [w.name].concat(wineDistractors(data, w.name, 3, i)),
       aliases: (w.aliases || []).slice(),
       scenario: 'A guest wants the ' + w.grape + ' from ' + w.region + '. Name the exact pour on our list.',
       learnLink: DECKS['wine-identity'].learnLink,
@@ -215,7 +231,6 @@ function genPronunciation(data) {
 }
 
 function genPairing(data) {
-  const wineNames = data.wines.map((w) => w.name);
   return data.foods.filter((f) => f.wine).map((f, i) => {
     const w = wineByName(data, f.wine);
     return {
@@ -224,7 +239,7 @@ function genPairing(data) {
       prompt: 'A guest orders ' + f.name + '. Best by-the-glass — and why?',
       answer: f.wine,
       why: f.why || '',
-      choices: [f.wine].concat(pickDistractors(wineNames, f.wine, 3, i)),
+      choices: [f.wine].concat(wineDistractors(data, f.wine, 3, i)),
       aliases: (w && w.aliases) ? w.aliases.slice() : [],
       scenario: 'Table just ordered ' + f.name + '. Recommend the glass and give the one structural reason it works.',
       learnLink: DECKS.pairing.learnLink,
@@ -369,6 +384,63 @@ export function buildMysteryPour(data) {
   return cards;
 }
 
+// LS-01: food -> best cocktail (+ the non-drinker zero-proof beat). Distractors are
+// OTHER cocktails only — leaking a wine would make it trivially solvable. Foods whose
+// printed cocktail can't be resolved to a real cocktail are skipped (no phantom answers).
+function genCocktailPairing(data) {
+  const ckNames = data.cocktails.map((c) => c.name);
+  const isCk = {}; ckNames.forEach((n) => { isCk[n] = 1; });
+  const cards = [];
+  data.foods.filter((f) => f.cocktail).forEach((f, i) => {
+    const options = String(f.cocktail).split(/\s+or\s+/i).map((s) => s.trim()).filter(Boolean);
+    const valid = options.filter((n) => isCk[n]);
+    if (!valid.length) return;
+    const answer = valid[0];
+    const ck = cocktailByName(data, answer);
+    const pool = ckNames.filter((n) => valid.indexOf(n) === -1);
+    const why = (ck ? ck.say : 'A strong cocktail call with ' + f.name + '.') +
+      (f.zero ? ' Not drinking? ' + f.zero + '.' : '');
+    cards.push({
+      id: 'cocktail-pairing:' + f.id + ':match',
+      deck: 'cocktail-pairing', kind: 'recall',
+      prompt: 'A guest at ' + f.name + ' wants a cocktail. Best call?',
+      answer: answer,
+      why: why,
+      choices: [answer].concat(pickDistractors(pool, answer, 3, i)),
+      aliases: valid.slice(1),
+      scenario: 'A guest at ' + f.name + " isn't drinking wine tonight — recommend a cocktail and one line on why.",
+      learnLink: DECKS['cocktail-pairing'].learnLink,
+      tags: ['cocktail-pairing'].concat(f.tags || [])
+    });
+  });
+  return cards;
+}
+
+// LS-02: glass -> bottle upsell. kind 'discriminate' (always MC) because the upgrade
+// text is prose, not a clean typeable token. The why carries the economics + the ethic.
+function genUpsell(data) {
+  const wines = data.wines.filter((w) => w.upgrade);
+  const upgrades = wines.map((w) => w.upgrade);
+  return wines.map((w, i) => {
+    const p = String(w.price).split('|').map((s) => s.trim());
+    const econ = p.length === 3
+      ? 'A bottle ($' + p[2] + ') is about 5x the 5oz pour ($' + p[0] + ')'
+      : 'A bottle is about 5x a single glass';
+    const pool = upgrades.filter((u) => u !== w.upgrade);
+    return {
+      id: 'upsell:' + w.id + ':bottle',
+      deck: 'upsell', kind: 'discriminate',
+      prompt: 'A guest is loving the ' + w.name + ' by the glass. What is the bottle move?',
+      answer: w.upgrade,
+      why: econ + '. Offer it once they are enjoying the glass — never push. ' + w.name + ' steps up to: ' + w.upgrade,
+      choices: [w.upgrade].concat(pickDistractors(pool, w.upgrade, 3, i)),
+      aliases: [],
+      learnLink: DECKS.upsell.learnLink,
+      tags: ['upsell'].concat(w.tags || [])
+    };
+  });
+}
+
 export function generateDeck(deckId, data) {
   if (!data) throw new Error('engine.generateDeck: data is required');
   switch (deckId) {
@@ -378,6 +450,8 @@ export function generateDeck(deckId, data) {
     case 'pairing': return genPairing(data);
     case 'structure': return genStructure(data);
     case 'mystery': return buildMysteryPour(data);
+    case 'cocktail-pairing': return genCocktailPairing(data);
+    case 'upsell': return genUpsell(data);
     default: return [];
   }
 }

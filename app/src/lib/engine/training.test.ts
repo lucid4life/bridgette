@@ -471,3 +471,82 @@ describe('engine', () => {
     expect(T.generateDeck('mystery', DATA)).toEqual(T.generateDeck('mystery', DATA));
   });
 });
+
+describe('v2 sprint1: cocktail-pairing + upsell decks, adjacency distractors', () => {
+  const cocktailNames = new Set(DATA.cocktails.map((c: any) => c.name));
+  const wineNames = new Set(DATA.wines.map((w: any) => w.name));
+  const lessonIds = new Set(DATA.lessons.map((l: any) => l.id));
+  const byName: Record<string, any> = {};
+  DATA.wines.forEach((w: any) => { byName[w.name] = w; });
+
+  it('LS-01 cocktail-pairing: registered in DECKS with a real lesson learnLink', () => {
+    expect((T.DECKS as any)['cocktail-pairing']).toBeTruthy();
+    expect(lessonIds.has((T.DECKS as any)['cocktail-pairing'].learnLink)).toBeTruthy();
+  });
+
+  it('LS-01 cocktail-pairing: answer is a real cocktail; every choice is a cocktail (never a wine)', () => {
+    const cards = T.generateDeck('cocktail-pairing', DATA);
+    expect(cards.length >= 1).toBeTruthy();
+    cards.forEach((c: any) => {
+      expect(c.deck).toBe('cocktail-pairing');
+      expect(c.id.split(':').length).toBe(3);
+      expect(/^cocktail-pairing:.+:match$/.test(c.id)).toBeTruthy();
+      expect(cocktailNames.has(c.answer), 'answer not a cocktail: ' + c.answer).toBeTruthy();
+      expect(c.choices.length >= 2).toBeTruthy();
+      expect(c.choices.indexOf(c.answer) !== -1).toBeTruthy();
+      expect(c.choices.length).toBe(new Set(c.choices).size);
+      c.choices.forEach((ch: string) => {
+        expect(cocktailNames.has(ch), 'distractor not a cocktail: ' + ch).toBeTruthy();
+        expect(wineNames.has(ch), 'wine leaked into cocktail deck: ' + ch).toBeFalsy();
+      });
+    });
+  });
+
+  it('LS-02 upsell: registered in DECKS with a real lesson learnLink', () => {
+    expect((T.DECKS as any)['upsell']).toBeTruthy();
+    expect(lessonIds.has((T.DECKS as any)['upsell'].learnLink)).toBeTruthy();
+  });
+
+  it('LS-02 upsell: one card per wine with an upgrade; MC choices incl. the answer; why teaches the economics', () => {
+    const winesWithUp = DATA.wines.filter((w: any) => w.upgrade);
+    const cards = T.generateDeck('upsell', DATA);
+    expect(cards.length).toBe(winesWithUp.length);
+    const upgrades = new Set(winesWithUp.map((w: any) => w.upgrade));
+    cards.forEach((c: any) => {
+      expect(c.deck).toBe('upsell');
+      expect(/^upsell:.+:bottle$/.test(c.id)).toBeTruthy();
+      expect(upgrades.has(c.answer), 'answer not an upgrade string: ' + c.answer).toBeTruthy();
+      expect(c.choices.length >= 2).toBeTruthy();
+      expect(c.choices.indexOf(c.answer) !== -1).toBeTruthy();
+      expect(c.choices.length).toBe(new Set(c.choices).size);
+      expect(/5/.test(c.why), 'why omits the ~5x economics: ' + c.id).toBeTruthy();
+    });
+  });
+
+  it('LS-05: pairing distractors are structurally adjacent — a steak red never offers a Bubbly/Rosé', () => {
+    const cards = T.generateDeck('pairing', DATA);
+    const steak = cards.find((c: any) => c.answer === 'St. John Claret');
+    expect(steak, 'expected a St. John Claret pairing card').toBeTruthy();
+    steak.choices.forEach((ch: string) => {
+      if (ch === steak.answer) return;
+      const w = byName[ch];
+      expect(w, 'distractor not a wine: ' + ch).toBeTruthy();
+      expect(['Bubbly', 'Rosé'].includes(w.category), 'wild steak distractor: ' + ch).toBeFalsy();
+    });
+  });
+
+  it('LS-05: distractor selection is deterministic across runs', () => {
+    const a = T.generateDeck('translator', DATA).map((c: any) => c.choices);
+    const b = T.generateDeck('translator', DATA).map((c: any) => c.choices);
+    expect(a).toEqual(b);
+  });
+
+  it('LS-05: translator/pairing/wine-identity MC choices still include the answer and are unique', () => {
+    ['translator', 'pairing', 'wine-identity'].forEach((id) => {
+      T.generateDeck(id, DATA).forEach((c: any) => {
+        expect(c.choices.indexOf(c.answer) !== -1, id + ' dropped answer: ' + c.id).toBeTruthy();
+        expect(c.choices.length).toBe(new Set(c.choices).size);
+      });
+    });
+  });
+});
