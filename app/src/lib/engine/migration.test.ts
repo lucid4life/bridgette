@@ -18,6 +18,11 @@ describe('bb_progress_v1 migration (a real v1 user must not lose progress)', () 
       expect(out.cards[id].box).toBe((st as any).box);
       expect(out.cards[id].wrong).toBe((st as any).wrong);
       expect(out.cards[id].consecutiveWrong).toBe((st as any).consecutiveWrong);
+      // scheduling fields must survive too — a regression that reset due/lastSeen
+      // or zeroed correct would silently collapse a real user's whole schedule.
+      expect(out.cards[id].due).toBe((st as any).due);
+      expect(out.cards[id].lastSeen).toBe((st as any).lastSeen);
+      expect(out.cards[id].correct).toBe((st as any).correct);
     }
   });
 
