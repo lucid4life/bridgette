@@ -39,6 +39,7 @@
   let shuffledChoices = $state<string[]>([]);
   let hypercorrection = $state(false);
   let summary = $state<{ correct: number; total: number; pct: number; weak: string[] } | null>(null);
+  let missed = $state<Card[]>([]);
 
   const card = $derived(queue[idx] as Card | undefined);
   const box = $derived(card ? (progressStore.value.cards[card.id]?.box ?? 1) : 1);
@@ -46,6 +47,7 @@
   const why = $derived(card ? engine.whyDisplay(card, box) : { label: '', text: '' });
   const progressPct = $derived(baseTotal ? Math.round((Math.min(idx, baseTotal) / baseTotal) * 100) : 0);
   const focusDecks = (Object.keys(engine.DECKS) as string[]).filter((d) => d !== 'mystery');
+  const weakCount = $derived(progressStore.weakCards().length);
 
   function reset() {
     revealed = false; pendingCorrect = null; confidence = null; chosen = null;
@@ -61,6 +63,15 @@
     view = 'session'; reset();
   }
   let caughtUp = $state(false);
+
+  // CT-02: drill an explicit set of cards (the just-missed ones, or the persistent
+  // weak list) — NOT a fresh Smart Review (which the "Drill the misses" button used to do).
+  function startDrill(cards: Card[]) {
+    if (!cards.length) return;
+    kind = 'practice'; deckId = null; queue = [...cards]; idx = 0; baseTotal = cards.length;
+    requeued = {}; results = []; correct = 0; total = 0; caughtUp = false;
+    view = 'session'; reset();
+  }
 
   function startReadiness() {
     const cards = engine.buildReadiness(data, {});
@@ -121,8 +132,11 @@
       summary = { correct: scored.correct, total: scored.total, pct: scored.score, weak: scored.weakAreas.slice(0, 6) };
     } else {
       const pct = total ? Math.round((correct / total) * 100) : 0;
-      const weak = results.filter((r) => !r.correct).map((r) => r.id);
-      summary = { correct, total, pct, weak: [] };
+      const byId = new Map(engine.allCards(data).map((c: Card) => [c.id, c] as const));
+      const ids = [...new Set(results.filter((r) => !r.correct).map((r) => r.id))];
+      missed = ids.map((id) => byId.get(id)).filter((c): c is Card => !!c);
+      // UX-05: human labels ("Translator: St. John Claret"), never raw slugs.
+      summary = { correct, total, pct, weak: missed.map((c) => `${(engine.DECKS as Record<string, { label: string }>)[c.deck]?.label ?? c.deck}: ${c.answer}`) };
     }
     hadMisses = results.some((r) => !r.correct);
     view = 'summary';
@@ -181,6 +195,11 @@
         <h3><span aria-hidden="true">🏁</span> Readiness Check</h3>
         <p class="meta">Mixed exam → % shift-ready</p>
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={startReadiness}>Run</button>
+      </div>
+      <div class="card">
+        <h3><span aria-hidden="true">🩹</span> My Mistakes</h3>
+        <p class="meta">{weakCount ? weakCount + ' to clean up' : 'Nothing to fix yet'}</p>
+        <button class="btn ghost" type="button" style="margin-top:10px" onclick={() => startDrill(progressStore.weakCards())} disabled={weakCount === 0}>Drill</button>
       </div>
     </div>
     <h3 style="margin:0 0 10px"><span aria-hidden="true">🎯</span> Focus a deck</h3>
@@ -292,7 +311,7 @@
     {/if}
     <div class="gradebar" style="justify-content:flex-start">
       {#if hadMisses && kind === 'practice'}
-        <button class="btn" type="button" onclick={() => startSession(null)}>Drill the misses</button>
+        <button class="btn" type="button" onclick={() => startDrill(missed)}>Drill the misses</button>
       {/if}
       <button class="btn ghost" type="button" onclick={() => (view = 'home')}>Back to Practice</button>
       <a class="btn ghost" href="/progress">See Progress</a>
