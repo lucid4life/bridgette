@@ -29,6 +29,22 @@
     })
   );
   const matrixRows = $derived(data.foods.filter((f) => f.wine).slice(0, 40));
+
+  // Decode the "5oz | 8oz | bottle" price string for the upsell ladder (UX-02).
+  function priceLadder(price: string): { pour5: string; pour8: string; bottle: string } | null {
+    const p = price.split('|').map((s) => s.trim());
+    return p.length === 3 ? { pour5: p[0], pour8: p[1], bottle: p[2] } : null;
+  }
+
+  // Translator cue/alias search so "Meiomi", "Napa Cab", "Malbec" all resolve (CT-04).
+  const translatorRows = $derived(
+    data.translator.filter((t) => {
+      if (!ql) return true;
+      const hay = [t.ask, ...(t.aliases ?? []), t.bestGlass, ...(t.bottleOptions ?? [])]
+        .join(' ').toLowerCase();
+      return hay.includes(ql);
+    })
+  );
 </script>
 
 <svelte:head><title>Reference · Bridgette Training</title></svelte:head>
@@ -53,6 +69,7 @@
     {#if wines.length}
     <div class="grid cols-2 on-cream">
       {#each wines as w (w.id)}
+        {@const pl = priceLadder(w.price)}
         <article class="card light winecard">
           <div class="winecard-head">
             <h3 class="name">{w.name}</h3>
@@ -64,7 +81,8 @@
               onclick={() => speak(w)}
             >🔊</button>
           </div>
-          <div class="meta">{w.grape} · {w.region} · {w.price}</div>
+          <div class="meta">{w.grape} · {w.region}</div>
+          {#if pl}<p class="price-ladder meta">5oz <b>${pl.pour5}</b> · 8oz <b>${pl.pour8}</b> · bottle <b>${pl.bottle}</b> <span class="ladder-note">≈ 5 glasses</span></p>{/if}
           <div class="meters">
             <StructureMeter label="Acidity" level={w.structure.acidity} />
             <StructureMeter label="Body" level={w.structure.body} />
@@ -73,6 +91,16 @@
           </div>
           <p class="winecard-pron meta">Say: <strong>{w.pronunciation.respell}</strong></p>
           <p class="winecard-body">{w.tenSecond}</p>
+          {#if w.profile}<p class="meta winecard-profile">{w.profile}</p>{/if}
+          {#if w.pair?.length}
+            <div class="best-with"><span class="meta">Best with:</span>{#each w.pair.slice(0, 5) as dish}<span class="pill alt">{dish}</span>{/each}</div>
+          {/if}
+          {#if w.upgrade}<p class="meta upgrade-line">Upsell → <strong>{w.upgrade}</strong></p>{/if}
+          {#if w.objections?.length}
+            <details class="objections"><summary>Guest objections ({w.objections.length})</summary>
+              <ul>{#each w.objections as o}<li><b>“{o.cue}”</b> — {o.reply}</li>{/each}</ul>
+            </details>
+          {/if}
           <div class="winecard-tags">
             <span class="pill">{w.family}</span>
             <span class="pill alt">{w.climate} climate</span>
@@ -110,15 +138,26 @@
     </div>
 
   {:else if filter === 'Translator'}
+    <label class="search">
+      <span class="visually-hidden">Search a guest ask by grape, style, alias, or wine</span>
+      <input type="search" bind:value={q} placeholder="Search a guest ask — Cabernet, Meiomi, Malbec…" autocomplete="off" />
+    </label>
+    <p class="meta" aria-live="polite" style="margin:0 0 12px">{translatorRows.length} of {data.translator.length} guest asks</p>
+    {#if translatorRows.length}
     <div class="grid cols-2 on-cream">
-      {#each data.translator as t (t.ask)}
+      {#each translatorRows as t (t.ask)}
         <article class="card light">
           <h3>{t.ask}</h3>
-          <p class="winecard-body">→ <strong>{t.bestGlass}</strong></p>
+          <p class="winecard-body">By the glass → <strong>{t.bestGlass}</strong></p>
+          {#if t.bottleOptions?.length}<p class="meta upgrade-line">Bottle upgrade → <strong>{t.bottleOptions.join(', ')}</strong></p>{/if}
+          {#if t.different}<p class="meta winecard-profile">Point of difference: {t.different}</p>{/if}
           <p class="meta">{t.phrase}</p>
         </article>
       {/each}
     </div>
+    {:else}
+      <p class="sub">No guest ask matches “{q}”. Try a grape, a wine name, or a style.</p>
+    {/if}
 
   {:else}
     <table class="matrix">
@@ -156,4 +195,15 @@
   .winecard-body { margin: 6px 0 0; font-size: 14px; }
   .winecard-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
   .pill.alt { background: rgba(67, 124, 147, .16); color: var(--ink); border-color: rgba(67, 124, 147, .4); }
+  .price-ladder { margin: 4px 0 0; }
+  .price-ladder b { color: var(--ink); }
+  .winecard-profile { margin: 6px 0 0; }
+  .best-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
+  .upgrade-line { margin: 6px 0 0; }
+  .upgrade-line strong { color: var(--ink); }
+  .objections { margin-top: 8px; }
+  .objections > summary { cursor: pointer; min-height: 24px; display: list-item; color: var(--ink); font-size: 13px; }
+  .objections ul { margin: 6px 0 0; padding-left: 18px; }
+  .objections li { font-size: 13px; margin: 4px 0; color: var(--ink); }
+  .objections li b { font-weight: 600; }
 </style>
