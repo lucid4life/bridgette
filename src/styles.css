@@ -945,6 +945,28 @@
     }
     .readiness-result { margin: 0; flex: 1 1 260px; color: var(--ink); font-weight: 700; }
 
+    /* ---- S5 contrast: light-background components rendered INSIDE .section.dark inherit
+       the section's cream text → cream-on-light (same bug class as the matrix hotfix).
+       Found via a rendered-DOM contrast scan; force dark text on each light component. ---- */
+    .result-panel { color: var(--ink); }            /* #pairing builder output sits on a cream panel */
+    .result-panel .quote { color: var(--brown); }   /* override .dark .quote on the cream panel */
+    .mini { color: var(--ink); }                    /* #start Salt/Fat/Spice/Intensity boxes (light bg) */
+    /* #drill tabs reuse .chip, whose dark-surface cream text is invisible in a light section */
+    .section:not(.dark) .chip:not(.active) {
+      color: var(--ink); background: rgba(30, 56, 75, .05); border-color: var(--line-dark);
+    }
+    .section:not(.dark) .chip:not(.active):hover {
+      border-color: var(--accent-dark); background: rgba(168, 50, 18, .1);
+    }
+    /* A default .btn (e.g. "I didn't") on the light flashcard faces would take the
+       dark-section cream text → cream-on-cream; restore the light .btn styling. */
+    .section.dark .flashcard-face .btn:not(.primary):not(.gold) {
+      color: var(--ink); background: rgba(255, 255, 255, .72); border-color: var(--line-dark);
+    }
+    .section.dark .flashcard-face .btn:not(.primary):not(.gold):hover {
+      border-color: var(--accent-dark); background: rgba(168, 50, 18, .12);
+    }
+
     /* ---- S5 visual flourish: additive in-system polish. All motion is auto-disabled
        by the prefers-reduced-motion block below (animation/transition-duration → .01ms),
        and nothing here changes a text/background colour token, so contrast is unaffected. ---- */

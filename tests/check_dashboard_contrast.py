@@ -133,12 +133,23 @@ def main() -> int:
         "choice-correct": [(colors.get("cream", "#ffeed7"), 1.0), ("#ffffff", 0.7), (colors.get("green", "#506f5f"), 0.2)],
         # Wine School lesson body: solid paper
         "lesson": [(colors.get("paper", "#ffeed7"), 1.0)],
+        # S5b: light components rendered INSIDE .section.dark inherit cream text (=bug);
+        # each must declare dark text. Surfaces = the real composited background.
+        "pairing-result": [(colors.get("cream", "#ffeed7"), 1.0)],                                   # #pairing builder panel (cream)
+        "start-mini": [(colors.get("ink", "#1e384b"), 1.0), ("#ffffff", 0.62)],                      # #start box: white .62 over ink
+        "flashcard-btn": [(colors.get("cream", "#ffeed7"), 1.0), ("#ffffff", 0.72)],                 # default .btn on cream flashcard face
+        "drill-chip": [(colors.get("paper", "#ffeed7"), 1.0), (colors.get("ink", "#1e384b"), 0.05)], # inactive chip in a light section
     }
     rule_checks = [
         (".matrix td", "color", "matrix-cell", "matrix data cells (dark-on-light, not cream-on-cream)"),
         (".section-sub", "color", "section-head-light", "section subtitle on tinted section-head"),
         (".choice-btn.correct .choice-key", "color", "choice-correct", "correct-answer key glyph"),
         (".lesson", "color", "lesson", "Wine School lesson body"),
+        # S5b: light components inside .section.dark must use dark text (rendered-DOM scan findings)
+        (".result-panel", "color", "pairing-result", "#pairing recommendation panel"),
+        (".mini", "color", "start-mini", "#start fundamentals boxes"),
+        (".section.dark .flashcard-face .btn:not(.primary):not(.gold)", "color", "flashcard-btn", "default grade button on flashcard face"),
+        (".section:not(.dark) .chip:not(.active)", "color", "drill-chip", "inactive chip in a light section"),
     ]
     for selector, prop, surface, label in rule_checks:
         raw = rule_decl(style_css, selector, prop)
