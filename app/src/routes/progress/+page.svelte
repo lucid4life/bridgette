@@ -3,6 +3,10 @@
   import * as engine from '$lib/engine/training.js';
   import { progressStore } from '$lib/state/progress.svelte';
   import type { Card } from '$lib/data/types';
+  import { onMount } from 'svelte';
+
+  let mounted = $state(false);
+  onMount(() => { mounted = true; }); // rings animate 0 → value (spec §6); reduced-motion zeroes the transition
 
   const decks = Object.keys(engine.DECKS) as string[];
   const TAGS = ['acidity', 'tannin', 'body', 'white', 'red', 'rose', 'spice', 'seafood', 'steak'];
@@ -40,37 +44,40 @@
   }
 </script>
 
+<svelte:head><title>Progress · Bridgette Training</title></svelte:head>
+
 <section class="screen on-dark">
   <p class="h-eyebrow">Progress</p>
   <h1>Where you stand</h1>
   <p class="sub">Mastery by deck and by topic, your weak list, and a JSON backup so you never lose progress.</p>
 
-  <h3 style="margin:0 0 10px">By deck</h3>
+  <h2 class="section-h">By deck</h2>
   <div class="rings">
     {#each deckRings as r}
       <div class="ring-card">
         <div class="ring small" role="img" aria-label={`${r.label}: ${r.pct}% mastered`}
-          style={`--p:${r.pct}; background:conic-gradient(${ringColor(r.pct)} ${r.pct * 3.6}deg, rgba(255,238,215,.12) 0)`}>
-          <span>{r.pct}</span>
+          style={`--p:${mounted ? r.pct : 0}; background:conic-gradient(${ringColor(r.pct)} calc(var(--p) * 3.6deg), rgba(255,238,215,.12) 0)`}>
+          <span aria-hidden="true">{r.pct}%</span>
         </div>
         <div class="ring-label">{r.label}</div>
       </div>
     {/each}
   </div>
 
-  <h3 style="margin:22px 0 10px">By topic</h3>
+  <h2 class="section-h" style="margin-top:22px">By topic</h2>
   <div class="rings">
     {#each tagRings as r}
       <div class="ring-card">
         <div class="ring small" role="img" aria-label={`${r.label}: ${r.pct}% mastered`}
-          style={`--p:${r.pct}; background:conic-gradient(${ringColor(r.pct)} ${r.pct * 3.6}deg, rgba(255,238,215,.12) 0)`}>
-          <span>{r.pct}</span>
+          style={`--p:${mounted ? r.pct : 0}; background:conic-gradient(${ringColor(r.pct)} calc(var(--p) * 3.6deg), rgba(255,238,215,.12) 0)`}>
+          <span aria-hidden="true">{r.pct}%</span>
         </div>
         <div class="ring-label">{r.label}</div>
       </div>
     {/each}
   </div>
 
+  <h2 class="visually-hidden">Streak, weak spots, and backup</h2>
   <div class="grid cols-2" style="margin-top:22px">
     <div class="card">
       <h3>Streak</h3>
@@ -96,7 +103,7 @@
       {#if weak.length}
         <div class="weak-list">
           {#each weak.slice(0, 24) as c (c.id)}
-            <span class="weak-pill" title={c.prompt}>{(engine.DECKS as any)[c.deck].label}: {c.answer}</span>
+            <a class="weak-pill" href="/?start=smart" aria-label={`Drill ${(engine.DECKS as any)[c.deck].label}: ${c.prompt}`}>{(engine.DECKS as any)[c.deck].label}: {c.answer}</a>
           {/each}
         </div>
       {:else}
@@ -118,6 +125,7 @@
 </section>
 
 <style>
+  .section-h { font-size: 15px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--gold); }
   .goal-toggle { display: flex; gap: 8px; margin: 0 0 10px; }
   .rings { display: flex; flex-wrap: wrap; gap: 16px; }
   .ring-card { display: grid; justify-items: center; gap: 6px; }
@@ -125,5 +133,6 @@
   .ring.small span { width: 68px; height: 68px; font-size: 22px; }
   .ring-label { font-size: 13px; color: var(--muted); text-transform: capitalize; }
   .weak-list { display: flex; flex-wrap: wrap; gap: 6px; }
-  .weak-pill { font-size: 12px; padding: 4px 9px; border-radius: 999px; background: rgba(168, 50, 18, .18); border: 1px solid rgba(168, 50, 18, .4); }
+  .weak-pill { display: inline-block; font-size: 12px; padding: 6px 11px; border-radius: 999px; background: rgba(168, 50, 18, .18); border: 1px solid rgba(168, 50, 18, .4); color: var(--cream); text-decoration: none; }
+  .weak-pill:hover { background: rgba(168, 50, 18, .3); }
 </style>

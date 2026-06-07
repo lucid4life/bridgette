@@ -12,8 +12,10 @@
 
   function speak(w: (typeof data.wines)[number]) {
     speaking = w.id;
-    playPronunciation(w.id, w.pronunciation.say, langFor(w.country));
-    setTimeout(() => { if (speaking === w.id) speaking = null; }, 1500);
+    // truthful playing-state: cleared by the real audio 'ended'/speech onend, not a timer
+    playPronunciation(w.id, w.pronunciation.say, langFor(w.country), () => {
+      if (speaking === w.id) speaking = null;
+    });
   }
 
   // multi-entry search: by name / grape / style / food / region (spec §5)
@@ -29,6 +31,8 @@
   const matrixRows = $derived(data.foods.filter((f) => f.wine).slice(0, 40));
 </script>
 
+<svelte:head><title>Reference · Bridgette Training</title></svelte:head>
+
 <section class="screen">
   <p class="h-eyebrow">Reference</p>
   <h1>Look it up fast</h1>
@@ -36,7 +40,7 @@
 
   <div class="chips" role="group" aria-label="Reference filter">
     {#each FILTERS as f}
-      <button class="chip" type="button" aria-pressed={filter === f} onclick={() => (filter = f)}>{f}</button>
+      <button class="chip" type="button" aria-pressed={filter === f} onclick={() => { filter = f; q = ''; speaking = null; }}>{f}</button>
     {/each}
   </div>
 
@@ -46,11 +50,12 @@
       <input type="search" bind:value={q} placeholder="Search grape, style, food, region…" autocomplete="off" />
     </label>
     <p class="meta" aria-live="polite" style="margin:0 0 12px">{wines.length} of {data.wines.length} wines</p>
+    {#if wines.length}
     <div class="grid cols-2 on-cream">
       {#each wines as w (w.id)}
         <article class="card light winecard">
           <div class="winecard-head">
-            <span class="name">{w.name}</span>
+            <h3 class="name">{w.name}</h3>
             <button
               class="speak"
               type="button"
@@ -77,6 +82,9 @@
         </article>
       {/each}
     </div>
+    {:else}
+      <p class="sub">No wines match “{q}”. Try a grape, style, food, or region.</p>
+    {/if}
 
   {:else if filter === 'Food'}
     <div class="grid cols-2 on-cream">
@@ -114,10 +122,17 @@
 
   {:else}
     <table class="matrix">
+      <caption class="visually-hidden">Dish-by-dish pairing matrix: wine, cocktail, zero-proof, and why.</caption>
       <thead><tr><th>Dish</th><th>Wine</th><th>Cocktail</th><th>Zero-proof</th><th>Why</th></tr></thead>
       <tbody>
         {#each matrixRows as f (f.id)}
-          <tr><th>{f.name}</th><td>{f.wine}</td><td>{f.cocktail ?? '—'}</td><td>{f.zero ?? '—'}</td><td>{f.why}</td></tr>
+          <tr>
+            <th>{f.name}</th>
+            <td data-label="Wine">{f.wine}</td>
+            <td data-label="Cocktail">{f.cocktail ?? '—'}</td>
+            <td data-label="Zero-proof">{f.zero ?? '—'}</td>
+            <td data-label="Why">{f.why}</td>
+          </tr>
         {/each}
       </tbody>
     </table>
@@ -130,11 +145,13 @@
     border-radius: var(--radius-btn); border: 1px solid var(--line);
     background: rgba(255, 238, 215, .05); color: var(--cream); font-size: 15px;
   }
+  .search input::placeholder { color: var(--muted); opacity: 1; }
   .meters { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; margin: 2px 0; }
   .sweet { display: flex; align-items: center; gap: 8px; }
   .sweet b { color: var(--ink); text-transform: capitalize; }
   @media (max-width: 420px) { .meters { grid-template-columns: 1fr; } }
   .winecard-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .winecard-head .name { margin: 0; }
   .winecard-pron { margin: 2px 0 0; }
   .winecard-body { margin: 6px 0 0; font-size: 14px; }
   .winecard-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }

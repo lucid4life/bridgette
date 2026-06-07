@@ -4,6 +4,18 @@
   import { progressStore } from '$lib/state/progress.svelte';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import type { Card } from '$lib/data/types';
+  import { tick, onMount } from 'svelte';
+  import { page } from '$app/state';
+
+  let revealEl = $state<HTMLDivElement | null>(null);
+  let hadMisses = $state(false);
+
+  onMount(() => {
+    // Today's cockpit CTAs deep-link here with an intent (spec §5: distinct entry points).
+    const s = page.url.searchParams.get('start');
+    if (s === 'readiness') startReadiness();
+    else if (s === 'smart') startSession(null);
+  });
 
   type View = 'home' | 'session' | 'summary';
   type Conf = 'sure' | 'shaky' | null;
@@ -70,11 +82,13 @@
     if (!card) return;
     revealed = true;
     pendingCorrect = null; // self-graded for pronounce
+    tick().then(() => revealEl?.focus());
   }
   function doReveal(isCorrect: boolean) {
     revealed = true;
     pendingCorrect = isCorrect;
     if (confidence === 'sure' && !isCorrect) hypercorrection = true; // loud correction (spec §9)
+    tick().then(() => revealEl?.focus()); // move focus to the answer (spec §6/§14)
   }
 
   function commit(isCorrect: boolean) {
@@ -110,6 +124,7 @@
       const weak = results.filter((r) => !r.correct).map((r) => r.id);
       summary = { correct, total, pct, weak: [] };
     }
+    hadMisses = results.some((r) => !r.correct);
     view = 'summary';
     // Signal a completed session so the PWA can offer a quiet, contextual install
     // prompt (spec §13 — after the first session, never on load).
@@ -139,6 +154,7 @@
 </script>
 
 <svelte:window onkeydown={onKey} />
+<svelte:head><title>Practice · Bridgette Training</title></svelte:head>
 
 <section class="screen on-dark">
   {#if view === 'home'}
@@ -147,27 +163,27 @@
     <p class="sub">Smart Review mixes what's due and weak. Or focus a single deck. Cards get harder as you master them.</p>
     <div class="grid cols-2" style="margin-bottom:24px">
       <div class="card">
-        <h3>⚡ Smart Review</h3>
+        <h3><span aria-hidden="true">⚡</span> Smart Review</h3>
         <p class="meta">{progressStore.dueCount()} due · mixed decks</p>
         <button class="btn" type="button" style="margin-top:10px" onclick={() => startSession(null)}>Start</button>
       </div>
       <div class="card">
-        <h3>🍷 Guest Simulator</h3>
+        <h3><span aria-hidden="true">🍷</span> Guest Simulator</h3>
         <p class="meta">Ask → Match → Explain → Confirm</p>
         <a class="btn ghost" href="/practice/simulator" style="margin-top:10px">Start</a>
       </div>
       <div class="card">
-        <h3>🔮 Mystery Pour</h3>
+        <h3><span aria-hidden="true">🔮</span> Mystery Pour</h3>
         <p class="meta">Read the structure → name the pour</p>
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={() => startSession('mystery')}>Deduce</button>
       </div>
       <div class="card">
-        <h3>🏁 Readiness Check</h3>
+        <h3><span aria-hidden="true">🏁</span> Readiness Check</h3>
         <p class="meta">Mixed exam → % shift-ready</p>
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={startReadiness}>Run</button>
       </div>
     </div>
-    <h3 style="margin:0 0 10px">🎯 Focus a deck</h3>
+    <h3 style="margin:0 0 10px"><span aria-hidden="true">🎯</span> Focus a deck</h3>
     <div class="grid cols-3">
       {#each focusDecks as d}
         {@const m = progressStore.masteryFor(d)}
@@ -192,6 +208,17 @@
         <span style={`width:${progressPct}%`}></span>
       </div>
     </div>
+
+    <!-- persistent live region: must be mounted BEFORE its text changes so SRs announce the reveal -->
+    <p class="visually-hidden" aria-live="polite" aria-atomic="true">
+      {revealed
+        ? pendingCorrect === true
+          ? 'Correct.'
+          : pendingCorrect === false
+            ? 'Not quite. The answer is ' + card.answer + '.'
+            : 'Answer: ' + card.answer + '.'
+        : ''}
+    </p>
 
     <div class="flash flashcard-face">
       <p class="q">{card.prompt}</p>
@@ -228,17 +255,20 @@
           </div>
         {/if}
       {:else}
-        <p class="ans">{card.answer}</p>
-        {#if pendingCorrect != null}
-          <p class="feedback" class:ok={pendingCorrect} class:no={!pendingCorrect} aria-live="polite">
-            {pendingCorrect ? 'Correct.' : 'Not quite — here’s the answer.'}
-          </p>
-        {/if}
-        {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
-        <div class="gradebar">
-          {#if card.audioText}<button class="btn ghost" type="button" onclick={speakCard}>🔊</button>{/if}
-          <button class="btn" type="button" onclick={() => commit(true)}>I got it (1)</button>
-          <button class="btn ghost" type="button" onclick={() => commit(false)}>I didn't (2)</button>
+        <div class="reveal" tabindex="-1" bind:this={revealEl}>
+          <p class="ans">{card.answer}</p>
+          {#if pendingCorrect != null}
+            <p class="feedback" class:ok={pendingCorrect} class:no={!pendingCorrect}>
+              <span aria-hidden="true">{pendingCorrect ? '✓' : '•'}</span>
+              {pendingCorrect ? 'Correct.' : 'Not quite — here’s the answer.'}
+            </p>
+          {/if}
+          {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
+          <div class="gradebar">
+            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={speakCard}><span aria-hidden="true">🔊</span></button>{/if}
+            <button class="btn" type="button" onclick={() => commit(true)}>I got it (1)</button>
+            <button class="btn ghost" type="button" onclick={() => commit(false)}>I didn't (2)</button>
+          </div>
         </div>
       {/if}
     </div>
@@ -258,7 +288,10 @@
       <p class="sub">{summary.correct} of {summary.total} correct.{summary.weak.length ? ' Weak areas: ' + summary.weak.join(', ') + '.' : ''}</p>
     {/if}
     <div class="gradebar" style="justify-content:flex-start">
-      <button class="btn" type="button" onclick={() => (view = 'home')}>Back to Practice</button>
+      {#if hadMisses && kind === 'practice'}
+        <button class="btn" type="button" onclick={() => startSession(null)}>Drill the misses</button>
+      {/if}
+      <button class="btn ghost" type="button" onclick={() => (view = 'home')}>Back to Practice</button>
       <a class="btn ghost" href="/progress">See Progress</a>
     </div>
   {/if}
@@ -278,6 +311,7 @@
   .feedback { font-weight: 800; margin: 0; }
   .feedback.ok { color: var(--green); }
   .feedback.no { color: var(--accent-dark); }
+  .reveal:focus { outline: none; } /* focus moved here programmatically on reveal */
   .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
   .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent-dark); border-radius: var(--radius-card); background: rgba(168, 50, 18, .14); }
   .deck-tile { display: grid; gap: 4px; text-align: left; cursor: pointer; }

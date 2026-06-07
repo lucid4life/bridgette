@@ -13,8 +13,9 @@ export function audioUrl(wineId: string): string {
  * if the clip is missing, errors, or is blocked by autoplay policy. Stops any
  * prior clip/speech so rapid taps never overlap.
  */
-export function playPronunciation(wineId: string, fallbackText: string, lang?: string): void {
+export function playPronunciation(wineId: string, fallbackText: string, lang?: string, onEnd?: () => void): void {
   if (typeof window === 'undefined') return;
+  const done = () => { if (onEnd) onEnd(); };
 
   const speak = (): void => {
     if (
@@ -22,10 +23,13 @@ export function playPronunciation(wineId: string, fallbackText: string, lang?: s
       typeof window.SpeechSynthesisUtterance === 'undefined' ||
       !fallbackText
     ) {
+      done(); // nothing will play — release the caller's "playing" state
       return;
     }
     const u = new window.SpeechSynthesisUtterance(fallbackText);
     if (lang) u.lang = lang;
+    u.onend = done;
+    u.onerror = done;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   };
@@ -44,6 +48,7 @@ export function playPronunciation(wineId: string, fallbackText: string, lang?: s
     currentAudio = a;
     let settled = false; // once the clip starts, a later error must NOT speak over it
     a.addEventListener('error', () => { if (!settled) { settled = true; speak(); } });
+    a.addEventListener('ended', done); // truthful "playing" state ends with the clip
     const p = a.play();
     if (p && typeof p.then === 'function') {
       p.then(

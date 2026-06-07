@@ -1,0 +1,483 @@
+{
+  "summary": "Adversarial per-screen review of the v2 UI vs the mockup + spec + a11y/interaction heuristics; returns prioritized, fixable findings",
+  "agentCount": 7,
+  "logs": [],
+  "result": [
+    {
+      "area": "Bridgette Training v2 — core loop (app/src/routes/+page.svelte) + Guest Simulator (app/src/routes/practice/simulator/+page.svelte), cross-referenced vs spec §5–§11/§14/§17, the approved mockup, and app.css tokens",
+      "findings": [
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "Spec §6 and §14 explicitly require focus to move front→answer on reveal ('focus front→answer' carried wholesale from v1). Neither file moves focus anywhere on reveal. In the core loop, after chooseMC/submitTyped/flipReveal flips `revealed`, focus stays on the now-removed choice button (or the input), so a keyboard/SR user is dropped to <body> / loses their place and never hears the answer or the why. Confirmed: zero focus()/tabindex/inert in +page.svelte or simulator, and no shared focus management in +layout.svelte.",
+          "file": "app/src/routes/+page.svelte",
+          "fix": "Give the reveal block an `<div class=\"reveal\" tabindex=\"-1\" bind:this={revealEl}>` wrapping the .ans/.feedback/.why and call `revealEl.focus()` inside doReveal()/flipReveal() via `await tick()`. Do the same on the simulator: focus the .ans/.feedback region after choose()/chooseReply(). This also satisfies the 'focus moves to the answer on reveal' acceptance item."
+        },
+        {
+          "severity": "high",
+          "kind": "a11y",
+          "detail": "aria-live feedback won't announce. In the core loop the entire `<p class=\"feedback\" aria-live=\"polite\">` is conditionally inserted at reveal time ({#if pendingCorrect != null} inside the {:else}/revealed branch). A live region must already be present in the DOM and then have its *content* mutated; inserting the region and its text in the same render means most screen readers (NVDA/VoiceOver) do not announce it. Same pattern in the simulator (line 109): the feedback <p> is created when phase becomes objectionDone. Net effect: the spec §14 'aria-live feedback' requirement and the 'never a red WRONG, but DO announce the result' intent silently fail.",
+          "file": "app/src/routes/+page.svelte",
+          "fix": "Render a persistent, always-mounted live region near the flashcard (e.g. `<p class=\"visually-hidden\" aria-live=\"polite\" aria-atomic=\"true\">{revealed ? (pendingCorrect ? 'Correct.' : 'Not quite — the answer is ' + card.answer) : ''}</p>`) so SRs announce the change. Keep the visible feedback <p> for sighted users. Apply the same persistent-region pattern to the simulator pick result and objection result."
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "The Guest Simulator — called out by the spec as the v2 differentiator (§7) and a first-class Practice mode — has NO keyboard support at all. All four wine choices and all reply choices are mouse-only onclick handlers; there is no `<svelte:window onkeydown>` (unlike the core loop), no 1–4 number selection, no Enter/Space to advance ('Then the guest pushes back', 'Next table'). Spec §6 mandates 'laptop: Space/1–4/Enter retained' for the practice loop and the simulator is part of Practice. A keyboard user can still Tab to the buttons, but the documented choreography is absent and inconsistent with the core loop on the very same surface.",
+          "file": "app/src/routes/practice/simulator/+page.svelte",
+          "fix": "Add `<svelte:window onkeydown={onKey} />` and an onKey handler mirroring the core loop: digits 1–4 call choose()/chooseReply() against wineChoices/replyChoices by index (guarding phase), and Enter advances via toObjection()/next() when a continue button is the active phase. Also surface the number on each choice button (a `.key` span like the core loop) so the shortcut is discoverable."
+        },
+        {
+          "severity": "medium",
+          "kind": "spec-deviation",
+          "detail": "Confidence tap (spec §9, an acceptance criterion in §17) is silently skippable. confidence starts null and nothing forces a Sure/Shaky tap before answering, so the common path leaves confidence=null. That means doReveal()'s hypercorrection trigger (`confidence === 'sure' && !isCorrect`) can never fire on a default run, and recordWithConfidence gets null — defeating the 'lucky guesses don't inflate shift-ready %' guarantee. There is also no visual nudge that a choice is expected before revealing.",
+          "file": "app/src/routes/+page.svelte",
+          "fix": "Either require a confidence pick before the MC/typed/flip controls are enabled (disable choices until confidence !== null, with a visible 'Pick how sure first' hint), or default-select 'shaky' and clearly mark it. At minimum, after reveal show which confidence was recorded so the loop is honest. Add an automated check that Sure+Wrong reaches hypercorrection."
+        },
+        {
+          "severity": "medium",
+          "kind": "missing-interaction",
+          "detail": "No reduced-motion or motion-state handling specific to the simulator, and the core-loop reveal/hypercorrection appear/disappear with no transition the spec asks for but ALSO with no text-only fallback verification. More concretely: the simulator has zero transitions (grep: no transition/animation/prefers-reduced-motion), so the 'instant feedback choreography' (spec §6/§7) is a hard content swap with no microinteraction and no progress affordance between beats. The global app.css reduced-motion branch only neutralizes the .screen fade; it does not add the spec-required 'state conveyed by text+icon, never color alone' guarantee for the green/amber feedback.",
+          "file": "app/src/routes/practice/simulator/+page.svelte",
+          "fix": "Add a brief transform/opacity transition (≤250ms, Svelte transition:fade/scale) on the answer/feedback reveal guarded by the existing prefers-reduced-motion CSS, and ensure the correct/incorrect state always carries a text+icon token (e.g. a ✓/• glyph next to 'Nailed it.'/'The smoother reply:') so it never relies on the green vs accent-dark color alone."
+        },
+        {
+          "severity": "medium",
+          "kind": "unlabeled-control",
+          "detail": "Icon-only speak buttons are unlabeled. In the core loop reveal state the speak control is `<button class=\"btn ghost\" onclick={speakCard}>🔊</button>` (line 239) — the emoji is its only accessible name, so a screen reader announces 'speaker emoji button' / nothing meaningful. (The pre-reveal flip variant at line 219 correctly says '🔊 Hear it'.) Inconsistent and fails WCAG 4.1.2 Name, Role, Value.",
+          "file": "app/src/routes/+page.svelte",
+          "fix": "Add `aria-label=\"Hear pronunciation\"` to the icon-only 🔊 button (line 239) and wrap the emoji in `aria-hidden=\"true\"`, matching the labelled variant. While there, give the visible-text variant aria-hidden on its emoji too so it isn't double-announced."
+        },
+        {
+          "severity": "medium",
+          "kind": "generic-default",
+          "detail": "Practice tiles use generic emoji icons (⚡ Smart Review, 🍷 Guest Simulator, 🔮 Mystery Pour, 🏁 Readiness Check, 🎯 Focus a deck) instead of the approved mockup's bespoke Bridgette SVG line-icons (the mockup defines custom stroke-path icons for every nav/section). This is exactly the 'generic-AI default that drifted from the workbook identity' the spec §11 forbids ('extend the Bridgette workbook identity'). The emojis are also not aria-hidden, so SR users hear 'lightning Smart Review', 'wine glass Guest Simulator', etc., and emoji rendering varies per-OS, breaking visual consistency vs the mockup baseline.",
+          "file": "app/src/routes/+page.svelte",
+          "fix": "Replace the inline emoji in each `<h3>` with the same 24×24 stroke SVG icon system used in +layout.svelte (aria-hidden), or at minimum wrap the emoji in `<span aria-hidden=\"true\">` and keep the text label. Align icon choices to the mockup's line-icon vocabulary so the visual-regression baseline matches."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "The wine-pick result in the simulator conveys correctness with no live region and color/glyph only. On phase change the result line `{turn.answerWine}{pickedWine === turn.answerWine ? ' ✓' : ` (you said ${pickedWine})`}` (line 95) is plain text with no aria-live, so SR users get no announcement that their pour was right/wrong; only the later objection feedback (line 109) has aria-live. The whole first 'beat' of the Ask→Match→Explain→Confirm loop is silent to assistive tech.",
+          "file": "app/src/routes/practice/simulator/+page.svelte",
+          "fix": "Mark the pick-result paragraph (or a persistent sibling live region) with aria-live=\"polite\" and phrase it as a sentence ('Correct — St. John Claret.' / 'Not quite — the pour is St. John Claret; you said X.'), and move focus to it on reveal (see finding 1)."
+        },
+        {
+          "severity": "low",
+          "kind": "contrast",
+          "detail": "The .why explainer box on the cream flashcard uses `background: rgba(67,124,147,.12)` (a faint blue tint over #ffeed7) with default ink body text. The token comment in app.css notes blue/gold wash out on cream; here the tint is fine for text contrast (text stays --ink), but the box itself has no border and ~12% tint, making it nearly invisible as a distinct surface on the cream card — the 'why revealed' emphasis the spec §6 wants ('the why revealed') reads as plain text. Borderline, but the visual hierarchy the mockup implies for the why/worked-example is lost.",
+          "file": "app/src/routes/+page.svelte",
+          "fix": "Bump the .why tint and add a hairline border consistent with the mockup's `.we` worked-example block (which uses gold-tinted bg + 1px gold border): e.g. `background: rgba(67,124,147,.18); border:1px solid rgba(67,124,147,.35);` so the why reads as a distinct, emphasized surface. Same .why rule is shared by the simulator."
+        },
+        {
+          "severity": "low",
+          "kind": "missing-interaction",
+          "detail": "Typed/scenario answer mode has no Tab-order / focus entry and no autofocus, and the keyboard handler deliberately bails when focus is in the input (onKey returns for input/textarea), which is correct — but nothing focuses the input when a typed/scenario card appears, so a keyboard user must Tab past the confidence chips every card to start typing. Minor friction that compounds over a session and diverges from the 'fast, low-friction core loop' intent (§6).",
+          "file": "app/src/routes/+page.svelte",
+          "fix": "After reset() when cardMode is 'typed'/'scenario', focus the text input (bind:this + tick().then(el.focus())). Pair this with the confidence-first requirement (finding 4) so focus lands on the input only once a confidence is chosen, preserving the §9 ordering."
+        }
+      ]
+    },
+    {
+      "area": "Today (cockpit) screen — app/src/routes/today/+page.svelte",
+      "findings": [
+        {
+          "severity": "high",
+          "kind": "unlabeled-control",
+          "detail": "The 'Shift-ready' progress ring is a CSS conic-gradient div with a child <span>{shiftReady}%</span> and NO accessible name or value semantics. Spec §14 explicitly requires ring aria-labels ('ring aria-labels' is named in the list of v1 a11y choreography to carry forward). As built it is a meaningless decorative gauge to a screen reader; the only thing announced is the bare number '78%' with no context that it is the shift-readiness estimate.",
+          "file": "app/src/routes/today/+page.svelte:48",
+          "fix": "Give the ring meter semantics: <div class=\"ring\" role=\"meter\" aria-valuenow={shiftReady} aria-valuemin=\"0\" aria-valuemax=\"100\" aria-label={`Shift-ready: ${shiftReady}% (${progressStore.readiness ? 'from your last Readiness Check' : 'estimate from deck mastery'})`} style={...}> and mark the inner <span aria-hidden=\"true\">. (Use role=\"img\" + aria-label if meter support is a concern.)"
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "The streak snowflake — a named, load-bearing feature (spec §3 'the streak snowflake'; §10 'a snowflake shown AFTER you were protected') — is rendered as emoji-only: {daily.protectedRecently ? '🔥❄️' : '🔥'}. The fire/snowflake distinction carries the entire 'your streak was protected' meaning, but emoji have no text alternative here, so a screen-reader user hears 'fire snowflake' (or nothing useful) and never learns the streak was frozen. Color/icon-only state, no text — fails WCAG 1.4.1 / 1.1.1 and the spec's own 'state conveyed by text+icon' rule.",
+          "file": "app/src/routes/today/+page.svelte:40",
+          "fix": "Wrap the emoji in <span aria-hidden=\"true\"> and add a visually-hidden text alternative, e.g. <span class=\"visually-hidden\">{daily.protectedRecently ? 'streak protected by a freeze' : ''}</span>; and ideally surface a visible 'Streak protected' chip when protectedRecently is true so the snowflake's meaning is explained, not just shown."
+        },
+        {
+          "severity": "high",
+          "kind": "spec-deviation",
+          "detail": "Spec §5 says first-run users get 'action-first onboarding (one win in ~30s) BEFORE any numbers.' Here the onboarding card and the live cockpit (due/streak/total stats, ring) render TOGETHER — the {#if !studied} block sits directly above an always-rendered .hero with all the numbers. A brand-new user sees the 30-second-win card AND a wall of '0 cards due / 0 day streak / 108 total / 0% ring' simultaneously, which is exactly the 'numbers before the win' the spec forbids and reads as a broken/empty cockpit.",
+          "file": "app/src/routes/today/+page.svelte:26-52",
+          "fix": "Gate the cockpit on first run: render ONLY the onboarding card when !studied, and show the .hero + stats grid only when studied (or move the hero inside {#if studied}). This both honors §5 ordering and avoids the empty-state zeros."
+        },
+        {
+          "severity": "high",
+          "kind": "spec-deviation",
+          "detail": "Every primary action on this 'cockpit / launchpad' points to the same href=\"/\" (Practice index): the onboarding 'Try a real card' (line 31), 'Start Smart Review' (line 43), 'Run Readiness Check' (line 50). Spec §5/§6 frame these as distinct entry points (the 30-second single-card win, Smart Review, the Readiness Check). Sending all three to the generic Practice landing means the action-first 'one win' and the Readiness Check are not actually wired — the cockpit's whole 'one primary CTA + actionable content' premise (§5) is unmet.",
+          "file": "app/src/routes/today/+page.svelte:31,43,50",
+          "fix": "Point each CTA at its real target with query intent, e.g. href=\"/?mode=smart\", href=\"/?mode=readiness\", and the onboarding link at a scoped single-card flow (e.g. /?mode=onboard or a dedicated first-card route). At minimum differentiate Readiness Check from Smart Review."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Heading order skips a level. The page emits <h1> (line 23) then jumps straight to multiple <h3> ('Ready to study', 'Shift-ready', the three bottom cards, and the onboarding 'One quick win'). There is no <h2>. WCAG 2.4.6 / best practice expects no skipped levels; screen-reader users navigating by heading get an inconsistent outline.",
+          "file": "app/src/routes/today/+page.svelte:37,47,55-57,29",
+          "fix": "Either promote the section/card titles to <h2> (and demote sub-items to <h3>), or add visually-hidden <h2> section headings ('Your session', 'Keep learning') so the outline is h1 → h2 → h3 without gaps."
+        },
+        {
+          "severity": "medium",
+          "kind": "missing-interaction",
+          "detail": "The cockpit numbers are live, reactive $derived values (due, streak, totalCards, shiftReady) that change after a session, but nothing is announced. Spec §6/§14 call for aria-live feedback and 'live cockpit numbers'. There is no aria-live region, so a returning AT user gets no confirmation that 'cards due' dropped or the streak ticked when they land back on Today.",
+          "file": "app/src/routes/today/+page.svelte:35-52",
+          "fix": "Mark the .stat container (or the Ready-to-study card) with aria-live=\"polite\" (and an aria-atomic on the streak count) so changes to due/streak after a session are announced; keep it polite to avoid chatter."
+        },
+        {
+          "severity": "medium",
+          "kind": "unlabeled-control",
+          "detail": "The unicode arrows '▶' and '▼' are placed directly inside the accessible name of interactive controls: '▶ Try a real card', '▶ Start Smart Review'. Screen readers announce these as 'black right-pointing triangle, Try a real card', adding noise to the button name (WCAG 1.1.1 / 2.4.4 name clarity). The mockup used the same glyph inside a <button>, but the mockup is a throwaway prototype, not the a11y baseline.",
+          "file": "app/src/routes/today/+page.svelte:31,43",
+          "fix": "Wrap the glyph: <a class=\"btn\" href=\"...\"><span aria-hidden=\"true\">▶</span> Start Smart Review</a>, so the accessible name is just the label. The existing .btn gap:8px already spaces an inline span correctly."
+        },
+        {
+          "severity": "medium",
+          "kind": "spec-deviation",
+          "detail": "The three bottom cards look identical but behave inconsistently and drift from the mockup. The mockup's three cards are non-interactive informational tiles; here two became <a class=\"card link\" href=\"/school#...\"> (lines 55-56) and the third stayed a plain <div> (line 57) with identical .card styling and a pill. A sighted user cannot tell the static 'Tip' card from the two clickable cards (no affordance difference beyond hover border), and the two links rely on URL fragments (#common-substitutions, #pairing-levers) that must exist as ids on the School page or they dead-link.",
+          "file": "app/src/routes/today/+page.svelte:54-58",
+          "fix": "Make the interaction affordance explicit on the clickable cards (e.g. a 'View →' cue or arrow) and verify the #common-substitutions / #pairing-levers anchors exist in /school; if the Tip is meant to be non-interactive, visually distinguish it (e.g. different pill/treatment) so it doesn't read as a broken link."
+        },
+        {
+          "severity": "low",
+          "kind": "spec-deviation",
+          "detail": "The eyebrow copy 'Source checked Jun 7 · v2' hardcodes a date and drops the weekday the mockup showed ('Wednesday · Source checked Jun 4'). The greeting 'Good evening, Adrian' is also a hardcoded time-of-day with a hardcoded name. On a 'live cockpit' (§5) these will be wrong outside their authored moment (says 'Good evening' at 9am; 'Jun 7' forever). Minor but it undercuts the live-cockpit credibility.",
+          "file": "app/src/routes/today/+page.svelte:22-23",
+          "fix": "Derive the greeting from the current hour (morning/afternoon/evening) and either show today's date dynamically or drop the date from the eyebrow; source name from settings rather than a literal."
+        },
+        {
+          "severity": "low",
+          "kind": "polish",
+          "detail": "weakest = deckMastery sorted ascending, sliced to 2, joined with ', '. If there is only one deck the join yields a single label (fine), but if deckMastery is empty (no decks) weakest=[] and the line renders 'Weakest decks: ' with an empty bold span — a dangling label. Also on true first run all masteries are 0, so the 'weakest decks' are arbitrary (sort is stable but meaningless) yet presented as fact next to a Start CTA.",
+          "file": "app/src/routes/today/+page.svelte:18,44",
+          "fix": "Guard the weakest line: only render the 'Weakest decks' <p> when studied (or weakest.length && some mastery > 0); otherwise it asserts weak spots before any data exists, which the onboarding spec (§5, numbers-after-the-win) wants to avoid."
+        }
+      ]
+    },
+    {
+      "area": "Wine School screen (school/+page.svelte, FamiliesView, StyleMap, RegionMap)",
+      "findings": [
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "Both maps promise keyboard reveal but deliver none. StyleMap.svelte L24 and RegionMap.svelte L22 render dots as <g class=\"dot\" tabindex=\"-1\">. tabindex=\"-1\" removes them from the Tab order, so the .dot:focus-visible rules (StyleMap L56/L58, RegionMap L52/L54) can never fire from the keyboard and the name/title never reveals. Yet the figcaption in each component explicitly tells the user to 'Hover or tab a dot for the name' (StyleMap L16, RegionMap L15). The name reveal is therefore mouse-hover-only — a WCAG 2.1.1 (keyboard) failure and a direct contradiction of the on-screen instruction and spec §8 dual-coding intent. (SR users are partly covered by the visually-hidden <ul>, but sighted keyboard users are stranded.)",
+          "file": "app/src/lib/components/StyleMap.svelte (L24), app/src/lib/components/RegionMap.svelte (L22)",
+          "fix": "Make each dot group focusable and labelled: tabindex=\"0\" role=\"img\" aria-label={`${d.wine.name} — ...`} on the <g>. Either drop aria-hidden from the SVG so the dot label is exposed, or keep the visually-hidden list for SR and use tabindex=\"0\" purely so the focus-visible name reveal works for sighted keyboard users. Update the figcaption only if you decide not to support tab."
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "Quick checks lock out permanently after the first answer with no way to retry. In +page.svelte L73 every choice button is disabled={chosen != null} once any choice is picked, and there is no reset/'try again' affordance (contrast: the deductive grid right below has a 'Reset clues' button, L110). This contradicts spec §6's forgiving core loop (calm amber + the why + retry-friendly) — a learner who taps the wrong answer can never re-attempt the check for the rest of the session.",
+          "file": "app/src/routes/school/+page.svelte (L73, L67-78)",
+          "fix": "Add a 'Try again' button inside .qc that runs picked[l.id] = null (re-enabling the choices), shown only when picked[l.id] != null. Keep the answer-reveal copy until they retry."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Dead/contradictory accessibility markup on both maps: each dot carries a <title> (StyleMap L27, RegionMap L25) for an accessible name, but the parent <svg> is aria-hidden=\"true\" (StyleMap L20, RegionMap L17), which strips the entire subtree — including those titles — from the accessibility tree. The titles can never be announced. They mislead a maintainer into believing SR users get per-dot info (the real SR path is the visually-hidden <ul>), and they are pure dead weight.",
+          "file": "app/src/lib/components/StyleMap.svelte (L20,L27), app/src/lib/components/RegionMap.svelte (L17,L25)",
+          "fix": "Either remove the now-useless <title> elements, or (paired with the tabindex=\"0\" fix above) drop aria-hidden so dots expose aria-label/<title> and delete the now-redundant visually-hidden list to avoid double-announcing."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "SVG label text is set far below a legible floor. .dot-label is font-size: 3px (RegionMap L53) / 3.4px (StyleMap L55) and country labels are 4px (RegionMap L50) inside a viewBox 0 0 100 100 that scales to container width. On the mobile single-column layout (maps stack at <=800px, +page.svelte L139) the panel is roughly the viewport width minus padding, so these render at single-digit px — the hover/focus name reveal (the only on-screen name source) becomes unreadable on phones, undermining the dual-coding goal on the exact device the PWA targets.",
+          "file": "app/src/lib/components/RegionMap.svelte (L50,L53), app/src/lib/components/StyleMap.svelte (L55)",
+          "fix": "Render labels in screen px instead of SVG user units (e.g. move the name into an HTML overlay/tooltip positioned over the dot, or set a CSS-px font-size via foreignObject), and verify the hovered/focused label clears ~12px and 4.5:1 against var(--ink-2) at the mobile breakpoint."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Deductive-grid tool has no heading landmark and breaks heading order. The grid is a distinct interactive tool but is introduced by <h3>Deductive grid... (+page.svelte L96) with no enclosing <section aria-labelledby> and no <h2> — the nearest preceding heading is the lesson <h3>s under <h2>The seven lessons</h2> (L52,L57). To a screen reader the grid reads as if it were an 8th lesson under 'The seven lessons', not a separate tool, and the h2→h3 grouping is misleading.",
+          "file": "app/src/routes/school/+page.svelte (L52, L95-96)",
+          "fix": "Wrap the grid article in <section aria-labelledby=\"dg-h\"> and promote its title to <h2 id=\"dg-h\">Deductive grid</h2> (matching the 'Families & geography' section pattern at L35-36), keeping inner labels at h3."
+        },
+        {
+          "severity": "low",
+          "kind": "a11y",
+          "detail": "Heading hierarchy is flat where nesting is implied: FamiliesView renders each family as <h3>{f.name}</h3> (FamiliesView.svelte L25), but those cards sit under the <h3 class=\"sub-h\">The 5 families</h3> heading in the parent (+page.svelte L38). Two sibling h3 levels where the family headings are conceptually children of 'The 5 families'. Same flat pattern for the two map-card h3s under the families section h2.",
+          "file": "app/src/lib/components/FamiliesView.svelte (L25), app/src/routes/school/+page.svelte (L38,L42,L47)",
+          "fix": "Demote the per-family card title to <h4> (or restructure so 'The 5 families'/'Style map'/'Where it's from' are the h3s and the items below them are h4s) so the level reflects the visual/semantic nesting."
+        },
+        {
+          "severity": "low",
+          "kind": "contrast",
+          "detail": "Low-contrast muted text on tinted surfaces is unverified. .dg-name uses var(--muted) (#c9bca9) and the 'matches X of Y clues' line uses .meta (also --muted) inside .dg-hit.top whose background is rgba(252,181,57,.08) over the dark card (+page.svelte L124,L163,L166). The gold film lightens the background, pushing muted body text toward the 4.5:1 floor; it is not part of the documented contrast-checked token pairs in app.css.",
+          "file": "app/src/routes/school/+page.svelte (L124, L163-166)",
+          "fix": "Verify --muted on the gold-tinted .dg-hit.top background meets 4.5:1; if not, use var(--cream) for .dg-name or darken/remove the tint behind muted text."
+        }
+      ]
+    },
+    {
+      "area": "Reference screen (app/src/routes/reference/+page.svelte) + StructureMeter component",
+      "findings": [
+        {
+          "severity": "high",
+          "kind": "spec-deviation",
+          "detail": "Spec §5 and §14 explicitly require the pairing matrix to be 'readable, mobile = stacked dish cards'. The implementation renders a fixed 5-column <table class=\"matrix\"> (Dish/Wine/Cocktail/Zero-proof/Why) and the ONLY mobile treatment in app.css is `@media (max-width: 680px){ .matrix { font-size: 12px; } }` (app.css:251). Nothing stacks. On a ~360px phone, five columns including a full-sentence 'Why' cell at 12px will wrap to slivers or force horizontal scroll/overflow — exactly the unreadable matrix the spec calls out. The mockup also never solved this (it only shrinks font), so the build inherited the gap rather than fixing it.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\reference\\+page.svelte (lines 116-123) and C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\app.css (line 251)",
+          "fix": "Below 680px convert the table to stacked cards: keep the table semantics but add `@media (max-width:680px){ .matrix thead{ position:absolute; left:-9999px } .matrix tr{ display:block; margin-bottom:12px; border-radius:10px; overflow:hidden } .matrix td, .matrix th{ display:block } .matrix td::before{ content: attr(data-label); display:block; font-weight:800; color:var(--muted-paper) } }` and emit `data-label=\"Wine\"` etc. on each <td> in +page.svelte. This produces the spec's 'dish card' per row without losing the desktop table."
+        },
+        {
+          "severity": "high",
+          "kind": "bug",
+          "detail": "Search state `q` is never cleared when the chip filter changes. `q` only affects the Wine branch (lines 21-28, 43-48), but a user can type a query under 'Wine', switch to 'Food'/'Cocktails'/etc., and the stale query silently persists in state. Switching back to 'Wine' re-applies an invisible filter the user forgot about — there is no search box visible on the other tabs to show or reset it, so the Wine list appears mysteriously filtered/empty. This is a real interaction defect, not cosmetic.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\reference\\+page.svelte (lines 9-10, 39, 43-48)",
+          "fix": "Reset the query when switching filters: change the chip handler to `onclick={() => { filter = f; q = ''; speaking = null; }}` (line 39). Clearing `speaking` there too avoids a stuck playing-state when leaving the Wine tab mid-clip."
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "No empty-state for search. When a query matches zero wines, the grid (lines 49-79) simply renders nothing — the user sees the heading, the chips, an empty area, and the live region announcing '0 of N wines'. Spec §5 frames Reference as 'look it up fast'; a silent blank with no 'No wines match — try a grape or region' message is a missing loading/empty state called out in the audit brief and is a usability dead-end on a touch device.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\reference\\+page.svelte (lines 49-79)",
+          "fix": "Wrap the grid: `{#if wines.length}<div class=\"grid cols-2 on-cream\">…</div>{:else}<p class=\"sub\">No wines match “{q}”. Try a grape, style, food, or region.</p>{/if}`. The existing aria-live count (line 48) then pairs with a visible empty message."
+        },
+        {
+          "severity": "medium",
+          "kind": "bug",
+          "detail": "The speak button's 'playing' state is a hardcoded 1500ms timer (line 16) that is decoupled from actual playback. `playPronunciation` (playPronunciation.ts) exposes no 'ended' event, so `aria-pressed`/the gold .speak[aria-pressed=true] state clears at exactly 1.5s regardless of clip length: longer clips keep playing while the button reads 'not playing', shorter clips/Web-Speech fallbacks read 'playing' after audio finished. Spec §5 requires speak buttons with a truthful 'playing state'. It also never resets if the user navigates away mid-timer.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\reference\\+page.svelte (lines 13-17) and C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\lib\\audio\\playPronunciation.ts",
+          "fix": "Have playPronunciation accept onStart/onEnd callbacks (or return the HTMLAudioElement) and wire `ended`/`pause`/speechSynthesis `onend` to set `speaking = null`; drive the state from real events instead of `setTimeout(...1500)`. As a minimum, also clear `speaking` in onMount cleanup so it doesn't persist across remounts."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Heading-order / landmark gap. The Wine branch uses <span class=\"name\"> for each wine title (line 54) styled as a 20px display heading via .winecard .name, while the Food/Cocktails/Translator branches use real <h3> (lines 84,96,107). So the Wine list — the primary content — exposes NO item headings to a screen reader, breaking the h1→h3 outline the sibling tabs establish and removing heading navigation for the densest list. Additionally the whole Reference page has no <main>/section landmark label and the matrix branch has no caption.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\reference\\+page.svelte (line 54; compare 84/96/107)",
+          "fix": "Make the wine name a heading: `<h3 class=\"name\">{w.name}</h3>` inside .winecard-head (keep the .winecard .name font rule). Add `<caption class=\"visually-hidden\">Dish-by-dish pairing matrix</caption>` to the matrix table for parity."
+        },
+        {
+          "severity": "medium",
+          "kind": "contrast",
+          "detail": "StructureMeter inactive segments use `background: rgba(30,56,75,.14)` on the cream card (StructureMeter.svelte:23). That is ~0.14 alpha ink over #ffeed7 — a barely-perceptible tint with no border, so on cream the empty segments are nearly invisible and the 3-segment 'dual-coding' graphic effectively reads as a fragment, not a 1/2/3 scale. The dual-coding intent (§1/§8: convey level by FILLED COUNT) depends on the user seeing all three slots; an unfilled track this faint defeats it for low-vision users even though it is not text-contrast-regulated.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\lib\\components\\StructureMeter.svelte (line 23)",
+          "fix": "Give the track a visible outline/fill, e.g. `.seg { background: rgba(30,56,75,.10); box-shadow: inset 0 0 0 1px rgba(30,56,75,.30); }` so all three slots are always discernible and the filled-count scale is legible."
+        },
+        {
+          "severity": "low",
+          "kind": "generic-default",
+          "detail": "The search <input> is styled ad-hoc in a component <style> block (lines 128-132) with `background: rgba(255,238,215,.05)` and no design token for the field, and crucially sets NO placeholder color. The placeholder text 'Search grape, style, food, region…' renders in the UA default placeholder color (grey) over the deep-ink shell — a generic-default appearance that drifts from the Bridgette identity and risks weak contrast. The Reference screen is also the only place an input appears, so this one-off style is the canonical text-field and should be a token, not inline.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\reference\\+page.svelte (lines 128-132)",
+          "fix": "Add `.search input::placeholder { color: var(--muted); opacity: 1; }` and promote the field to a reusable `.field`/`.input` class in app.css (the single CSS source of truth per §11) instead of a route-local style, so other screens inherit the Bridgette field treatment."
+        },
+        {
+          "severity": "low",
+          "kind": "polish",
+          "detail": "Dead/duplicated style drift between the source-of-truth CSS and the component. app.css still ships the old mockup `.struct` / `.struct b` rules (app.css:158-159) for the flat 'Acidity high · Body medium' line, but the component was rebuilt to use StructureMeter + a local `.meters` grid (+page.svelte:63-68, 133). The `.struct` rules are now dead code in the 'single source of truth' file, and the meter layout lives in a route-local <style> instead of app.css — both invite future drift from the documented contract (§11).",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\app.css (lines 158-159)",
+          "fix": "Remove the unused `.struct`/`.struct b` rules from app.css, and either move `.meters`/`.sweet` into app.css next to the other Reference rules or leave a comment that meter layout is component-scoped, so the visual contract stays authoritative."
+        }
+      ]
+    },
+    {
+      "area": "Progress screen (app/src/routes/progress/+page.svelte)",
+      "findings": [
+        {
+          "severity": "high",
+          "kind": "spec-deviation",
+          "detail": "Spec §5 (\"deck + per-tag mastery rings (animated)\"), §6 (\"mastery rings animate up\"), §10/§14 and acceptance criterion §17 all require the mastery rings to ANIMATE up. The deck and topic rings render a static `conic-gradient` inline background (lines 53, 66) with no transition, no `@property --p` registration, and no JS count-up. The `--p:${r.pct}` custom prop set inline (lines 53/66) is dead — the hardcoded `${r.pct*3.6}deg` arc is what paints, so even a transition on `--p` would do nothing. CSS cannot tween a conic-gradient stop without `@property`, so the rings simply pop to their final value. This is the headline interaction of the screen and it is missing.",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Register the angle as an animatable custom property and drive the gradient from it, then animate from 0 on mount (guarded by prefers-reduced-motion). e.g. add to app.css: `@property --p { syntax: '<number>'; inherits: false; initial-value: 0; }` and `.ring { transition: --p .6s ease; }`; in the component set `background: conic-gradient(${ringColor(r.pct)} calc(var(--p)*3.6deg), rgba(255,238,215,.12) 0)` and toggle `--p` from 0→r.pct after mount via an `$effect`/`onMount`. Wrap the animation so the reduced-motion branch jumps straight to the final value (text/icon already convey state)."
+        },
+        {
+          "severity": "high",
+          "kind": "a11y",
+          "detail": "The weak-spot pills (line 99) put the full card prompt ONLY in a `title` attribute on a non-interactive `<span>`. `title` tooltips are not reachable by keyboard, are unreliable/unread by most screen readers, and never appear on touch — so for a beginner studying on a phone (the primary device per §1) the context behind each weak item is effectively invisible. The pill also shows only `deck label: answer`, which is the ANSWER side of a card with no question context, so without the prompt the list is hard to act on.",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Expose the prompt accessibly: either render it as visible secondary text inside the pill, or attach it via `aria-label`/an associated `aria-describedby` element instead of `title`. If the pills should be tappable to drill the card (matches §6 'one-tap drill weak ones'), make them real `<button>`s with `aria-label={\\`${label}: ${c.prompt}\\`}` and ≥44px tap targets."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Heading order skips a level. The page goes `<h1>Where you stand` (line 45) straight to multiple `<h3>` (lines 48, 61, 76, 95, 109 and `.card h3`); there is no `<h2>` between them. WCAG 2.2 (1.3.1 / heading-structure best practice) and axe's heading-order check flag skipped levels, which the spec's §16 per-route axe gate is meant to catch. Screen-reader users navigating by heading get a broken outline (H1 then H3).",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Promote the section headers to `<h2>` (By deck, By topic, Streak, Weak spots, Backup) so the outline is H1 → H2, or restructure so card titles are H3 under H2 section headings. Keep the visual size via the existing `.card h3`/type classes if needed."
+        },
+        {
+          "severity": "medium",
+          "kind": "spec-deviation",
+          "detail": "The snowflake/silent streak-freeze (spec §10: a snowflake shown AFTER you were protected, never punitive) is implemented for the DAILY goal only (line 83, `daily.protectedRecently`). When the user switches to the Weekly goal (line 88) there is no `protectedRecently`/snowflake surfaced even though the store exposes weekly streak data, so a protected miss silently disappears from the weekly view. The forgiving-streak signal is inconsistent across the two goal modes the same screen offers.",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Surface the same forgiven-day affordance in the weekly branch (line 88) if the weekly streak helper reports a protected/forgiven week, or document in the store that weekly has no freeze concept. At minimum keep the snowflake (❄️) + 'forgiven' copy parity between daily and weekly so the lenient design is visible in both modes."
+        },
+        {
+          "severity": "medium",
+          "kind": "missing-interaction",
+          "detail": "Import gives no confirmation focus or live-region announcement that survives a screen reader's attention. `ioStatus` is written into a `<p class=\"meta\" aria-live=\"polite\">` (line 116), but the Export/Import buttons sit far above it in a separate card and focus stays on the button; a SR user triggering Import may not have the polite region in their reading context, and there is no focus move or assertive cue on the failure case (\"Import failed — not valid progress JSON\"). For a destructive-ish merge operation, silent-ish feedback is risky.",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Keep the polite region for success but consider `role=\"status\"`/`aria-live=\"assertive\"` for failures, and/or move focus to the status text after import. Ensure the status `<p>` is adjacent to the buttons (it is) and is not visually hidden by being empty — give it a min-height so layout doesn't jump when the message appears."
+        },
+        {
+          "severity": "low",
+          "kind": "unlabeled-control",
+          "detail": "The goal toggle uses `aria-pressed` toggle buttons inside `role=\"group\"` (lines 77-79), but the two options have asymmetric, ambiguous labels: 'Daily' vs 'Weekly goal'. A screen-reader user hears 'Daily, toggle button, not pressed' and 'Weekly goal, toggle button' — the inconsistent wording obscures that these are mutually exclusive choices of the same setting. This is really a single-choice control (radio semantics), not two independent toggles.",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Make labels parallel ('Daily goal' / 'Weekly goal') and consider `role=\"radiogroup\"` with `role=\"radio\" aria-checked` (or a real `<fieldset>`/radios) since exactly one goal is active at a time — that conveys the mutual exclusivity and arrow-key navigation that `aria-pressed` toggles do not."
+        },
+        {
+          "severity": "low",
+          "kind": "polish",
+          "detail": "The visible ring number omits the unit: `<span>{r.pct}</span>` (lines 54, 67) shows e.g. '64' with no '%', while the approved mockup ring shows '64%' (mockup lines 238-240) and the Today shift-ready ring shows '{shiftReady}%' (today/+page.svelte line 48). The aria-label correctly says '64% mastered', so sighted and SR users get different units, and it drifts from the mockup baseline that §11 makes the visual contract.",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Render `{r.pct}%` (or a smaller superscript %) in the ring span to match the mockup and the Today ring; the `.ring.small span` font-size (22px, line 125) has room, or drop to ~18px to fit the % cleanly."
+        },
+        {
+          "severity": "low",
+          "kind": "polish",
+          "detail": "Layout drift from the approved mockup: the mockup's Progress screen lays the mastery rings out as a 3-up `.grid cols-3` of centered `.card`s with the ring inside each card and an `<h3>` label (mockup lines 237-241). The build instead uses a bespoke flex `.rings` / `.ring-card` / `.ring-label` pattern (lines 49-72, styles 122-126) with smaller 92px rings and `var(--muted)` 13px labels rather than `.card`-wrapped rings with display-font H3 labels. It reads fine but is a recognizable departure from the frozen baseline §11/§16 visual-regression is meant to hold.",
+          "file": "app/src/routes/progress/+page.svelte",
+          "fix": "Either reconcile toward the mockup (wrap rings in centered `.card`s with H-level labels) or, if the denser multi-ring layout is intentional for the larger real deck/tag set, record it as an approved deviation so the visual-regression baseline is updated deliberately rather than silently."
+        }
+      ]
+    },
+    {
+      "area": "v2 app shell (+layout.svelte), PWA toast, design tokens (app.css)",
+      "findings": [
+        {
+          "severity": "high",
+          "kind": "generic-default",
+          "detail": "The display typeface silently falls back to a generic system font. app.css line 26 defines --font-display: \"Oswald\", Impact, \"Arial Narrow\", sans-serif and the whole brand identity (brand wordmark, all h1/h2/h3, nav labels, eyebrows, stat numbers, flashcard Q) is set in it — but Oswald is never loaded: app.html has no Google Fonts <link>, there is no @font-face or @fontsource import anywhere in app/, and no woff/woff2 ships in static/. The approved mockup explicitly loads Oswald via fonts.googleapis.com (prototype <head> lines 7-9). So every headline renders in Impact/Arial Narrow instead of Oswald — a direct drift from the locked visual contract (spec §11 'extract the mockup's exact tokens', §17 'Bridgette tokens are the single CSS source of truth; no generic-AI styling'). This also defeats the visual-regression baseline, which was diffed against an Oswald mockup.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\app.html",
+          "fix": "Self-host Oswald and load it offline-safely (PWA must work offline — do NOT rely on the runtime Google Fonts CDN). Add @fontsource/oswald (weights 400;500;600;700) imported in +layout.svelte, or drop woff2 files in static/fonts and add an @font-face block at the top of app.css with font-display:swap. Ensure the font files are added to the SW precache globs (spec §13)."
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "No in-app back/close affordance for the installed PWA. Spec §13 explicitly requires 'In-app back/close affordances (installed PWA has no browser chrome)' and §5 calls out the cockpit/back patterns. The layout's mobile <header class=\"topbar\"> (lines 42-44) contains only an empty <div class=\"brand\"></div>; on desktop .topbar is display:none. There is no back button anywhere in the shell, so once a user drills into a sub-route (e.g. /practice/simulator, which exists per the grep) in standalone display mode they have no browser Back button and no in-app way to return except the bottom tab-bar — and sub-routes that aren't top-level tabs are unreachable to go back from.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\+layout.svelte",
+          "fix": "Add a context-aware back/close control in the topbar (and surface the topbar at all breakpoints, not just <=680px). Render a back button when page.url.pathname is a non-top-level route (e.g. starts with /practice/ but isn't a NAV href), with aria-label=\"Back\", min 44x44px, using history.back() / goto. The mockup topbar already carried content (the streak chip), so reusing this slot fits the design."
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "PWA update/install toasts are not announced and not focus-managed; role=\"status\" (polite) is wrong for an actionable interruption. PwaToast.svelte lines 49 & 55 use role=\"status\" (aria-live=polite, implicitly atomic=false) on toasts that contain actionable buttons (Refresh / Install / Not now). Polite live regions are routinely dropped if anything else is speaking, and nothing moves focus to the toast, so a keyboard/AT user may never learn the action exists. Spec §13/§14 call for accessible install/update prompts and carrying v1's aria-live choreography. There is also no aria-label on the toast container to name it as a dialog/alert.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\lib\\components\\PwaToast.svelte",
+          "fix": "Promote the toast to role=\"alertdialog\" (or at minimum role=\"alert\" with aria-live=\"assertive\") with an aria-label (e.g. \"App update available\" / \"Install app\"), and move focus to the primary action when it appears (e.g. bind:this on the Refresh/Install button and .focus() in an $effect when needRefresh/showInstall flips true). Keep Escape/Not-now dismissable."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Two distinct navigation landmarks share the same accessible name. The desktop sidebar <nav aria-label=\"Sections\"> (line 27) and the mobile <nav class=\"tabbar\" aria-label=\"Sections\"> (line 48) both expose identical 'Sections' names. Although only one is visible at a time via CSS, both remain in the accessibility tree/DOM (the tabbar is display:none only above 680px, the sidebar display:none only below 680px) and screen-reader landmark menus enumerate both, producing two same-named 'Sections navigation' landmarks — a WCAG 2.4.1 / landmark-uniqueness smell. Additionally the outer <aside aria-label=\"Primary\"> plus an inner <nav aria-label=\"Sections\"> double-wraps the same links.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\+layout.svelte",
+          "fix": "Give the two navs distinct names, e.g. aria-label=\"Primary\" on the sidebar nav (and drop the redundant aria-label on the wrapping <aside>, or make the aside a plain <div>) and aria-label=\"Primary (mobile)\" or simply move aria-label to the nav and remove it from the aside. Goal: each rendered landmark has a unique, meaningful name."
+        },
+        {
+          "severity": "medium",
+          "kind": "spec-deviation",
+          "detail": "Tab-bar labels duplicate the icon's accessible meaning incorrectly and the icons are hidden, but 'Wine School' is relabeled inconsistently. In the tab-bar each <a> renders an aria-hidden SVG plus the text, and line 54 special-cases item.label === 'Wine School' ? 'School' : item.label. The sidebar shows full 'Wine School' while the tab shows 'School' — matching the mockup — but because the icon is aria-hidden, the tab's entire accessible name for that item is just 'School', which diverges from the sidebar's 'Wine School' for the same destination. Minor, but it means the same nav target announces under two different names depending on breakpoint, and 'School' alone is ambiguous (could read as a generic school).",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\+layout.svelte",
+          "fix": "Keep the short visible 'School' label but give the tab a stable accessible name via aria-label=\"Wine School\" on that <a> (or add a visually-hidden 'Wine ' prefix). Apply the same full name across both navs so the destination announces consistently."
+        },
+        {
+          "severity": "medium",
+          "kind": "spec-deviation",
+          "detail": "The mobile topbar lost the streak indicator the mockup placed there, leaving an empty bar. Mockup topbar (prototype line 138) is <div class=\"topbar\"><div class=\"brand\"></div><span class=\"streak\">🔥 6</span></div> and uses justify-content:space-between to push brand left and streak right. The layout's topbar (lines 42-44) has only the empty brand div, so on mobile the space-between layout has a single child and the streak/cockpit signal from spec §10 (forgiving streak visible) is absent from the shell chrome. The brand div is also empty in the desktop topbar (which is display:none, so harmless there) — but on mobile the ::before content injects 'Bridgette Training' via CSS, meaning the wordmark is CSS-generated text that is invisible to some AT and untranslatable.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\+layout.svelte",
+          "fix": "Render the brand wordmark as real text inside the topbar (not via CSS ::before content), and either restore the streak chip in the topbar or intentionally document its removal. If the streak stays CSS-only, add an aria-label. Real text also keeps the heading/landmark accessible name reliable."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Reduced-motion override does not fully neutralize the route-transition animation, and the .screen fade can fire on every navigation. app.css defines .screen { animation: fade .25s ease } (line 121) used per route. The global prefers-reduced-motion block (lines 87-93) sets animation-duration:.001ms !important which collapses timing, but it leaves the keyframe's starting transform: translateY(6px)/opacity:0 to snap — generally OK, yet because duration is forced near-zero the fade is effectively removed for everyone who prefers reduced motion (good) while still being declared. The real gap: spec §6 requires state conveyed by text+icon never motion/color alone and a 'full prefers-reduced-motion branch'; the shell relies on the blanket duration override rather than an explicit reduced-motion branch that disables the entrance animation, so any component using opacity-only entrance still flickers. Low-risk but worth an explicit @media (prefers-reduced-motion) { .screen { animation: none } }.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\app.css",
+          "fix": "Add an explicit rule inside the existing reduced-motion media query: .screen { animation: none; } so the entrance is removed outright rather than time-collapsed, matching spec §6's 'full reduced-motion branch'."
+        },
+        {
+          "severity": "low",
+          "kind": "polish",
+          "detail": "The skip link target/landmark wiring is correct (skip-link -> #main, <main id=\"main\">), but <main> has no tabindex and no heading, and is not focusable; some browsers will not move focus into a non-focusable element on skip-link activation, so the next Tab may still land back in the nav. The skip link itself uses left:-999px off-screen positioning (fine) and becomes visible on focus (line 85) — good. This is a minor robustness gap relative to spec §14's focus-order checkpoint.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\routes\\+layout.svelte",
+          "fix": "Add tabindex=\"-1\" to <main id=\"main\"> so skip-link activation reliably moves focus into the content region across browsers (and consider style outline:none on main:focus to avoid a stray outline)."
+        },
+        {
+          "severity": "low",
+          "kind": "polish",
+          "detail": "Hourly SW update polling has no teardown and ignores tab visibility. PwaToast.svelte line 10 sets setInterval(() => r.update(), 60*60*1000) inside onRegisteredSW but never clears it; the interval also runs while the tab is backgrounded. Not user-visible, but it is a leak relative to the onMount cleanup pattern used just below for the event listeners, and contradicts the file's own tidy listener-removal approach.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\lib\\components\\PwaToast.svelte",
+          "fix": "Store the interval id and clear it on component teardown (return a cleanup from onMount or an $effect), and optionally gate r.update() on document.visibilityState === 'visible' to avoid background polling."
+        },
+        {
+          "severity": "low",
+          "kind": "polish",
+          "detail": "deferredPrompt is typed as $state<any> and the beforeinstallprompt event is cast loosely, but more relevantly there is no loading/empty state while the SW registers or before sessionDone fires — acceptable for a toast, yet the install toast can theoretically appear simultaneously with the refresh toast (both render if $needRefresh && showInstall), stacking two fixed bars at bottom:20px/72px and overlapping since both use the same bottom offset and translateX(-50%). Spec §13 treats these as distinct moments; co-occurrence is an unhandled edge.",
+          "file": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app\\src\\lib\\components\\PwaToast.svelte",
+          "fix": "Make the two toasts mutually exclusive (e.g. {#if $needRefresh}...{:else if showInstall}...) or stack them with distinct offsets, so an update-ready toast and an install toast never overlap at the same bottom position."
+        }
+      ]
+    },
+    {
+      "area": "Bridgette Training v2 — completeness vs spec §17 acceptance + §3 scope",
+      "findings": [
+        {
+          "severity": "high",
+          "kind": "spec-deviation",
+          "detail": "Readiness '% ready' is NOT confidence-weighted. Spec §9 and §17 require the Readiness shift-ready % to be confidence-weighted 'so lucky guesses don't inflate it.' But engine.scoreReadiness() (training.js ~408-433) computes score purely from r.correct and never reads confidence. Worse, in the Readiness flow the confidence chips are never even shown: +page.svelte gates them behind `{#if kind !== 'readiness'}` (line ~200) and commit() for readiness pushes {id,correct,deck} with no confidence (lines ~83-87). So the headline honesty metric the spec calls out is unweighted.",
+          "file": "app/src/routes/+page.svelte (lines ~83-87, ~200-205); app/src/lib/engine/training.js (scoreReadiness ~408-433)",
+          "fix": "Show the Sure/Shaky chips during readiness too (drop the kind!=='readiness' guard around the conf group), capture confidence per readiness result, and add an optional confidence-weighted score in scoreReadiness (e.g. a Sure+Right counts full, Shaky+Right discounted, Sure+Wrong penalized) feeding summary.pct and progress.readiness.lastScore. Keep the plain score for the engine tests and add the weighted score as a new field."
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "End-of-session summary does not animate mastery rings or tick the streak. Spec §6 (centerpiece) and §17 explicitly require: 'a summary screen: what improved, what's weak, mastery rings animate up, streak ticks, one-tap drill weak ones.' The summary branch in +page.svelte (lines ~252-264) renders only an eyebrow, an h1 with the percentage, a sub line, and two buttons. No rings render (rings live only on /progress), no streak indicator appears, and there is no one-tap 'drill weak ones' action — only 'Back to Practice' and 'See Progress'.",
+          "file": "app/src/routes/+page.svelte (summary branch lines ~252-264)",
+          "fix": "On the summary screen render the deck/topic mastery rings (reuse the conic-gradient ring markup from /progress, animate width/--p from prior to new value, honoring prefers-reduced-motion), show the current daily/weekly streak with the freeze snowflake when protectedRecently, and add a 'Drill weak ones' button that calls startSession with the weak items (summary.weak is currently always [] for practice — populate it)."
+        },
+        {
+          "severity": "high",
+          "kind": "missing-interaction",
+          "detail": "Guest Simulator does not score the Ask/Explain/Confirm beats that the spec requires; it only scores two beats (right pour + right canned reply). Spec §7 and §17 require scoring 'asked first? one reason not three? confirmed the bottle upgrade?' and box-driven difficulty (box 1 = guest names the grape; box 5 = vague + objection + sweetness/allergy confirm). The simulator (practice/simulator/+page.svelte) has a fixed 2-point-per-table model, no 'Ask' beat, no structural-reason beat (the 'why' is just displayed, never chosen/graded), no explicit bottle-upgrade confirm beat, and no box/difficulty scaling — turns are random regardless of mastery. It also is not driven by the Leitner box at all.",
+          "file": "app/src/routes/practice/simulator/+page.svelte (buildTurns ~23-44, scoring ~55-67)",
+          "fix": "Add at least the structural-reason beat (present 3 reason options, score 'one reason not three') and an upgrade-confirm beat using the wines' upgrade/exclusive fields, and scale difficulty by the relevant card's box (box1 names the grape in the guest line; box5 makes it vague and adds the objection + a sweetness/allergen confirm). Score each beat separately."
+        },
+        {
+          "severity": "medium",
+          "kind": "missing-interaction",
+          "detail": "Miss → one-tap 'Explain this' deep-link to the lesson is absent. Every generated card carries a learnLink (training.js DECKS + card objects; v1 even rendered it), the findings doc flags surfacing it (#Explain this), and spec §5/§6 frame the lesson as the unblock path. On a wrong answer the reveal block (+page.svelte lines ~230-243) shows the answer, feedback, and the why, but offers no link to card.learnLink. The learner cannot jump from a miss to the relevant Wine School lesson.",
+          "file": "app/src/routes/+page.svelte (reveal block lines ~230-243)",
+          "fix": "In the revealed state, when pendingCorrect === false, render an anchor `<a class=\"btn ghost\" href={'/school#' + card.learnLink}>Explain this</a>` (card.learnLink is already on every card). The lesson articles already have matching id anchors on /school."
+        },
+        {
+          "severity": "medium",
+          "kind": "a11y",
+          "detail": "Style map and Region map dots are not keyboard-focusable, contradicting their own captions and spec §14 keyboard requirements. Both StyleMap.svelte (line ~24) and RegionMap.svelte (line ~22) put the interactive <g class=\"dot\"> with tabindex=\"-1\", which removes them from tab order, so the :focus-visible reveal of the dot label never fires for keyboard users. The figcaptions say 'Hover or tab a dot' (RegionMap line 15, StyleMap line 16) — a promise the markup breaks. (A visually-hidden SR list mirrors the data, so it's not a total loss, but the documented tab interaction is dead.)",
+          "file": "app/src/lib/components/StyleMap.svelte (line ~24); app/src/lib/components/RegionMap.svelte (line ~22)",
+          "fix": "Either change tabindex to 0 and add role/aria-label per dot so Tab reveals the label and SR announces it, or remove the 'or tab a dot' wording from the figcaptions so the affordance matches reality. Preferred: tabindex=0 + role=\"img\" + aria-label on each <g>."
+        },
+        {
+          "severity": "medium",
+          "kind": "missing-interaction",
+          "detail": "Silent streak-freeze is surfaced only on /progress and partly on /today, not where the spec puts it. Spec §10/§17 require the snowflake shown 'after you were protected' as part of the streak view, and §6 wants the streak to tick on the session summary. The summary screen shows no streak at all. /today shows '🔥❄️' only as a combined glyph (today/+page.svelte line ~40) rather than a clear 'a missed day was forgiven' state, and the forgiveness copy + snowflake only appear on /progress. The protectedRecently signal is computed (dailyStreak) but underused at the moments that matter (post-session).",
+          "file": "app/src/routes/+page.svelte (summary branch ~252-264); app/src/routes/today/+page.svelte (line ~40)",
+          "fix": "Render a streak chip on the session summary (count + ❄️ when protectedRecently with non-punitive copy) so the streak visibly ticks after a session, and make the /today snowflake explicit rather than a fused emoji."
+        },
+        {
+          "severity": "medium",
+          "kind": "spec-deviation",
+          "detail": "Mobile swipe-to-grade and tap-to-flip gestures are not implemented. Spec §6 and §17 specify 'Mobile: tap-to-flip + swipe-to-grade; laptop: Space/1-4/Enter retained.' The keyboard path is fully implemented (onKey in +page.svelte handles Space flip, 1-4 choose, 1/2/Enter grade), but there are no pointer/touch handlers for swipe-to-grade or tap-to-flip anywhere in the session UI; mobile users must tap the small grade buttons. This is a core-loop interaction the spec calls out for the primary (phone) form factor.",
+          "file": "app/src/routes/+page.svelte (session/flash block lines ~196-244)",
+          "fix": "Add touch/pointer handlers on the .flash card: tap-to-flip in flip mode, and a horizontal swipe (left=I didn't / right=I got it) in the revealed state that calls commit(true/false). Respect prefers-reduced-motion for the swipe animation."
+        },
+        {
+          "severity": "medium",
+          "kind": "spec-deviation",
+          "detail": "The 'always confirm allergens with the kitchen, never guess' rule is not consistently surfaced in Reference, and food allergy flags are shown without the hard rule. Spec §3 includes this as a cheap, safety-critical v2 inclusion and says 'Safety flags remain visible in Reference.' On /reference the Food filter prints `Confirm: {f.flags.join(', ')}` (reference/+page.svelte line ~88) but never states the never-guess kitchen rule, and the Wine filter does not surface allergen/safety flags at all. The rule appears only as a passing tip on /today (line ~57).",
+          "file": "app/src/routes/reference/+page.svelte (Food branch line ~88)",
+          "fix": "Add a persistent banner or per-card note in Reference's Food/Wine views stating 'Always confirm allergens with the kitchen — never guess.' Surface f.flags prominently (and any wine safety flags) with that rule attached."
+        },
+        {
+          "severity": "low",
+          "kind": "missing-interaction",
+          "detail": "Action-first onboarding gives 'one win in ~30s' as copy only, not an interactive win. Spec §3/§5/§17 want a first-run win before any numbers. The /today onboarding card (today/+page.svelte ~26-33) tells the Cab→Claret answer in prose and links to '/' ('Try a real card'), but the win is pre-revealed text, not a guided interaction the user performs. The spec's intent ('one win' the user achieves) is only partially met.",
+          "file": "app/src/routes/today/+page.svelte (onboard card lines ~26-33)",
+          "fix": "Make the first-run win interactive: a single inline MC ('A guest asks for a Cabernet — what do you pour?') that the user taps and gets the green confirm + why, before showing any dashboard numbers, then routes into Smart Review."
+        },
+        {
+          "severity": "low",
+          "kind": "spec-deviation",
+          "detail": "Confidence tap is collected but the 'forced re-show' for Sure+Wrong is not distinct from the normal wrong-answer re-queue. Spec §9 requires Sure+Wrong → 'loud full-screen hypercorrection AND forced re-show.' The hypercorrection banner (+page.svelte ~246-250) is an inline role=alert, not full-screen, and the re-show on miss (commit ~94) happens for every wrong answer regardless of confidence, so a confident-wrong card gets no stronger re-show than a shaky-wrong one. The 'loud/full-screen' and 'forced' distinctions the spec calls out are softened.",
+          "file": "app/src/routes/+page.svelte (hypercorrection block ~246-250, commit ~94)",
+          "fix": "For confidence==='sure' && !isCorrect, escalate to a full-screen hypercorrection state that blocks advance until acknowledged, and guarantee the forced re-show (e.g. re-queue immediately next, not just appended) so the dangerous confident-wrong belief is corrected harder than an ordinary miss."
+        }
+      ]
+    }
+  ]
+}

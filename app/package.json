@@ -9,9 +9,12 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.11.3",
+    "@fontsource/oswald": "5.2.8",
     "@playwright/test": "1.60.0",
     "@sveltejs/adapter-static": "3.0.10",
     "@sveltejs/kit": "2.63.0",

@@ -143,7 +143,10 @@ a { color: inherit; }
 
 /* Today */
 .hero { display: grid; grid-template-columns: 1.3fr .7fr; gap: 16px; margin-bottom: 18px; }
-.ring { --p: 78; width: 128px; height: 128px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto; background: conic-gradient(var(--gold) calc(var(--p) * 1%), rgba(255, 238, 215, .12) 0); }
+/* Animatable conic ring: @property lets the gradient stop tween (spec §6 "rings
+   animate up"). The global reduced-motion branch zeroes the transition. */
+@property --p { syntax: '<number>'; inherits: false; initial-value: 0; }
+.ring { --p: 78; width: 128px; height: 128px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto; background: conic-gradient(var(--gold) calc(var(--p) * 1%), rgba(255, 238, 215, .12) 0); transition: --p .6s ease; }
 .ring span { width: 96px; height: 96px; border-radius: 50%; background: var(--ink-2); display: grid; place-items: center; font-family: var(--font-display); font-size: 30px; }
 .stat { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
 .stat b { font-family: var(--font-display); font-size: 30px; display: block; line-height: 1; }
@@ -155,8 +158,6 @@ a { color: inherit; }
 .chip[aria-pressed="true"] { background: var(--accent-dark); border-color: var(--accent-dark); color: var(--cream); }
 .winecard { display: grid; gap: 8px; }
 .winecard .name { font-family: var(--font-display); font-size: 20px; }
-.struct { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted-paper); }
-.struct b { color: var(--ink); }
 .speak { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--line-dark); background: rgba(30, 56, 75, .06); color: var(--accent-dark); display: inline-grid; place-items: center; font-size: 18px; }
 .speak[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); }
 table.matrix { width: 100%; border-collapse: collapse; background: var(--cream); color: var(--ink); border-radius: 10px; overflow: hidden; font-size: 13px; }
@@ -248,5 +249,12 @@ table.matrix { width: 100%; border-collapse: collapse; background: var(--cream);
   .tab { flex: 1; background: none; border: none; color: var(--muted); padding: 9px 0 10px; display: grid; justify-items: center; gap: 3px; min-height: 58px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; text-decoration: none; }
   .tab .ico { width: 24px; height: 24px; }
   .tab[aria-current="page"] { color: var(--gold); }
-  .matrix { font-size: 12px; }
+  /* Spec §5: the matrix becomes stacked dish cards on phones (no h-scroll). */
+  .matrix { font-size: 13px; border-collapse: separate; border-spacing: 0; background: transparent; }
+  .matrix thead { position: absolute; left: -9999px; }
+  .matrix tbody, .matrix tr, .matrix th, .matrix td { display: block; }
+  .matrix tr { background: var(--cream); border-radius: 10px; margin-bottom: 12px; padding: 6px 4px; }
+  .matrix tbody th { background: transparent; font-family: var(--font-display); font-size: 16px; text-transform: uppercase; border: 0; padding: 8px 12px 2px; }
+  .matrix td { border: 0; padding: 4px 12px; }
+  .matrix td::before { content: attr(data-label) ": "; font-weight: 800; color: var(--muted-paper); }
 }

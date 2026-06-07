@@ -12,14 +12,14 @@
 </script>
 
 <figure class="regionmap">
-  <figcaption class="meta">Where the list comes from — colour shows the climate (cool → warm) that shapes each wine. Hover or tab a dot.</figcaption>
+  <figcaption class="meta">Where the list comes from — colour shows the climate (cool → warm) that shapes each wine. Hover a dot; the full list is below.</figcaption>
   <div class="map">
     <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       {#each regionMap.countries as c (c.country)}
         <text x={c.x} y={c.y} class="country">{c.country}</text>
       {/each}
       {#each dots as d (d.id)}
-        <g class="dot" tabindex="-1">
+        <g class="dot">
           <circle cx={d.x} cy={d.y} r="2.6" fill={CLIMATE_COLOR[d.wine.climate]} />
           <text x={d.x} y={d.y - 3.5} class="dot-label">{d.wine.name}</text>
           <title>{d.wine.name} — {d.regionLabel} ({d.wine.climate})</title>

@@ -27,6 +27,8 @@
   function resetGrid() { clues = {}; }
 </script>
 
+<svelte:head><title>Wine School · Bridgette Training</title></svelte:head>
+
 <section class="screen">
   <p class="h-eyebrow">Wine School</p>
   <h1>The fundamentals</h1>
@@ -87,13 +89,17 @@
               {/if}
             {/if}
           </p>
+          {#if picked[l.id] != null}
+            <button class="btn ghost qc-retry" type="button" onclick={() => (picked[l.id] = null)}>Try again</button>
+          {/if}
         </div>
       </article>
     {/each}
   </div>
 
-  <article class="card dg" id="deductive-grid-tool">
-    <h3>Deductive grid — guess the grape from the clues</h3>
+  <h2 class="fg-h">Deductive grid</h2>
+  <article class="card dg" id="deductive-grid-tool" aria-label="Deductive grid tool">
+    <h3>Guess the grape from the clues</h3>
     <p class="meta">Set the clues you taste, then reveal the likely grape and the exact glass.</p>
     <div class="dg-fields">
       {#each DG_DIMS as dim}
@@ -153,6 +159,7 @@
   .qc-choice.wrong { background: rgba(168, 50, 18, .25); border-color: var(--accent-dark); }
   .qc-key { font-family: var(--font-display); font-weight: 800; opacity: .8; }
   .qc-result { margin: 8px 0 0; min-height: 1.2em; font-weight: 700; }
+  .qc-retry { margin-top: 8px; }
   .dg { margin-top: 22px; border-left: 4px solid var(--blue); }
   .dg-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 12px 0; }
   .dg-field { display: grid; gap: 4px; font-size: 13px; }

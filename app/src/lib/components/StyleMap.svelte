@@ -13,7 +13,7 @@
 </script>
 
 <figure class="stylemap">
-  <figcaption class="meta">Where each wine sits by <strong>body</strong> (light → full) and <strong>acidity</strong> (low → high). Hover or tab a dot for the name.</figcaption>
+  <figcaption class="meta">Where each wine sits by <strong>body</strong> (light → full) and <strong>acidity</strong> (low → high). Hover a dot for the name; the full list is below.</figcaption>
   <div class="plot-wrap">
     <span class="axis y">Acidity →</span>
     <div class="plot">
@@ -21,7 +21,7 @@
         <line x1="50" y1="0" x2="50" y2="100" class="grid" />
         <line x1="0" y1="50" x2="100" y2="50" class="grid" />
         {#each dots as d (d.id)}
-          <g class="dot" tabindex="-1">
+          <g class="dot">
             <circle cx={d.x} cy={100 - d.y} r="3.4" fill={FAMILY_COLOR[d.wine.family]} />
             <text x={d.x} y={100 - d.y - 5} class="dot-label">{d.wine.name}</text>
             <title>{d.wine.name} — {d.wine.structure.body} body, {d.wine.structure.acidity} acidity</title>
