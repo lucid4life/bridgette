@@ -835,6 +835,44 @@
       tile.appendChild(name); tile.appendChild(meta); tile.appendChild(mast);
       grid.appendChild(tile);
     });
+    renderToday();
+  }
+
+  // "Today" one-tap chooser: due cards -> Smart Review; else weakest deck <40%; else stale Readiness; else caught up.
+  function pickToday() {
+    var p = loadProgress();
+    var today = dayNumber();
+    var due = 0;
+    allCards(window.BB.data).forEach(function (c) { var st = p.cards[c.id]; if (st && isDue(st, today)) due++; });
+    if (due > 0) return { kind: "smart", reason: due + " card" + (due === 1 ? "" : "s") + " due today — a quick Smart Review keeps them from piling up." };
+    var weakest = null, weakestM = 101;
+    Object.keys(DECKS).forEach(function (id) { var m = masteryFor(p, id, window.BB.data); if (m < weakestM) { weakestM = m; weakest = id; } });
+    if (weakest && weakestM < 40) return { kind: "deck", deck: weakest, reason: "Nothing due yet — build up " + DECKS[weakest].label + " (" + weakestM + "% mastered)." };
+    var r = p.readiness;
+    if (!r || r.lastTaken == null || (today - r.lastTaken) >= 3) return { kind: "readiness", reason: "You're current on reviews — take a Readiness Check to see your % shift-ready." };
+    return { kind: "caughtup", reason: "You're all caught up — rest is part of spacing. Come back tomorrow." };
+  }
+  function renderToday() {
+    var reason = $("todayReason"); if (!reason) return;
+    var pick = pickToday();
+    reason.textContent = pick.reason;
+    var btn = $("startToday");
+    if (btn) {
+      btn.disabled = pick.kind === "caughtup";
+      btn.textContent = pick.kind === "smart" ? "Start Smart Review"
+        : pick.kind === "deck" ? "Focus " + DECKS[pick.deck].label
+        : pick.kind === "readiness" ? "Run Readiness Check"
+        : "You're caught up";
+    }
+  }
+  function startToday() {
+    var pick = pickToday();
+    if (pick.kind === "smart") startSession(null);
+    else if (pick.kind === "deck") startSession(pick.deck);
+    else if (pick.kind === "readiness") startReadiness();
+    else { renderCaughtUp(null); }
+    var prm = document.getElementById("practice");
+    if (prm) prm.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
   }
 
   function ringColor(pct) {
@@ -906,7 +944,7 @@
   }
 
   var GUIDED = [
-    { type: "learn", label: "Read Wine School: what the structure words mean", target: "#start" },
+    { type: "learn", label: "Read Wine School: what the structure words mean", target: "#learn" },
     { type: "deck", deck: "translator", label: "Focus: Translator (your #1 table priority)" },
     { type: "deck", deck: "wine-identity", label: "Focus: Wine Identity (grape + region)" },
     { type: "deck", deck: "pronunciation", label: "Focus: Pronunciation (say each name)" },
@@ -921,6 +959,7 @@
     var firstActive = true;
     GUIDED.forEach(function (step, i) {
       var done = false;
+      if (step.type === "learn") { try { done = typeof localStorage !== "undefined" && localStorage.getItem("bb_calgary_learn_v1") === "1"; } catch (e) { done = false; } }
       if (step.type === "deck") done = masteryFor(p, step.deck, window.BB.data) >= 40;
       if (step.type === "smart") done = Object.keys(DECKS).every(function (d) { return masteryFor(p, d, window.BB.data) >= 40; });
       var div = document.createElement("div");
@@ -1006,6 +1045,7 @@
       var prm = document.getElementById("practice");
       if (prm) prm.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
     });
+    var stt = $("startToday"); if (stt) stt.addEventListener("click", startToday);
     var again = $("summaryAgain"); if (again) again.addEventListener("click", function () {
       $("summaryScreen").hidden = true; $("practiceHome").hidden = false; renderDeckHome();
     });

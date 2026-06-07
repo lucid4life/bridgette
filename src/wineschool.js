@@ -75,6 +75,9 @@
       btn.addEventListener("click", function () {
         var i = parseInt(btn.getAttribute("data-i"), 10);
         var ok = checkQuickCheck(lesson, i);
+        // Engaging with a Wine School quick check completes Progress guided-path step 1.
+        try { localStorage.setItem("bb_calgary_learn_v1", "1"); } catch (e) {}
+        if (window.BB.training && window.BB.training.renderProgress) window.BB.training.renderProgress();
         Array.prototype.forEach.call(buttons, function (b) {
           b.classList.remove("is-correct", "is-wrong");
           b.removeAttribute("aria-pressed");
@@ -115,7 +118,7 @@
       (wines || []).forEach(function (w) { if (w.category && !seen[w.category]) { seen[w.category] = 1; cats.push(w.category); } });
       return cats;
     }
-    if (dim === "sweetness") return ["dry", "off-dry", "medium-dry", "medium-sweet", "sweet"];
+    if (dim === "sweetness") return ["dry", "off-dry"]; // only values any wine on this list actually carries
     return ["low", "medium", "high"];
   }
 

@@ -215,8 +215,8 @@
       border-color: var(--accent-dark);
       background: rgba(168,50,18,.12);
     }
-    .section.dark .btn:hover,
-    .site-header .btn:hover {
+    .section.dark .btn:not(.primary):not(.gold):hover,
+    .site-header .btn:not(.primary):not(.gold):hover {
       border-color: var(--orange);
       background: rgba(241,86,35,.18);
     }
