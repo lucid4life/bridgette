@@ -252,6 +252,26 @@
         });
       });
     });
+    // Structure RECALL (spec §9): given a named wine, recall its level for each
+    // attribute. MC over the WSET low/medium/high scale; reinforces per-attribute
+    // mastery and the "what is THIS wine like" knowledge the discrimination cards skip.
+    data.wines.forEach(function (w) {
+      ["acidity", "tannin", "body"].forEach(function (attr) {
+        var lvl = w.structure && w.structure[attr];
+        if (!LEVEL[lvl]) return;
+        cards.push({
+          id: "structure:recall-" + attr + "-" + w.id + ":level",
+          deck: "structure", kind: "discriminate",
+          prompt: w.name + " — is its " + attr + " low, medium, or high?",
+          answer: lvl,
+          why: w.name + " is " + lvl + " in " + attr + (w.structureNote ? " — " + w.structureNote : "") + ".",
+          choices: ["low", "medium", "high"],
+          aliases: [],
+          learnLink: DECKS.structure.learnLink,
+          tags: ["structure", attr]
+        });
+      });
+    });
     return cards;
   }
 

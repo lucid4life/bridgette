@@ -417,4 +417,31 @@ test("recordReadiness: caps weakAreas at 8", () => {
   assert.strictEqual(out.readiness.weakAreas.length, 8);
 });
 
+// --- S4: structure RECALL (spec §9 "structure recall" — named wine -> its level) ---
+
+test("genStructure: includes structure-recall cards (named wine -> its level) with LMH choices", () => {
+  const cards = T.generateDeck("structure", DATA);
+  const recall = cards.filter(c => /^structure:recall-/.test(c.id));
+  assert.ok(recall.length >= DATA.wines.length, "expected at least one recall card per wine");
+  recall.forEach(c => {
+    assert.strictEqual(c.deck, "structure");
+    assert.deepStrictEqual(c.choices, ["low", "medium", "high"], "recall choices must be the LMH scale: " + c.id);
+    assert.ok(c.choices.indexOf(c.answer) !== -1, "recall answer not among choices: " + c.id);
+    assert.ok(c.learnLink, "recall card missing learnLink: " + c.id);
+    assert.strictEqual(c.id.split(":").length, 3, "bad id shape: " + c.id);
+  });
+});
+
+test("genStructure recall: the recalled level matches the wine's actual structure value", () => {
+  const cards = T.generateDeck("structure", DATA);
+  DATA.wines.forEach(w => {
+    ["acidity", "tannin", "body"].forEach(attr => {
+      const id = "structure:recall-" + attr + "-" + w.id + ":level";
+      const c = cards.find(x => x.id === id);
+      assert.ok(c, "missing recall card: " + id);
+      assert.strictEqual(c.answer, w.structure[attr], "wrong level for " + id);
+    });
+  });
+});
+
 module.exports = { T, DATA };
