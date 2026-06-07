@@ -84,7 +84,7 @@ const savedKey = "bb_calgary_saved_cards_v1";
             <div class="confirm-line"><b>Confirm</b>${escapeHtml(caveat)}</div>
             <div class="badge-row">${tags}</div>
             ${isWine ? `<p><strong>${escapeHtml(item.grape)}</strong><br>${escapeHtml(item.region)}</p>` : ""}
-            ${isWine && item.pronunciation ? `<p class="pron"><strong>Say it:</strong> ${escapeHtml(item.pronunciation.respell)}</p>` : ""}
+            ${isWine && item.pronunciation ? `<p class="pron"><strong>Say it:</strong> ${escapeHtml(item.pronunciation.respell)} <button class="speak-btn" type="button" data-audio="${escapeHtml(item.id)}" aria-label="Hear ${escapeHtml(item.name)} pronounced">🔊 Hear it</button></p>` : ""}
             ${isWine ? structureMeters(item.structure, item.structureNote) : ""}
             ${isWine && item.tenSecond ? `<div class="pair-line"><b>10-second pour</b>${escapeHtml(item.tenSecond)}</div>` : ""}
             ${isFood ? `<p><strong>Menu:</strong> ${escapeHtml(item.menu)}</p>` : ""}
@@ -368,6 +368,17 @@ const savedKey = "bb_calgary_saved_cards_v1";
         });
       });
       document.querySelectorAll("select").forEach(select => select.addEventListener("change", updatePairing));
+      document.body.addEventListener("click", event => {
+        const btn = event.target.closest("[data-audio]");
+        if (!btn) return;
+        const id = btn.dataset.audio;
+        const wine = (window.BB.data.wines || []).find(w => w.id === id);
+        if (!wine || !window.BB.playPronunciation) return;
+        const lang = (window.BB.training && window.BB.training.langFor)
+          ? window.BB.training.langFor(wine.country) : "";
+        const say = wine.pronunciation ? wine.pronunciation.say : wine.name;
+        window.BB.playPronunciation(id, say, lang);
+      });
       document.body.addEventListener("click", event => {
         const button = event.target.closest("[data-save]");
         if (!button) return;

@@ -889,6 +889,7 @@
       padding: 8px 12px; font-weight: 800;
     }
     .speak-btn:hover { background: rgba(168,50,18,.16); }
+    .pron .speak-btn { margin-left: 8px; vertical-align: middle; font-size: 12px; padding: 4px 10px; }
     .scenario-note { font-size: 13px; color: var(--brown); margin: 0; }
 
     .grade-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }

@@ -199,6 +199,7 @@
     return data.wines.map(function (w) {
       return {
         id: "pronunciation:" + w.id + ":say",
+        wineId: w.id,
         deck: "pronunciation", kind: "pronounce",
         prompt: "How do you say “" + w.name + "”?",
         answer: w.pronunciation.respell,
@@ -664,7 +665,10 @@
     b.type = "button"; b.className = "speak-btn";
     b.setAttribute("aria-label", "Hear " + card.answer + " spoken aloud");
     b.textContent = "🔊 Hear it";
-    b.addEventListener("click", function () { speak(card.audioText, card.lang); });
+    b.addEventListener("click", function () {
+      if (window.BB && window.BB.playPronunciation) window.BB.playPronunciation(card.wineId, card.audioText, card.lang);
+      else speak(card.audioText, card.lang);
+    });
     return b;
   }
   function speak(text, lang) {

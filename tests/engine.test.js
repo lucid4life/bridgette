@@ -444,4 +444,13 @@ test("genStructure recall: the recalled level matches the wine's actual structur
   });
 });
 
+test("pronunciation cards carry a bare wineId for audio lookup", () => {
+  const cards = T.generateDeck("pronunciation", DATA);
+  assert.ok(cards.length > 0);
+  for (const c of cards) {
+    assert.ok(c.wineId, "card " + c.id + " missing wineId");
+    assert.strictEqual(c.id, "pronunciation:" + c.wineId + ":say");
+  }
+});
+
 module.exports = { T, DATA };
