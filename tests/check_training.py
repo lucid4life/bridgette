@@ -116,8 +116,11 @@ def main() -> int:
             failures.append(f"wine {wid}: missing tenSecond pitch")
         if not str(wine.get("country", "")).strip():
             failures.append(f"wine {wid}: missing country")
-        if not isinstance(wine.get("vegan"), bool):
-            failures.append(f"wine {wid}: vegan must be a boolean")
+        # v2 vegan accuracy fix (spec §12): true only for menu 'v'-marked wines;
+        # null = unconfirmed. The menu never marks non-vegan, so asserting
+        # vegan:false was an overclaim a beginner would memorize as fact.
+        if "vegan" not in wine or wine.get("vegan") not in (True, None):
+            failures.append(f"wine {wid}: vegan must be true (menu 'v') or null (unconfirmed)")
         if not isinstance(wine.get("glass"), bool):
             failures.append(f"wine {wid}: glass must be a boolean")
         if not isinstance(wine.get("pair"), list) or not wine.get("pair"):
