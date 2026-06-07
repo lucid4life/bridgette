@@ -4,8 +4,8 @@
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
 
-  type Filter = 'Wine' | 'Food' | 'Cocktails' | 'Translator' | 'Pairing matrix';
-  const FILTERS: Filter[] = ['Wine', 'Food', 'Cocktails', 'Translator', 'Pairing matrix'];
+  type Filter = 'Wine' | 'Bottles' | 'Food' | 'Cocktails' | 'Beer' | 'Digestifs' | 'Translator' | 'Pairing matrix';
+  const FILTERS: Filter[] = ['Wine', 'Bottles', 'Food', 'Cocktails', 'Beer', 'Digestifs', 'Translator', 'Pairing matrix'];
   let filter = $state<Filter>('Wine');
   let q = $state('');
   let speaking = $state<string | null>(null);
@@ -29,6 +29,16 @@
     })
   );
   const matrixRows = $derived(data.foods.filter((f) => f.wine).slice(0, 40));
+
+  // By-the-bottle list (Phase B): searchable by grape/style/region/alias/dish (COMP-01).
+  const bottles = $derived(
+    data.bottles.filter((b) => {
+      if (!ql) return true;
+      const hay = [b.name, b.grape, b.region, b.family, b.type, ...(b.aliases ?? []), ...(b.pair ?? [])]
+        .join(' ').toLowerCase();
+      return hay.includes(ql);
+    })
+  );
 
   // Decode the "5oz | 8oz | bottle" price string for the upsell ladder (UX-02).
   function priceLadder(price: string): { pour5: string; pour8: string; bottle: string } | null {
@@ -166,6 +176,75 @@
     {:else}
       <p class="sub">No guest ask matches “{q}”. Try a grape, a wine name, or a style.</p>
     {/if}
+
+  {:else if filter === 'Bottles'}
+    <label class="search">
+      <span class="visually-hidden">Search bottles by grape, style, region, or dish</span>
+      <input type="search" bind:value={q} placeholder="Search the bottle list — Napa Cab, Barolo, Sancerre…" autocomplete="off" />
+    </label>
+    <p class="meta" aria-live="polite" style="margin:0 0 12px">{bottles.length} of {data.bottles.length} bottles</p>
+    {#if bottles.length}
+    <div class="grid cols-2 on-cream">
+      {#each bottles as b (b.id)}
+        <article class="card light winecard">
+          <h3 class="name">{b.name}</h3>
+          <div class="meta">{b.grape} · {b.region}</div>
+          {#if b.priceBottle}<p class="price-ladder meta">bottle <b>${b.priceBottle}</b></p>{/if}
+          <div class="meters">
+            <StructureMeter label="Acidity" level={b.structure.acidity} />
+            <StructureMeter label="Body" level={b.structure.body} />
+            <StructureMeter label="Tannin" level={b.structure.tannin} />
+            <div class="sweet"><span class="meta">Sweetness</span> <b>{b.structure.sweetness}</b></div>
+          </div>
+          <p class="winecard-pron meta">Say: <strong>{b.pronunciation.respell}</strong></p>
+          <p class="winecard-body">{b.tenSecond}</p>
+          {#if b.pairWhy}<p class="meta winecard-profile">{b.pairWhy}</p>{/if}
+          {#if b.pair?.length}
+            <div class="best-with"><span class="meta">Best with:</span>{#each b.pair.slice(0, 4) as dish}<span class="pill alt">{dish}</span>{/each}</div>
+          {/if}
+          <div class="winecard-tags">
+            <span class="pill">{b.family}</span>
+            <span class="pill alt">{b.climate} climate</span>
+            {#if b.upgradeFrom !== 'none'}<span class="pill alt">upgrade from {b.upgradeFrom}</span>{/if}
+            {#if b.vegan === true}<span class="pill alt">vegan</span>{/if}
+          </div>
+        </article>
+      {/each}
+    </div>
+    {:else}
+      <p class="sub">No bottle matches “{q}”. Try a grape, region, or a dish.</p>
+    {/if}
+
+  {:else if filter === 'Beer'}
+    <div class="grid cols-2 on-cream">
+      {#each data.beers as b (b.id)}
+        <article class="card light">
+          <h3>{b.name}</h3>
+          <div class="meta">{b.style} · {b.origin} · {b.abv}{b.oz ? ' · ' + b.oz : ''}</div>
+          {#if b.flavor}<p class="winecard-body">{b.flavor}</p>{/if}
+          {#if b.pairWith?.length}
+            <div class="best-with"><span class="meta">Best with:</span>{#each b.pairWith as dish}<span class="pill alt">{dish}</span>{/each}</div>
+          {/if}
+        </article>
+      {/each}
+    </div>
+
+  {:else if filter === 'Digestifs'}
+    <p class="meta" style="margin:0 0 12px">Dessert pours + after-dinner sherry, port, amaro, cognac, calvados, armagnac, grappa.</p>
+    <div class="grid cols-2 on-cream">
+      {#each data.fortifieds as f (f.id)}
+        <article class="card light">
+          <h3>{f.name}</h3>
+          <div class="meta">{f.type}{f.origin ? ' · ' + f.origin : ''}{f.abv ? ' · ' + f.abv : ''}</div>
+          <p class="winecard-pron meta">Say: <strong>{f.pronunciation.respell}</strong></p>
+          {#if f.profile}<p class="winecard-body">{f.profile}</p>{/if}
+          {#if f.pairWith?.length}
+            <div class="best-with"><span class="meta">Best with:</span>{#each f.pairWith as dish}<span class="pill alt">{dish}</span>{/each}</div>
+          {/if}
+          {#if f.sweetness}<p class="meta">{f.sweetness} · served as {f.servedAs}</p>{/if}
+        </article>
+      {/each}
+    </div>
 
   {:else}
     <table class="matrix">
