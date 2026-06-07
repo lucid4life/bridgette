@@ -1,0 +1,29 @@
+{
+  "engine": "elevenlabs",
+  "model_id": "eleven_multilingual_v2",
+  "voice_id": "PENDING_PREVIEW",
+  "voice_name": "PENDING_PREVIEW",
+  "output_format": "mp3_44100_128",
+  "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "use_speaker_boost": true, "speed": 1.0 },
+  "default_recipe": "PENDING_PREVIEW (name+native-lang | name+en | respell+en)",
+  "note": "text = exact string sent to TTS; source = name|respell (provenance for regeneration). A wine with fallback:true and no mp3 is intentionally left to Web Speech. build_audio_js.py keys clip membership off mp3 presence, not this file.",
+  "wines": {
+    "blue-mountain-brut": { "text": "Blue Mountain Brut", "language": "en", "source": "name" },
+    "fattoria-moretto-semprebon": { "text": "Fattoria Moretto Semprebon", "language": "it", "source": "name" },
+    "hiedler-loss": { "text": "Hiedler Löss", "language": "de", "source": "name" },
+    "vini-be-good-hip-hop-chenin": { "text": "Vini be Good Hip Hop Chenin", "language": "fr", "source": "name" },
+    "wagner-stempel-weissburgunder": { "text": "Wagner Stempel Weissburgunder", "language": "de", "source": "name" },
+    "darting-durkheimer-fronhof": { "text": "Darting Dürkheimer Fronhof", "language": "de", "source": "name" },
+    "dona-matilde-branco": { "text": "Dona Matilde Branco", "language": "pt", "source": "name" },
+    "bodega-cerron-remordimiento-blanco": { "text": "Bodega Cerrón Remordimiento Blanco", "language": "es", "source": "name" },
+    "ameztoi-rubentis": { "text": "Ameztoi Rubentis", "language": "es", "source": "name" },
+    "leitz-eins-zwei-dry-rose": { "text": "Leitz Eins Zwei Dry Rosé", "language": "de", "source": "name" },
+    "deinhard-deidesheim": { "text": "Deinhard Deidesheim", "language": "de", "source": "name" },
+    "ca-del-baio-langhe": { "text": "Ca' del Baio Langhe", "language": "it", "source": "name" },
+    "sindicat-la-figuera": { "text": "Sindicat la Figuera", "language": "es", "source": "name" },
+    "bindi-sergardi-la-boncia": { "text": "Bindi Sergardi La Boncia", "language": "it", "source": "name" },
+    "bodega-cerron-remordimiento-tinto": { "text": "Bodega Cerrón Remordimiento Tinto", "language": "es", "source": "name" },
+    "st-john-claret": { "text": "St. John Claret", "language": "fr", "source": "name" },
+    "gallina-de-piel-neverwine": { "text": "Gallina de Piel Neverwine", "language": "es", "source": "name" }
+  }
+}

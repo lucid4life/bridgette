@@ -1,3 +1,5 @@
 dist/
 verification/chrome-profile*/
 __pycache__/
+tools/.elevenlabs.key
+tools/audio_clips/_preview/

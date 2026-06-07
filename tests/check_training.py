@@ -250,6 +250,61 @@ def main() -> int:
         if not info["weakIsArray"]:
             failures.append("scoreReadiness.weakAreas is not an array")
 
+    # --- audio (S4.5): audio.js parses; clip-or-whitelist coverage; valid data URIs; build reproducible ---
+    AUDIO = SRC / "audio.js"
+    # Wines deliberately left to Web-Speech fallback (no clip). Empty = a clip is REQUIRED for every wine.
+    # TEMP until S4.5 generation (Task 5 reverts this to set() once the 17 clips exist).
+    APPROVED_WEB_SPEECH_FALLBACK = {
+        "blue-mountain-brut", "fattoria-moretto-semprebon", "hiedler-loss",
+        "vini-be-good-hip-hop-chenin", "wagner-stempel-weissburgunder",
+        "darting-durkheimer-fronhof", "dona-matilde-branco",
+        "bodega-cerron-remordimiento-blanco", "ameztoi-rubentis",
+        "leitz-eins-zwei-dry-rose", "deinhard-deidesheim", "ca-del-baio-langhe",
+        "sindicat-la-figuera", "bindi-sergardi-la-boncia",
+        "bodega-cerron-remordimiento-tinto", "st-john-claret", "gallina-de-piel-neverwine",
+    }
+
+    if not AUDIO.exists():
+        failures.append("missing src/audio.js (run python tools/build_audio_js.py)")
+    else:
+        parse_a = subprocess.run(["node", "--check", str(AUDIO)], capture_output=True, text=True)
+        if parse_a.returncode != 0:
+            failures.append("audio.js does not parse under `node --check`:\n" + parse_a.stderr)
+        audio_snippet = (
+            "global.window={};const fs=require('fs');"
+            f"eval(fs.readFileSync({json.dumps(str(AUDIO))},'utf8'));"
+            "const B=global.window.BB;"
+            "process.stdout.write(JSON.stringify({ids:Object.keys(B.audio||{}),"
+            "fb:B.audioFallback||[],hasFn:typeof B.playPronunciation==='function',"
+            "badUri:Object.keys(B.audio||{}).filter(function(k){return String(B.audio[k]).slice(0,22)!=='data:audio/mpeg;base64';})}));"
+        )
+        ares = subprocess.run(["node", "-e", audio_snippet], capture_output=True, text=True)
+        if ares.returncode != 0:
+            failures.append("audio.js failed to evaluate under Node:\n" + ares.stderr)
+        else:
+            ainfo = json.loads(ares.stdout)
+            if not ainfo["hasFn"]:
+                failures.append("audio.js does not define window.BB.playPronunciation")
+            if ainfo["badUri"]:
+                failures.append(f"audio clips with a non-data-URI value: {ainfo['badUri'][:5]}")
+            covered = set(ainfo["ids"]) | set(ainfo["fb"])
+            for wine in data.get("wines", []):
+                wid = wine.get("id", "?")
+                if wine.get("pronunciation") and wid not in covered:
+                    failures.append(f"wine {wid}: has a pronunciation but no audio clip and not in audioFallback")
+            not_approved = set(ainfo["fb"]) - APPROVED_WEB_SPEECH_FALLBACK
+            if not_approved:
+                failures.append(f"wines fell back to Web Speech but are not approved fallbacks: {sorted(not_approved)}")
+        # build reproducibility: re-running the assembler must yield byte-identical audio.js
+        before_a = AUDIO.read_bytes()
+        rebuild_a = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "build_audio_js.py")], capture_output=True, text=True
+        )
+        if rebuild_a.returncode != 0:
+            failures.append("build_audio_js.py failed to run:\n" + rebuild_a.stderr)
+        if AUDIO.read_bytes() != before_a:
+            failures.append("src/audio.js is NOT in sync with tools/audio_clips - rerun tools/build_audio_js.py")
+
     # 4. bundler byte-sync: dist must equal a fresh build
     if not DIST.exists():
         failures.append(f"missing built bundle {DIST} (run `python build_single_file.py`)")
