@@ -49,7 +49,7 @@
         <h3>Ready to study</h3>
         <div class="stat" aria-live="polite">
           <div><b>{due}</b><span class="meta">cards due</span></div>
-          <div><b class="streak">{streak}</b><span class="meta">day streak {daily.protectedRecently ? '🔥❄️' : '🔥'}</span></div>
+          <div><b class="streak">{streak}</b><span class="meta">day streak <span aria-hidden="true">{daily.protectedRecently ? '🔥❄️' : '🔥'}</span>{#if daily.protectedRecently}<span class="visually-hidden"> — a missed day was forgiven</span>{/if}</span></div>
           <div><b>{totalCards}</b><span class="meta">cards total</span></div>
         </div>
         <p style="margin:16px 0 0"><a class="btn" href="/?start=smart"><span aria-hidden="true">▶</span> Start Smart Review</a></p>
