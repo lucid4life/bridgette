@@ -9,6 +9,7 @@
 
   let revealEl = $state<HTMLDivElement | null>(null);
   let typedInput = $state<HTMLInputElement | null>(null);
+  let qEl = $state<HTMLParagraphElement | null>(null);
   let hadMisses = $state(false);
 
   onMount(() => {
@@ -61,9 +62,10 @@
   });
   // A11Y-18: focus the typed/scenario input on card entry so you can type immediately.
   $effect(() => {
-    if (view === 'session' && !revealed && (cardMode === 'typed' || cardMode === 'scenario') && typedInput) {
-      typedInput.focus();
-    }
+    if (view !== 'session' || revealed) return;
+    // A11Y-18/N2: land focus on a new card so SR/keyboard never drop to <body>.
+    if ((cardMode === 'typed' || cardMode === 'scenario') && typedInput) typedInput.focus();
+    else if (qEl) qEl.focus(); // mc/flip: focus the prompt
   });
   const progressPct = $derived(baseTotal ? Math.round((Math.min(idx, baseTotal) / baseTotal) * 100) : 0);
   const focusDecks = (Object.keys(engine.DECKS) as string[]).filter((d) => d !== 'mystery');
@@ -192,8 +194,9 @@
     const onControl = !!(e.target as HTMLElement).closest('button, a, input, textarea, summary');
     const wasDrag = dragging;
     dragX = 0; dragging = false; ptrStart = null;
-    // swipe-to-grade on the revealed card: right = got it, left = didn't
-    if (revealed && wasDrag && Math.abs(dx) > 90) { commit(dx > 0); return; }
+    // swipe-to-grade on the revealed card: right = got it, left = didn't (A11Y-N4: not when
+    // the drag started on a control, so dragging off a button can't commit the wrong grade)
+    if (revealed && wasDrag && !onControl && Math.abs(dx) > 90) { commit(dx > 0); return; }
     // tap-to-flip a pronunciation card (small move, not on a control)
     if (!revealed && cardMode === 'flip' && !onControl && Math.abs(dx) < 10 && Math.abs(dy) < 10) flipReveal();
   }
@@ -281,11 +284,9 @@
     <!-- persistent live region: must be mounted BEFORE its text changes so SRs announce the reveal -->
     <p class="visually-hidden" aria-live="polite" aria-atomic="true">
       {revealed
-        ? pendingCorrect === true
-          ? 'Correct.'
-          : pendingCorrect === false
-            ? 'Not quite. The answer is ' + card.answer + '.'
-            : 'Answer: ' + card.answer + '.'
+        ? (pendingCorrect === true ? 'Correct. ' : pendingCorrect === false ? 'Not quite. The answer is ' + card.answer + '. ' : 'Answer: ' + card.answer + '. ')
+          + (confusion ? 'Easy mix-up: ' + confusion.c.name + ' versus ' + confusion.a.name + '. ' : '')
+          + (why.text ? why.label + ': ' + why.text : (box >= 5 && card.why ? 'The reason: ' + card.why : ''))
         : ''}
     </p>
 
@@ -301,7 +302,7 @@
       onpointerup={onPointerUp}
       onpointercancel={onPointerUp}
     >
-      <p class="q">{card.prompt}</p>
+      <p class="q" tabindex="-1" bind:this={qEl}>{card.prompt}</p>
 
       {#if !revealed}
         <div class="conf" role="group" aria-label="How sure are you?">
@@ -419,6 +420,7 @@
   .feedback.ok { color: var(--green); }
   .feedback.no { color: var(--accent-dark); }
   .reveal:focus { outline: none; } /* focus moved here programmatically on reveal */
+  .q:focus { outline: none; } /* prompt is focused programmatically on card entry (A11Y-N2) */
   .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
   .confusion { background: rgba(168, 50, 18, .10); border-radius: var(--radius-nav); padding: 8px 10px; font-size: 13px; margin: 6px 0 0; }
   .summary-hero { display: flex; align-items: center; gap: 18px; margin: 10px 0 4px; flex-wrap: wrap; animation: hero-in .35s ease both; }

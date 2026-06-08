@@ -6,6 +6,8 @@
   import { tick } from 'svelte';
 
   let revealEl = $state<HTMLParagraphElement | null>(null);
+  let promptEl = $state<HTMLParagraphElement | null>(null);
+  let doneEl = $state<HTMLHeadingElement | null>(null);
 
   type BeatKind = 'match' | 'explain' | 'objection' | 'upsell';
   type Beat = {
@@ -104,12 +106,11 @@
   const maxScore = $derived(turns.reduce((s, t) => s + t.beats.length, 0));
   const isLastBeat = $derived(turn ? beatIdx + 1 >= turn.beats.length : true);
   const isLastTurn = $derived(ti + 1 >= turns.length);
-  const liveMsg = $derived(
-    !answered || !beat ? '' : picked === beat.answer ? 'Correct.' : 'Not quite. ' + beat.answer
-  );
-
   const OK: Record<BeatKind, string> = { match: 'Good pour.', explain: "That's the reason.", objection: 'Nailed the reply.', upsell: 'Great upsell.' };
   const NO: Record<BeatKind, string> = { match: 'Not the best pour.', explain: 'The cleaner reason:', objection: 'The smoother reply:', upsell: 'The bottle move:' };
+  const liveMsg = $derived(
+    !answered || !beat ? '' : (picked === beat.answer ? OK[beat.kind] : NO[beat.kind] + ' ' + beat.answer)
+  );
 
   function choose(c: string) {
     if (answered || !beat) return;
@@ -125,9 +126,12 @@
   }
   function advance() {
     if (!answered) return;
-    if (!isLastBeat) { beatIdx += 1; answered = false; picked = null; return; }
-    if (!isLastTurn) { ti += 1; beatIdx = 0; answered = false; picked = null; return; }
-    done = true;
+    if (!isLastBeat) { beatIdx += 1; answered = false; picked = null; }
+    else if (!isLastTurn) { ti += 1; beatIdx = 0; answered = false; picked = null; }
+    else { done = true; }
+    // A11Y-N1/N5: land focus on the new beat prompt (or the done heading) so SR/keyboard
+    // users aren't dropped to <body> on every advance.
+    tick().then(() => { (done ? doneEl : promptEl)?.focus(); });
   }
   function restart() {
     turns = buildTurns(); ti = 0; beatIdx = 0; answered = false; picked = null; score = 0; done = false;
@@ -158,7 +162,7 @@
       {#if beat.guestLine}<p class="guest"><span class="who">Guest:</span> "{beat.guestLine}"</p>{/if}
 
       {#if !answered}
-        <p class="meta">{beat.prompt}</p>
+        <p class="meta beat-prompt" tabindex="-1" bind:this={promptEl}>{beat.prompt}</p>
         <div class="gradebar choices">
           {#each beat.choices as c, i}
             <button class="btn ghost choice" class:reply={beat.kind !== 'match'} type="button" onclick={() => choose(c)}>
@@ -176,7 +180,8 @@
       {/if}
     </div>
   {:else}
-    <h1 class="score">{score} / {maxScore}</h1>
+    <h1 tabindex="-1" bind:this={doneEl}>Round complete</h1>
+    <p class="score">{score} / {maxScore}</p>
     <p class="sub">Every beat is a point: the pour, the reason, the comeback, the bottle. Run it again — the tables and the difficulty change with you.</p>
     <div class="gradebar" style="justify-content:flex-start">
       <button class="btn" type="button" onclick={restart}>New round</button>
@@ -199,5 +204,6 @@
   .feedback { font-weight: 800; margin: 4px 0 0; }
   .feedback.ok { color: var(--green); }
   .feedback.no { color: var(--accent-dark); }
-  .score { font-size: clamp(40px, 8vw, 72px); }
+  .score { font-size: clamp(40px, 8vw, 72px); margin: 4px 0; }
+  h1:focus, .beat-prompt:focus { outline: none; } /* focused programmatically (A11Y-N1/N5) */
 </style>
