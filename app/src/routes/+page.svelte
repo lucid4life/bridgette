@@ -250,32 +250,32 @@
     <p class="sub">Smart Review mixes what's due and weak. Or focus a single deck. Cards get harder as you master them.</p>
     <div class="grid cols-2" style="margin-bottom:24px">
       <div class="card">
-        <h3><span aria-hidden="true">⚡</span> Smart Review</h3>
+        <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 3 5 13h5l-1 8 8-11h-5z"/></svg> Smart Review</h3>
         <p class="meta">{progressStore.dueCount()} due · mixed decks</p>
         <button class="btn" type="button" style="margin-top:10px" onclick={() => startSession(null)}>Start</button>
       </div>
       <div class="card">
-        <h3><span aria-hidden="true">🍷</span> Guest Simulator</h3>
+        <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v10H9l-4 4z"/></svg> Guest Simulator</h3>
         <p class="meta">Ask → Match → Explain → Confirm</p>
         <a class="btn ghost" href="/practice/simulator" style="margin-top:10px">Start</a>
       </div>
       <div class="card">
-        <h3><span aria-hidden="true">🔮</span> Mystery Pour</h3>
+        <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4l1.6 4.8L18 10l-4.4 1.2L12 16l-1.6-4.8L6 10l4.4-1.2z"/></svg> Mystery Pour</h3>
         <p class="meta">Read the structure → name the pour</p>
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={() => startSession('mystery')}>Deduce</button>
       </div>
       <div class="card">
-        <h3><span aria-hidden="true">🏁</span> Readiness Check</h3>
+        <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 21V4M6 4h11l-2 4 2 4H6"/></svg> Readiness Check</h3>
         <p class="meta">Mixed exam → % shift-ready</p>
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={startReadiness}>Run</button>
       </div>
       <div class="card">
-        <h3><span aria-hidden="true">🩹</span> My Mistakes</h3>
+        <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 4v4h-4"/></svg> My Mistakes</h3>
         <p class="meta">{weakCount ? weakCount + ' to clean up' : 'Nothing to fix yet'}</p>
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={() => startDrill(progressStore.weakCards())} disabled={weakCount === 0}>Drill</button>
       </div>
     </div>
-    <h3 style="margin:0 0 10px"><span aria-hidden="true">🎯</span> Focus a deck</h3>
+    <h3 style="margin:0 0 10px"><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg> Focus a deck</h3>
     <div class="grid cols-3">
       {#each focusDecks as d}
         {@const m = progressStore.masteryFor(d)}

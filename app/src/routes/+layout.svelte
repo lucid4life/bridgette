@@ -12,6 +12,15 @@
   import '@fontsource/oswald/latin-ext-600.css';
   import '@fontsource/oswald/latin-700.css';
   import '@fontsource/oswald/latin-ext-700.css';
+  // Self-hosted Hanken Grotesk (offline-safe; precached by the SW) — the warm body face.
+  // latin + latin-ext at the three weights the body uses (400/500/700); latin-ext carries
+  // the accented wine names (Löss / Grüner / Dürkheimer / Niederösterreich).
+  import '@fontsource/hanken-grotesk/latin-400.css';
+  import '@fontsource/hanken-grotesk/latin-ext-400.css';
+  import '@fontsource/hanken-grotesk/latin-500.css';
+  import '@fontsource/hanken-grotesk/latin-ext-500.css';
+  import '@fontsource/hanken-grotesk/latin-700.css';
+  import '@fontsource/hanken-grotesk/latin-ext-700.css';
   import { page } from '$app/state';
   import PwaToast from '$lib/components/PwaToast.svelte';
 
