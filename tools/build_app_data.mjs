@@ -32,18 +32,16 @@ const header =
 const body = 'export const data = ' + JSON.stringify(data, null, 2) + ';\n';
 writeFileSync(root + 'app/src/lib/data/data.js', header + body);
 
-// PERF-03: bottles/beers/fortifieds are Reference-only (~100 KB) and are consumed by no
-// engine deck, the progress store, or any other route. Emit them to a SEPARATE module so
-// they stay OFF every other route's first-paint critical path (the Phase-B expansion was
-// ~2x-ing the shared data chunk). The Reference route imports this; Vite code-splits it.
-const fmHeader =
-  '// app/src/lib/data/fullmenu.data.js — GENERATED from src/data-fullmenu.json by\n' +
-  '// tools/build_app_data.mjs. Reference-only; code-split off the shared data chunk.\n';
-const fmBody =
-  'export const bottles = ' + JSON.stringify(full.bottles, null, 2) + ';\n' +
-  'export const beers = ' + JSON.stringify(full.beers, null, 2) + ';\n' +
-  'export const fortifieds = ' + JSON.stringify(full.fortifieds, null, 2) + ';\n';
-writeFileSync(root + 'app/src/lib/data/fullmenu.data.js', fmHeader + fmBody);
+// PERF-03 (real): bottles/beers/fortifieds are Reference-only and consumed by no engine
+// deck, the progress store, or any other route. Emit them as a STATIC JSON ASSET that the
+// Reference route fetch()es on demand — NOT a JS module. (SvelteKit's bundler co-locates
+// generated data leaf-modules into one shared chunk regardless of dynamic-import or
+// manualChunks boundaries, so a module split silently fails; a fetched asset is never in
+// any route chunk.) Precached by the SW `json` glob, so offline still works.
+writeFileSync(
+  root + 'app/static/fullmenu.json',
+  JSON.stringify({ bottles: full.bottles, beers: full.beers, fortifieds: full.fortifieds })
+);
 
-console.log('wrote data.js (' + data.wines.length + ' wines) + fullmenu.data.js (' +
+console.log('wrote data.js (' + data.wines.length + ' wines) + static/fullmenu.json (' +
   full.bottles.length + ' bottles, ' + full.beers.length + ' beers, ' + full.fortifieds.length + ' fortifieds)');

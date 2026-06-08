@@ -1,10 +1,18 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
-  // Reference-only full-menu data, code-split off the shared chunk (PERF-03).
-  import { bottles as allBottles, beers, fortifieds } from '$lib/data/fullmenu';
+  import { onMount } from 'svelte';
   import { langFor } from '$lib/engine/training.js';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
+  import type { Bottle, Beer, Fortified } from '$lib/data/types';
+
+  // Reference-only full-menu data — fetched as a STATIC JSON ASSET (PERF-03) so it is
+  // never bundled into any route chunk; loaded only when you open Reference. SW-precached.
+  type FullMenu = { bottles: Bottle[]; beers: Beer[]; fortifieds: Fortified[] };
+  let fullmenu = $state<FullMenu | null>(null);
+  onMount(async () => {
+    try { fullmenu = await fetch('/fullmenu.json').then((r) => r.json()); } catch { fullmenu = { bottles: [], beers: [], fortifieds: [] }; }
+  });
 
   type Filter = 'Wine' | 'Bottles' | 'Food' | 'Cocktails' | 'Beer' | 'Digestifs' | 'Translator' | 'Pairing matrix';
   const FILTERS: Filter[] = ['Wine', 'Bottles', 'Food', 'Cocktails', 'Beer', 'Digestifs', 'Translator', 'Pairing matrix'];
@@ -33,6 +41,7 @@
   const matrixRows = $derived(data.foods.filter((f) => f.wine).slice(0, 40));
 
   // By-the-bottle list (Phase B): searchable by grape/style/region/alias/dish (COMP-01).
+  const allBottles = $derived(fullmenu?.bottles ?? []);
   const bottles = $derived(
     allBottles.filter((b) => {
       if (!ql) return true;
@@ -184,8 +193,10 @@
       <span class="visually-hidden">Search bottles by grape, style, region, or dish</span>
       <input type="search" bind:value={q} placeholder="Search the bottle list — Napa Cab, Barolo, Sancerre…" autocomplete="off" />
     </label>
-    <p class="meta" aria-live="polite" style="margin:0 0 12px">{bottles.length} of {allBottles.length} bottles</p>
-    {#if bottles.length}
+    <p class="meta" aria-live="polite" style="margin:0 0 12px">{fullmenu ? `${bottles.length} of ${allBottles.length} bottles` : 'Loading the bottle list…'}</p>
+    {#if !fullmenu}
+      <p class="sub">Loading the bottle list…</p>
+    {:else if bottles.length}
     <div class="grid cols-2 on-cream">
       {#each bottles as b (b.id)}
         <article class="card light winecard">
@@ -218,8 +229,11 @@
     {/if}
 
   {:else if filter === 'Beer'}
+    {#if !fullmenu}
+      <p class="sub">Loading the beer list…</p>
+    {:else}
     <div class="grid cols-2 on-cream">
-      {#each beers as b (b.id)}
+      {#each fullmenu?.beers ?? [] as b (b.id)}
         <article class="card light">
           <h3>{b.name}</h3>
           <div class="meta">{b.style} · {b.origin} · {b.abv}{b.oz ? ' · ' + b.oz : ''}</div>
@@ -230,11 +244,15 @@
         </article>
       {/each}
     </div>
+    {/if}
 
   {:else if filter === 'Digestifs'}
     <p class="meta" style="margin:0 0 12px">Dessert pours + after-dinner sherry, port, amaro, cognac, calvados, armagnac, grappa.</p>
+    {#if !fullmenu}
+      <p class="sub">Loading the digestif list…</p>
+    {:else}
     <div class="grid cols-2 on-cream">
-      {#each fortifieds as f (f.id)}
+      {#each fullmenu?.fortifieds ?? [] as f (f.id)}
         <article class="card light">
           <h3>{f.name}</h3>
           <div class="meta">{f.type}{f.origin ? ' · ' + f.origin : ''}{f.abv ? ' · ' + f.abv : ''}</div>
@@ -247,6 +265,7 @@
         </article>
       {/each}
     </div>
+    {/if}
 
   {:else}
     <table class="matrix">
