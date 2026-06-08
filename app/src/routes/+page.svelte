@@ -51,6 +51,13 @@
   const box = $derived(card ? (progressStore.value.cards[card.id]?.box ?? 1) : 1);
   const cardMode = $derived(card ? engine.modeForBox(card, box) : 'mc');
   const why = $derived(card ? engine.whyDisplay(card, box) : { label: '', text: '' });
+  // CT-01: on a same-family MC miss, name what was confused (discriminative learning).
+  const confusion = $derived.by(() => {
+    if (pendingCorrect !== false || !chosen || !card) return null;
+    const a = data.wines.find((w) => w.name === card.answer);
+    const c = data.wines.find((w) => w.name === chosen);
+    return a && c && a.id !== c.id && a.family === c.family ? { c, a } : null;
+  });
   const progressPct = $derived(baseTotal ? Math.round((Math.min(idx, baseTotal) / baseTotal) * 100) : 0);
   const focusDecks = (Object.keys(engine.DECKS) as string[]).filter((d) => d !== 'mystery');
   const weakCount = $derived(progressStore.weakCards().length);
@@ -320,6 +327,9 @@
               {pendingCorrect ? 'Correct.' : 'Not quite — here’s the answer.'}
             </p>
           {/if}
+          {#if confusion}
+            <p class="confusion"><strong>Easy mix-up</strong> — both are {confusion.a.family}. {confusion.c.name} is the wrong call here; {confusion.a.name}: {confusion.a.tenSecond}</p>
+          {/if}
           {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
           {#if pendingCorrect === false && card.learnLink}
             <p class="explain"><a class="explain-link" href={'/school#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
@@ -379,6 +389,7 @@
   .feedback.no { color: var(--accent-dark); }
   .reveal:focus { outline: none; } /* focus moved here programmatically on reveal */
   .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
+  .confusion { background: rgba(168, 50, 18, .10); border-radius: var(--radius-nav); padding: 8px 10px; font-size: 13px; margin: 6px 0 0; }
   .explain { margin: 8px 0 0; }
   .explain-link { color: var(--accent-dark); font-weight: 600; font-size: 14px; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; min-height: 24px; }
   .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent-dark); border-radius: var(--radius-card); background: rgba(168, 50, 18, .14); }
