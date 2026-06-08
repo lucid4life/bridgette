@@ -116,6 +116,8 @@ export const DECKS = {
   mystery: { label: 'Mystery Pour', learnLink: 'deductive-grid' },
   // v2 sprint1 — two under-served core areas finally get retrieval practice.
   'cocktail-pairing': { label: 'Cocktail Pairing', learnLink: 'pairing-levers' },
+  // The reverse pairing direction: pouring this wine, which dish do you steer them to?
+  'wine-dish': { label: 'Wine → Dish', learnLink: 'pairing-levers' },
   upsell: { label: 'Upselling', learnLink: 'talking-to-a-guest' }
 };
 
@@ -416,6 +418,46 @@ function genCocktailPairing(data) {
   return cards;
 }
 
+// Wine -> Dish (the REVERSE pairing direction, spec §7): you're pouring this wine —
+// which dish on our menu sings with it? One card per wine that is the printed pour for
+// at least one dish. Answer = the FIRST dish paired with that wine (deterministic, no
+// rng — keeps the card id and answer stable). Distractors are dishes paired with
+// STRUCTURALLY-DISTANT wines (reds vs whites/rosé/bubbly) so a crisp white never offers
+// a steak as a plausible foil; falls back to dishes paired with any OTHER wine.
+function isRedWine(data, name) {
+  const w = wineByName(data, name);
+  return !!(w && w.category === 'Red');
+}
+function genWineDish(data) {
+  const cards = [];
+  data.wines.forEach((w, i) => {
+    const mine = data.foods.filter((f) => f.wine === w.name);
+    if (!mine.length) return; // only wines that actually pour with a dish
+    const food = mine[0];
+    const answer = food.name;
+    const wRed = isRedWine(data, w.name);
+    // dishes paired with a structurally-distant wine (opposite red/not-red side)
+    const distant = data.foods.filter((f) => f.wine && f.wine !== w.name &&
+      isRedWine(data, f.wine) !== wRed);
+    // fallback pool: dishes paired with ANY other wine (covers single-side menus)
+    const other = data.foods.filter((f) => f.wine && f.wine !== w.name);
+    const pool = (distant.length >= 2 ? distant : other).map((f) => f.name);
+    cards.push({
+      id: 'wine-dish:' + w.id + ':match',
+      deck: 'wine-dish', kind: 'recall',
+      prompt: "You're pouring " + w.name + ' — which dish on our menu sings with it?',
+      answer: answer,
+      why: food.why || '',
+      choices: [answer].concat(pickDistractors(pool, answer, 3, i)),
+      aliases: [],
+      scenario: "You've just poured " + w.name + ' — recommend the one dish on our menu that sings with it, and the one reason it works.',
+      learnLink: DECKS['wine-dish'].learnLink,
+      tags: ['wine-dish'].concat(w.tags || [])
+    });
+  });
+  return cards;
+}
+
 // LS-02: glass -> bottle upsell. kind 'discriminate' (always MC) because the upgrade
 // text is prose, not a clean typeable token. The why carries the economics + the ethic.
 function genUpsell(data) {
@@ -451,6 +493,7 @@ export function generateDeck(deckId, data) {
     case 'structure': return genStructure(data);
     case 'mystery': return buildMysteryPour(data);
     case 'cocktail-pairing': return genCocktailPairing(data);
+    case 'wine-dish': return genWineDish(data);
     case 'upsell': return genUpsell(data);
     default: return [];
   }
@@ -729,7 +772,7 @@ export function importProgress(json, validIds) {
 // Reason-bearing decks: past the beginner boxes the learner PRODUCES the pour + the
 // one reason out loud, reveals, then self-rates (spec §6). Everything before box 3
 // (and every non-reason deck) keeps the prior mc/typed/scenario/flip behaviour.
-export const REASON_DECKS = new Set(['translator', 'pairing', 'cocktail-pairing', 'upsell']);
+export const REASON_DECKS = new Set(['translator', 'pairing', 'cocktail-pairing', 'wine-dish', 'upsell']);
 export function modeForBox(card, box) {
   if (card.kind === 'pronounce') return 'flip';
   // Reason decks PRODUCE at box>=3 even when the card is discriminate (upsell,

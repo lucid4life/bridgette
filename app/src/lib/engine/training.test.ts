@@ -607,3 +607,42 @@ describe('v2 sprint1: cocktail-pairing + upsell decks, adjacency distractors', (
     });
   });
 });
+
+describe('wine-dish: the reverse pairing direction (you\'re pouring this wine — which dish?)', () => {
+  const foodNames = new Set(DATA.foods.map((f: any) => f.name));
+  const lessonIds = new Set(DATA.lessons.map((l: any) => l.id));
+
+  it('registered in DECKS with a real lesson learnLink; Translator is still the FIRST deck', () => {
+    expect((T.DECKS as any)['wine-dish']).toBeTruthy();
+    expect((T.DECKS as any)['wine-dish'].label).toBe('Wine → Dish');
+    expect(lessonIds.has((T.DECKS as any)['wine-dish'].learnLink)).toBeTruthy();
+    expect(Object.keys(T.DECKS)[0]).toBe('translator');
+  });
+
+  it('yields >=1 card; answer is among unique choices; prompts non-empty; ids start with wine-dish:', () => {
+    const cards = T.generateDeck('wine-dish', DATA);
+    expect(cards.length >= 1, 'wine-dish produced no cards').toBeTruthy();
+    cards.forEach((c: any) => {
+      expect(c.id.startsWith('wine-dish:'), 'bad id prefix: ' + c.id).toBeTruthy();
+      expect(c.id.split(':').length, 'bad id shape: ' + c.id).toBe(3);
+      expect(c.deck).toBe('wine-dish');
+      expect(c.kind).toBe('recall');
+      expect(c.prompt && c.prompt.trim(), 'empty prompt: ' + c.id).toBeTruthy();
+      expect(foodNames.has(c.answer), 'answer not a dish: ' + c.answer).toBeTruthy();
+      expect(Array.isArray(c.choices) && c.choices.length >= 2, 'too few choices: ' + c.id).toBeTruthy();
+      expect(c.choices.indexOf(c.answer) !== -1, 'choices omit answer: ' + c.id).toBeTruthy();
+      expect(c.choices.length).toBe(new Set(c.choices).size);
+      c.choices.forEach((ch: string) => expect(foodNames.has(ch), 'distractor not a dish: ' + ch).toBeTruthy());
+    });
+  });
+
+  it('is deterministic (same data → identical cards, stable id + answer)', () => {
+    expect(T.generateDeck('wine-dish', DATA)).toEqual(T.generateDeck('wine-dish', DATA));
+  });
+
+  it('is a reason deck: produce-mode at box>=3', () => {
+    expect(T.REASON_DECKS.has('wine-dish')).toBeTruthy();
+    expect(T.modeForBox({ kind: 'recall', deck: 'wine-dish' }, 3)).toBe('produce');
+    expect(T.modeForBox({ kind: 'recall', deck: 'wine-dish' }, 2)).toBe('mc');
+  });
+});
