@@ -362,7 +362,7 @@
           {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
           {#if box >= 5 && card.why}<p class="why"><strong>The reason:</strong> {card.why}</p>{/if}
           {#if pendingCorrect === false && card.learnLink}
-            <p class="explain"><a class="explain-link" href={'/school#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
+            <p class="explain"><a class="explain-link" href={'/learn#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
           {/if}
           <div class="gradebar">
             {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={() => speakCard()}><span aria-hidden="true">🔊</span></button>{/if}

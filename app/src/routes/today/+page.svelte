@@ -75,8 +75,8 @@
 
   <h2 class="visually-hidden">Keep learning</h2>
   <div class="grid cols-3">
-    <a class="card link" href="/school#common-substitutions"><span class="pill">Guided path</span><h3 style="margin-top:10px">The Substitution Translator</h3><p class="meta">Cab → Claret, Sauv Blanc → Grüner. Your #1 on-the-floor skill.</p></a>
-    <a class="card link" href="/school#pairing-levers"><span class="pill">Wine School</span><h3 style="margin-top:10px">Pairing levers</h3><p class="meta">Acid cuts fat · tannin needs protein · sweet tames heat.</p></a>
+    <a class="card link" href="/learn#common-substitutions"><span class="pill">Guided path</span><h3 style="margin-top:10px">The Substitution Translator</h3><p class="meta">Cab → Claret, Sauv Blanc → Grüner. Your #1 on-the-floor skill.</p></a>
+    <a class="card link" href="/learn#pairing-levers"><span class="pill">Wine School</span><h3 style="margin-top:10px">Pairing levers</h3><p class="meta">Acid cuts fat · tannin needs protein · sweet tames heat.</p></a>
     <div class="card"><span class="pill">Tip</span><h3 style="margin-top:10px">Taste before you call it dry</h3><p class="meta">Riesling sweetness varies — confirm with the team. Same for allergens: never guess.</p></div>
   </div>
 </section>
