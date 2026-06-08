@@ -61,6 +61,7 @@
   const progressPct = $derived(baseTotal ? Math.round((Math.min(idx, baseTotal) / baseTotal) * 100) : 0);
   const focusDecks = (Object.keys(engine.DECKS) as string[]).filter((d) => d !== 'mystery');
   const weakCount = $derived(progressStore.weakCards().length);
+  const streakCount = $derived(progressStore.dailyStreak().count);
 
   function reset() {
     revealed = false; pendingCorrect = null; confidence = null; chosen = null;
@@ -351,11 +352,19 @@
 
   {:else if view === 'summary' && summary}
     <p class="h-eyebrow">{kind === 'readiness' ? 'Readiness Check' : 'Session complete'}</p>
-    <h1>{kind === 'readiness' ? `${summary.pct}% shift-ready` : caughtUp ? "You're caught up" : `${summary.pct}% this session`}</h1>
+    <h1>{kind === 'readiness' ? `${summary.pct}% shift-ready` : caughtUp ? "You're caught up" : 'Nice work'}</h1>
     {#if caughtUp}
-      <p class="sub">Nothing is due right now — rest is part of spacing. Drill a deck below or come back later.</p>
-    {:else}
+      <p class="sub">Nothing is due right now — rest is part of spacing. Tap Back to Practice to drill a deck.</p>
+    {:else if kind === 'readiness'}
       <p class="sub">{summary.correct} of {summary.total} correct.{summary.weak.length ? ' Weak areas: ' + summary.weak.join(', ') + '.' : ''}</p>
+    {:else}
+      <div class="summary-hero">
+        <div class="ring" role="img" aria-label={`${summary.pct}% correct this session`} style={`--p:${summary.pct}`}><span aria-hidden="true">{summary.pct}%</span></div>
+        <div>
+          <p class="sub" style="margin:0">{summary.correct} of {summary.total} correct.</p>
+          <p class="meta" style="margin:6px 0 0"><span aria-hidden="true">🔥</span> {streakCount}-day streak{summary.weak.length ? ' · Weak: ' + summary.weak.join(', ') : ''}</p>
+        </div>
+      </div>
     {/if}
     {#if kind === 'readiness' && summary.sureWrong}
       <p class="meta"><span aria-hidden="true">⚠</span> You were sure but missed {summary.sureWrong} — those confident-wrong answers are the dangerous ones; re-learn them first.</p>
@@ -390,6 +399,11 @@
   .reveal:focus { outline: none; } /* focus moved here programmatically on reveal */
   .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
   .confusion { background: rgba(168, 50, 18, .10); border-radius: var(--radius-nav); padding: 8px 10px; font-size: 13px; margin: 6px 0 0; }
+  .summary-hero { display: flex; align-items: center; gap: 18px; margin: 10px 0 4px; flex-wrap: wrap; animation: hero-in .35s ease both; }
+  /* UX-04: the --p ring fill is static-correct (animating the registered --p property
+     proved fragile across mount timing); a transform/opacity entrance is the reliable delight. */
+  @keyframes hero-in { from { opacity: 0; transform: translateY(8px); } }
+  @media (prefers-reduced-motion: reduce) { .summary-hero { animation: none; } }
   .explain { margin: 8px 0 0; }
   .explain-link { color: var(--accent-dark); font-weight: 600; font-size: 14px; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; min-height: 24px; }
   .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent-dark); border-radius: var(--radius-card); background: rgba(168, 50, 18, .14); }
