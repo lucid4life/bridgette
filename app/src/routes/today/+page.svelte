@@ -1,6 +1,7 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
   import * as engine from '$lib/engine/training.js';
+  import GuestSearch from '$lib/components/GuestSearch.svelte';
   import { progressStore } from '$lib/state/progress.svelte';
   import { onMount } from 'svelte';
 
@@ -38,6 +39,8 @@
   <h1>{greeting}, Adrian</h1>
   <p class="sub">Small, consistent sessions beat cramming — let's keep the streak alive.</p>
 
+  <div class="today-search"><GuestSearch /></div>
+
   {#if !studied}
     <div class="card onboard">
       <span class="pill">Start here</span>
@@ -73,6 +76,25 @@
     </div>
   {/if}
 
+  <h2 class="section-h">Your 3 floor moves</h2>
+  <div class="grid cols-3" style="margin-bottom:22px">
+    <a class="card link" href="/on-the-floor?view=substitutions">
+      <span class="pill">Floor move</span>
+      <h3 style="margin-top:10px">Substitute a wine</h3>
+      <p class="meta">A guest orders a grape we don't pour — your pour, and the one reason it fits.</p>
+    </a>
+    <a class="card link" href="/on-the-floor?view=pairings">
+      <span class="pill">Floor move</span>
+      <h3 style="margin-top:10px">Pair food → wine</h3>
+      <p class="meta">What wine goes with their dish — and the lever that makes it work, both directions.</p>
+    </a>
+    <a class="card link" href="/on-the-floor?view=pairings">
+      <span class="pill">Floor move</span>
+      <h3 style="margin-top:10px">Pair a cocktail</h3>
+      <p class="meta">Not drinking wine? The cocktail and the zero-proof move, with the why.</p>
+    </a>
+  </div>
+
   <h2 class="visually-hidden">Keep learning</h2>
   <div class="grid cols-3">
     <a class="card link" href="/learn#common-substitutions"><span class="pill">Guided path</span><h3 style="margin-top:10px">The Substitution Translator</h3><p class="meta">Cab → Claret, Sauv Blanc → Grüner. Your #1 on-the-floor skill.</p></a>
@@ -85,4 +107,6 @@
   .onboard { border-left: 4px solid var(--gold); margin-bottom: 18px; }
   .card.link { text-decoration: none; color: inherit; display: block; }
   .card.link:hover { border-color: var(--gold); }
+  .today-search { max-width: 520px; margin: 0 0 22px; }
+  .section-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-size: 14px; margin: 0 0 12px; }
 </style>
