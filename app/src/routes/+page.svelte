@@ -13,9 +13,11 @@
   let hadMisses = $state(false);
 
   onMount(() => {
-    // Today's cockpit CTAs deep-link here with an intent (spec §5: distinct entry points).
+    // Today's cockpit CTAs + Progress weak-pills deep-link here with an intent (spec §5).
     const s = page.url.searchParams.get('start');
-    if (s === 'readiness') startReadiness();
+    const drillId = page.url.searchParams.get('drill');
+    if (drillId) startDrillById(drillId);
+    else if (s === 'readiness') startReadiness();
     else if (s === 'smart') startSession(null);
   });
 
@@ -94,6 +96,12 @@
     kind = 'practice'; deckId = null; queue = [...cards]; idx = 0; baseTotal = cards.length;
     requeued = {}; results = []; correct = 0; total = 0; caughtUp = false;
     view = 'session'; reset();
+  }
+  // A11Y-07/UX-3: a Progress weak-pill drills THAT card, not a generic Smart Review.
+  function startDrillById(id: string) {
+    const card = engine.allCards(data).find((c) => c.id === id);
+    if (card) startDrill([card]);
+    else startSession(null);
   }
 
   function startReadiness() {

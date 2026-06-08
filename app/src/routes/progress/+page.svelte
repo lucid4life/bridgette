@@ -103,7 +103,7 @@
       {#if weak.length}
         <div class="weak-list">
           {#each weak.slice(0, 24) as c (c.id)}
-            <a class="weak-pill" href="/?start=smart" aria-label={`Drill ${(engine.DECKS as any)[c.deck].label}: ${c.prompt}`}>{(engine.DECKS as any)[c.deck].label}: {c.answer}</a>
+            <a class="weak-pill" href={'/?drill=' + encodeURIComponent(c.id)} aria-label={`Drill ${(engine.DECKS as any)[c.deck].label}: ${c.prompt}`}>{(engine.DECKS as any)[c.deck].label}: {c.answer}</a>
           {/each}
         </div>
       {:else}
