@@ -1,107 +1,144 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
   import * as engine from '$lib/engine/training.js';
-  import type { Wine } from '$lib/data/types';
+  import { progressStore } from '$lib/state/progress.svelte';
+  import type { Wine, Card } from '$lib/data/types';
   import { tick } from 'svelte';
 
   let revealEl = $state<HTMLParagraphElement | null>(null);
 
-  type Turn = {
-    guest: string;
-    answerWine: string;
-    why: string;
-    objection: { cue: string; reply: string };
-    wineChoices: string[];
-    replyChoices: string[];
+  type BeatKind = 'match' | 'explain' | 'objection' | 'upsell';
+  type Beat = {
+    kind: BeatKind;
+    prompt: string;
+    guestLine?: string;
+    choices: string[];
+    answer: string;
+    cardId?: string; // pairing card to grade in Leitner (match beat only)
   };
+  type Turn = { guest: string; beats: Beat[] };
 
   const VIBES = ['a date night', 'a birthday table of 6', 'a quick after-work drink', 'a celebration', 'two regulars at the bar'];
+  const CELEBRATION = new Set(['a celebration', 'a birthday table of 6']);
 
   function pick<T>(arr: T[], n: number, exclude: T[] = []): T[] {
-    const pool = engine.shuffle(arr.filter((x) => !exclude.includes(x)), Math.random);
-    return pool.slice(0, n);
+    return engine.shuffle(arr.filter((x) => !exclude.includes(x)), Math.random).slice(0, n);
+  }
+  function familyHint(w: Wine): string {
+    return w.family === 'Bright & Crisp Whites' ? 'crisp white'
+      : w.family === 'Round Whites' ? 'rounder white'
+      : w.family === 'Light Reds' ? 'lighter red'
+      : w.family === 'Structured Reds' ? 'bigger red'
+      : 'something sparkling or pink';
   }
 
+  // Box-scaled difficulty (spec §7): box 1-2 the guest names the lane; box 3 neutral;
+  // box 4-5 vague "surprise us". The Simulator now writes the match beat back to Leitner.
   function buildTurns(): Turn[] {
-    // foods that name a by-the-glass wine which itself has objections
     const winesById = new Map(data.wines.map((w) => [w.name, w] as const));
     const usable = data.foods.filter((f) => f.wine && winesById.get(f.wine)?.objections?.length);
     const chosen = engine.shuffle(usable, Math.random).slice(0, 5) as typeof usable;
-    return chosen.map((f, i: number) => {
-      const w = winesById.get(f.wine!) as Wine;
-      const obj = w.objections[Math.floor(((i + 1) * 2654435761) % w.objections.length)];
-      const otherReplies = pick(
-        data.wines.flatMap((x) => (x.name === w.name ? [] : x.objections.map((o) => o.reply))),
-        3
-      );
-      return {
-        guest: `Table ordered the ${f.name} — it's ${VIBES[i % VIBES.length]}. What's your by-the-glass pour?`,
-        answerWine: w.name,
-        why: f.why,
-        objection: obj,
-        wineChoices: engine.shuffle([w.name, ...engine.wineDistractors(data, w.name, 3)], Math.random),
-        replyChoices: engine.shuffle([obj.reply, ...otherReplies], Math.random)
-      };
+    const allUpgrades = data.wines.filter((w) => w.upgrade).map((w) => w.upgrade as string);
+    const allWhys = data.foods.filter((f) => f.why).map((f) => f.why);
+    return chosen.map((f, i) => {
+      const w = winesById.get(f.wine!)!;
+      const cardId = 'pairing:' + f.id + ':match';
+      const box = progressStore.value.cards[cardId]?.box ?? 1;
+      const vibe = VIBES[i % VIBES.length];
+
+      let guest: string;
+      if (box <= 2) guest = `Table's having the ${f.name} — they usually go for a ${familyHint(w)}. What's your by-the-glass pour?`;
+      else if (box === 3) guest = `Table ordered the ${f.name} — it's ${vibe}. What's your by-the-glass pour?`;
+      else guest = `Table ordered the ${f.name}. "Surprise us — something that just works." Your pour?`;
+
+      const objection = w.objections[Math.floor(((i + 1) * 2654435761) % w.objections.length)];
+      const otherReplies = pick(data.wines.flatMap((x) => (x.name === w.name ? [] : x.objections.map((o) => o.reply))), 3);
+
+      const beats: Beat[] = [
+        {
+          kind: 'match',
+          prompt: 'Match the dish to a by-the-glass pour:',
+          choices: engine.shuffle([w.name, ...engine.wineDistractors(data, w.name, 3)], Math.random),
+          answer: w.name,
+          cardId
+        },
+        {
+          kind: 'explain',
+          prompt: 'In one line — why does it fit? (say it, then pick)',
+          choices: engine.shuffle([f.why, ...pick(allWhys, 3, [f.why])], Math.random),
+          answer: f.why
+        },
+        {
+          kind: 'objection',
+          prompt: 'Pick the best reply:',
+          guestLine: objection.cue,
+          choices: engine.shuffle([objection.reply, ...otherReplies], Math.random),
+          answer: objection.reply
+        }
+      ];
+      // Bottle-upsell beat (spec §7 "confirmed the bottle upgrade?") — on celebration
+      // vibes or once the basics are mastered, so it rehearses the highest-revenue move.
+      if (w.upgrade && (CELEBRATION.has(vibe) || box >= 4)) {
+        beats.push({
+          kind: 'upsell',
+          prompt: 'They’re enjoying it — close the bottle upgrade:',
+          guestLine: 'This is lovely… should we just get a bottle?',
+          choices: engine.shuffle([w.upgrade, ...pick(allUpgrades, 3, [w.upgrade])], Math.random),
+          answer: w.upgrade
+        });
+      }
+      return { guest, beats };
     });
   }
 
   let turns = $state<Turn[]>(buildTurns());
   let ti = $state(0);
-  let phase = $state<'pick' | 'pickDone' | 'objection' | 'objectionDone' | 'done'>('pick');
+  let beatIdx = $state(0);
+  let answered = $state(false);
+  let picked = $state<string | null>(null);
   let score = $state(0);
-  let pickedWine = $state<string | null>(null);
-  let pickedReply = $state<string | null>(null);
+  let done = $state(false);
 
   const turn = $derived(turns[ti]);
+  const beat = $derived(turn?.beats[beatIdx]);
+  const maxScore = $derived(turns.reduce((s, t) => s + t.beats.length, 0));
+  const isLastBeat = $derived(turn ? beatIdx + 1 >= turn.beats.length : true);
+  const isLastTurn = $derived(ti + 1 >= turns.length);
   const liveMsg = $derived(
-    !turn
-      ? ''
-      : phase === 'pickDone' || phase === 'objection'
-        ? pickedWine === turn.answerWine
-          ? 'Correct pour: ' + turn.answerWine + '.'
-          : 'Not the best pour; the answer is ' + turn.answerWine + '.'
-        : phase === 'objectionDone'
-          ? pickedReply === turn.objection.reply
-            ? 'Good reply.'
-            : 'A smoother reply was suggested.'
-          : ''
+    !answered || !beat ? '' : picked === beat.answer ? 'Correct.' : 'Not quite. ' + beat.answer
   );
 
-  function choose(w: string) {
-    if (phase !== 'pick') return;
-    pickedWine = w;
-    if (w === turn.answerWine) score += 1;
-    phase = 'pickDone';
+  const OK: Record<BeatKind, string> = { match: 'Good pour.', explain: "That's the reason.", objection: 'Nailed the reply.', upsell: 'Great upsell.' };
+  const NO: Record<BeatKind, string> = { match: 'Not the best pour.', explain: 'The cleaner reason:', objection: 'The smoother reply:', upsell: 'The bottle move:' };
+
+  function choose(c: string) {
+    if (answered || !beat) return;
+    picked = c;
+    const correct = c === beat.answer;
+    if (correct) score += 1;
+    // Leitner write-back: the match beat IS the pairing (dish→wine) card (LS-06).
+    if (beat.kind === 'match' && beat.cardId) {
+      progressStore.recordWithConfidence({ id: beat.cardId } as unknown as Card, correct, null);
+    }
+    answered = true;
     tick().then(() => revealEl?.focus());
   }
-  function toObjection() { phase = 'objection'; }
-  function chooseReply(r: string) {
-    if (phase !== 'objection') return;
-    pickedReply = r;
-    if (r === turn.objection.reply) score += 1;
-    phase = 'objectionDone';
-    tick().then(() => revealEl?.focus());
-  }
-  function next() {
-    if (ti + 1 >= turns.length) { phase = 'done'; return; }
-    ti += 1; phase = 'pick'; pickedWine = null; pickedReply = null;
+  function advance() {
+    if (!answered) return;
+    if (!isLastBeat) { beatIdx += 1; answered = false; picked = null; return; }
+    if (!isLastTurn) { ti += 1; beatIdx = 0; answered = false; picked = null; return; }
+    done = true;
   }
   function restart() {
-    turns = buildTurns(); ti = 0; phase = 'pick'; score = 0; pickedWine = null; pickedReply = null;
+    turns = buildTurns(); ti = 0; beatIdx = 0; answered = false; picked = null; score = 0; done = false;
   }
   function onKey(e: KeyboardEvent) {
     const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;
-    if (phase === 'pick' && /^[1-4]$/.test(e.key)) {
+    if (!answered && /^[1-4]$/.test(e.key)) {
       const i = parseInt(e.key, 10) - 1;
-      if (turn.wineChoices[i]) { e.preventDefault(); choose(turn.wineChoices[i]); }
-    } else if (phase === 'objection' && /^[1-4]$/.test(e.key)) {
-      const i = parseInt(e.key, 10) - 1;
-      if (turn.replyChoices[i]) { e.preventDefault(); chooseReply(turn.replyChoices[i]); }
-    } else if (e.key === 'Enter') {
-      if (phase === 'pickDone') { e.preventDefault(); toObjection(); }
-      else if (phase === 'objectionDone') { e.preventDefault(); next(); }
-    }
+      if (beat?.choices[i]) { e.preventDefault(); choose(beat.choices[i]); }
+    } else if (answered && e.key === 'Enter') { e.preventDefault(); advance(); }
   }
 </script>
 
@@ -111,49 +148,36 @@
 <section class="screen on-dark">
   <p class="h-eyebrow"><a href="/" class="back">← Practice</a> · Guest Simulator</p>
   <h1>Talk to the table</h1>
-  <p class="sub">Ask → Match → Explain → Confirm. Pick the pour, then handle the curveball. {turns.length} turns.</p>
+  <p class="sub">Match the pour → explain the why → handle the curveball → close the bottle. Difficulty scales to your level; the match counts toward your decks. {turns.length} tables.</p>
 
-  {#if phase !== 'done'}
-    <p class="meta">Turn {ti + 1} of {turns.length} · score {score}</p>
+  {#if !done && turn && beat}
+    <p class="meta">Table {ti + 1} of {turns.length} · beat {beatIdx + 1}/{turn.beats.length} · score {score}</p>
     <p class="visually-hidden" aria-live="polite" aria-atomic="true">{liveMsg}</p>
     <div class="flash flashcard-face sim">
       <p class="guest"><span class="who">Guest:</span> {turn.guest}</p>
+      {#if beat.guestLine}<p class="guest"><span class="who">Guest:</span> "{beat.guestLine}"</p>{/if}
 
-      {#if phase === 'pick'}
-        <p class="meta">Match the dish to a by-the-glass pour:</p>
+      {#if !answered}
+        <p class="meta">{beat.prompt}</p>
         <div class="gradebar choices">
-          {#each turn.wineChoices as w, i}
-            <button class="btn ghost choice" type="button" onclick={() => choose(w)}><span class="key" aria-hidden="true">{i + 1}</span>{w}</button>
+          {#each beat.choices as c, i}
+            <button class="btn ghost choice" class:reply={beat.kind !== 'match'} type="button" onclick={() => choose(c)}>
+              <span class="key" aria-hidden="true">{i + 1}</span>{c}
+            </button>
           {/each}
         </div>
       {:else}
-        <p class="ans" tabindex="-1" bind:this={revealEl}>{turn.answerWine}{pickedWine === turn.answerWine ? ' ✓' : ` (you said ${pickedWine})`}</p>
-        <p class="why"><strong>Why:</strong> {turn.why}</p>
-        {#if phase === 'pickDone'}
-          <button class="btn" type="button" onclick={toObjection}>Then the guest pushes back →</button>
-        {:else}
-          <p class="guest"><span class="who">Guest:</span> "{turn.objection.cue}"</p>
-          {#if phase === 'objection'}
-            <p class="meta">Pick the best reply:</p>
-            <div class="gradebar choices">
-              {#each turn.replyChoices as r, i}
-                <button class="btn ghost choice reply" type="button" onclick={() => chooseReply(r)}><span class="key" aria-hidden="true">{i + 1}</span>{r}</button>
-              {/each}
-            </div>
-          {:else}
-            <p class="feedback" class:ok={pickedReply === turn.objection.reply} class:no={pickedReply !== turn.objection.reply}>
-              <span aria-hidden="true">{pickedReply === turn.objection.reply ? '✓' : '•'}</span>
-              {pickedReply === turn.objection.reply ? 'Nailed it.' : 'The smoother reply:'}
-            </p>
-            <p class="why">{turn.objection.reply}</p>
-            <button class="btn" type="button" onclick={next}>{ti + 1 >= turns.length ? 'Finish' : 'Next table →'}</button>
-          {/if}
-        {/if}
+        <p class="ans" tabindex="-1" bind:this={revealEl}>{beat.answer}</p>
+        <p class="feedback" class:ok={picked === beat.answer} class:no={picked !== beat.answer}>
+          <span aria-hidden="true">{picked === beat.answer ? '✓' : '•'}</span>
+          {picked === beat.answer ? OK[beat.kind] : NO[beat.kind]}{picked !== beat.answer && beat.kind === 'match' ? ` — you said ${picked}` : ''}
+        </p>
+        <button class="btn" type="button" onclick={advance}>{isLastBeat && isLastTurn ? 'Finish' : isLastBeat ? 'Next table →' : 'Next →'}</button>
       {/if}
     </div>
   {:else}
-    <h1 class="score">{score} / {turns.length * 2}</h1>
-    <p class="sub">Two points per table: the right pour + the right comeback. Run it again — the tables change.</p>
+    <h1 class="score">{score} / {maxScore}</h1>
+    <p class="sub">Every beat is a point: the pour, the reason, the comeback, the bottle. Run it again — the tables and the difficulty change with you.</p>
     <div class="gradebar" style="justify-content:flex-start">
       <button class="btn" type="button" onclick={restart}>New round</button>
       <a class="btn ghost" href="/">Back to Practice</a>
@@ -169,9 +193,9 @@
   .choices { flex-direction: column; align-items: stretch; }
   .choice { justify-content: flex-start; text-align: left; }
   .choice .key { font-family: var(--font-display); font-weight: 800; margin-right: 8px; opacity: .7; }
+  .choice.reply { font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 13px; line-height: 1.4; }
+  .ans { font-weight: 600; }
   .ans:focus { outline: none; }
-  .reply { font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 13px; line-height: 1.4; }
-  .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0; }
   .feedback { font-weight: 800; margin: 4px 0 0; }
   .feedback.ok { color: var(--green); }
   .feedback.no { color: var(--accent-dark); }
