@@ -54,7 +54,7 @@
       return hay.includes(ql);
     })
   );
-  const matrixRows = $derived(data.foods.filter((f) => f.wine).slice(0, 40));
+  const matrixRows = $derived(data.foods.filter((f) => f.wine));
 
   // By-the-bottle list (Phase B): searchable by grape/style/region/alias/dish (COMP-01).
   const allBottles = $derived(fullmenu?.bottles ?? []);
@@ -82,6 +82,10 @@
       return hay.includes(ql);
     })
   );
+
+  // Join a translator row's bestGlass back to the wine for pronunciation (reuses the
+  // existing speak()/speaking machinery). Surfaces the previously-dead `familiar` copy.
+  const wineByName = new Map(data.wines.map((w) => [w.name, w] as const));
 </script>
 
 <svelte:head><title>Reference · Bridgette Training</title></svelte:head>
@@ -210,9 +214,23 @@
     {#if translatorRows.length}
     <div class="grid cols-2 on-cream">
       {#each translatorRows as t (t.ask)}
+        {@const gw = wineByName.get(t.bestGlass)}
         <article class="card light">
           <h3>{t.ask}</h3>
-          <p class="winecard-body">By the glass → <strong>{t.bestGlass}</strong></p>
+          <div class="winecard-head">
+            <p class="winecard-body" style="margin:0">By the glass → <strong>{t.bestGlass}</strong></p>
+            {#if gw}
+              <button
+                class="speak"
+                type="button"
+                aria-pressed={speaking === gw.id}
+                aria-label={'Hear ' + gw.name + ' pronounced'}
+                onclick={() => speak(gw)}
+              >🔊</button>
+            {/if}
+          </div>
+          {#if gw}<p class="winecard-pron meta">Say: <strong>{gw.pronunciation.respell}</strong></p>{/if}
+          {#if t.familiar}<p class="meta">Same lane: {t.familiar}</p>{/if}
           {#if t.bottleOptions?.length}<p class="meta upgrade-line">Bottle upgrade → <strong>{t.bottleOptions.join(', ')}</strong></p>{/if}
           {#if t.different}<p class="meta winecard-profile">Point of difference: {t.different}</p>{/if}
           <p class="meta">{t.phrase}</p>
