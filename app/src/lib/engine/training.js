@@ -732,8 +732,10 @@ export function importProgress(json, validIds) {
 export const REASON_DECKS = new Set(['translator', 'pairing', 'cocktail-pairing', 'upsell']);
 export function modeForBox(card, box) {
   if (card.kind === 'pronounce') return 'flip';
-  if (card.kind === 'discriminate') return 'mc';
+  // Reason decks PRODUCE at box>=3 even when the card is discriminate (upsell,
+  // cocktail-pairing) — the priority floor skills are spoken, not recognised (spec §6/§7).
   if (REASON_DECKS.has(card.deck) && box >= 3) return 'produce';
+  if (card.kind === 'discriminate') return 'mc';
   if (box <= 2) return 'mc';
   if (box >= 5) return 'scenario';
   return 'typed';

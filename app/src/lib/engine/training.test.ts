@@ -344,9 +344,14 @@ describe('engine', () => {
     });
   });
 
-  it('modeForBox: kind always wins — discriminate stays mc, pronounce stays flip even on a reason deck', () => {
-    // upsell/cocktail-pairing are reason decks but their cards are kind:discriminate
-    expect(T.modeForBox({ kind: 'discriminate', deck: 'upsell' }, 4)).toBe('mc');
+  it('modeForBox: produce wins over discriminate for reason decks at box>=3; pronounce always flips; non-reason discriminate stays mc', () => {
+    // upsell/cocktail-pairing are reason decks whose cards are kind:discriminate —
+    // they still PRODUCE at box>=3 (spec §7), but stay mc for the beginner boxes.
+    expect(T.modeForBox({ kind: 'discriminate', deck: 'upsell' }, 2)).toBe('mc');
+    expect(T.modeForBox({ kind: 'discriminate', deck: 'upsell' }, 4)).toBe('produce');
+    expect(T.modeForBox({ kind: 'discriminate', deck: 'cocktail-pairing' }, 3)).toBe('produce');
+    // a non-reason discriminate deck (e.g. structure recall) stays mc; pronounce always flips
+    expect(T.modeForBox({ kind: 'discriminate', deck: 'structure' }, 4)).toBe('mc');
     expect(T.modeForBox({ kind: 'pronounce', deck: 'pairing' }, 4)).toBe('flip');
   });
 
