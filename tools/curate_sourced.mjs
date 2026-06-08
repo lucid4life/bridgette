@@ -19,8 +19,12 @@ const report = { coerced: [], excluded: [], deduped: [], flaggedIntegrated: [] }
 
 function lmh(v, label) {
   if (LMH.has(v)) return v;
-  const map = { full: 'high', 'medium-full': 'high', 'medium-high': 'high', 'full-bodied': 'high', light: 'low', 'light-medium': 'low', 'low-medium': 'low', 'medium-low': 'medium' };
-  const out = map[String(v).toLowerCase()] || 'medium';
+  // DATA-06: 'medium-low' -> 'low' (symmetric with 'low-medium'); THROW on any value not
+  // in the map rather than silently coercing to 'medium' (a silent mis-grade on a future
+  // content pass). curate is a one-shot tool, so failing loud is the safe behaviour.
+  const map = { full: 'high', 'medium-full': 'high', 'medium-high': 'high', 'full-bodied': 'high', light: 'low', 'light-medium': 'low', 'low-medium': 'low', 'medium-low': 'low' };
+  const out = map[String(v).toLowerCase()];
+  if (!out) throw new Error(`curate lmh(): unmapped structure value '${v}' at ${label} — add it to the map or fix the source; refusing to silently coerce.`);
   report.coerced.push(`${label}: '${v}' -> '${out}'`);
   return out;
 }

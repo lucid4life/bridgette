@@ -50,3 +50,11 @@ These came out of the full-menu web-sourcing pass (38 bottles + 17 beers + 25 fo
 
 ### Vegan deferrals (menu 'v' only → otherwise null)
 - `vegan: null` (no menu 'v') on the new bottles: Pierre Thibert, Brandini, Castello di Potentino, Texier, Château Larose Perganson, Whitehall Lane, White Rock, Claire Naudin, Clos Bellane, Rochette, Buisson-Charles, Mount Eden, Eleonore Moreau. Tell a vegan guest you'll check — never assert vegan without the 'v'.
+
+## Phase D self-review — doc items (2026-06-07)
+
+From the adversarial self-review (`docs/research/2026-06-07-v2-phase-d-review.md`). Doc-completeness, not in-app false assertions.
+
+- **(DATA-05) Vermentino translator is a deliberate stand-in.** The "Vermentino?" guest-ask is answered by **Doña Matilde Branco** (a Portuguese Douro white), a medium-confidence stand-in — NOT a true Vermentino. The row's `different` field already discloses this in-app; logged here to satisfy the rule that medium items go to open-questions. *Decide:* keep the stand-in, or source an actual Vermentino if the list grows.
+- **(DATA-04) Dönnhoff respelling — pick one form.** The app data uses `DUR-nhohf FINE-hairp`; the sourcing summary calls `DUHN-hohf` "closer." Both are defensible English approximations of German ö (the r-coloured "bird/her" vowel). *Decide:* align the data and the summary on one form (no card-id impact either way; the unaccented display name "Donnhoff" stays).
+- **(UX-1) Visual-regression gate — deliberately deferred (WAIVER).** Spec §15/§16/§17 list a 3-breakpoint `toHaveScreenshot` visual-regression gate as a hard CI gate + acceptance criterion. It is **not implemented**: screenshot baselines are OS/CI-image-dependent and would false-fail across machines, so they should be captured once a fixed CI image is chosen and the look is signed off. Real-device QA (Phase 4) covers visual fidelity meanwhile. *Decide:* capture baselines after a device review, or formally accept the waiver. This is the one acceptance criterion currently unmet by design.
