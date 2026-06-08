@@ -41,6 +41,12 @@
   let summary = $state<{ correct: number; total: number; pct: number; weak: string[]; sureWrong?: number } | null>(null);
   let missed = $state<Card[]>([]);
 
+  // UX-01: mobile tap-to-flip + swipe-to-grade. The buttons + window keyboard handler
+  // remain the accessibility path (WCAG 2.5.7 dragging alternative); this is additive.
+  let dragX = $state(0);
+  let dragging = $state(false);
+  let ptrStart: { x: number; y: number; id: number } | null = null;
+
   const card = $derived(queue[idx] as Card | undefined);
   const box = $derived(card ? (progressStore.value.cards[card.id]?.box ?? 1) : 1);
   const cardMode = $derived(card ? engine.modeForBox(card, box) : 'mc');
@@ -148,6 +154,29 @@
     if (card?.wineId) playPronunciation(card.wineId, card.audioText ?? card.answer, card.lang);
   }
 
+  function onPointerDown(e: PointerEvent) {
+    if (view !== 'session' || !card) return;
+    ptrStart = { x: e.clientX, y: e.clientY, id: e.pointerId };
+  }
+  function onPointerMove(e: PointerEvent) {
+    if (!ptrStart || e.pointerId !== ptrStart.id || !revealed) return;
+    const dx = e.clientX - ptrStart.x;
+    const dy = e.clientY - ptrStart.y;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) { dragging = true; dragX = dx; }
+  }
+  function onPointerUp(e: PointerEvent) {
+    if (!ptrStart || e.pointerId !== ptrStart.id) { ptrStart = null; return; }
+    const dx = e.clientX - ptrStart.x;
+    const dy = e.clientY - ptrStart.y;
+    const onControl = !!(e.target as HTMLElement).closest('button, a, input, textarea, summary');
+    const wasDrag = dragging;
+    dragX = 0; dragging = false; ptrStart = null;
+    // swipe-to-grade on the revealed card: right = got it, left = didn't
+    if (revealed && wasDrag && Math.abs(dx) > 90) { commit(dx > 0); return; }
+    // tap-to-flip a pronunciation card (small move, not on a control)
+    if (!revealed && cardMode === 'flip' && !onControl && Math.abs(dx) < 10 && Math.abs(dy) < 10) flipReveal();
+  }
+
   function onKey(e: KeyboardEvent) {
     if (view !== 'session' || !card) return;
     const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
@@ -239,7 +268,18 @@
         : ''}
     </p>
 
-    <div class="flash flashcard-face">
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+      class="flash flashcard-face"
+      class:dragging
+      class:swipe-yes={dragging && dragX > 40}
+      class:swipe-no={dragging && dragX < -40}
+      style={`transform: translateX(${dragX}px)`}
+      onpointerdown={onPointerDown}
+      onpointermove={onPointerMove}
+      onpointerup={onPointerUp}
+      onpointercancel={onPointerUp}
+    >
       <p class="q">{card.prompt}</p>
 
       {#if !revealed}
@@ -344,4 +384,10 @@
   .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent-dark); border-radius: var(--radius-card); background: rgba(168, 50, 18, .14); }
   .deck-tile { display: grid; gap: 4px; text-align: left; cursor: pointer; }
   .deck-name { font-family: var(--font-display); font-size: 17px; text-transform: uppercase; }
+  /* UX-01 swipe-to-grade: card follows the finger; snap-back is gated by reduced-motion. */
+  .flash { touch-action: pan-y; transition: transform .2s ease; }
+  .flash.dragging { transition: none; }
+  .flash.swipe-yes { box-shadow: inset 8px 0 0 -2px var(--green); }
+  .flash.swipe-no { box-shadow: inset -8px 0 0 -2px var(--accent-dark); }
+  @media (prefers-reduced-motion: reduce) { .flash { transition: none; } }
 </style>
