@@ -5,13 +5,13 @@
    extend the Bridgette workbook identity. */
 :root {
   /* palette */
-  --cream: #ffeed7;
+  --cream: #ffeed6;
   --paper: #fff8ec;
   --paper-2: #f7dfbf;
   --ink: #1e384b;
   --ink-2: #162d3d;
   --ink-3: #102230;
-  --orange: #f15623;
+  --orange: #f15825;
   --accent-dark: #a83212;   /* contrast-safe action colour on cream */
   --label-light: #8f2a12;   /* contrast-safe small label on cream (v1 fix) */
   --gold: #fcb539;
