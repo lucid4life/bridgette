@@ -20,12 +20,10 @@ if (!data || !Array.isArray(data.wines)) throw new Error('failed to extract BB.d
 // fields only; the per-field sources + accuracy flags live in the research doc and
 // docs/v2-open-questions.md, not in the shipped client bundle.
 const full = JSON.parse(readFileSync(root + 'src/data-fullmenu.json', 'utf8'));
-data.bottles = full.bottles;
-data.beers = full.beers;
-data.fortifieds = full.fortifieds;
 // The 10 new guest-ask translator rows (Gamay, Viognier, Albariño, Barolo, Cava, the
-// honest "sweet plush red" expectation-setter, …) are merged at build time so v1's
-// src/data.js stays untouched while the app translator deck + Reference get them.
+// honest "sweet plush red" expectation-setter, …) are merged into the CORE data at build
+// time (the engine's translator deck reads data.translator) so v1's src/data.js stays
+// untouched while the app translator deck + Reference get them.
 data.translator = data.translator.concat(full.translatorRows);
 
 const header =
@@ -33,4 +31,19 @@ const header =
   '// Do NOT edit by hand. Edit src/data.js and re-run: node tools/build_app_data.mjs\n';
 const body = 'export const data = ' + JSON.stringify(data, null, 2) + ';\n';
 writeFileSync(root + 'app/src/lib/data/data.js', header + body);
-console.log('wrote app/src/lib/data/data.js (' + data.wines.length + ' wines)');
+
+// PERF-03: bottles/beers/fortifieds are Reference-only (~100 KB) and are consumed by no
+// engine deck, the progress store, or any other route. Emit them to a SEPARATE module so
+// they stay OFF every other route's first-paint critical path (the Phase-B expansion was
+// ~2x-ing the shared data chunk). The Reference route imports this; Vite code-splits it.
+const fmHeader =
+  '// app/src/lib/data/fullmenu.data.js — GENERATED from src/data-fullmenu.json by\n' +
+  '// tools/build_app_data.mjs. Reference-only; code-split off the shared data chunk.\n';
+const fmBody =
+  'export const bottles = ' + JSON.stringify(full.bottles, null, 2) + ';\n' +
+  'export const beers = ' + JSON.stringify(full.beers, null, 2) + ';\n' +
+  'export const fortifieds = ' + JSON.stringify(full.fortifieds, null, 2) + ';\n';
+writeFileSync(root + 'app/src/lib/data/fullmenu.data.js', fmHeader + fmBody);
+
+console.log('wrote data.js (' + data.wines.length + ' wines) + fullmenu.data.js (' +
+  full.bottles.length + ' bottles, ' + full.beers.length + ' beers, ' + full.fortifieds.length + ' fortifieds)');

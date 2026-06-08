@@ -1,5 +1,7 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
+  // Reference-only full-menu data, code-split off the shared chunk (PERF-03).
+  import { bottles as allBottles, beers, fortifieds } from '$lib/data/fullmenu';
   import { langFor } from '$lib/engine/training.js';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
@@ -32,7 +34,7 @@
 
   // By-the-bottle list (Phase B): searchable by grape/style/region/alias/dish (COMP-01).
   const bottles = $derived(
-    data.bottles.filter((b) => {
+    allBottles.filter((b) => {
       if (!ql) return true;
       const hay = [b.name, b.grape, b.region, b.family, b.type, ...(b.aliases ?? []), ...(b.pair ?? [])]
         .join(' ').toLowerCase();
@@ -182,7 +184,7 @@
       <span class="visually-hidden">Search bottles by grape, style, region, or dish</span>
       <input type="search" bind:value={q} placeholder="Search the bottle list — Napa Cab, Barolo, Sancerre…" autocomplete="off" />
     </label>
-    <p class="meta" aria-live="polite" style="margin:0 0 12px">{bottles.length} of {data.bottles.length} bottles</p>
+    <p class="meta" aria-live="polite" style="margin:0 0 12px">{bottles.length} of {allBottles.length} bottles</p>
     {#if bottles.length}
     <div class="grid cols-2 on-cream">
       {#each bottles as b (b.id)}
@@ -217,7 +219,7 @@
 
   {:else if filter === 'Beer'}
     <div class="grid cols-2 on-cream">
-      {#each data.beers as b (b.id)}
+      {#each beers as b (b.id)}
         <article class="card light">
           <h3>{b.name}</h3>
           <div class="meta">{b.style} · {b.origin} · {b.abv}{b.oz ? ' · ' + b.oz : ''}</div>
@@ -232,7 +234,7 @@
   {:else if filter === 'Digestifs'}
     <p class="meta" style="margin:0 0 12px">Dessert pours + after-dinner sherry, port, amaro, cognac, calvados, armagnac, grappa.</p>
     <div class="grid cols-2 on-cream">
-      {#each data.fortifieds as f (f.id)}
+      {#each fortifieds as f (f.id)}
         <article class="card light">
           <h3>{f.name}</h3>
           <div class="meta">{f.type}{f.origin ? ' · ' + f.origin : ''}{f.abv ? ' · ' + f.abv : ''}</div>
