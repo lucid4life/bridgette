@@ -77,6 +77,7 @@
               >
                 <span class="qc-key" aria-hidden="true">{String.fromCharCode(65 + ci)}</span>
                 <span>{choice}</span>
+                {#if chosen != null && isAns}<span class="qc-glyph" aria-hidden="true">✓</span>{:else if chosen === ci}<span class="qc-glyph" aria-hidden="true">✗</span>{/if}
               </button>
             {/each}
           </div>
@@ -158,6 +159,7 @@
   .qc-choice.correct { background: rgba(63, 107, 84, .3); border-color: var(--green); }
   .qc-choice.wrong { background: rgba(168, 50, 18, .25); border-color: var(--accent-dark); }
   .qc-key { font-family: var(--font-display); font-weight: 800; opacity: .8; }
+  .qc-glyph { font-weight: 800; margin-left: 6px; color: var(--ink); }
   .qc-result { margin: 8px 0 0; min-height: 1.2em; font-weight: 700; }
   .qc-retry { margin-top: 8px; }
   .dg { margin-top: 22px; border-left: 4px solid var(--blue); }
