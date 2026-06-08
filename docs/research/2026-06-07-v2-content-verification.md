@@ -24,7 +24,7 @@ Produced by a 17-agent parallel web-verification workflow (run `wf_702b0cdd-c22`
 
 ## Applied to `src/data.js`
 - `climate` set per the table above for all 17 wines.
-- Spelling fixes applied: **Wagner-Stempel** (hyphen, synced across the wine name, both translator `bestGlass` rows, and 4 food `wine` references); **Bindi Sergardi region → "Chianti DOCG, Tuscany, Italy"**.
+- Spelling fixes applied: **Wagner-Stempel** (hyphen, synced across the wine name, both translator `bestGlass` rows, and 4 food `wine` references); **Bindi Sergardi region → "Chianti Classico, Tuscany, Italy"** (*updated 2026-06-07: Phase 1 set the broader "Chianti DOCG"; Adrian re-verified the bottle is **Chianti Classico** and corrected it — resolves the audit's Bindi-appellation flag*).
 - `vegan`: `true` for the 5 menu-`v` wines, `null` (unconfirmed) for the other 12 (spec §12 — stop asserting `vegan:false`). Sourced **not-vegan** findings for Blue Mountain Brut and Bindi Sergardi captured in a `veganNote` field + open questions (kept `vegan:null` per spec, with the note flagging the risk so the confirm rule is invoked).
 
 ## Confidence flags carried to open questions
