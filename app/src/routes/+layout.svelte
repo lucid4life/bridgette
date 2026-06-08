@@ -64,7 +64,7 @@
       {/if}
       <span class="topbar-brand">Bridgette Training</span>
     </header>
-    <main id="main" class="screen-wrap">
+    <main id="main" class="screen-wrap" tabindex="-1">
       {@render children()}
     </main>
     <nav class="tabbar" aria-label="Bottom navigation">
@@ -93,4 +93,6 @@
   .topbar-back .ico { width: 18px; height: 18px; }
   .topbar-back:hover { background: rgba(255, 238, 215, .06); }
   .topbar-brand { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em; font-size: 18px; color: var(--cream); }
+  /* A11Y-12: the skip link focuses <main> (tabindex -1); don't show a focus ring on the whole region. */
+  main:focus { outline: none; }
 </style>

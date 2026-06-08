@@ -8,6 +8,7 @@
   import { page } from '$app/state';
 
   let revealEl = $state<HTMLDivElement | null>(null);
+  let typedInput = $state<HTMLInputElement | null>(null);
   let hadMisses = $state(false);
 
   onMount(() => {
@@ -57,6 +58,12 @@
     const a = data.wines.find((w) => w.name === card.answer);
     const c = data.wines.find((w) => w.name === chosen);
     return a && c && a.id !== c.id && a.family === c.family ? { c, a } : null;
+  });
+  // A11Y-18: focus the typed/scenario input on card entry so you can type immediately.
+  $effect(() => {
+    if (view === 'session' && !revealed && (cardMode === 'typed' || cardMode === 'scenario') && typedInput) {
+      typedInput.focus();
+    }
   });
   const progressPct = $derived(baseTotal ? Math.round((Math.min(idx, baseTotal) / baseTotal) * 100) : 0);
   const focusDecks = (Object.keys(engine.DECKS) as string[]).filter((d) => d !== 'mystery');
@@ -314,7 +321,7 @@
         {:else}
           {#if cardMode === 'scenario' && card.scenario}<p class="meta scenario">{card.scenario}</p>{/if}
           <div class="typed-row">
-            <input type="text" bind:value={typedValue} aria-label="Type your answer" autocomplete="off"
+            <input type="text" bind:this={typedInput} bind:value={typedValue} aria-label="Type your answer" autocomplete="off"
               onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); submitTyped(); } }} />
             <button class="btn" type="button" onclick={submitTyped}>Check</button>
           </div>
