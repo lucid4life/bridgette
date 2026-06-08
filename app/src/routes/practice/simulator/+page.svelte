@@ -9,7 +9,7 @@
   let promptEl = $state<HTMLParagraphElement | null>(null);
   let doneEl = $state<HTMLHeadingElement | null>(null);
 
-  type BeatKind = 'match' | 'explain' | 'objection' | 'upsell';
+  type BeatKind = 'ask' | 'match' | 'explain' | 'objection' | 'upsell';
   type Beat = {
     kind: BeatKind;
     prompt: string;
@@ -22,6 +22,12 @@
 
   const VIBES = ['a date night', 'a birthday table of 6', 'a quick after-work drink', 'a celebration', 'two regulars at the bar'];
   const CELEBRATION = new Set(['a celebration', 'a birthday table of 6']);
+  // Spec §7 "asked first?" — a scored Ask beat that drills the gather-info-first habit.
+  const ASK_BEATS = [
+    { prompt: 'Before you recommend — what do you confirm first?', answer: 'A style they love and any allergies', wrong: ['Nothing — just pour your favourite', 'The priciest bottle they’ll take', 'Whether they look like wine people'] },
+    { prompt: 'They haven’t said what they like. Your first move?', answer: 'Ask about a wine they’ve enjoyed before', wrong: ['Default to the house wine', 'Recommend the most expensive', 'Guess from how they’re dressed'] },
+    { prompt: 'What gets you to the right pour fastest?', answer: 'A quick question about their taste and the dish', wrong: ['A long speech about the whole list', 'Upselling before they’ve chosen', 'Pouring without asking'] }
+  ];
 
   function pick<T>(arr: T[], n: number, exclude: T[] = []): T[] {
     return engine.shuffle(arr.filter((x) => !exclude.includes(x)), Math.random).slice(0, n);
@@ -56,7 +62,14 @@
       const objection = w.objections[Math.floor(((i + 1) * 2654435761) % w.objections.length)];
       const otherReplies = pick(data.wines.flatMap((x) => (x.name === w.name ? [] : x.objections.map((o) => o.reply))), 3);
 
+      const ask = ASK_BEATS[i % ASK_BEATS.length];
       const beats: Beat[] = [
+        {
+          kind: 'ask',
+          prompt: ask.prompt,
+          choices: engine.shuffle([ask.answer, ...ask.wrong], Math.random),
+          answer: ask.answer
+        },
         {
           kind: 'match',
           prompt: 'Match the dish to a by-the-glass pour:',
@@ -106,8 +119,8 @@
   const maxScore = $derived(turns.reduce((s, t) => s + t.beats.length, 0));
   const isLastBeat = $derived(turn ? beatIdx + 1 >= turn.beats.length : true);
   const isLastTurn = $derived(ti + 1 >= turns.length);
-  const OK: Record<BeatKind, string> = { match: 'Good pour.', explain: "That's the reason.", objection: 'Nailed the reply.', upsell: 'Great upsell.' };
-  const NO: Record<BeatKind, string> = { match: 'Not the best pour.', explain: 'The cleaner reason:', objection: 'The smoother reply:', upsell: 'The bottle move:' };
+  const OK: Record<BeatKind, string> = { ask: 'Ask first — always.', match: 'Good pour.', explain: "That's the reason.", objection: 'Nailed the reply.', upsell: 'Great upsell.' };
+  const NO: Record<BeatKind, string> = { ask: 'Gather info before the pour:', match: 'Not the best pour.', explain: 'The cleaner reason:', objection: 'The smoother reply:', upsell: 'The bottle move:' };
   const liveMsg = $derived(
     !answered || !beat ? '' : (picked === beat.answer ? OK[beat.kind] : NO[beat.kind] + ' ' + beat.answer)
   );
@@ -152,7 +165,7 @@
 <section class="screen on-dark">
   <p class="h-eyebrow"><a href="/" class="back">← Practice</a> · Guest Simulator</p>
   <h1>Talk to the table</h1>
-  <p class="sub">Match the pour → explain the why → handle the curveball → close the bottle. Difficulty scales to your level; the match counts toward your decks. {turns.length} tables.</p>
+  <p class="sub">Ask first → match the pour → explain the why → handle the curveball → close the bottle. Difficulty scales to your level; the match counts toward your decks. {turns.length} tables.</p>
 
   {#if !done && turn && beat}
     <p class="meta">Table {ti + 1} of {turns.length} · beat {beatIdx + 1}/{turn.beats.length} · score {score}</p>
