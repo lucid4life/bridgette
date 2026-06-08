@@ -12,6 +12,8 @@ export default defineConfig({
         name: 'Bridgette Bar Training',
         short_name: 'Bridgette',
         description: 'Wine training for Bridgette Bar Calgary — wines, pairings, pronunciation, and guest practice.',
+        start_url: '/today',
+        id: '/today',
         display: 'standalone',
         orientation: 'portrait',
         theme_color: '#132b3b',
