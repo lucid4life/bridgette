@@ -14,8 +14,8 @@
     try { fullmenu = await fetch('/fullmenu.json').then((r) => r.json()); } catch { fullmenu = { bottles: [], beers: [], fortifieds: [] }; }
   });
 
-  type Filter = 'Wine' | 'Bottles' | 'Food' | 'Cocktails' | 'Beer' | 'Digestifs' | 'Translator' | 'Pairing matrix';
-  const FILTERS: Filter[] = ['Wine', 'Bottles', 'Food', 'Cocktails', 'Beer', 'Digestifs', 'Translator', 'Pairing matrix'];
+  type Filter = 'Wine' | 'Bottles' | 'Food' | 'Cocktails' | 'Beer' | 'Digestifs';
+  const FILTERS: Filter[] = ['Wine', 'Bottles', 'Food', 'Cocktails', 'Beer', 'Digestifs'];
   let filter = $state<Filter>('Wine');
   let q = $state('');
   let speaking = $state<string | null>(null);
@@ -54,8 +54,6 @@
       return hay.includes(ql);
     })
   );
-  const matrixRows = $derived(data.foods.filter((f) => f.wine));
-
   // By-the-bottle list (Phase B): searchable by grape/style/region/alias/dish (COMP-01).
   const allBottles = $derived(fullmenu?.bottles ?? []);
   const bottles = $derived(
@@ -73,19 +71,6 @@
     return p.length === 3 ? { pour5: p[0], pour8: p[1], bottle: p[2] } : null;
   }
 
-  // Translator cue/alias search so "Meiomi", "Napa Cab", "Malbec" all resolve (CT-04).
-  const translatorRows = $derived(
-    data.translator.filter((t) => {
-      if (!ql) return true;
-      const hay = [t.ask, ...(t.aliases ?? []), t.bestGlass, ...(t.bottleOptions ?? [])]
-        .join(' ').toLowerCase();
-      return hay.includes(ql);
-    })
-  );
-
-  // Join a translator row's bestGlass back to the wine for pronunciation (reuses the
-  // existing speak()/speaking machinery). Surfaces the previously-dead `familiar` copy.
-  const wineByName = new Map(data.wines.map((w) => [w.name, w] as const));
 </script>
 
 <svelte:head><title>Reference · Bridgette Training</title></svelte:head>
@@ -205,42 +190,6 @@
       <p class="sub">No cocktail matches “{q}”. Try an ingredient or a profile.</p>
     {/if}
 
-  {:else if filter === 'Translator'}
-    <label class="search">
-      <span class="visually-hidden">Search a guest ask by grape, style, alias, or wine</span>
-      <input type="search" bind:value={q} placeholder="Search a guest ask — Cabernet, Meiomi, Malbec…" autocomplete="off" />
-    </label>
-    <p class="meta" aria-live="polite" style="margin:0 0 12px">{translatorRows.length} of {data.translator.length} guest asks</p>
-    {#if translatorRows.length}
-    <div class="grid cols-2 on-cream">
-      {#each translatorRows as t (t.ask)}
-        {@const gw = wineByName.get(t.bestGlass)}
-        <article class="card light">
-          <h3>{t.ask}</h3>
-          <div class="winecard-head">
-            <p class="winecard-body" style="margin:0">By the glass → <strong>{t.bestGlass}</strong></p>
-            {#if gw}
-              <button
-                class="speak"
-                type="button"
-                aria-pressed={speaking === gw.id}
-                aria-label={'Hear ' + gw.name + ' pronounced'}
-                onclick={() => speak(gw)}
-              >🔊</button>
-            {/if}
-          </div>
-          {#if gw}<p class="winecard-pron meta">Say: <strong>{gw.pronunciation.respell}</strong></p>{/if}
-          {#if t.familiar}<p class="meta">Same lane: {t.familiar}</p>{/if}
-          {#if t.bottleOptions?.length}<p class="meta upgrade-line">Bottle upgrade → <strong>{t.bottleOptions.join(', ')}</strong></p>{/if}
-          {#if t.different}<p class="meta winecard-profile">Point of difference: {t.different}</p>{/if}
-          <p class="meta">{t.phrase}</p>
-        </article>
-      {/each}
-    </div>
-    {:else}
-      <p class="sub">No guest ask matches “{q}”. Try a grape, a wine name, or a style.</p>
-    {/if}
-
   {:else if filter === 'Bottles'}
     <label class="search">
       <span class="visually-hidden">Search bottles by grape, style, region, or dish</span>
@@ -319,23 +268,6 @@
       {/each}
     </div>
     {/if}
-
-  {:else}
-    <table class="matrix">
-      <caption class="visually-hidden">Dish-by-dish pairing matrix: wine, cocktail, zero-proof, and why.</caption>
-      <thead><tr><th>Dish</th><th>Wine</th><th>Cocktail</th><th>Zero-proof</th><th>Why</th></tr></thead>
-      <tbody>
-        {#each matrixRows as f (f.id)}
-          <tr>
-            <th>{f.name}</th>
-            <td data-label="Wine">{f.wine}</td>
-            <td data-label="Cocktail">{f.cocktail ?? '—'}</td>
-            <td data-label="Zero-proof">{f.zero ?? '—'}</td>
-            <td data-label="Why">{f.why}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
   {/if}
 </section>
 
