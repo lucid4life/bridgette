@@ -19,9 +19,14 @@
   const studied = $derived(Object.keys(progressStore.value.cards).length > 0);
 
   const deckMastery = $derived(decks.map((d) => ({ d, label: (engine.DECKS as any)[d].label, m: progressStore.masteryFor(d) })));
+  // UX-3: the fallback estimate must average the SAME decks buildReadiness scores —
+  // it excludes self-graded pronunciation — so this number can't diverge from the gauntlet.
   const shiftReady = $derived(
     progressStore.readiness?.lastScore ??
-      Math.round(deckMastery.reduce((s, x) => s + x.m, 0) / (deckMastery.length || 1))
+      (() => {
+        const obj = deckMastery.filter((x) => x.d !== 'pronunciation');
+        return Math.round(obj.reduce((s, x) => s + x.m, 0) / (obj.length || 1));
+      })()
   );
   const weakest = $derived([...deckMastery].sort((a, b) => a.m - b.m).slice(0, 2).map((x) => x.label));
 </script>

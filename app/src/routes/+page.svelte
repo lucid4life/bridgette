@@ -367,7 +367,9 @@
     </div>
 
     {#if hypercorrection}
-      <div class="hyper" role="alert">
+      <!-- A11Y-N7: polite, not assertive — the reveal region already announced the answer;
+           this is added emphasis (also visually loud) and must not pre-empt it. -->
+      <div class="hyper" role="status">
         <strong>Worth re-learning:</strong> you were confident but this one's <em>{card.answer}</em>. It'll come back this session.
       </div>
     {/if}

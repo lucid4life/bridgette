@@ -38,6 +38,22 @@
       return hay.includes(ql);
     })
   );
+  // Search the Food + Cocktail tabs too (spec §5 lists "food" as a search axis).
+  const foods = $derived(
+    data.foods.filter((f) => {
+      if (!ql) return true;
+      const hay = [f.name, f.category, f.menu, f.flavor, f.wine ?? '', f.cocktail ?? '', f.zero ?? '', f.why, ...(f.tags ?? [])]
+        .join(' ').toLowerCase();
+      return hay.includes(ql);
+    })
+  );
+  const cocktails = $derived(
+    data.cocktails.filter((c) => {
+      if (!ql) return true;
+      const hay = [c.name, c.category, c.profile, c.pair, c.say, ...(c.tags ?? [])].join(' ').toLowerCase();
+      return hay.includes(ql);
+    })
+  );
   const matrixRows = $derived(data.foods.filter((f) => f.wine).slice(0, 40));
 
   // By-the-bottle list (Phase B): searchable by grape/style/region/alias/dish (COMP-01).
@@ -81,8 +97,9 @@
     {/each}
   </div>
 
-  <!-- a11y: gives the per-card h3s a parent h2 so the heading order is h1→h2→h3 (1.3.1). -->
-  <h2 class="visually-hidden" aria-live="polite">{filter}</h2>
+  <!-- a11y: gives the per-card h3s a parent h2 so the heading order is h1→h2→h3 (1.3.1).
+       Not a live region (A11Y-N6) — the aria-pressed filter chips already announce the switch. -->
+  <h2 class="visually-hidden">{filter}</h2>
 
   {#if filter === 'Wine'}
     <label class="search">
@@ -139,8 +156,14 @@
     {/if}
 
   {:else if filter === 'Food'}
+    <label class="search">
+      <span class="visually-hidden">Search dishes by name, ingredient, or pairing</span>
+      <input type="search" bind:value={q} placeholder="Search a dish — oysters, lamb, truffle…" autocomplete="off" />
+    </label>
+    <p class="meta" aria-live="polite" style="margin:0 0 12px">{foods.length} of {data.foods.length} dishes</p>
+    {#if foods.length}
     <div class="grid cols-2 on-cream">
-      {#each data.foods as f (f.id)}
+      {#each foods as f (f.id)}
         <article class="card light">
           <h3>{f.name}</h3>
           <div class="meta">{f.category} · {f.price}</div>
@@ -151,10 +174,19 @@
         </article>
       {/each}
     </div>
+    {:else}
+      <p class="sub">No dish matches “{q}”. Try an ingredient or a pairing.</p>
+    {/if}
 
   {:else if filter === 'Cocktails'}
+    <label class="search">
+      <span class="visually-hidden">Search cocktails by name, ingredient, or pairing</span>
+      <input type="search" bind:value={q} placeholder="Search a cocktail — mezcal, amaro, citrus…" autocomplete="off" />
+    </label>
+    <p class="meta" aria-live="polite" style="margin:0 0 12px">{cocktails.length} of {data.cocktails.length} cocktails</p>
+    {#if cocktails.length}
     <div class="grid cols-2 on-cream">
-      {#each data.cocktails as c (c.id)}
+      {#each cocktails as c (c.id)}
         <article class="card light">
           <h3>{c.name}</h3>
           <div class="meta">{c.category} · {c.price}</div>
@@ -165,6 +197,9 @@
         </article>
       {/each}
     </div>
+    {:else}
+      <p class="sub">No cocktail matches “{q}”. Try an ingredient or a profile.</p>
+    {/if}
 
   {:else if filter === 'Translator'}
     <label class="search">
