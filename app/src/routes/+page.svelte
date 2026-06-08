@@ -123,8 +123,14 @@
   function flipReveal() {
     if (!card) return;
     revealed = true;
-    pendingCorrect = null; // self-graded for pronounce
+    pendingCorrect = null; // self-graded for pronounce / produce
     tick().then(() => revealEl?.focus());
+  }
+  // UX-3 (spec §6): self-rate a PRODUCED answer. Nailed → correct + sure; Close →
+  // correct + shaky (re-shown sooner via the confidence weight); Missed → wrong.
+  function rate(r: 'nailed' | 'close' | 'missed') {
+    confidence = r === 'missed' ? 'shaky' : r === 'close' ? 'shaky' : 'sure';
+    commit(r !== 'missed');
   }
   function doReveal(isCorrect: boolean) {
     revealed = true;
@@ -219,7 +225,13 @@
       return;
     }
     if (revealed) {
-      if (e.key === '1') { e.preventDefault(); commit(true); }
+      if (cardMode === 'produce') {
+        if (e.key === '1') { e.preventDefault(); rate('nailed'); }
+        else if (e.key === '2') { e.preventDefault(); rate('close'); }
+        else if (e.key === '3') { e.preventDefault(); rate('missed'); }
+      } else if (cardMode === 'mc' && pendingCorrect != null) {
+        if (e.key === 'Enter') { e.preventDefault(); commit(pendingCorrect); }
+      } else if (e.key === '1') { e.preventDefault(); commit(true); }
       else if (e.key === '2') { e.preventDefault(); commit(false); }
       else if (e.key === 'Enter' && pendingCorrect != null) { e.preventDefault(); commit(pendingCorrect); }
     } else if ((e.code === 'Space' || e.key === ' ') && cardMode === 'flip') {
@@ -294,7 +306,7 @@
       {revealed
         ? (pendingCorrect === true ? 'Correct. ' : pendingCorrect === false ? 'Not quite. The answer is ' + card.answer + '. ' : 'Answer: ' + card.answer + '. ')
           + (confusion ? 'Easy mix-up: ' + confusion.c.name + ' versus ' + confusion.a.name + '. ' : '')
-          + (why.text ? why.label + ': ' + why.text : (box >= 5 && card.why ? 'The reason: ' + card.why : ''))
+          + (why.text ? why.label + ': ' + why.text : (box >= 4 && card.why ? 'The reason: ' + card.why : ''))
         : ''}
     </p>
 
@@ -313,13 +325,20 @@
       <p class="q" tabindex="-1" bind:this={qEl}>{card.prompt}</p>
 
       {#if !revealed}
-        <div class="conf" role="group" aria-label="How sure are you?">
-          <span class="meta">How sure?</span>
-          <button class="chip" type="button" aria-pressed={confidence === 'sure'} onclick={() => (confidence = 'sure')}>Sure</button>
-          <button class="chip" type="button" aria-pressed={confidence === 'shaky'} onclick={() => (confidence = 'shaky')}>Shaky</button>
-        </div>
+        {#if cardMode !== 'produce'}
+          <div class="conf" role="group" aria-label="How sure are you?">
+            <span class="meta">How sure?</span>
+            <button class="chip" type="button" aria-pressed={confidence === 'sure'} onclick={() => (confidence = 'sure')}>Sure</button>
+            <button class="chip" type="button" aria-pressed={confidence === 'shaky'} onclick={() => (confidence = 'shaky')}>Shaky</button>
+          </div>
+        {/if}
 
-        {#if cardMode === 'mc'}
+        {#if cardMode === 'produce'}
+          <p class="meta gen-nudge">Say your pour and the one reason it works — out loud. Then reveal.</p>
+          <div class="gradebar">
+            <button class="btn gold" type="button" onclick={flipReveal}>Reveal answer</button>
+          </div>
+        {:else if cardMode === 'mc'}
           <div class="gradebar choices">
             {#each shuffledChoices as choice, i}
               <button class="btn ghost choice" type="button" onclick={() => chooseMC(choice)}>
@@ -360,15 +379,23 @@
             <p class="confusion"><strong>Easy mix-up</strong> — both are {confusion.a.family}. {confusion.c.name} is the wrong call here; {confusion.a.name}: {confusion.a.tenSecond}</p>
           {/if}
           {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
-          {#if box >= 5 && card.why}<p class="why"><strong>The reason:</strong> {card.why}</p>{/if}
+          {#if box >= 4 && !why.text && card.why}<p class="why"><strong>The reason:</strong> {card.why}</p>{/if}
           {#if pendingCorrect === false && card.learnLink}
             <p class="explain"><a class="explain-link" href={'/learn#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
           {/if}
           <div class="gradebar">
             {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={() => speakCard()}><span aria-hidden="true">🔊</span></button>{/if}
             {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it slowly" onclick={() => speakCard(0.7)}><span aria-hidden="true">🐢</span></button>{/if}
-            <button class="btn" type="button" onclick={() => commit(true)}>I got it (1)</button>
-            <button class="btn ghost" type="button" onclick={() => commit(false)}>I didn't (2)</button>
+            {#if cardMode === 'produce'}
+              <button class="btn" type="button" onclick={() => rate('nailed')}>Nailed it</button>
+              <button class="btn ghost" type="button" onclick={() => rate('close')}>Close</button>
+              <button class="btn ghost" type="button" onclick={() => rate('missed')}>Missed</button>
+            {:else if cardMode === 'mc'}
+              <button class="btn" type="button" onclick={() => commit(pendingCorrect!)}>Continue <span aria-hidden="true">→</span></button>
+            {:else}
+              <button class="btn" type="button" onclick={() => commit(true)}>I got it (1)</button>
+              <button class="btn ghost" type="button" onclick={() => commit(false)}>I didn't (2)</button>
+            {/if}
           </div>
         </div>
       {/if}

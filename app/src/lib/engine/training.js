@@ -726,9 +726,14 @@ export function importProgress(json, validIds) {
 }
 
 // ---------------- pure UI-mode helpers (used by Phase 3 components) ----------------
+// Reason-bearing decks: past the beginner boxes the learner PRODUCES the pour + the
+// one reason out loud, reveals, then self-rates (spec §6). Everything before box 3
+// (and every non-reason deck) keeps the prior mc/typed/scenario/flip behaviour.
+export const REASON_DECKS = new Set(['translator', 'pairing', 'cocktail-pairing', 'upsell']);
 export function modeForBox(card, box) {
   if (card.kind === 'pronounce') return 'flip';
   if (card.kind === 'discriminate') return 'mc';
+  if (REASON_DECKS.has(card.deck) && box >= 3) return 'produce';
   if (box <= 2) return 'mc';
   if (box >= 5) return 'scenario';
   return 'typed';

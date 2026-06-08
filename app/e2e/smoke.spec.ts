@@ -10,11 +10,12 @@ test('core loop: focus a deck, answer a card, get feedback + the why, grade, adv
   await expect(flash).toBeVisible();
   await expect(page.locator('.session-top .bar')).toBeVisible();
 
-  // answer (MC) → instant feedback + the why + grade buttons appear
+  // answer (MC) → instant feedback + the why + a Continue button (MC result is
+  // already known, so no redundant self-grade)
   await page.locator('.choices button.choice').first().click();
   await expect(page.locator('.feedback')).toBeVisible();
-  await expect(page.getByRole('button', { name: /I got it/i })).toBeVisible();
-  await page.getByRole('button', { name: /I got it/i }).click();
+  await expect(page.getByRole('button', { name: /Continue/i })).toBeVisible();
+  await page.getByRole('button', { name: /Continue/i }).click();
   // still in a session (advanced) or at the summary
   await expect(page.locator('.flash, .screen h1')).toBeVisible();
 });

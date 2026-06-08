@@ -333,6 +333,31 @@ describe('engine', () => {
     expect(T.whyDisplay({ kind: 'pronounce' }, 2)).toEqual({ label: '', text: '' });
   });
 
+  it('modeForBox: reason decks are mc at box<=2, then produce at box>=3', () => {
+    const c = { kind: 'recall', deck: 'translator' };
+    expect(T.modeForBox(c, 1)).toBe('mc');
+    expect(T.modeForBox(c, 2)).toBe('mc');
+    expect(T.modeForBox(c, 3)).toBe('produce');
+    expect(T.modeForBox(c, 5)).toBe('produce');
+    ['pairing', 'cocktail-pairing', 'upsell'].forEach((deck) => {
+      expect(T.modeForBox({ kind: 'recall', deck }, 3)).toBe('produce');
+    });
+  });
+
+  it('modeForBox: kind always wins — discriminate stays mc, pronounce stays flip even on a reason deck', () => {
+    // upsell/cocktail-pairing are reason decks but their cards are kind:discriminate
+    expect(T.modeForBox({ kind: 'discriminate', deck: 'upsell' }, 4)).toBe('mc');
+    expect(T.modeForBox({ kind: 'pronounce', deck: 'pairing' }, 4)).toBe('flip');
+  });
+
+  it('modeForBox: non-reason decks keep mc/typed/scenario unchanged', () => {
+    const c = { kind: 'recall', deck: 'wine-identity' };
+    expect(T.modeForBox(c, 2)).toBe('mc');
+    expect(T.modeForBox(c, 3)).toBe('typed');
+    expect(T.modeForBox(c, 4)).toBe('typed');
+    expect(T.modeForBox(c, 5)).toBe('scenario');
+  });
+
   it('exportProgress: does not mutate the input progress object', () => {
     const p = emptyProgress();
     const card = T.generateDeck('structure', DATA)[0];
