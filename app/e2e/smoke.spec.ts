@@ -33,8 +33,11 @@ test('reference renders 17 wines with speak buttons + meters', async ({ page }) 
   await expect(page.locator('.meter').first()).toBeVisible();
 });
 
-test('wine school shows the reasoning layer', async ({ page }) => {
+test('course: the 5 families module shows the reasoning layer', async ({ page }) => {
   await page.goto('/learn');
+  // The reasoning layer now lives inside the "The 5 families" module. Its map card
+  // is unlocked-or-jump-ahead, so it's always clickable.
+  await page.locator('button.mod-card', { hasText: 'The 5 families' }).click();
   await expect(page.locator('.family')).toHaveCount(5);
   await expect(page.locator('.stylemap')).toBeVisible();
   await expect(page.locator('.regionmap')).toBeVisible();
