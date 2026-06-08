@@ -47,7 +47,8 @@
 <style>
   .regionmap { margin: 0; }
   svg { width: 100%; aspect-ratio: 5 / 4; background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius-card); }
-  .country { font-size: 4px; fill: var(--muted); font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; text-anchor: middle; opacity: .65; }
+  /* UX-15: was opacity .65 (= 4.09:1, a 1.4.3 AA fail); full opacity makes it ~7.6:1. */
+  .country { font-size: 4px; fill: var(--muted); font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; text-anchor: middle; }
   .dot circle { stroke: var(--ink-3); stroke-width: .6; cursor: pointer; }
   .dot:hover circle, .dot:focus-visible circle { stroke: var(--cream); stroke-width: 1.2; }
   .dot-label { font-size: 3px; fill: var(--cream); paint-order: stroke; stroke: var(--ink-3); stroke-width: 1px; opacity: 0; pointer-events: none; text-anchor: middle; }
