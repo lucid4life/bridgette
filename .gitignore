@@ -6,3 +6,6 @@ tools/audio_clips/_preview/
 
 # local preview server config (S5 browser verification)
 .claude/launch.json
+
+# brainstorming visual-companion scratch (mockups, session state)
+.superpowers/
