@@ -2,7 +2,7 @@
   import { data } from '$lib/data/index';
   import * as engine from '$lib/engine/training.js';
   import { progressStore } from '$lib/state/progress.svelte';
-  import type { Wine, Card } from '$lib/data/types';
+  import type { Wine, Card, Translator } from '$lib/data/types';
   import { tick } from 'svelte';
 
   let revealEl = $state<HTMLParagraphElement | null>(null);
@@ -45,7 +45,7 @@
   function buildTurns(): Turn[] {
     const winesById = new Map(data.wines.map((w) => [w.name, w] as const));
     const usable = data.foods.filter((f) => f.wine && winesById.get(f.wine)?.objections?.length);
-    const chosen = engine.shuffle(usable, Math.random).slice(0, 5) as typeof usable;
+    const chosen = engine.shuffle(usable, Math.random).slice(0, 3) as typeof usable;
     const allUpgrades = data.wines.filter((w) => w.upgrade).map((w) => w.upgrade as string);
     const allWhys = data.foods.filter((f) => f.why).map((f) => f.why);
     return chosen.map((f, i) => {
@@ -106,7 +106,77 @@
     });
   }
 
-  let turns = $state<Turn[]>(buildTurns());
+  // Substitution turns: guest names a varietal we don't pour — the #1 real conversation.
+  // Match beat writes the translator card to Leitner (same choose() path as food match).
+  function buildSubTurns(): Turn[] {
+    const winesById = new Map(data.wines.map((w) => [w.name, w] as const));
+    const eligible = data.translator.filter(
+      (t) => t.bestGlass && t.different && winesById.has(t.bestGlass)
+    );
+    const chosen = engine.shuffle(eligible, Math.random).slice(0, 2);
+    const allDifferents = data.translator.filter((x) => x.different).map((x) => x.different);
+    const allBottleOpts = Array.from(
+      new Set(data.translator.flatMap((x) => x.bottleOptions ?? []))
+    );
+    const allUpgrades = data.wines.filter((w) => w.upgrade).map((w) => w.upgrade as string);
+
+    return chosen.map((t: Translator, i: number) => {
+      const cardId = 'translator:' + engine.slug(t.ask) + ':ask';
+      const ask = ASK_BEATS[(i + 1) % ASK_BEATS.length]; // offset so we don't repeat index 0
+
+      const beats: Beat[] = [
+        {
+          kind: 'ask',
+          prompt: ask.prompt,
+          choices: engine.shuffle([ask.answer, ...ask.wrong], Math.random),
+          answer: ask.answer
+        },
+        {
+          kind: 'match',
+          prompt: "We don't pour that by the glass — what's your closest pour?",
+          choices: engine.shuffle(
+            [t.bestGlass, ...engine.wineDistractors(data, t.bestGlass, 3)],
+            Math.random
+          ),
+          answer: t.bestGlass,
+          cardId
+        },
+        {
+          kind: 'explain',
+          prompt: 'Why steer them there? (say it, then pick)',
+          choices: engine.shuffle(
+            [t.different, ...pick(allDifferents, 3, [t.different])],
+            Math.random
+          ),
+          answer: t.different
+        }
+      ];
+
+      // Bottle-upsell beat: if the translator row has bottle options, rehearse the close.
+      if (t.bottleOptions?.length) {
+        const bottleAnswer = t.bottleOptions[0];
+        const distPool = allBottleOpts.filter((b) => b !== bottleAnswer);
+        const distractors =
+          distPool.length >= 3
+            ? pick(distPool, 3, [bottleAnswer])
+            : pick(allUpgrades, 3, [bottleAnswer]);
+        beats.push({
+          kind: 'upsell',
+          prompt: 'They want the exact grape — offer the bottle:',
+          guestLine: 'Can I get an actual ' + t.ask + '?',
+          choices: engine.shuffle([bottleAnswer, ...distractors], Math.random),
+          answer: bottleAnswer
+        });
+      }
+
+      return {
+        guest: `A guest asks — "Do you have a ${t.ask}?"`,
+        beats
+      };
+    });
+  }
+
+  let turns = $state<Turn[]>(engine.shuffle([...buildTurns(), ...buildSubTurns()], Math.random));
   let ti = $state(0);
   let beatIdx = $state(0);
   let answered = $state(false);
@@ -147,7 +217,8 @@
     tick().then(() => { (done ? doneEl : promptEl)?.focus(); });
   }
   function restart() {
-    turns = buildTurns(); ti = 0; beatIdx = 0; answered = false; picked = null; score = 0; done = false;
+    turns = engine.shuffle([...buildTurns(), ...buildSubTurns()], Math.random);
+    ti = 0; beatIdx = 0; answered = false; picked = null; score = 0; done = false;
   }
   function onKey(e: KeyboardEvent) {
     const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
@@ -165,7 +236,7 @@
 <section class="screen on-dark">
   <p class="h-eyebrow"><a href="/" class="back">← Practice</a> · Guest Simulator</p>
   <h1>Talk to the table</h1>
-  <p class="sub">Ask first → match the pour → explain the why → handle the curveball → close the bottle. Difficulty scales to your level; the match counts toward your decks. {turns.length} tables.</p>
+  <p class="sub">Match the pour, explain the why, handle the curveball, close the bottle — for dishes AND for grapes we don't carry. Difficulty scales to your level; the match counts toward your decks. {turns.length} tables.</p>
 
   {#if !done && turn && beat}
     <p class="meta">Table {ti + 1} of {turns.length} · beat {beatIdx + 1}/{turn.beats.length} · score {score}</p>
