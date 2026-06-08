@@ -5,6 +5,8 @@
   // No content is re-authored here — every line renders the same source Learn and
   // Practice cross-link to.
   import { data } from '$lib/data/index';
+  import { page } from '$app/state';
+  import { onMount } from 'svelte';
   import { langFor } from '$lib/engine/training.js';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
@@ -25,6 +27,22 @@
       if (speaking === w.id) speaking = null;
     });
   }
+
+  // Deep-link: the global "Guest asked for…" search lands here with ?view=&q= so the
+  // surface opens pre-filtered. view=pairings → Pairings tab; otherwise Substitutions.
+  // q seeds the active view's search box. No params → behaviour is unchanged.
+  onMount(() => {
+    const params = page.url.searchParams;
+    const v = params.get('view');
+    const q = params.get('q');
+    if (v === 'pairings') {
+      view = 'pairs';
+      if (q) pairQ = q;
+    } else {
+      if (v === 'substitutions') view = 'subs';
+      if (q) subQ = q;
+    }
+  });
 
   // Join a translator row's bestGlass back to its wine (verified 30/30 — every
   // bestGlass resolves), surfacing the otherwise-dead `familiar` line + the pour's
