@@ -320,6 +320,7 @@
           </div>
         {:else}
           {#if cardMode === 'scenario' && card.scenario}<p class="meta scenario">{card.scenario}</p>{/if}
+          {#if box >= 4 && cardMode === 'typed'}<p class="meta gen-nudge">First, say the one structural reason it fits out loud — then check.</p>{/if}
           <div class="typed-row">
             <input type="text" bind:this={typedInput} bind:value={typedValue} aria-label="Type your answer" autocomplete="off"
               onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); submitTyped(); } }} />
@@ -339,6 +340,7 @@
             <p class="confusion"><strong>Easy mix-up</strong> — both are {confusion.a.family}. {confusion.c.name} is the wrong call here; {confusion.a.name}: {confusion.a.tenSecond}</p>
           {/if}
           {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
+          {#if box >= 5 && card.why}<p class="why"><strong>The reason:</strong> {card.why}</p>{/if}
           {#if pendingCorrect === false && card.learnLink}
             <p class="explain"><a class="explain-link" href={'/school#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
           {/if}
@@ -400,6 +402,7 @@
   .typed-row { display: flex; gap: 8px; justify-content: center; }
   .typed-row input { flex: 1; max-width: 320px; padding: 11px 14px; border-radius: var(--radius-btn); border: 1px solid var(--line-dark); font-size: 16px; }
   .scenario { font-style: italic; }
+  .gen-nudge { border-left: 2px solid var(--gold); padding-left: 8px; max-width: 480px; margin: 4px auto; text-align: left; }
   .feedback { font-weight: 800; margin: 0; }
   .feedback.ok { color: var(--green); }
   .feedback.no { color: var(--accent-dark); }
