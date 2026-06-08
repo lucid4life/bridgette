@@ -63,7 +63,11 @@
       <div class="card" style="text-align:center">
         <h3 style="text-align:left">Shift-ready</h3>
         <div class="ring" role="img" aria-label={`${shiftReady}% shift-ready`} style={`--p:${mounted ? shiftReady : 0}`}><span aria-hidden="true">{shiftReady}%</span></div>
-        <p class="meta">{progressStore.readiness ? 'From your last Readiness Check' : 'Estimate from deck mastery'}</p>
+        <p class="meta">
+          {#if progressStore.readiness}From your last Readiness Check
+          {:else if shiftReady < 25}Early days — this climbs fast as you learn. Run a quick check anytime.
+          {:else}Estimate from deck mastery{/if}
+        </p>
         <a class="btn ghost" href="/?start=readiness" style="margin-top:6px">Run Readiness Check</a>
       </div>
     </div>
