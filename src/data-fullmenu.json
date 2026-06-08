@@ -316,7 +316,7 @@
     {
       "id": "charlotte-jean-baptiste-senat-amalgame",
       "name": "Charlotte & Jean Baptiste Senat Amalgame",
-      "grape": "Grenache Noir, Grenache Blanc & Grenache Gris",
+      "grape": "Grenache Noir, Grenache Gris & old Languedoc varieties (Piquepoul, Counoise, Terret)",
       "region": "Minervois, France",
       "country": "France",
       "vintage": "2022",
@@ -1119,7 +1119,7 @@
       "id": "gulfi-nerojbleo",
       "name": "Gulfi Nerojbleo",
       "grape": "Nero d'Avola",
-      "region": "Sicilia DOC, Sicily, Italy",
+      "region": "Terre Siciliane IGT, Sicily, Italy",
       "country": "Italy",
       "vintage": "2022",
       "priceBottle": 105,
@@ -1429,7 +1429,7 @@
     {
       "id": "raventos-i-blanc-de-nit-rose",
       "name": "Raventós i Blanc de Nit Rosé",
-      "grape": "Monastrell",
+      "grape": "Xarel·lo, Macabeu, Parellada & Monastrell",
       "region": "Conca del Riu Anoia, Penedès",
       "country": "Spain",
       "vintage": "NV",
@@ -1814,7 +1814,7 @@
       "name": "Dandy The Julia Peach Cobbler Sour",
       "style": "Kettle sour / fruited sour ale",
       "origin": "Calgary, AB",
-      "abv": "5.0%",
+      "abv": "5.5%",
       "oz": "15oz",
       "flavor": "Tastes like peach cobbler — fresh Okanagan peach with vanilla and cinnamon, generous tartness over a touch of malty sweetness.",
       "pairWith": [
@@ -1865,7 +1865,7 @@
       "name": "Michelob Ultra",
       "style": "American light lager",
       "origin": "USA",
-      "abv": "4.0%",
+      "abv": "4.2%",
       "oz": "355ml",
       "flavor": "Very light-bodied, crisp and dry with subtle malt and almost no bitterness; clean and refreshing.",
       "pairWith": [
@@ -1948,7 +1948,7 @@
       "name": "Uncommon Tropical Cider",
       "style": "Fruit cider (tropical, dry-hopped)",
       "origin": "Calgary, AB",
-      "abv": "6.0%",
+      "abv": "6.8%",
       "oz": "15oz",
       "flavor": "Ripe kiwi aroma with pineapple, passion fruit and papaya and a soft coconut-water mouthfeel; fruity, dry-hopped with Citra/Zamba/Hallertau Blanc.",
       "pairWith": [

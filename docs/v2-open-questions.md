@@ -62,3 +62,5 @@ From the adversarial self-review (`docs/research/2026-06-07-v2-phase-d-review.md
 ## Phase 0a data-fix flags (2026-06-08) — confirm with team
 - **Fattoria Moretto cuvée:** data now says off-dry (the Semprebon = Amabile). Confirm which Moretto cuvée is actually poured (Semprebon amabile vs Canova secco).
 - **Wagyu Beef Carpaccio pairing:** changed from Ca' del Baio Nebbiolo to Deinhard Deidesheim (Pinot) because the old "why" wrongly called Nebbiolo light-tannin. Confirm the swap, or keep the Nebbiolo with a corrected why.
+- **Fallentimber Honey Buck** is a sparkling mead currently filed under digestifs/fortifieds; decide whether to surface it under Beer in the Reference UI (categorization only).
+- **Michelob Ultra ABV** set to the real 4.2% (the printed menu says 4.0%); confirm which to display.
