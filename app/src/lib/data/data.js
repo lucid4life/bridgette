@@ -1717,7 +1717,7 @@ export const data = {
       "flavor": "salty, crisp, creamy aioli",
       "wine": "Blue Mountain Brut",
       "cocktail": "Spicy Sandia",
-      "zero": "Freixenet Sparkling Wine or Ol' Beautiful Okami Kasu Japanese Lager",
+      "zero": "Freixenet Sparkling Wine or Peroni Pilsner 0.0",
       "why": "Salt and fried fat want high acid and bubbles to scrub the palate clean (acid cuts fat; bubbles refresh).",
       "flags": [
         "garlic aioli",
