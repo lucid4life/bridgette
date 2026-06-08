@@ -3,6 +3,7 @@
   import * as engine from '$lib/engine/training.js';
   import GuestSearch from '$lib/components/GuestSearch.svelte';
   import { progressStore } from '$lib/state/progress.svelte';
+  import { courseStore } from '$lib/state/course.svelte';
   import { onMount } from 'svelte';
 
   let mounted = $state(false);
@@ -30,6 +31,15 @@
       })()
   );
   const weakest = $derived([...deckMastery].sort((a, b) => a.m - b.m).slice(0, 2).map((x) => x.label));
+
+  // Smart hero: pick the right next action based on what's due
+  const nextMod = $derived(courseStore.nextModule());
+  const courseProgress = $derived(`${courseStore.completedCount()} of ${courseStore.total} modules`);
+  const heroMode = $derived(
+    due > 0 ? 'review'
+    : nextMod !== null ? 'course'
+    : 'caught-up'
+  ) as 'review' | 'course' | 'caught-up';
 </script>
 
 <svelte:head><title>Today · Bridgette Training</title></svelte:head>
@@ -53,16 +63,31 @@
   {#if studied}
     <h2 class="visually-hidden">Your session</h2>
     <div class="hero">
-      <div class="card">
-        <h3>Ready to study</h3>
-        <div class="stat" aria-live="polite">
-          <div><b>{due}</b><span class="meta">cards due</span></div>
-          <div><b class="streak">{streak}</b><span class="meta">day streak <span aria-hidden="true">{daily.protectedRecently ? '🔥❄️' : '🔥'}</span>{#if daily.protectedRecently}<span class="visually-hidden"> — a missed day was forgiven</span>{/if}</span></div>
-          <div><b>{totalCards}</b><span class="meta">cards total</span></div>
+      {#if heroMode === 'review'}
+        <div class="card">
+          <h3>Ready to study</h3>
+          <div class="stat" aria-live="polite">
+            <div><b>{due}</b><span class="meta">cards due</span></div>
+            <div><b class="streak">{streak}</b><span class="meta">day streak <span aria-hidden="true">{daily.protectedRecently ? '🔥❄️' : '🔥'}</span>{#if daily.protectedRecently}<span class="visually-hidden"> — a missed day was forgiven</span>{/if}</span></div>
+            <div><b>{totalCards}</b><span class="meta">cards total</span></div>
+          </div>
+          <p style="margin:16px 0 0"><a class="btn" href="/?start=smart"><span aria-hidden="true">▶</span> Start Smart Review</a></p>
+          {#if weakest.length}<p class="meta" style="margin-top:14px">Weakest decks: <strong style="color:var(--cream)">{weakest.join(', ')}</strong></p>{/if}
         </div>
-        <p style="margin:16px 0 0"><a class="btn" href="/?start=smart"><span aria-hidden="true">▶</span> Start Smart Review</a></p>
-        {#if weakest.length}<p class="meta" style="margin-top:14px">Weakest decks: <strong style="color:var(--cream)">{weakest.join(', ')}</strong></p>{/if}
-      </div>
+      {:else if heroMode === 'course'}
+        <div class="card">
+          <h3>Continue your course</h3>
+          <p style="margin:10px 0 4px"><strong>Module {nextMod!.num} · {nextMod!.title}</strong></p>
+          <p class="meta">{courseProgress} complete · reviews are clear</p>
+          <p style="margin:16px 0 0"><a class="btn" href="/learn"><span aria-hidden="true">▶</span> Resume the course</a></p>
+        </div>
+      {:else}
+        <div class="card">
+          <h3>You're all caught up</h3>
+          <p class="meta">Course complete and no reviews due — rest is part of spacing. Run a Readiness Check anytime.</p>
+          <p style="margin:16px 0 0"><a class="btn ghost" href="/?start=readiness">Run Readiness Check</a></p>
+        </div>
+      {/if}
       <div class="card" style="text-align:center">
         <h3 style="text-align:left">Shift-ready</h3>
         <div class="ring" role="img" aria-label={`${shiftReady}% shift-ready`} style={`--p:${mounted ? shiftReady : 0}`}><span aria-hidden="true">{shiftReady}%</span></div>
