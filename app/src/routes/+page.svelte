@@ -165,8 +165,14 @@
     // prompt (spec §13 — after the first session, never on load).
     if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('bb:session-complete'));
   }
-  function speakCard() {
-    if (card?.wineId) playPronunciation(card.wineId, card.audioText ?? card.answer, card.lang);
+  function speakCard(rate?: number) {
+    if (card?.wineId) playPronunciation(card.wineId, card.audioText ?? card.answer, card.lang, undefined, rate);
+  }
+  // CT-12: split a respelling ("VAHG-ner SHTEM-pel") into stress-marked syllable chunks.
+  function respellChunks(respell: string) {
+    return respell.split(/\s+/).filter(Boolean).map((word) =>
+      word.split('-').map((syl) => ({ syl, stress: /[A-Z]/.test(syl) && syl === syl.toUpperCase() }))
+    );
   }
 
   function onPointerDown(e: PointerEvent) {
@@ -315,7 +321,8 @@
         {:else if cardMode === 'flip'}
           <p class="meta">Say it out loud, then flip to check the respelling.</p>
           <div class="gradebar">
-            {#if card.audioText}<button class="btn ghost" type="button" onclick={speakCard}>🔊 Hear it</button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" onclick={() => speakCard()}>🔊 Hear it</button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it slowly" onclick={() => speakCard(0.7)}><span aria-hidden="true">🐢</span> Slow</button>{/if}
             <button class="btn gold" type="button" onclick={flipReveal}>Flip to answer</button>
           </div>
         {:else}
@@ -329,7 +336,11 @@
         {/if}
       {:else}
         <div class="reveal" tabindex="-1" bind:this={revealEl}>
-          <p class="ans">{card.answer}</p>
+          {#if card.kind === 'pronounce'}
+            <p class="ans respell" aria-label={'Say: ' + card.answer}>{#each respellChunks(card.answer) as word, wi}{#if wi > 0}<span class="resp-gap"> </span>{/if}{#each word as part, pi}{#if pi > 0}<span class="resp-sep" aria-hidden="true">·</span>{/if}<span class="syl" class:stress={part.stress}>{part.syl}</span>{/each}{/each}</p>
+          {:else}
+            <p class="ans">{card.answer}</p>
+          {/if}
           {#if pendingCorrect != null}
             <p class="feedback" class:ok={pendingCorrect} class:no={!pendingCorrect}>
               <span aria-hidden="true">{pendingCorrect ? '✓' : '•'}</span>
@@ -345,7 +356,8 @@
             <p class="explain"><a class="explain-link" href={'/school#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
           {/if}
           <div class="gradebar">
-            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={speakCard}><span aria-hidden="true">🔊</span></button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={() => speakCard()}><span aria-hidden="true">🔊</span></button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it slowly" onclick={() => speakCard(0.7)}><span aria-hidden="true">🐢</span></button>{/if}
             <button class="btn" type="button" onclick={() => commit(true)}>I got it (1)</button>
             <button class="btn ghost" type="button" onclick={() => commit(false)}>I didn't (2)</button>
           </div>
@@ -414,6 +426,12 @@
      proved fragile across mount timing); a transform/opacity entrance is the reliable delight. */
   @keyframes hero-in { from { opacity: 0; transform: translateY(8px); } }
   @media (prefers-reduced-motion: reduce) { .summary-hero { animation: none; } }
+  /* CT-12: respelling as stress-marked syllable chunks (stress = weight + gold underline;
+     all syllables stay full-ink so contrast holds — colour is never the only cue). */
+  .respell { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; justify-content: center; }
+  .syl.stress { font-weight: 800; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
+  .resp-sep { opacity: .4; margin: 0 1px; }
+  .resp-gap { width: 10px; display: inline-block; }
   .explain { margin: 8px 0 0; }
   .explain-link { color: var(--accent-dark); font-weight: 600; font-size: 14px; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; min-height: 24px; }
   .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent-dark); border-radius: var(--radius-card); background: rgba(168, 50, 18, .14); }
