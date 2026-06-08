@@ -50,7 +50,7 @@ export const data = {
       "tenSecond": "Crisp BC bubbles — my easiest reset for oysters, fries, and anything salty or fried.",
       "profile": "Lemon, green apple, fine bubbles, and a clean finish. This is the easiest seafood/fried-food reset on the list.",
       "pair": [
-        "Oysters",
+        "Oysters 1/2 dozen",
         "French Fries",
         "Burrata Cheese",
         "Tuna Crudo",
@@ -93,7 +93,7 @@ export const data = {
       "objections": [
         {
           "cue": "A sparkling red? Is it sweet?",
-          "reply": "This Grasparossa runs dry — fruity, not sweet — but Lambrusco sweetness varies, so I'll taste-confirm if you like."
+          "reply": "This Grasparossa is gently off-dry and fruity — taste to confirm — but not cloying; Lambrusco sweetness varies, so I'll taste-confirm if you like."
         },
         {
           "cue": "That sounds like a novelty.",
@@ -108,9 +108,9 @@ export const data = {
         "acidity": "high",
         "body": "medium",
         "tannin": "medium",
-        "sweetness": "dry"
+        "sweetness": "off-dry"
       },
-      "structureNote": "Lambrusco sweetness ranges secco to amabile; this Grasparossa style runs dry — taste to confirm before calling it dry or sweet.",
+      "structureNote": "Lambrusco sweetness ranges secco to amabile; the Semprebon is gently off-dry and fruity — taste to confirm before calling it dry or sweet.",
       "tenSecond": "Chilled sparkling red — fruity, not silly, and made for sausage, salami, cheese, and pizza.",
       "profile": "Black cherry, blackberry, violet, almond, fizz, and enough grip for sausage and cheese.",
       "pair": [
@@ -374,7 +374,7 @@ export const data = {
       "tenSecond": "The spice problem-solver — peach and lime freshness for chili, pickle, honey-spice, and salty plates.",
       "profile": "Riesling is the problem solver for spice, pickle, honey, jalapeno, and salty food. It can be dry or off-dry depending on the wine.",
       "pair": [
-        "Oysters",
+        "Oysters 1/2 dozen",
         "Brussels Sprouts",
         "Bibb Lettuce",
         "Chicken Sausage",
@@ -564,7 +564,7 @@ export const data = {
       "tenSecond": "The salty, spritzy Basque rose — bright and coastal, made for crudo, cucumber, salami, and salty-spicy plates.",
       "profile": "A salty, bright Basque rose that is excellent with seafood, crudo, cucumber, salami, and salty-spicy plates.",
       "pair": [
-        "Oysters",
+        "Oysters 1/2 dozen",
         "Tuna Crudo",
         "Grilled Octopus Salad",
         "Smashed Cucumbers",
@@ -978,7 +978,7 @@ export const data = {
       "category": "Red",
       "glass": true,
       "price": "16 | 26 | 80",
-      "grape": "Merlot & Cabernet Sauvignon",
+      "grape": "Cabernet Sauvignon & Merlot",
       "region": "Bordeaux, France",
       "country": "France",
       "vintage": "2023",
@@ -993,7 +993,7 @@ export const data = {
         },
         {
           "cue": "We usually love a big Napa Cab.",
-          "reply": "You'll be at home — Claret is a Bordeaux Merlot-Cabernet blend, a touch more savoury and structured than a plush Napa. For full Napa power, the White Rock Cabernet is our bottle."
+          "reply": "You'll be at home — Claret is a Cab-led Bordeaux blend, a touch more savoury and structured than a plush Napa. For full Napa power, the White Rock Cabernet is our bottle."
         },
         {
           "cue": "Something like Meiomi?",
@@ -1011,7 +1011,7 @@ export const data = {
         "sweetness": "dry"
       },
       "tenSecond": "The safe steak red by the glass — dark fruit and Bordeaux structure without needing a speech.",
-      "profile": "The safest classic steak red by the glass. Merlot softens, Cabernet adds structure.",
+      "profile": "The safest classic steak red by the glass. Cabernet leads the structure; Merlot softens the finish.",
       "pair": [
         "Wood Grilled Beef Strip Steak",
         "26oz Wood Grilled Beef Ribeye",
@@ -1081,7 +1081,7 @@ export const data = {
       "tenSecond": "The no-alcohol white-style pour — citrusy and saline, a real pairing shape for seafood and lighter plates.",
       "profile": "A useful non-alcoholic white-style option for guests who still want a pairing shape.",
       "pair": [
-        "Oysters",
+        "Oysters 1/2 dozen",
         "Tuna Crudo",
         "Hummus Chips",
         "Bibb Lettuce"
@@ -1196,7 +1196,7 @@ export const data = {
       "bestGlass": "Darting Dürkheimer Fronhof",
       "bottleOptions": [
         "Valdespino Cream Sherry",
-        "Tawny Port"
+        "Quevedo Tawny 10yr"
       ],
       "familiar": "Riesling gives peachy fruit and aromatic lift, which can satisfy guests asking for a softer white.",
       "different": "There is not a true Moscato-style glass.",
@@ -1913,10 +1913,10 @@ export const data = {
       "price": "20",
       "menu": "Mushroom Vinaigrette, Mushroom Salad",
       "flavor": "beef, mushroom, umami, vinaigrette",
-      "wine": "Ca' del Baio Langhe",
+      "wine": "Deinhard Deidesheim",
       "cocktail": "White Peach Negroni",
       "zero": "Noughty Rouge",
-      "why": "Beef and umami flatter a high-acid, light-tannin red; acid cuts the fat while gentle tannin frames the meat without overpowering raw beef.",
+      "why": "Delicate raw beef wants a high-acid, low-tannin red — the Pinot lifts the richness without overwhelming it.",
       "flags": [
         "raw/rare beef",
         "confirm preparation"
