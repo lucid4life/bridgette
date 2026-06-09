@@ -36,7 +36,8 @@ test('axe: practice revealed (feedback) state', async ({ page }) => {
   await page.goto('/');
   await page.locator('button.deck-tile').first().click();
   await page.locator('.choices button.choice').first().click();
-  await expect(page.locator('.feedback')).toBeVisible();
+  // either the "Correct." line (hit) or the you-said/correct miss-banner (miss)
+  await expect(page.locator('.feedback, .miss-banner')).toBeVisible();
   await freeze(page);
   const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
   expect(results.violations, report(results.violations)).toEqual([]);

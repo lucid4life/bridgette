@@ -10,10 +10,10 @@ test('core loop: focus a deck, answer a card, get feedback + the why, grade, adv
   await expect(flash).toBeVisible();
   await expect(page.locator('.session-top .bar')).toBeVisible();
 
-  // answer (MC) → instant feedback + the why + a Continue button (MC result is
-  // already known, so no redundant self-grade)
+  // answer (MC) → instant reveal: "Correct." feedback on a hit, or the rich
+  // you-said/correct miss-banner on a miss (spec §4c); then the why + a Continue button
   await page.locator('.choices button.choice').first().click();
-  await expect(page.locator('.feedback')).toBeVisible();
+  await expect(page.locator('.feedback, .miss-banner')).toBeVisible();
   await expect(page.getByRole('button', { name: /Continue/i })).toBeVisible();
   await page.getByRole('button', { name: /Continue/i }).click();
   // still in a session (advanced) or at the summary

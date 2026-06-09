@@ -3,6 +3,8 @@
   import * as engine from '$lib/engine/training.js';
   import { progressStore } from '$lib/state/progress.svelte';
   import { playPronunciation } from '$lib/audio/playPronunciation';
+  import Expandable from '$lib/components/Expandable.svelte';
+  import StructureMeter from '$lib/components/StructureMeter.svelte';
   import type { Card } from '$lib/data/types';
   import { tick, onMount } from 'svelte';
   import { page } from '$app/state';
@@ -59,13 +61,17 @@
   const box = $derived(card ? (progressStore.value.cards[card.id]?.box ?? 1) : 1);
   const cardMode = $derived(card ? engine.modeForBox(card, box) : 'mc');
   const why = $derived(card ? engine.whyDisplay(card, box) : { label: '', text: '' });
-  // CT-01: on a same-family MC miss, name what was confused (discriminative learning).
-  const confusion = $derived.by(() => {
-    if (pendingCorrect !== false || !chosen || !card) return null;
-    const a = data.wines.find((w) => w.name === card.answer);
-    const c = data.wines.find((w) => w.name === chosen);
-    return a && c && a.id !== c.id && a.family === c.family ? { c, a } : null;
+  // Rich miss-feedback (spec §4c): you-said / correct / why + a generalised same-family
+  // confusion beat — computed in the engine (engine.missFeedback), not the component.
+  const feedback = $derived.by(() => {
+    if (!revealed || !card) return null;
+    const said = chosen ?? ((cardMode === 'typed' || cardMode === 'scenario') ? typedValue : null);
+    return engine.missFeedback(card, said, data);
   });
+  // The brief "You said / Correct" banner shows only when the learner committed a value.
+  const showMissBanner = $derived(revealed && pendingCorrect === false && !!feedback && !!feedback.said);
+  // The always-available Expand drawer (spec §4b): depth that's already in the data.
+  const expanded = $derived(card ? engine.expandFor(card, data).sections : []);
   // A11Y-18: focus the typed/scenario input on card entry so you can type immediately.
   $effect(() => {
     if (view !== 'session' || revealed) return;
@@ -314,8 +320,8 @@
     <!-- persistent live region: must be mounted BEFORE its text changes so SRs announce the reveal -->
     <p class="visually-hidden" aria-live="polite" aria-atomic="true">
       {revealed
-        ? (pendingCorrect === true ? 'Correct. ' : pendingCorrect === false ? 'Not quite. The answer is ' + card.answer + '. ' : 'Answer: ' + card.answer + '. ')
-          + (confusion ? 'Easy mix-up: ' + confusion.c.name + ' versus ' + confusion.a.name + '. ' : '')
+        ? (pendingCorrect === true ? 'Correct. ' : pendingCorrect === false ? 'Not quite. ' + (showMissBanner ? 'You said ' + feedback?.said + '. ' : '') + 'The answer is ' + card.answer + '. ' : 'Answer: ' + card.answer + '. ')
+          + (feedback?.confusion ? 'Easy mix-up: ' + feedback.confusion.chose.name + ' versus ' + feedback.confusion.answer.name + '. ' : '')
           + (why.text ? why.label + ': ' + why.text : (box >= 4 && card.why ? 'The reason: ' + card.why : ''))
         : ''}
     </p>
@@ -374,23 +380,56 @@
         {/if}
       {:else}
         <div class="reveal" tabindex="-1" bind:this={revealEl}>
-          {#if card.kind === 'pronounce'}
-            <p class="ans respell" aria-label={'Say: ' + card.answer}>{#each respellChunks(card.answer) as word, wi}{#if wi > 0}<span class="resp-gap"> </span>{/if}{#each word as part, pi}{#if pi > 0}<span class="resp-sep" aria-hidden="true">·</span>{/if}<span class="syl" class:stress={part.stress}>{part.syl}</span>{/each}{/each}</p>
+          {#if showMissBanner}
+            <!-- Rich miss-feedback: what you said vs the correct answer (spec §4c). -->
+            <div class="miss-banner">
+              <p class="mb said"><svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg><span class="mb-k">You said</span> <span class="mb-v">{feedback?.said}</span></p>
+              <p class="mb corr"><svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg><span class="mb-k">Correct</span> <span class="mb-v">{card.answer}</span></p>
+            </div>
           {:else}
-            <p class="ans">{card.answer}</p>
+            {#if card.kind === 'pronounce'}
+              <p class="ans respell" aria-label={'Say: ' + card.answer}>{#each respellChunks(card.answer) as word, wi}{#if wi > 0}<span class="resp-gap"> </span>{/if}{#each word as part, pi}{#if pi > 0}<span class="resp-sep" aria-hidden="true">·</span>{/if}<span class="syl" class:stress={part.stress}>{part.syl}</span>{/each}{/each}</p>
+            {:else}
+              <p class="ans">{card.answer}</p>
+            {/if}
+            {#if pendingCorrect != null}
+              <p class="feedback" class:ok={pendingCorrect} class:no={!pendingCorrect}>
+                <span aria-hidden="true">{pendingCorrect ? '✓' : '•'}</span>
+                {pendingCorrect ? 'Correct.' : 'Not quite — here’s the answer.'}
+              </p>
+            {/if}
           {/if}
-          {#if pendingCorrect != null}
-            <p class="feedback" class:ok={pendingCorrect} class:no={!pendingCorrect}>
-              <span aria-hidden="true">{pendingCorrect ? '✓' : '•'}</span>
-              {pendingCorrect ? 'Correct.' : 'Not quite — here’s the answer.'}
-            </p>
-          {/if}
-          {#if confusion}
-            <p class="confusion"><strong>Easy mix-up</strong> — both are {confusion.a.family}. {confusion.c.name} is the wrong call here; {confusion.a.name}: {confusion.a.tenSecond}</p>
+          {#if feedback?.confusion}
+            <p class="confusion"><strong>Easy mix-up</strong> — both are {feedback.confusion.answer.family}. {feedback.confusion.chose.name} is the wrong call here; {feedback.confusion.answer.name}: {feedback.confusion.answer.tenSecond}</p>
           {/if}
           {#if why.text}<p class="why"><strong>{why.label}:</strong> {why.text}</p>{/if}
           {#if box >= 4 && !why.text && card.why}<p class="why"><strong>The reason:</strong> {card.why}</p>{/if}
-          {#if pendingCorrect === false && card.learnLink}
+          {#if expanded.length}
+            <Expandable label="Expand — the full card">
+              {#each expanded as s (s.label)}
+                <div class="exp-sect">
+                  <div class="exp-h">{s.label}</div>
+                  {#if s.text}
+                    <p class="exp-t">{s.text}</p>
+                  {:else if s.items}
+                    <div class="exp-pills">{#each s.items as it}<span class="pill alt">{it}</span>{/each}</div>
+                  {:else if s.structure}
+                    <div class="exp-meters">
+                      <StructureMeter label="Acidity" level={s.structure.acidity} />
+                      <StructureMeter label="Body" level={s.structure.body} />
+                      <StructureMeter label="Tannin" level={s.structure.tannin} />
+                    </div>
+                    <p class="exp-t sweet">Sweetness: {s.structure.sweetness}</p>
+                  {:else if s.objections}
+                    {#each s.objections as o}<p class="exp-obj"><strong>{o.cue}</strong> {o.reply}</p>{/each}
+                  {:else if s.picks}
+                    <div class="exp-picks">{#if s.picks.wine}<span><b>Wine</b> {s.picks.wine}</span>{/if}{#if s.picks.cocktail}<span><b>Cocktail</b> {s.picks.cocktail}</span>{/if}{#if s.picks.zero}<span><b>Zero-proof</b> {s.picks.zero}</span>{/if}</div>
+                  {/if}
+                </div>
+              {/each}
+            </Expandable>
+          {/if}
+          {#if card.learnLink}
             <p class="explain"><a class="explain-link" href={'/learn#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
           {/if}
           <div class="gradebar">
@@ -470,6 +509,25 @@
   .q:focus { outline: none; } /* prompt is focused programmatically on card entry (A11Y-N2) */
   .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
   .confusion { background: rgba(168, 50, 18, .10); border-radius: var(--radius-nav); padding: 8px 10px; font-size: 13px; margin: 6px 0 0; }
+  /* Rich miss-feedback banner — you-said (accent) over correct (green). */
+  .miss-banner { display: grid; max-width: 460px; margin: 0 auto; border: 1px solid rgba(168, 50, 18, .3); border-radius: var(--radius-nav); overflow: hidden; text-align: left; }
+  .mb { display: flex; align-items: center; gap: 8px; margin: 0; padding: 9px 12px; font-size: 16px; font-weight: 700; }
+  .mb-ic { width: 18px; height: 18px; flex: none; }
+  .mb-k { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+  .mb.said { background: rgba(168, 50, 18, .08); color: var(--accent-dark); }
+  .mb.corr { background: rgba(63, 107, 84, .12); color: var(--green); border-top: 1px solid rgba(63, 107, 84, .22); }
+  /* Expand drawer sections (cream face). */
+  .exp-sect { margin: 0 0 11px; text-align: left; }
+  .exp-sect:last-child { margin-bottom: 0; }
+  .exp-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; font-weight: 700; color: var(--accent-dark); margin: 0 0 3px; }
+  .exp-t { margin: 0; font-size: 14px; color: var(--ink); }
+  .exp-t.sweet { margin-top: 4px; font-size: 13px; color: var(--muted-paper); }
+  .exp-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .exp-meters { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+  .exp-obj { margin: 0 0 6px; font-size: 13px; color: var(--ink); }
+  .exp-obj strong { display: block; color: var(--accent-dark); }
+  .exp-picks { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--ink); }
+  .exp-picks b { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-paper); margin-right: 6px; }
   .summary-hero { display: flex; align-items: center; gap: 18px; margin: 10px 0 4px; flex-wrap: wrap; animation: hero-in .35s ease both; }
   /* UX-04: the --p ring fill is static-correct (animating the registered --p property
      proved fragile across mount timing); a transform/opacity entrance is the reliable delight. */
