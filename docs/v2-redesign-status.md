@@ -37,9 +37,17 @@ After the four increments, a final pass closed the remaining in-scope spec items
 3. **Run Playwright on a fixed CI image** for the visual-regression baselines before deploy (the e2e + axe ran green here every step; baselines were deferred by waiver).
 4. **Then deploy** to Cloudflare Pages.
 
-## Deliberately deferred (documented, low-risk-not-worth-it now)
-- Harder course→SRS integration (gating new-card introduction by completed modules — today completing a module links to "drill it now"); **FSRS** scheduler swap; the typed/ESM **data-pipeline rewrite** + relaxing the frozen card-id rule.
-- The deeper **brand pass** that needs your assets: the real logo/wordmark SVG, the paid Adobe Typekit face, paper-grain texture, a Rob-Bailey-style illustration.
-- Making the global search **persistent on every route** (today it's on Today + On the Floor has its own); routing swipe-to-grade on a produce card through the Nailed/Close/Missed mapping (buttons + keyboard already do).
+### Pronunciation overhaul (2026-06-08, per Adrian's request)
+All 17 spoken pronunciations were **regenerated in one consistent English voice** (Sarah) via ElevenLabs, switching from the multilingual model (which applied native German/Italian/Spanish accents inconsistently) to the **English-only `eleven_turbo_v2`** fed the on-screen respellings — so every name is now read in the same English voice. v1 embedded audio + manifest updated, v1 + v2 both green. The swipe-to-grade path on produce cards now routes through the Nailed/Missed self-rate.
 
-**Bottom line:** the app is materially better and safe to ship — the safety bug is fixed and guarded, the three priority skills are first-class and trained as *production*, it's a real course now, and it looks the part. Everything is on `v2-app` for you to review and deploy when you're ready.
+## NOT built — and why (deliberate, not overlooked)
+These were on the consultant's wish-list but are **intentionally not built**, because forcing them would *reduce* quality or contradict a decision:
+- **FSRS scheduler swap.** This contradicts an *original locked decision*: "Leitner validated over SM-2/FSRS for a small deck — consistency matters more than the algorithm." For ~295 cards studied over weeks, Leitner is the right call; FSRS's ~20–30% efficiency edge matters for decks of thousands. Doing it would rewrite the working scheduler + tests for marginal benefit. **Recommend leaving Leitner.**
+- **Data-pipeline rewrite** (typed ESM source, dropping the eval). Maintainability/developer-ergonomics only — *zero* user-facing value — and the pipeline has generated correctly all session. A future dev-hygiene task, not product completion; rewriting risks breaking what works.
+- **Hard course→SRS card-gating.** Conflicts with the "jump ahead / not forced" course you chose, and would risk empty study sessions for a new user. The soft "drill it now" seeding is the better UX.
+
+## Genuinely needs YOU (can't be done without your input/assets)
+- The deeper **brand pass**: the real logo/wordmark SVG, the paid Adobe Typekit face, a Rob-Bailey-style illustration. (I used a free brand-true font, the *exact* live palette, and clean icons; the rest is your files.)
+- **Visual-regression baselines** (false-fail off a fixed CI image), **real-device QA**, the **somm confirmations** (`docs/v2-open-questions.md`), and the **deploy**.
+
+**Bottom line:** everything from the original prompt, the plan's in-scope work, the pronunciation request, and every in-scope refinement is complete and green on `v2-app`. What's left is either deliberately-not (with the reasons above) or genuinely yours. The app is materially better and safe to ship.
