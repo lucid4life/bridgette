@@ -10,6 +10,7 @@
   import { langFor } from '$lib/engine/training.js';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
+  import Expandable from '$lib/components/Expandable.svelte';
 
   type View = 'subs' | 'pairs';
   type Direction = 'dish' | 'drink' | 'lever';
@@ -197,17 +198,19 @@
                 {/if}
               </div>
               {#if t.familiar}<p class="bridge">{t.familiar}</p>{/if}
-              {#if gw}
-                <div class="meters">
-                  <StructureMeter label="Acidity" level={gw.structure.acidity} />
-                  <StructureMeter label="Body" level={gw.structure.body} />
-                  <StructureMeter label="Tannin" level={gw.structure.tannin} />
-                </div>
-                <p class="winecard-pron meta">Say: <strong>{gw.pronunciation.respell}</strong></p>
-              {/if}
-              {#if t.different}<p class="meta">Point of difference: {t.different}</p>{/if}
-              {#if t.bottleOptions?.length}<p class="meta upgrade-line">Want the real grape? → <strong>{t.bottleOptions.join(', ')}</strong></p>{/if}
-              <p class="meta phrase">{t.phrase}</p>
+              <Expandable label="More">
+                {#if gw}
+                  <div class="meters">
+                    <StructureMeter label="Acidity" level={gw.structure.acidity} />
+                    <StructureMeter label="Body" level={gw.structure.body} />
+                    <StructureMeter label="Tannin" level={gw.structure.tannin} />
+                  </div>
+                  <p class="winecard-pron meta">Say: <strong>{gw.pronunciation.respell}</strong></p>
+                {/if}
+                {#if t.different}<p class="meta">Point of difference: {t.different}</p>{/if}
+                {#if t.bottleOptions?.length}<p class="meta upgrade-line">Want the real grape? → <strong>{t.bottleOptions.join(', ')}</strong></p>{/if}
+                <p class="meta phrase">{t.phrase}</p>
+              </Expandable>
             </article>
           {/each}
         </div>

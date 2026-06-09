@@ -4,6 +4,7 @@
   import { langFor } from '$lib/engine/training.js';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
+  import Expandable from '$lib/components/Expandable.svelte';
   import type { Bottle, Beer, Fortified } from '$lib/data/types';
 
   // Reference-only full-menu data — fetched as a STATIC JSON ASSET (PERF-03) so it is
@@ -126,15 +127,19 @@
           </div>
           <p class="winecard-pron meta">Say: <strong>{w.pronunciation.respell}</strong></p>
           <p class="winecard-body">{w.tenSecond}</p>
-          {#if w.profile}<p class="meta winecard-profile">{w.profile}</p>{/if}
-          {#if w.pair?.length}
-            <div class="best-with"><span class="meta">Best with:</span>{#each w.pair.slice(0, 5) as dish}<span class="pill alt">{dish}</span>{/each}</div>
-          {/if}
-          {#if w.upgrade}<p class="meta upgrade-line">Upsell → <strong>{w.upgrade}</strong></p>{/if}
-          {#if w.objections?.length}
-            <details class="objections"><summary>Guest objections ({w.objections.length})</summary>
-              <ul>{#each w.objections as o}<li><b>“{o.cue}”</b> — {o.reply}</li>{/each}</ul>
-            </details>
+          {#if w.profile || w.pair?.length || w.upgrade || w.objections?.length}
+            <Expandable label="More">
+              {#if w.profile}<p class="meta winecard-profile">{w.profile}</p>{/if}
+              {#if w.pair?.length}
+                <div class="best-with"><span class="meta">Best with:</span>{#each w.pair.slice(0, 5) as dish}<span class="pill alt">{dish}</span>{/each}</div>
+              {/if}
+              {#if w.upgrade}<p class="meta upgrade-line">Upsell → <strong>{w.upgrade}</strong></p>{/if}
+              {#if w.objections?.length}
+                <div class="objections"><p class="meta obj-h">Guest objections</p>
+                  <ul>{#each w.objections as o}<li><b>“{o.cue}”</b> — {o.reply}</li>{/each}</ul>
+                </div>
+              {/if}
+            </Expandable>
           {/if}
           <div class="winecard-tags">
             <span class="pill">{w.family}</span>
@@ -221,9 +226,13 @@
           </div>
           <p class="winecard-pron meta">Say: <strong>{b.pronunciation.respell}</strong></p>
           <p class="winecard-body">{b.tenSecond}</p>
-          {#if b.pairWhy}<p class="meta winecard-profile">{b.pairWhy}</p>{/if}
-          {#if b.pair?.length}
-            <div class="best-with"><span class="meta">Best with:</span>{#each b.pair.slice(0, 4) as dish}<span class="pill alt">{dish}</span>{/each}</div>
+          {#if b.pairWhy || b.pair?.length}
+            <Expandable label="More">
+              {#if b.pairWhy}<p class="meta winecard-profile">{b.pairWhy}</p>{/if}
+              {#if b.pair?.length}
+                <div class="best-with"><span class="meta">Best with:</span>{#each b.pair.slice(0, 4) as dish}<span class="pill alt">{dish}</span>{/each}</div>
+              {/if}
+            </Expandable>
           {/if}
           <div class="winecard-tags">
             <span class="pill">{b.family}</span>
@@ -306,8 +315,9 @@
   .upgrade-line { margin: 6px 0 0; }
   .upgrade-line strong { color: var(--ink); }
   .objections { margin-top: 8px; }
-  .objections > summary { cursor: pointer; min-height: 24px; display: list-item; color: var(--ink); font-size: 13px; }
   .objections ul { margin: 6px 0 0; padding-left: 18px; }
   .objections li { font-size: 13px; margin: 4px 0; color: var(--ink); }
   .objections li b { font-weight: 600; }
+  .obj-h { margin: 4px 0 2px; font-weight: 700; color: var(--ink); }
+  .winecard-profile:first-child { margin-top: 0; }
 </style>
