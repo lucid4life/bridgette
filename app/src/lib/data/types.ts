@@ -193,6 +193,13 @@ export interface Card {
   audioText?: string;
   lang?: string;
   wineId?: string;
+  // Additive source linkage (NOT part of the frozen `id` slug) — lets the Expand
+  // drawer + miss-feedback resolve a card to its rich source record. sourceFoodId/
+  // sourceWineId carry the second record for the two bridge decks (wine-dish).
+  sourceKind?: 'wine' | 'translator' | 'food' | 'cocktail';
+  sourceId?: string;
+  sourceFoodId?: string;
+  sourceWineId?: string;
   learnLink: string;
   tags: string[];
 }

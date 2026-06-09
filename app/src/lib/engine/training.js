@@ -170,6 +170,7 @@ function genTranslator(data) {
     return {
       id: 'translator:' + slug(t.ask) + ':ask',
       deck: 'translator', kind: 'recall',
+      sourceKind: 'translator', sourceId: slug(t.ask),
       prompt: 'A guest asks for ' + t.ask + '. What’s your by-the-glass pour?',
       answer: t.bestGlass,
       why: t.phrase,
@@ -190,6 +191,7 @@ function genWineIdentity(data) {
     cards.push({
       id: 'wine-identity:' + w.id + ':grape',
       deck: 'wine-identity', kind: 'recall',
+      sourceKind: 'wine', sourceId: w.id,
       prompt: w.name + ': what grape and region?',
       answer: ans,
       why: w.profile || '',
@@ -202,6 +204,7 @@ function genWineIdentity(data) {
     cards.push({
       id: 'wine-identity:' + w.id + ':name',
       deck: 'wine-identity', kind: 'recall',
+      sourceKind: 'wine', sourceId: w.id,
       prompt: w.grape + ' from ' + w.region + ' — which wine on our list?',
       answer: w.name,
       why: w.tenSecond || w.profile || '',
@@ -220,6 +223,7 @@ function genPronunciation(data) {
     return {
       id: 'pronunciation:' + w.id + ':say',
       wineId: w.id,
+      sourceKind: 'wine', sourceId: w.id,
       deck: 'pronunciation', kind: 'pronounce',
       prompt: 'How do you say “' + w.name + '”?',
       answer: w.pronunciation.respell,
@@ -238,6 +242,7 @@ function genPairing(data) {
     return {
       id: 'pairing:' + f.id + ':match',
       deck: 'pairing', kind: 'recall',
+      sourceKind: 'food', sourceId: f.id,
       prompt: 'A guest orders ' + f.name + '. Best by-the-glass — and why?',
       answer: f.wine,
       why: f.why || '',
@@ -262,6 +267,7 @@ function genStructure(data) {
       cards.push({
         id: 'structure:' + attr + '-' + w.id + ':pick',
         deck: 'structure', kind: 'discriminate',
+        sourceKind: 'wine', sourceId: w.id,
         prompt: 'Which has the highest ' + attr + '?',
         answer: w.name,
         why: w.name + ' sits at high ' + attr + '; the others are lower.',
@@ -281,6 +287,7 @@ function genStructure(data) {
       cards.push({
         id: 'structure:recall-' + attr + '-' + w.id + ':level',
         deck: 'structure', kind: 'discriminate',
+        sourceKind: 'wine', sourceId: w.id,
         prompt: w.name + ' — is its ' + attr + ' low, medium, or high?',
         answer: lvl,
         why: w.name + ' is ' + lvl + ' in ' + attr + (w.structureNote ? ' — ' + w.structureNote : '') + '.',
@@ -352,6 +359,7 @@ export function buildMysteryPour(data) {
       cards.push({
         id: 'mystery:' + w.id + ':grape',
         deck: 'mystery', kind: 'discriminate', wineId: w.id,
+        sourceKind: 'wine', sourceId: w.id,
         prompt: w.name + ' — what is its structure signature?',
         answer: answerFp,
         why: w.name + ' (' + w.grape + ', ' + w.region + ') reads ' + answerFp + (w.structureNote ? ' — ' + w.structureNote : '') + '.',
@@ -374,6 +382,7 @@ export function buildMysteryPour(data) {
       cards.push({
         id: 'mystery:' + w.id + ':name',
         deck: 'mystery', kind: 'discriminate', wineId: w.id,
+        sourceKind: 'wine', sourceId: w.id,
         prompt: prompt,
         answer: w.name,
         why: 'It’s ' + w.grape + ' from ' + w.region + '. The tell: ' + fpString(w) + (hasTwin ? ' (others share this profile — region pins it).' : '.'),
@@ -404,6 +413,7 @@ function genCocktailPairing(data) {
     cards.push({
       id: 'cocktail-pairing:' + f.id + ':match',
       deck: 'cocktail-pairing', kind: 'recall',
+      sourceKind: 'food', sourceId: f.id,
       prompt: 'A guest at ' + f.name + ' wants a cocktail. Best call?',
       answer: answer,
       why: why,
@@ -444,6 +454,7 @@ function genWineDish(data) {
     cards.push({
       id: 'wine-dish:' + w.id + ':match',
       deck: 'wine-dish', kind: 'recall',
+      sourceKind: 'wine', sourceId: w.id, sourceFoodId: food.id,
       prompt: "You're pouring " + w.name + ' — which dish on our menu sings with it?',
       answer: answer,
       why: food.why || '',
@@ -471,6 +482,7 @@ function genUpsell(data) {
     return {
       id: 'upsell:' + w.id + ':bottle',
       deck: 'upsell', kind: 'discriminate',
+      sourceKind: 'wine', sourceId: w.id,
       prompt: 'A guest is loving the ' + w.name + ' by the glass. What is the bottle move?',
       answer: w.upgrade,
       why: econ + '. Offer it once they are enjoying the glass — never push. ' + w.name + ' steps up to: ' + w.upgrade,
@@ -503,6 +515,20 @@ export function allCards(data) {
   let all = [];
   Object.keys(DECKS).forEach((id) => { all = all.concat(generateDeck(id, data)); });
   return all;
+}
+
+// Resolve a card to its primary rich source record (wine / translator / food /
+// cocktail) via the additive sourceKind/sourceId fields — the single seam that
+// powers expandFor() + missFeedback() without touching the frozen id slugs.
+export function sourceForCard(card, data) {
+  if (!card || !data) return null;
+  switch (card.sourceKind) {
+    case 'wine': return data.wines.find((w) => w.id === card.sourceId) || null;
+    case 'food': return data.foods.find((f) => f.id === card.sourceId) || null;
+    case 'translator': return data.translator.find((t) => slug(t.ask) === card.sourceId) || null;
+    case 'cocktail': return data.cocktails.find((c) => c.name === card.sourceId) || null;
+    default: return null;
+  }
 }
 
 // ---------------- Readiness Check (pure: a mixed gauntlet across live decks) ----------------
