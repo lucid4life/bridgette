@@ -26,6 +26,9 @@ This was the redesign you asked for: a hypercritical consultant review + deep re
 - **Guest Simulator** now rehearses the **substitution conversation** (a guest names a grape we don't pour), and its match beat writes the translator card toward your mastery.
 - **Visual polish:** a warm self-hosted body font (**Hanken Grotesk**), an **elevation scale** for depth, and **clean line icons** replacing the consumer emoji on Practice.
 
+### Completeness pass (same session — finishing every in-scope spec item)
+After the four increments, a final pass closed the remaining in-scope spec items: the **Today smart hero** (auto-picks "do your review first" vs "continue your course"); the **Guest Simulator's Explain beat** is now say-it-then-self-rate (not multiple choice); a **"By lever" view** on the On the Floor pairings (drill the rule, not 42 pairs); the **food→cocktail drill "why"** is now the structural lever, not the cocktail's flavor blurb; and the **all-caps was softened** to natural-case headings (labels/nav/eyebrows keep their caps) with the ▶ glyph swapped for an icon. All green (195 Vitest / 14 Playwright / svelte-check 0 / build / v1 PASS).
+
 ---
 
 ## What remains — your side (no more code from me)
