@@ -4,6 +4,8 @@
 // (changing either silently wipes a real user's Leitner progress). Functions that
 // took an implicit window.BB.data fallback in v1 now REQUIRE an explicit `data` arg.
 
+import { basicsIdSet } from './basics.js';
+
 // ---- constants (spec §8 / research convergence) ----
 export const BOX_DUE_DAYS = { 1: 0, 2: 1, 3: 3, 4: 7, 5: 14 };
 export const NEW_CAP = 9; // new cards per session (anti-burnout cap, separate from size)
@@ -670,7 +672,7 @@ function defaultProgressShape() {
     schema: 1, cards: {}, decks: {}, tags: {}, readiness: null,
     studyDays: [], // v2 forgiving-streak source of truth (sorted day-numbers)
     streak: { current: 0, lastStudyDate: null },
-    settings: { difficulty: 'adaptive', audio: true, goal: 'daily', weeklyTarget: 3 }
+    settings: { difficulty: 'adaptive', audio: true, goal: 'daily', weeklyTarget: 3, basicsOnly: true }
   };
 }
 export const defaultProgress = defaultProgressShape;
@@ -711,7 +713,14 @@ export function buildSession(deckId, ctx) {
   const sizeCap = ctx.sizeCap != null ? ctx.sizeCap : SIZE_CAP;
   const rng = ctx.rng || Math.random;
 
-  const cards = deckId == null ? allCards(data) : generateDeck(deckId, data);
+  // Floor Basics soft gate (spec §6): when on, Smart Review draws ONLY from the
+  // curated on-ramp set. Focus decks (an explicit choice) are never filtered.
+  const basicsOnly = ctx.basicsOnly != null ? ctx.basicsOnly : !!(progress.settings && progress.settings.basicsOnly);
+  let cards = deckId == null ? allCards(data) : generateDeck(deckId, data);
+  if (basicsOnly && deckId == null) {
+    const set = basicsIdSet(data);
+    cards = cards.filter((c) => set.has(c.id));
+  }
 
   const due = [];
   const fresh = [];
@@ -787,6 +796,12 @@ export function migrateProgress(raw, validIds) {
       base.settings.weeklyTarget = Math.max(1, Math.min(7, Math.round(Number(raw.settings.weeklyTarget))));
     }
   }
+  // Floor Basics soft gate (spec §6): respect an explicit saved value; otherwise
+  // default ON only for a brand-new (no studied cards) profile — never shrink an
+  // existing learner's review pool. (base.cards is populated above.)
+  base.settings.basicsOnly = (raw.settings && typeof raw.settings === 'object' && 'basicsOnly' in raw.settings)
+    ? raw.settings.basicsOnly !== false
+    : Object.keys(base.cards).length === 0;
   // v2 study-day log; backfill from the legacy lastStudyDate so upgrading users
   // keep a streak. (Unknown to v1, so this restores continuity, never loses it.)
   if (Array.isArray(raw.studyDays)) {

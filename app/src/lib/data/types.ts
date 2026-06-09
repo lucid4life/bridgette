@@ -232,5 +232,5 @@ export interface Progress {
   readiness: Readiness | null;
   studyDays: number[];
   streak: Streak;
-  settings: { difficulty: string; audio: boolean; goal: StreakGoal; weeklyTarget: number };
+  settings: { difficulty: string; audio: boolean; goal: StreakGoal; weeklyTarget: number; basicsOnly: boolean };
 }

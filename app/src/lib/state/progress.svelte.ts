@@ -45,6 +45,14 @@ export const progressStore = {
     progress.settings.goal = g;
     this.save();
   },
+  /** Floor Basics soft gate — true = Smart Review draws only the on-ramp set. */
+  get basicsOnly(): boolean {
+    return progress.settings.basicsOnly;
+  },
+  setBasicsOnly(on: boolean) {
+    progress.settings.basicsOnly = on;
+    this.save();
+  },
   /** Grade a card and persist (skips re-shown cards — caller decides). */
   record(card: Card, correct: boolean, today?: number) {
     const t = today ?? engine.dayNumber();
