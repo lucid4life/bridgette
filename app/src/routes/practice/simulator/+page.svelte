@@ -79,7 +79,7 @@
         },
         {
           kind: 'explain',
-          prompt: 'In one line — why does it fit? (say it, then pick)',
+          prompt: 'In one line — why does it fit? Say it out loud, then reveal.',
           choices: engine.shuffle([f.why, ...pick(allWhys, 3, [f.why])], Math.random),
           answer: f.why
         },
@@ -143,7 +143,7 @@
         },
         {
           kind: 'explain',
-          prompt: 'Why steer them there? (say it, then pick)',
+          prompt: 'In one line — why does it fit? Say it out loud, then reveal.',
           choices: engine.shuffle(
             [t.different, ...pick(allDifferents, 3, [t.different])],
             Math.random
@@ -192,7 +192,11 @@
   const OK: Record<BeatKind, string> = { ask: 'Ask first — always.', match: 'Good pour.', explain: "That's the reason.", objection: 'Nailed the reply.', upsell: 'Great upsell.' };
   const NO: Record<BeatKind, string> = { ask: 'Gather info before the pour:', match: 'Not the best pour.', explain: 'The cleaner reason:', objection: 'The smoother reply:', upsell: 'The bottle move:' };
   const liveMsg = $derived(
-    !answered || !beat ? '' : (picked === beat.answer ? OK[beat.kind] : NO[beat.kind] + ' ' + beat.answer)
+    !answered || !beat
+      ? ''
+      : beat.kind === 'explain'
+        ? 'The reason: ' + beat.answer
+        : (picked === beat.answer ? OK[beat.kind] : NO[beat.kind] + ' ' + beat.answer)
   );
 
   function choose(c: string) {
@@ -206,6 +210,16 @@
     }
     answered = true;
     tick().then(() => revealEl?.focus());
+  }
+  function revealExplain() {
+    if (answered) return;
+    picked = null;
+    answered = true;
+    tick().then(() => revealEl?.focus());
+  }
+  function rateExplain(r: 'nailed' | 'close' | 'missed') {
+    if (r !== 'missed') score += 1;
+    advance();
   }
   function advance() {
     if (!answered) return;
@@ -223,10 +237,17 @@
   function onKey(e: KeyboardEvent) {
     const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;
-    if (!answered && /^[1-4]$/.test(e.key)) {
-      const i = parseInt(e.key, 10) - 1;
-      if (beat?.choices[i]) { e.preventDefault(); choose(beat.choices[i]); }
-    } else if (answered && e.key === 'Enter') { e.preventDefault(); advance(); }
+    if (beat?.kind === 'explain') {
+      if (!answered && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); revealExplain(); }
+      else if (answered && e.key === '1') { e.preventDefault(); rateExplain('nailed'); }
+      else if (answered && e.key === '2') { e.preventDefault(); rateExplain('close'); }
+      else if (answered && e.key === '3') { e.preventDefault(); rateExplain('missed'); }
+    } else {
+      if (!answered && /^[1-4]$/.test(e.key)) {
+        const i = parseInt(e.key, 10) - 1;
+        if (beat?.choices[i]) { e.preventDefault(); choose(beat.choices[i]); }
+      } else if (answered && e.key === 'Enter') { e.preventDefault(); advance(); }
+    }
   }
 </script>
 
@@ -247,12 +268,24 @@
 
       {#if !answered}
         <p class="meta beat-prompt" tabindex="-1" bind:this={promptEl}>{beat.prompt}</p>
-        <div class="gradebar choices">
-          {#each beat.choices as c, i}
-            <button class="btn ghost choice" class:reply={beat.kind !== 'match'} type="button" onclick={() => choose(c)}>
-              <span class="key" aria-hidden="true">{i + 1}</span>{c}
-            </button>
-          {/each}
+        {#if beat.kind === 'explain'}
+          <button class="btn gold" type="button" onclick={revealExplain}>Reveal the reason</button>
+        {:else}
+          <div class="gradebar choices">
+            {#each beat.choices as c, i}
+              <button class="btn ghost choice" class:reply={beat.kind !== 'match'} type="button" onclick={() => choose(c)}>
+                <span class="key" aria-hidden="true">{i + 1}</span>{c}
+              </button>
+            {/each}
+          </div>
+        {/if}
+      {:else if beat.kind === 'explain'}
+        <p class="ans" tabindex="-1" bind:this={revealEl}>{beat.answer}</p>
+        <p class="meta">How did your reason compare?</p>
+        <div class="gradebar">
+          <button class="btn" type="button" onclick={() => rateExplain('nailed')}>Nailed it</button>
+          <button class="btn ghost" type="button" onclick={() => rateExplain('close')}>Close</button>
+          <button class="btn ghost" type="button" onclick={() => rateExplain('missed')}>Missed</button>
         </div>
       {:else}
         <p class="ans" tabindex="-1" bind:this={revealEl}>{beat.answer}</p>
