@@ -531,6 +531,50 @@ export function sourceForCard(card, data) {
   }
 }
 
+function pushText(arr, label, text) { if (text) arr.push({ label: label, text: String(text) }); }
+function pushItems(arr, label, items) { if (items && items.length) arr.push({ label: label, items: items.slice() }); }
+
+// Build the "Expand for more" drawer for a card from the depth ALREADY in the data
+// (spec §4b). Pure + data-driven: only sections with real content are returned, so
+// the UI never renders an empty drawer. Shapes: {label,text} | {label,items} |
+// {label,structure} | {label,objections:[{cue,reply}]} | {label,picks:{wine,cocktail,zero}}.
+export function expandFor(card, data) {
+  const sections = [];
+  const src = sourceForCard(card, data);
+  if (!src) return { sections: sections };
+
+  if (card.sourceKind === 'wine') {
+    const w = src;
+    pushText(sections, '10-second', w.tenSecond);
+    if (w.structure) sections.push({ label: 'Structure', structure: w.structure });
+    const ident = [w.grape, w.region, w.climate ? w.climate + ' climate' : ''].filter(Boolean).join(' · ');
+    pushText(sections, 'The grape', ident);
+    pushText(sections, 'Say it', w.say);
+    pushText(sections, 'Remember', w.mnemonic);
+    pushItems(sections, 'Pairs with', w.pair);
+    if (w.objections && w.objections.length) sections.push({ label: 'If they push back', objections: w.objections.slice() });
+    pushText(sections, 'Avoid', w.avoid);
+    pushText(sections, 'Upgrade bottle', w.upgrade);
+  } else if (card.sourceKind === 'translator') {
+    const t = src;
+    pushText(sections, 'Why it fits', t.familiar);
+    pushText(sections, 'Point of difference', t.different);
+    pushText(sections, 'Say it', t.phrase);
+    const pour = wineByName(data, t.bestGlass);
+    if (pour) {
+      pushText(sections, '10-second', pour.tenSecond);
+      if (pour.structure) sections.push({ label: 'Structure', structure: pour.structure });
+    }
+    pushItems(sections, 'Want the real grape?', t.bottleOptions);
+  } else if (card.sourceKind === 'food') {
+    const f = src;
+    if (f.category || f.flavor) pushText(sections, 'The dish', [f.category, f.flavor].filter(Boolean).join(' · '));
+    pushText(sections, 'The lever', f.why);
+    if (f.wine || f.cocktail || f.zero) sections.push({ label: 'The picks', picks: { wine: f.wine, cocktail: f.cocktail, zero: f.zero } });
+  }
+  return { sections: sections };
+}
+
 // ---------------- Readiness Check (pure: a mixed gauntlet across live decks) ----------------
 export function buildReadiness(data, opts) {
   if (!data) throw new Error('engine.buildReadiness: data is required');
