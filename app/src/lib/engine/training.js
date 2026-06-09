@@ -575,6 +575,23 @@ export function expandFor(card, data) {
   return { sections: sections };
 }
 
+// Generalised miss-feedback (spec §4c): always returns what the learner SAID, the
+// CORRECT answer, and the one-line why. When both sides resolve to same-family wines
+// it adds a discriminative `confusion` beat (the prior wine-only logic, lifted out of
+// the component so it can render for any deck).
+export function missFeedback(card, chosen, data) {
+  const said = chosen == null ? '' : String(chosen);
+  const correct = card ? card.answer : '';
+  const why = (card && card.why) || '';
+  let confusion = null;
+  const a = wineByName(data, correct);
+  const c = wineByName(data, said);
+  if (a && c && a.id !== c.id && a.family === c.family) {
+    confusion = { chose: c, answer: a };
+  }
+  return { said: said, correct: correct, why: why, confusion: confusion };
+}
+
 // ---------------- Readiness Check (pure: a mixed gauntlet across live decks) ----------------
 export function buildReadiness(data, opts) {
   if (!data) throw new Error('engine.buildReadiness: data is required');
