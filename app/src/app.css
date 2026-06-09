@@ -69,9 +69,9 @@ body {
 }
 h1, h2, h3, .brand, .nav-label, .eyebrow {
   font-family: var(--font-display);
-  text-transform: uppercase;
   letter-spacing: .02em;
 }
+.brand, .nav-label, .eyebrow { text-transform: uppercase; }
 button { font: inherit; cursor: pointer; color: inherit; } /* UA default button text is dark — inherit the surface colour */
 a { color: inherit; }
 
@@ -143,6 +143,7 @@ a { color: inherit; }
 .btn.ghost { background: transparent; border-color: var(--line); color: var(--cream); }
 .btn.gold { background: var(--gold); border-color: var(--gold); color: var(--ink); }
 .btn:disabled { opacity: .5; cursor: default; filter: none; }
+.cta-ico { width: 13px; height: 13px; vertical-align: -1px; margin-right: 2px; }
 .meta { color: var(--muted); font-size: 13px; }
 .on-cream .meta, .card.light .meta { color: var(--muted-paper); }
 

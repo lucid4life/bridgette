@@ -56,7 +56,7 @@
       <span class="pill">Start here</span>
       <h3 style="margin-top:10px">One quick win — 30 seconds</h3>
       <p class="meta">A guest asks for a <strong>Cabernet</strong>. Your move: pour the <strong>St. John Claret</strong> (the safe Bordeaux steak red). That's the whole job — match the lane, give one reason.</p>
-      <p style="margin:14px 0 0"><a class="btn" href="/?start=smart"><span aria-hidden="true">▶</span> Try a real card</a></p>
+      <p style="margin:14px 0 0"><a class="btn" href="/?start=smart"><svg class="cta-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Try a real card</a></p>
     </div>
   {/if}
 
@@ -71,7 +71,7 @@
             <div><b class="streak">{streak}</b><span class="meta">day streak <span aria-hidden="true">{daily.protectedRecently ? '🔥❄️' : '🔥'}</span>{#if daily.protectedRecently}<span class="visually-hidden"> — a missed day was forgiven</span>{/if}</span></div>
             <div><b>{totalCards}</b><span class="meta">cards total</span></div>
           </div>
-          <p style="margin:16px 0 0"><a class="btn" href="/?start=smart"><span aria-hidden="true">▶</span> Start Smart Review</a></p>
+          <p style="margin:16px 0 0"><a class="btn" href="/?start=smart"><svg class="cta-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Start Smart Review</a></p>
           {#if weakest.length}<p class="meta" style="margin-top:14px">Weakest decks: <strong style="color:var(--cream)">{weakest.join(', ')}</strong></p>{/if}
         </div>
       {:else if heroMode === 'course'}
@@ -79,7 +79,7 @@
           <h3>Continue your course</h3>
           <p style="margin:10px 0 4px"><strong>Module {nextMod!.num} · {nextMod!.title}</strong></p>
           <p class="meta">{courseProgress} complete · reviews are clear</p>
-          <p style="margin:16px 0 0"><a class="btn" href="/learn"><span aria-hidden="true">▶</span> Resume the course</a></p>
+          <p style="margin:16px 0 0"><a class="btn" href="/learn"><svg class="cta-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Resume the course</a></p>
         </div>
       {:else}
         <div class="card">
