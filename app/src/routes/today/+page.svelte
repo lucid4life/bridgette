@@ -2,6 +2,7 @@
   import { data } from '$lib/data/index';
   import * as engine from '$lib/engine/training.js';
   import GuestSearch from '$lib/components/GuestSearch.svelte';
+  import BackupCard from '$lib/components/BackupCard.svelte';
   import { progressStore } from '$lib/state/progress.svelte';
   import { courseStore } from '$lib/state/course.svelte';
   import { onMount } from 'svelte';
@@ -31,6 +32,8 @@
       })()
   );
   const weakest = $derived([...deckMastery].sort((a, b) => a.m - b.m).slice(0, 2).map((x) => x.label));
+  // Drill of the Day = your single weakest deck (a focused, always-available study action).
+  const lowestDeck = $derived([...deckMastery].sort((a, b) => a.m - b.m)[0]);
 
   // Smart hero: pick the right next action based on what's due
   const nextMod = $derived(courseStore.nextModule());
@@ -101,6 +104,22 @@
     </div>
   {/if}
 
+  {#if studied}
+    <h2 class="section-h">Keep the reflex sharp</h2>
+    <div class="grid cols-2" style="margin-bottom:22px">
+      <a class="card link" href={'/?deck=' + lowestDeck.d}>
+        <span class="pill">Drill of the day</span>
+        <h3 style="margin-top:10px">{lowestDeck.label}</h3>
+        <p class="meta">Your weakest deck right now — a focused few minutes here moves the needle most. {lowestDeck.m}% mastered.</p>
+      </a>
+      <a class="card link" href="/?start=smart">
+        <span class="pill">Study now</span>
+        <h3 style="margin-top:10px">Smart Review</h3>
+        <p class="meta">{due > 0 ? due + ' due' : 'Nothing due — a quick mixed refresher'} · what's due and weak, interleaved.</p>
+      </a>
+    </div>
+  {/if}
+
   <h2 class="section-h">Your 3 floor moves</h2>
   <div class="grid cols-3" style="margin-bottom:22px">
     <a class="card link" href="/on-the-floor?view=substitutions">
@@ -126,6 +145,9 @@
     <a class="card link" href="/learn#pairing-levers"><span class="pill">Wine School</span><h3 style="margin-top:10px">Pairing levers</h3><p class="meta">Acid cuts fat · tannin needs protein · sweet tames heat.</p></a>
     <div class="card"><span class="pill">Tip</span><h3 style="margin-top:10px">Taste before you call it dry</h3><p class="meta">Riesling sweetness varies — confirm with the team. Same for allergens: never guess.</p></div>
   </div>
+
+  <h2 class="section-h" style="margin-top:26px">Your data</h2>
+  <BackupCard />
 </section>
 
 <style>
