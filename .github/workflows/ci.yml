@@ -1,0 +1,46 @@
+name: CI
+
+# Runs the same gates Adrian runs locally, on every push/PR — so the data-safety
+# guard, the type check, and the axe/a11y suite become real merge blockers once a
+# GitHub remote exists. No deploy here (Adrian deploys).
+on:
+  push:
+    branches: [main, v2-app]
+  pull_request:
+
+jobs:
+  app:
+    name: app (test · check · build · e2e)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - name: Unit tests (Vitest)
+        run: npm test
+      - name: Type check (svelte-check)
+        run: npm run check
+      - name: Production build
+        run: npm run build
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: E2E + axe (Playwright)
+        run: npm run test:e2e
+
+  data:
+    name: data (check_training.py)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: v1 structural data gate
+        run: python tests/check_training.py
