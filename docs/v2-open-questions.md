@@ -64,3 +64,20 @@ From the adversarial self-review (`docs/research/2026-06-07-v2-phase-d-review.md
 - **Wagyu Beef Carpaccio pairing:** changed from Ca' del Baio Nebbiolo to Deinhard Deidesheim (Pinot) because the old "why" wrongly called Nebbiolo light-tannin. Confirm the swap, or keep the Nebbiolo with a corrected why.
 - **Fallentimber Honey Buck** is a sparkling mead currently filed under digestifs/fortifieds; decide whether to surface it under Beer in the Reference UI (categorization only).
 - **Michelob Ultra ABV** set to the real 4.2% (the printed menu says 4.0%); confirm which to display.
+
+## Study-redesign decisions (2026-06-09) — for sign-off
+
+These were decided autonomously while Adrian was at work (he delegated the calls). All are easily changed.
+
+1. **The 36-card Floor Basics list** (curated by Claude; the "study these first" on-ramp). Edit in `app/src/lib/engine/basics.js` — it's authored in plain terms (asks/wine-ids/dish-ids). *Decide:* is this the right "basics" set?
+   - **Translator (10):** Cabernet Sauvignon · Merlot · Malbec · Sauvignon Blanc · Pinot Grigio/Gris · Chardonnay · Pinot Noir · Riesling · Prosecco/Champagne · Rosé.
+   - **Wine identity, one per family (5):** Blue Mountain Brut · Hiedler Löss · Bodega Cerrón Blanco · Deinhard Deidesheim · St. John Claret.
+   - **Structure levers (7):** acidity/body/tannin on St. John Claret + Hiedler Löss (+ the Hiedler acidity discriminator).
+   - **Pairings (9):** French Fries · Garlic Bread · Margherita · Strip Steak · Grilled Farm Chicken · Tuna Crudo · Burrata · Wood-roasted Cod · Grilled Lamb Saddle.
+   - **Pronunciation, the hard names (5):** Hiedler Löss · Wagner-Stempel Weissburgunder · Deinhard Deidesheim · Ca' del Baio Langhe · Bodega Cerrón Tinto.
+
+2. **Floor-Basics default.** New (empty) profiles start in **basics-only**; profiles with existing progress (yours) default to **Study everything** so the live review pool isn't shrunk. The toggle on Practice flips it anytime. *Decide:* keep, or default yourself to basics-only too?
+
+3. **Zero-proof Reference records** were built lightly (name + the dishes that suggest them, inverted from the menu) — no new tasting copy, per the "surface existing depth" decision. *Decide:* leave lightweight, or author real notes for each later?
+
+4. **Learn read sections** were intentionally **not** collapsed behind Expand (the lesson is to read the structure). The brief→Expand pattern applies to the answer/lookup surfaces (Practice card, Reference, On-the-Floor). *Decide:* agree, or want them collapsed too?
