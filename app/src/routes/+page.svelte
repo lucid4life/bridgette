@@ -14,9 +14,13 @@
 
   onMount(() => {
     // Today's cockpit CTAs + Progress weak-pills deep-link here with an intent (spec §5).
+    // Learn's "Drill {deck} now" completion CTA deep-links with ?deck=<id> to focus one deck;
+    // validate against the known decks so a bad param falls back to the home screen.
     const s = page.url.searchParams.get('start');
     const drillId = page.url.searchParams.get('drill');
+    const deck = page.url.searchParams.get('deck');
     if (drillId) startDrillById(drillId);
+    else if (deck && (Object.keys(engine.DECKS) as string[]).includes(deck)) startSession(deck);
     else if (s === 'readiness') startReadiness();
     else if (s === 'smart') startSession(null);
   });

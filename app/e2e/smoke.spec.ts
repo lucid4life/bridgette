@@ -20,6 +20,19 @@ test('core loop: focus a deck, answer a card, get feedback + the why, grade, adv
   await expect(page.locator('.flash, .screen h1')).toBeVisible();
 });
 
+test('deep-link: /?deck=<id> starts a focused session (Learn "Drill it now" CTA)', async ({ page }) => {
+  await page.goto('/?deck=structure');
+  // a valid deck id starts straight into a session, skipping the home screen
+  await expect(page.locator('.flash')).toBeVisible();
+  await expect(page.locator('.session-top')).toBeVisible();
+});
+
+test('deep-link: an unknown ?deck= falls back to the Practice home screen', async ({ page }) => {
+  await page.goto('/?deck=not-a-real-deck');
+  await expect(page.getByRole('heading', { name: /build the muscle memory/i })).toBeVisible();
+  await expect(page.locator('.flash')).toHaveCount(0);
+});
+
 test('guest simulator runs a turn', async ({ page }) => {
   await page.goto('/practice/simulator');
   await expect(page.getByRole('heading', { name: /talk to the table/i })).toBeVisible();
