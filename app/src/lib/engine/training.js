@@ -398,9 +398,8 @@ function genCocktailPairing(data) {
     const valid = options.filter((n) => isCk[n]);
     if (!valid.length) return;
     const answer = valid[0];
-    const ck = cocktailByName(data, answer);
     const pool = ckNames.filter((n) => valid.indexOf(n) === -1);
-    const why = (ck ? ck.say : 'A strong cocktail call with ' + f.name + '.') +
+    const why = (f.why || 'A strong cocktail call with ' + f.name + '.') +
       (f.zero ? ' Not drinking? ' + f.zero + '.' : '');
     cards.push({
       id: 'cocktail-pairing:' + f.id + ':match',
