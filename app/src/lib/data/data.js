@@ -1358,19 +1358,6 @@ export const data = {
       "phrase": "For Rioja energy by the glass, I would use Sangiovese for freshness or Grenache for warmth; the exact Rioja-style bottle is Algre Valgañon."
     },
     {
-      "ask": "Chablis",
-      "aliases": [
-        "chablis"
-      ],
-      "bestGlass": "Hiedler Löss",
-      "bottleOptions": [
-        "Eleonore Moreau Petit Chablis"
-      ],
-      "familiar": "Freshness, citrus, clean seafood compatibility, and a leaner feel than round Chardonnay.",
-      "different": "Grüner is not Chardonnay, but it solves the same crisp seafood-white request.",
-      "phrase": "If Chablis is the ask, the bottle is exact; for a glass, I would put you in the crisp Grüner lane."
-    },
-    {
       "ask": "Bordeaux / red blend",
       "aliases": [
         "bordeaux",
@@ -1417,42 +1404,6 @@ export const data = {
       "phrase": "Are we pairing with pizza/pasta, or something richer like steak? Then I move you to Sangiovese, Pinot, or Claret."
     },
     {
-      "ask": "Gamay / Beaujolais",
-      "aliases": [
-        "gamay",
-        "beaujolais",
-        "beaujolais villages",
-        "cru beaujolais",
-        "morgon",
-        "fleurie"
-      ],
-      "bestGlass": "Deinhard Deidesheim",
-      "bottleOptions": [
-        "Domaine de Colette Coteaux de Colette"
-      ],
-      "familiar": "Light-bodied red, juicy red cherry and strawberry, low tannin, and bright acidity that keeps it fresh and easy. Great with mushrooms, carpaccio, duck, charcuterie, and even trout.",
-      "different": "By the glass it is German Pinot Noir, not Gamay — same light, low-tannin, high-acid shape, a touch more earthy. The actual Gamay is our Domaine de Colette bottle.",
-      "phrase": "If you love Beaujolais for that light, juicy, low-tannin red, the Deinhard Pinot is the same easy lane by the glass — and if you want the real Gamay, the Domaine de Colette is exactly that, straight from Beaujolais."
-    },
-    {
-      "ask": "Viognier / white Rhône",
-      "aliases": [
-        "viognier",
-        "white rhone",
-        "cotes du rhone blanc",
-        "condrieu",
-        "marsanne",
-        "roussanne"
-      ],
-      "bestGlass": "Bodega Cerrón Remordimiento Blanco",
-      "bottleOptions": [
-        "Clos Bellane Valréas"
-      ],
-      "familiar": "A fuller, rounder white with weight and texture rather than sharp zip — ripe stone fruit and citrus that handle trout, cod, crab, and creamy or buttery plates.",
-      "different": "By the glass it is Spanish Chardonnay, so you get the body but not Viognier's perfumed, peachy aromatics. The Clos Bellane bottle is the real white Rhône — Marsanne, Viognier and Roussanne blended.",
-      "phrase": "There is no Viognier by the glass, but if it is the rounder, fuller white you want, the Spanish Chardonnay delivers that weight — and for the genuine white Rhône, the Clos Bellane Valréas is a Marsanne-Viognier-Roussanne blend."
-    },
-    {
       "ask": "Gewürztraminer / aromatic white",
       "aliases": [
         "gewurztraminer",
@@ -1469,58 +1420,6 @@ export const data = {
       "familiar": "Perfumed, fruit-forward white with peach and lime lift and a touch of off-dry softness — aromatic and friendly, and a strong partner for spice, chili, honey, and pickle.",
       "different": "It is Riesling, not Gewürztraminer — brighter and higher-acid, without Gewürz's lychee, rose, and ginger or its oily, low-acid weight.",
       "phrase": "We do not have a Gewürztraminer, but if you want that perfumed, fruity, slightly off-dry style, the Darting Riesling is the closest call — aromatic and a little soft, and great with anything spicy."
-    },
-    {
-      "ask": "Albariño",
-      "aliases": [
-        "albarino",
-        "alvarinho",
-        "rias baixas",
-        "galician white",
-        "coastal spanish white"
-      ],
-      "bestGlass": "Dona Matilde Branco",
-      "bottleOptions": [
-        "Denizot Sancerre",
-        "Landron Muscadet"
-      ],
-      "familiar": "Bright, citrusy, saline white with a coastal, seafood-loving snap — exactly the lane Albariño lives in, fresh enough for oysters, crudo, octopus, and shrimp.",
-      "different": "Doña Matilde is a dry Portuguese Douro white (Arinto, Rabigato, Viosinho, Gouveio), not Albariño, but it shares the citrus-and-saline coastal feel. If the guest is skipping alcohol, our zero-proof Neverwine actually IS Albariño.",
-      "phrase": "If you love Albariño for that crisp, salty, seafood-friendly style, the Portuguese Doña Matilde is right in that lane — and fun fact, our non-alcoholic Neverwine is literally Albariño if you want the exact grape."
-    },
-    {
-      "ask": "Barolo / Barbaresco",
-      "aliases": [
-        "barolo",
-        "barbaresco",
-        "nebbiolo",
-        "langhe",
-        "king of wines"
-      ],
-      "bestGlass": "Ca' del Baio Langhe",
-      "bottleOptions": [
-        "Brandini Langhe Filari Corti",
-        "Fletcher Barbaresco Recta Pete"
-      ],
-      "familiar": "Same grape — Nebbiolo. Red cherry, rose, and a dry, tea-like tannin grip with high acidity, built for strip steak, lamb, mushrooms, and rich sauces.",
-      "different": "The Langhe by the glass is a lighter, younger expression than a full Barolo or Barbaresco — the Fletcher Barbaresco is the actual Barbaresco, and the Brandini Langhe Nebbiolo is the richer step up.",
-      "phrase": "Barolo and Barbaresco are both Nebbiolo, and our Ca' del Baio glass is exactly that grape — same rose, cherry, and grippy tannin. If you want true Barbaresco, the Fletcher bottle is the one."
-    },
-    {
-      "ask": "Cava",
-      "aliases": [
-        "cava",
-        "spanish sparkling",
-        "spanish bubbles",
-        "brut"
-      ],
-      "bestGlass": "Blue Mountain Brut",
-      "bottleOptions": [
-        "Raventos i Blanc de Nit Rose"
-      ],
-      "familiar": "Dry, crisp traditional-style bubbles with green apple, citrus, and a clean finish — the easy seafood-and-fried-food reset Cava drinkers reach for.",
-      "different": "The glass is a BC Brut, not Cava. The Raventós bottle is the Spanish move — traditional-method and made mostly from the classic Cava grapes (Xarel·lo, Macabeo, Parellada) plus a touch of Monastrell for the rosé color — though Raventós actually left the Cava DO for its own appellation, so it is even a step above standard Cava.",
-      "phrase": "For Cava-style bubbles by the glass, the Blue Mountain Brut is dry and crisp in exactly that way — and if you want Spanish sparkling in a bottle, the Raventós is the move, made the same traditional way as Cava."
     },
     {
       "ask": "Sweet / plush red (Meiomi, Apothic, 19 Crimes)",
@@ -1542,60 +1441,6 @@ export const data = {
       "familiar": "Both are smooth, ripe, dark-fruited reds that feel rich and easy on the palate — the Claret (Merlot-Cabernet) is plush and rounded, and the Cerrón Tinto is dark, full, and fruit-forward.",
       "different": "This is the honest part: wines like Meiomi and Apothic are deliberately sweetened with leftover sugar, and we do not pour any sweetened reds. Ours are dry — rich and smooth, but no actual sugar.",
       "phrase": "I will be straight with you: we do not have a sweetened red like Meiomi or Apothic — those have added sugar. But if you want a red that drinks rich and smooth, the Claret is plush and soft, and the Cerrón Tinto is dark and full. I can pour a taste so you can feel the difference."
-    },
-    {
-      "ask": "Beaujolais Nouveau / light juicy red",
-      "aliases": [
-        "beaujolais nouveau",
-        "light juicy red",
-        "chillable red",
-        "easy red",
-        "fruity red",
-        "light bodied red"
-      ],
-      "bestGlass": "Deinhard Deidesheim",
-      "bottleOptions": [
-        "Domaine de Colette Coteaux de Colette",
-        "Alta Mora Etna Rosso"
-      ],
-      "familiar": "Light-bodied, juicy, low-tannin red with fresh red-berry fruit — the soft, easy, even slightly-chilled style, great with charcuterie, mushrooms, pizza, duck, and trout.",
-      "different": "Beaujolais Nouveau is young carbonic Gamay with that candied, banana-ish pop; the Deinhard Pinot is drier and more savoury, but the same light, low-tannin, high-acid shape. The Domaine de Colette bottle is proper Beaujolais Gamay.",
-      "phrase": "If you want that light, juicy, low-tannin red, the Deinhard Pinot is the easy-drinking glass — and for actual Beaujolais Gamay, the Domaine de Colette bottle is the move."
-    },
-    {
-      "ask": "Sancerre",
-      "aliases": [
-        "sancerre",
-        "pouilly fume",
-        "loire sauvignon",
-        "french sauvignon blanc"
-      ],
-      "bestGlass": "Hiedler Löss",
-      "bottleOptions": [
-        "Denizot Sancerre"
-      ],
-      "familiar": "Crisp, high-acid, mineral white with citrus and a clean, snappy finish — the lean, seafood-and-greens style Sancerre drinkers are after.",
-      "different": "By the glass it is Grüner Veltliner, not Sauvignon Blanc, so it leans more white-peppery than flinty-grassy. The Denizot Sancerre bottle is the real thing — Loire Sauvignon Blanc.",
-      "phrase": "If Sancerre is the ask, the Denizot Sancerre is exactly that — Loire Sauvignon Blanc. For a crisp, high-acid glass in the same spirit, I would pour the Hiedler Grüner."
-    },
-    {
-      "ask": "Vermentino / coastal Italian white",
-      "aliases": [
-        "vermentino",
-        "coastal italian white",
-        "pigato",
-        "italian seafood white",
-        "sardinian white",
-        "ligurian white"
-      ],
-      "bestGlass": "Dona Matilde Branco",
-      "bottleOptions": [
-        "Cusumano Lucido",
-        "Ciro Picariello Bru Emm"
-      ],
-      "familiar": "A fresh, citrusy white with a saline, herbal, slightly almond-bitter coastal feel — the seafood-and-antipasti lane Vermentino lives in, great with octopus, olives, shrimp, and lemony pasta.",
-      "different": "It is a Portuguese Douro white (Arinto, Rabigato, Viosinho, Gouveio), not Vermentino, but it shares that citrus-saline coastal character. For more zip, the Hiedler Grüner is crisper.",
-      "phrase": "We do not have a Vermentino, but if you want that fresh, citrusy, seaside Italian-white style, the Portuguese Doña Matilde is the closest pour — and if you want maximum crispness, the Grüner is even snappier."
     }
   ],
   "lessons": [
