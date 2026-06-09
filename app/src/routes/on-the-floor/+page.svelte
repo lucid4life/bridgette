@@ -11,6 +11,7 @@
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
   import Expandable from '$lib/components/Expandable.svelte';
+  import Icon from '$lib/components/Icon.svelte';
 
   type View = 'subs' | 'pairs';
   type Direction = 'dish' | 'drink' | 'lever';
@@ -194,7 +195,7 @@
                     aria-pressed={speaking === gw.id}
                     aria-label={'Hear ' + gw.name + ' pronounced'}
                     onclick={() => speak(gw)}
-                  >🔊</button>
+                  ><Icon name="speaker" /></button>
                 {/if}
               </div>
               {#if t.familiar}<p class="bridge">{t.familiar}</p>{/if}

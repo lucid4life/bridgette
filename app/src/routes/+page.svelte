@@ -5,6 +5,7 @@
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import Expandable from '$lib/components/Expandable.svelte';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
+  import Icon from '$lib/components/Icon.svelte';
   import type { Card } from '$lib/data/types';
   import { tick, onMount } from 'svelte';
   import { page } from '$app/state';
@@ -374,8 +375,8 @@
         {:else if cardMode === 'flip'}
           <p class="meta">Say it out loud, then flip to check the respelling.</p>
           <div class="gradebar">
-            {#if card.audioText}<button class="btn ghost" type="button" onclick={() => speakCard()}>🔊 Hear it</button>{/if}
-            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it slowly" onclick={() => speakCard(0.7)}><span aria-hidden="true">🐢</span> Slow</button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" onclick={() => speakCard()}><Icon name="speaker" /> Hear it</button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it slowly" onclick={() => speakCard(0.7)}><Icon name="slow" /> Slow</button>{/if}
             <button class="btn gold" type="button" onclick={flipReveal}>Flip to answer</button>
           </div>
         {:else}
@@ -442,8 +443,8 @@
             <p class="explain"><a class="explain-link" href={'/learn#' + card.learnLink}>Explain this <span aria-hidden="true">→</span></a></p>
           {/if}
           <div class="gradebar">
-            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={() => speakCard()}><span aria-hidden="true">🔊</span></button>{/if}
-            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it slowly" onclick={() => speakCard(0.7)}><span aria-hidden="true">🐢</span></button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it" onclick={() => speakCard()}><Icon name="speaker" /></button>{/if}
+            {#if card.audioText}<button class="btn ghost" type="button" aria-label="Hear it slowly" onclick={() => speakCard(0.7)}><Icon name="slow" /></button>{/if}
             {#if cardMode === 'produce'}
               <button class="btn" type="button" onclick={() => rate('nailed')}>Nailed it</button>
               <button class="btn ghost" type="button" onclick={() => rate('close')}>Close</button>

@@ -5,6 +5,7 @@
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
   import Expandable from '$lib/components/Expandable.svelte';
+  import Icon from '$lib/components/Icon.svelte';
   import type { Bottle, Beer, Fortified } from '$lib/data/types';
 
   // Reference-only full-menu data — fetched as a STATIC JSON ASSET (PERF-03) so it is
@@ -115,7 +116,7 @@
               aria-pressed={speaking === w.id}
               aria-label={'Hear ' + w.name + ' pronounced'}
               onclick={() => speak(w)}
-            >🔊</button>
+            ><Icon name="speaker" /></button>
           </div>
           <div class="meta">{w.grape} · {w.region}</div>
           {#if pl}<p class="price-ladder meta">5oz <b>${pl.pour5}</b> · 8oz <b>${pl.pour8}</b> · bottle <b>${pl.bottle}</b> <span class="ladder-note">≈ 5 glasses</span></p>{/if}
@@ -214,7 +215,7 @@
         <article class="card light winecard">
           <div class="winecard-head">
             <h3 class="name">{b.name}</h3>
-            <button class="speak" type="button" aria-pressed={speaking === b.id} aria-label={'Hear ' + b.name + ' pronounced'} onclick={() => speakItem(b.id, b.pronunciation.say)}>🔊</button>
+            <button class="speak" type="button" aria-pressed={speaking === b.id} aria-label={'Hear ' + b.name + ' pronounced'} onclick={() => speakItem(b.id, b.pronunciation.say)}><Icon name="speaker" /></button>
           </div>
           <div class="meta">{b.grape} · {b.region}</div>
           {#if b.priceBottle}<p class="price-ladder meta">bottle <b>${b.priceBottle}</b></p>{/if}
@@ -275,7 +276,7 @@
         <article class="card light">
           <div class="winecard-head">
             <h3>{f.name}</h3>
-            <button class="speak" type="button" aria-pressed={speaking === f.id} aria-label={'Hear ' + f.name + ' pronounced'} onclick={() => speakItem(f.id, f.pronunciation.say)}>🔊</button>
+            <button class="speak" type="button" aria-pressed={speaking === f.id} aria-label={'Hear ' + f.name + ' pronounced'} onclick={() => speakItem(f.id, f.pronunciation.say)}><Icon name="speaker" /></button>
           </div>
           <div class="meta">{f.type}{f.origin ? ' · ' + f.origin : ''}{f.abv ? ' · ' + f.abv : ''}</div>
           <p class="winecard-pron meta">Say: <strong>{f.pronunciation.respell}</strong></p>

@@ -9,6 +9,7 @@
   import StyleMap from '$lib/components/StyleMap.svelte';
   import RegionMap from '$lib/components/RegionMap.svelte';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
+  import Icon from '$lib/components/Icon.svelte';
 
   // ── view / state machine ──────────────────────────────────────────────────
   let view = $state<'map' | 'module'>('map');
@@ -164,7 +165,7 @@
               {:else if unlocked}
                 <span class="badge badge-go">{isNext ? 'Current' : 'Start'}</span>
               {:else}
-                <span class="badge badge-locked"><span aria-hidden="true">🔒</span> Locked</span>
+                <span class="badge badge-locked"><Icon name="lock" size={13} /> Locked</span>
                 <span class="jump-hint meta">Jump ahead</span>
               {/if}
             </span>
