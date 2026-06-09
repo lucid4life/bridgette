@@ -28,6 +28,11 @@
     });
   }
 
+  function speakItem(id: string, say: string) {
+    speaking = id;
+    playPronunciation(id, say, undefined, () => { if (speaking === id) speaking = null; });
+  }
+
   // multi-entry search: by name / grape / style / food / region (spec §5)
   const ql = $derived(q.trim().toLowerCase());
   const wines = $derived(
@@ -202,7 +207,10 @@
     <div class="grid cols-2 on-cream">
       {#each bottles as b (b.id)}
         <article class="card light winecard">
-          <h3 class="name">{b.name}</h3>
+          <div class="winecard-head">
+            <h3 class="name">{b.name}</h3>
+            <button class="speak" type="button" aria-pressed={speaking === b.id} aria-label={'Hear ' + b.name + ' pronounced'} onclick={() => speakItem(b.id, b.pronunciation.say)}>🔊</button>
+          </div>
           <div class="meta">{b.grape} · {b.region}</div>
           {#if b.priceBottle}<p class="price-ladder meta">bottle <b>${b.priceBottle}</b></p>{/if}
           <div class="meters">
@@ -256,7 +264,10 @@
     <div class="grid cols-2 on-cream">
       {#each fullmenu?.fortifieds ?? [] as f (f.id)}
         <article class="card light">
-          <h3>{f.name}</h3>
+          <div class="winecard-head">
+            <h3>{f.name}</h3>
+            <button class="speak" type="button" aria-pressed={speaking === f.id} aria-label={'Hear ' + f.name + ' pronounced'} onclick={() => speakItem(f.id, f.pronunciation.say)}>🔊</button>
+          </div>
           <div class="meta">{f.type}{f.origin ? ' · ' + f.origin : ''}{f.abv ? ' · ' + f.abv : ''}</div>
           <p class="winecard-pron meta">Say: <strong>{f.pronunciation.respell}</strong></p>
           {#if f.profile}<p class="winecard-body">{f.profile}</p>{/if}
