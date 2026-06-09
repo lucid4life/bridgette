@@ -16,8 +16,8 @@
     try { fullmenu = await fetch('/fullmenu.json').then((r) => r.json()); } catch { fullmenu = { bottles: [], beers: [], fortifieds: [] }; }
   });
 
-  type Filter = 'Wine' | 'Bottles' | 'Food' | 'Cocktails' | 'Beer' | 'Digestifs';
-  const FILTERS: Filter[] = ['Wine', 'Bottles', 'Food', 'Cocktails', 'Beer', 'Digestifs'];
+  type Filter = 'Wine' | 'Bottles' | 'Food' | 'Cocktails' | 'Zero-proof' | 'Beer' | 'Digestifs';
+  const FILTERS: Filter[] = ['Wine', 'Bottles', 'Food', 'Cocktails', 'Zero-proof', 'Beer', 'Digestifs'];
   let filter = $state<Filter>('Wine');
   let q = $state('');
   let speaking = $state<string | null>(null);
@@ -71,6 +71,25 @@
       return hay.includes(ql);
     })
   );
+
+  // Zero-proof lookups: the verified non-alcoholic pours the menu PRINTS in dish
+  // pairings but you couldn't previously look up. Built by inverting foods[].zero —
+  // surfacing existing relationships, no new content authoring.
+  const zeroProof = $derived.by(() => {
+    const map = new Map<string, Set<string>>();
+    for (const f of data.foods) {
+      if (!f.zero) continue;
+      for (const drink of f.zero.split(/\s+or\s+/i).map((s) => s.trim()).filter(Boolean)) {
+        const set = map.get(drink) ?? new Set<string>();
+        set.add(f.name);
+        map.set(drink, set);
+      }
+    }
+    const list = [...map.entries()].map(([name, dishes]) => ({ name, dishes: [...dishes] }));
+    list.sort((a, b) => a.name.localeCompare(b.name));
+    if (!ql) return list;
+    return list.filter((r) => (r.name + ' ' + r.dishes.join(' ')).toLowerCase().includes(ql));
+  });
 
   // Decode the "5oz | 8oz | bottle" price string for the upsell ladder (UX-02).
   function priceLadder(price: string): { pour5: string; pour8: string; bottle: string } | null {
@@ -199,6 +218,29 @@
     </div>
     {:else}
       <p class="sub">No cocktail matches “{q}”. Try an ingredient or a profile.</p>
+    {/if}
+
+  {:else if filter === 'Zero-proof'}
+    <label class="search">
+      <span class="visually-hidden">Search zero-proof drinks by name or dish</span>
+      <input type="search" bind:value={q} placeholder="Search a non-alcoholic pour — Noughty, Freixenet…" autocomplete="off" />
+    </label>
+    <p class="meta" style="margin:0 0 12px">The non-alcoholic pours the menu suggests — your safe play for a guest who isn't drinking. Confirm it's truly alcohol-free if asked.</p>
+    {#if zeroProof.length}
+    <div class="grid cols-2 on-cream">
+      {#each zeroProof as z (z.name)}
+        <article class="card light">
+          <div class="winecard-head"><h3 class="name">{z.name}</h3><span class="pill alt">Zero-proof</span></div>
+          {#if z.dishes.length}
+            <div class="best-with"><span class="meta">Suggested with:</span>{#each z.dishes as dish}<span class="pill alt">{dish}</span>{/each}</div>
+          {:else}
+            <p class="meta">A non-alcoholic option on the list.</p>
+          {/if}
+        </article>
+      {/each}
+    </div>
+    {:else}
+      <p class="sub">No zero-proof drink matches “{q}”.</p>
     {/if}
 
   {:else if filter === 'Bottles'}
