@@ -264,6 +264,15 @@
     <p class="h-eyebrow">Practice</p>
     <h1>Build the muscle memory</h1>
     <p class="sub">Smart Review mixes what's due and weak. Or focus a single deck. Cards get harder as you master them.</p>
+
+    <div class="basics-row">
+      <div class="basics-toggle" role="group" aria-label="Study scope">
+        <button class="chip" type="button" aria-pressed={progressStore.basicsOnly} onclick={() => progressStore.setBasicsOnly(true)}>Just the basics</button>
+        <button class="chip" type="button" aria-pressed={!progressStore.basicsOnly} onclick={() => progressStore.setBasicsOnly(false)}>Study everything</button>
+      </div>
+      <p class="meta basics-note">{progressStore.basicsOnly ? 'Smart Review is drawing from the ~36 high-yield Floor Basics — switch to the full deck anytime.' : 'Smart Review is drawing from the full menu.'}</p>
+    </div>
+
     <div class="grid cols-2" style="margin-bottom:24px">
       <div class="card">
         <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 3 5 13h5l-1 8 8-11h-5z"/></svg> Smart Review</h3>
@@ -491,6 +500,9 @@
 </section>
 
 <style>
+  .basics-row { margin: 0 0 22px; }
+  .basics-toggle { display: inline-flex; gap: 8px; }
+  .basics-note { margin: 8px 0 0; }
   .session-top { max-width: 520px; margin: 0 auto 12px; }
   .bar { height: 8px; border-radius: 999px; background: rgba(255, 238, 215, .12); overflow: hidden; }
   .bar span { display: block; height: 100%; background: var(--gold); transition: width .25s ease; }
