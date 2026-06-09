@@ -210,7 +210,13 @@
     dragX = 0; dragging = false; ptrStart = null;
     // swipe-to-grade on the revealed card: right = got it, left = didn't (A11Y-N4: not when
     // the drag started on a control, so dragging off a button can't commit the wrong grade)
-    if (revealed && wasDrag && !onControl && Math.abs(dx) > 90) { commit(dx > 0); return; }
+    if (revealed && wasDrag && !onControl && Math.abs(dx) > 90) {
+      // produce cards self-rate so the swipe carries confidence (right = nailed, left = missed),
+      // not a raw commit with null confidence; other modes commit objectively.
+      if (cardMode === 'produce') rate(dx > 0 ? 'nailed' : 'missed');
+      else commit(dx > 0);
+      return;
+    }
     // tap-to-flip a pronunciation card (small move, not on a control)
     if (!revealed && cardMode === 'flip' && !onControl && Math.abs(dx) < 10 && Math.abs(dy) < 10) flipReveal();
   }
