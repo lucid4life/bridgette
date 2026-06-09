@@ -12,7 +12,7 @@
   import StructureMeter from '$lib/components/StructureMeter.svelte';
 
   type View = 'subs' | 'pairs';
-  type Direction = 'dish' | 'drink';
+  type Direction = 'dish' | 'drink' | 'lever';
 
   let view = $state<View>('subs');
   let subQ = $state('');
@@ -113,6 +113,46 @@
       .map((w) => ({ wine: w, dishes: dishesFor(w.name) }))
       .filter(({ dishes }) => dishes.length > 0)
   );
+
+  // By lever: group every food (with a wine) by the structural rule in its why.
+  // First match wins; if nothing matches, falls back to 'Match the weight'.
+  const LEVER_ORDER = [
+    'Tannin needs protein',
+    'Acidity cuts fat',
+    'Sweetness tames heat',
+    'Salt lifts the wine',
+    'Bitterness as structure',
+    'Freshness & acidity',
+    'Match the weight'
+  ] as const;
+  type Lever = (typeof LEVER_ORDER)[number];
+
+  function leverOf(why: string): Lever {
+    const w = (why || '').toLowerCase();
+    if (/tannin/.test(w)) return 'Tannin needs protein';
+    if (/acid/.test(w) && /(fat|fried|cream|rich|oil|butter)/.test(w)) return 'Acidity cuts fat';
+    if (/(sweet|honey).*(heat|spice|chili|chilli)|(heat|spice|chili|chilli).*(sweet|honey)/.test(w)) return 'Sweetness tames heat';
+    if (/salt/.test(w)) return 'Salt lifts the wine';
+    if (/bitter/.test(w)) return 'Bitterness as structure';
+    if (/acid|fresh|bubble|crisp/.test(w)) return 'Freshness & acidity';
+    return 'Match the weight';
+  }
+
+  const leverGroups = $derived.by(() => {
+    const buckets = new Map<Lever, typeof pairFoods>();
+    for (const f of pairFoods) {
+      const lev = leverOf(f.why ?? '');
+      const arr = buckets.get(lev) ?? [];
+      arr.push(f);
+      buckets.set(lev, arr);
+    }
+    const ordered: { lever: Lever; foods: typeof pairFoods }[] = [];
+    for (const lev of LEVER_ORDER) {
+      const foods = buckets.get(lev);
+      if (foods?.length) ordered.push({ lever: lev, foods });
+    }
+    return ordered;
+  });
 </script>
 
 <svelte:head><title>On the Floor · Bridgette Training</title></svelte:head>
@@ -185,6 +225,7 @@
     <div class="segmented dir" role="group" aria-label="Pairing direction">
       <button type="button" class="seg" aria-pressed={direction === 'dish'} onclick={() => { direction = 'dish'; }}>Dish → drink</button>
       <button type="button" class="seg" aria-pressed={direction === 'drink'} onclick={() => { direction = 'drink'; }}>Drink → dish</button>
+      <button type="button" class="seg" aria-pressed={direction === 'lever'} onclick={() => { direction = 'lever'; }}>By lever</button>
     </div>
 
     {#if direction === 'dish'}
@@ -216,7 +257,7 @@
       {:else}
         <p class="sub">No dish matches “{pairQ}”. Try an ingredient or a flavor.</p>
       {/if}
-    {:else}
+    {:else if direction === 'drink'}
       <h2 class="visually-hidden">Drink to dish pairings</h2>
       <p class="sub intro">You're pouring this — what do you feed it?</p>
       <div class="grid cols-2 on-cream">
@@ -230,6 +271,37 @@
           </article>
         {/each}
       </div>
+    {:else}
+      {#if leverGroups.length}
+        {#each leverGroups as group (group.lever)}
+          <h2 class="lane">{group.lever}</h2>
+          <div class="grid cols-2 on-cream">
+            {#each group.foods as f (f.id)}
+              <article class="card light">
+                <h3>{f.name}</h3>
+                <div class="meta">{f.category} · {f.flavor}</div>
+                <div class="picks">
+                  <div class="pick">
+                    <span class="pick-label">Wine</span>
+                    <span class="pick-val">{f.wine}</span>
+                  </div>
+                  <div class="pick">
+                    <span class="pick-label">Cocktail</span>
+                    <span class="pick-val">{f.cocktail ?? '—'}</span>
+                  </div>
+                  <div class="pick">
+                    <span class="pick-label">Zero-proof</span>
+                    <span class="pick-val">{f.zero ?? '—'}</span>
+                  </div>
+                </div>
+                <p class="lever">{f.why}</p>
+              </article>
+            {/each}
+          </div>
+        {/each}
+      {:else}
+        <p class="sub">No dish matches "{pairQ}". Try an ingredient or a flavor.</p>
+      {/if}
     {/if}
   {/if}
 </section>
