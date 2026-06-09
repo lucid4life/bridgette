@@ -38,7 +38,7 @@ After the four increments, a final pass closed the remaining in-scope spec items
 4. **Then deploy** to Cloudflare Pages.
 
 ### Pronunciation overhaul (2026-06-08, per Adrian's request)
-All 17 spoken pronunciations were **regenerated in one consistent English voice** (Sarah) via ElevenLabs, switching from the multilingual model (which applied native German/Italian/Spanish accents inconsistently) to the **English-only `eleven_turbo_v2`** fed the on-screen respellings — so every name is now read in the same English voice. v1 embedded audio + manifest updated, v1 + v2 both green. The swipe-to-grade path on produce cards now routes through the Nailed/Missed self-rate.
+All 17 spoken pronunciations were **regenerated in one consistent English voice** (Sarah) via ElevenLabs, switching from the multilingual model (which applied native German/Italian/Spanish accents inconsistently) to the **English-only `eleven_turbo_v2`** fed the on-screen respellings — so every name is now read in the same English voice. v1 embedded audio + manifest updated, v1 + v2 both green. The swipe-to-grade path on produce cards now routes through the Nailed/Missed self-rate. **Then extended to the whole menu:** generated clips for all **38 bottles + 25 digestifs** in the same Sarah / English-only voice and added 🔊 buttons to those Reference cards — so **every one of the 80 names** a server might say is now audible and consistent (verified: bottle/digestif clips serve as `audio/mpeg` and are SW-precached, 142 precache entries).
 
 ## NOT built — and why (deliberate, not overlooked)
 These were on the consultant's wish-list but are **intentionally not built**, because forcing them would *reduce* quality or contradict a decision:
