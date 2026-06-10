@@ -47,6 +47,12 @@ test('reference renders 17 wines with speak buttons + meters', async ({ page }) 
   await expect(page.locator('.meter').first()).toBeVisible();
 });
 
+test('wine deep-dive: /reference/wine/<id> renders the record', async ({ page }) => {
+  await page.goto('/reference/wine/hiedler-loss');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Hiedler');
+  await expect(page.locator('.meter').first()).toBeVisible();
+});
+
 test('course: the 5 families module shows the reasoning layer', async ({ page }) => {
   await page.goto('/learn');
   // The reasoning layer now lives inside the "The 5 families" module. Its map card

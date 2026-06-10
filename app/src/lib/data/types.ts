@@ -57,6 +57,11 @@ export interface Wine {
   tags: string[];
   serviceTemp?: string | null; // fast-follow stub (spec §12)
   glassware?: string | null; // fast-follow stub (spec §12)
+  // Deep-dive enrichment (additive; not authored yet — render conditionally):
+  producerStory?: string; // who makes it / the estate story
+  whyWePourIt?: string; // why this bottle earned its slot on the list
+  compare?: string[]; // "vs <other pour>: …" discrimination rows
+  storyMnemonic?: string; // a narrative hook alongside the one-line mnemonic
 }
 
 export interface Food {

@@ -81,3 +81,13 @@ These were decided autonomously while Adrian was at work (he delegated the calls
 3. **Zero-proof Reference records** were built lightly (name + the dishes that suggest them, inverted from the menu) — no new tasting copy, per the "surface existing depth" decision. *Decide:* leave lightweight, or author real notes for each later?
 
 4. **Learn read sections** were intentionally **not** collapsed behind Expand (the lesson is to read the structure). The brief→Expand pattern applies to the answer/lookup surfaces (Practice card, Reference, On-the-Floor). *Decide:* agree, or want them collapsed too?
+
+5. **Bindi Sergardi La Boncia: Chianti Classico vs plain Chianti DOCG.** Our data
+   (and the printed menu) say Chianti Classico; one UK retailer lists La Boncia as
+   plain Chianti DOCG. *Decide:* eyeball the physical bottle label next shift —
+   if it says only "Chianti", soften the region wording. (2026-06-09 enrichment pass.)
+
+6. **Thin producer sources** (hedged accordingly in producerStory): Vini be Good
+   Hip Hop Chenin (grower-collective story from Vine Arts + producer site only) and
+   Sindicat la Figuera (importer/retailer pages only). Fine to ship; double-check
+   if a guest ever pushes for detail. (2026-06-09 enrichment pass.)

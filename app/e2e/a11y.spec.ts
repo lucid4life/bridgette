@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
-const ROUTES = ['/', '/today', '/on-the-floor', '/learn', '/reference', '/progress', '/practice/simulator'];
+const ROUTES = ['/', '/today', '/on-the-floor', '/learn', '/reference', '/reference/wine/hiedler-loss', '/progress', '/practice/simulator'];
 
 // Axe must measure the SETTLED state — the .screen entrance fade transiently lowers
 // opacity, which axe samples as a false-positive contrast hit. Hard-disable all

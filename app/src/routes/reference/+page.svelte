@@ -136,7 +136,7 @@
         {@const pl = priceLadder(w.price)}
         <article class="card light winecard">
           <div class="winecard-head">
-            <h3 class="name">{w.name}</h3>
+            <h3 class="name"><a class="namelink" href={'/reference/wine/' + w.id}>{w.name}</a></h3>
             <button
               class="speak"
               type="button"
@@ -264,7 +264,7 @@
       {#each bottles as b (b.id)}
         <article class="card light winecard">
           <div class="winecard-head">
-            <h3 class="name">{b.name}</h3>
+            <h3 class="name"><a class="namelink" href={'/reference/wine/' + b.id}>{b.name}</a></h3>
             <button class="speak" type="button" aria-pressed={speaking === b.id} aria-label={'Hear ' + b.name + ' pronounced'} onclick={() => speakItem(b.id, b.pronunciation.say)}><Icon name="speaker" /></button>
           </div>
           <div class="meta">{b.grape} · {b.region}</div>
@@ -325,7 +325,7 @@
       {#each fullmenu?.fortifieds ?? [] as f (f.id)}
         <article class="card light">
           <div class="winecard-head">
-            <h3>{f.name}</h3>
+            <h3><a class="namelink" href={'/reference/wine/' + f.id}>{f.name}</a></h3>
             <button class="speak" type="button" aria-pressed={speaking === f.id} aria-label={'Hear ' + f.name + ' pronounced'} onclick={() => speakItem(f.id, f.pronunciation.say)}><Icon name="speaker" /></button>
           </div>
           <div class="meta">{f.type}{f.origin ? ' · ' + f.origin : ''}{f.abv ? ' · ' + f.abv : ''}</div>
@@ -355,6 +355,10 @@
   @media (max-width: 420px) { .meters { grid-template-columns: 1fr; } }
   .winecard-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .winecard-head .name { margin: 0; }
+  /* Card names deep-link to /reference/wine/<id>: keep the ink colour, mark the
+     affordance with a quiet underline that strengthens on hover/focus. */
+  .namelink { color: inherit; text-decoration: underline; text-decoration-color: rgba(30, 56, 75, .35); text-underline-offset: 3px; }
+  .namelink:hover { color: var(--accent-dark); text-decoration-color: var(--accent-dark); }
   .winecard-pron { margin: 2px 0 0; }
   .winecard-body { margin: 6px 0 0; font-size: 14px; }
   .winecard-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }

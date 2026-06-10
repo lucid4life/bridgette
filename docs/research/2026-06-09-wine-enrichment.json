@@ -1,0 +1,215 @@
+{
+  "blue-mountain-brut": {
+    "producerStory": "The Mavety family has farmed this bench above Vaseux Lake in Okanagan Falls since 1971 and opened the winery in 1991 — it's still family-run today, with the second generation handling winemaking and sales. Everything is estate-grown: they make wine only from their own vineyards, never purchased fruit.",
+    "whyWePourIt": "Our all-purpose opener and the only Canadian pour by the glass: dry, crisp bubbles at glass price that reset the palate against oysters, fries, and anything salty or fried.",
+    "compare": [
+      "vs Fattoria Moretto Semprebon: both fizz, opposite jobs — Blue Mountain is dry, white, and palate-cleansing; the Moretto is a gently off-dry chilled RED with fruit and grip for sausage and pizza.",
+      "vs Ameztoi Rubentis: Blue Mountain is a true sparkling wine with a fine, persistent mousse; the Ameztoi is a still rosé with just a light natural spritz and a saltier, leaner shape."
+    ],
+    "sources": [
+      "https://bluemountainwinery.com/about",
+      "https://winebc.com/winery/blue-mountain-vineyard-cellars/"
+    ]
+  },
+  "fattoria-moretto-semprebon": {
+    "producerStory": "A small family farm in the hills of Castelvetro in Emilia-Romagna, founded in 1971 and now run by brothers Fausto and Fabio Altariva, the third generation. They specialize in Lambrusco Grasparossa and farm organically; 'Semprebon' is dialect for 'always good.'",
+    "whyWePourIt": "Fills a slot nothing else on the list can: a chilled, gently off-dry sparkling red whose fruit and fizz handle salami, Calabrian chili, and honey at the same time — where dry whites and tannic reds both fail.",
+    "compare": [
+      "vs Blue Mountain Brut: both bubbly, but the Moretto is red, fruity, and off-dry with a little tannin grip; Blue Mountain is white, bone-dry, and purely refreshing.",
+      "vs Sindicat la Figuera: same juicy-red-fruit-for-sausage lane, but the Moretto is cold and fizzy while the Figuera is a still, warm-spiced red."
+    ],
+    "storyMnemonic": "Semprebon = 'sempre buono' — ALWAYS GOOD. Picture a nonna in Castelvetro pouring purple fizz over a sausage pizza and shouting 'SEMPRE BON!' every single time. Cold purple bubbles, always good with cured pork — that's the whole wine.",
+    "sources": [
+      "https://kermitlynch.com/files/fattorio-moretto.pdf",
+      "https://www.fattoriamoretto.it/fattoria-moretto-en/"
+    ]
+  },
+  "hiedler-loss": {
+    "producerStory": "The Hiedler family has made wine in Langenlois, in Austria's Kamptal, since 1856; today the next generation of Hiedlers runs the estate. The Löss bottling is named for the wind-blown loess soil its Grüner Veltliner vines grow on — fine glacial dust deposited over millennia.",
+    "whyWePourIt": "The crisp, peppery white that handles green vegetables nothing else can — asparagus, cucumber, tahini, herbs — thanks to Grüner's white-pepper snap and high acid.",
+    "compare": [
+      "vs Darting Dürkheimer Fronhof: both high-acid Germanic whites, but the Hiedler is bone-dry and white-peppery for green plates; the Darting is off-dry and peachy for spicy ones.",
+      "vs Dona Matilde Branco: both food whites, but the Hiedler is the zippier, higher-acid, peppery one; the Branco is rounder and more herbal-citrus for olives and brine."
+    ],
+    "storyMnemonic": "HEED-ler LURSS — hear 'Heed the loess!' Picture a stern Austrian farmer yelling at you as a storm of pale glacial dust blows over his vines; when the dust settles on your tongue, it tastes of white pepper and lime. Heed the loess, and you'll never blank on the soil or the snap.",
+    "sources": [
+      "https://www.skurnik.com/producer/weingut-hiedler/",
+      "https://hiedler.at/en/"
+    ]
+  },
+  "vini-be-good-hip-hop-chenin": {
+    "producerStory": "Vini be Good isn't a single winery — it's a Loire Valley collective of roughly 35 quality-minded growers, the team behind the Les Athlètes du Vin label, focused on honest, fairly priced Loire wines with environmentally careful farming. The Chenin in this 'Wine Is Music' line is reportedly vinified in stainless steel to keep it fresh and pure.",
+    "whyWePourIt": "Our bridge white: fresh enough to sit with the crisp wines, textured enough to flirt with the round ones — the one glass that covers a mixed seafood table without a debate.",
+    "compare": [
+      "vs Hiedler Löss: both fresh Loire-vs-Austria whites, but the Chenin has more mid-palate texture and less pepper — Grüner zings, Chenin glides.",
+      "vs Bodega Cerrón Remordimiento Blanco: the Chenin is the lighter, brighter half of the middle lane; the Cerrón Blanco is riper and rounder for buttery plates."
+    ],
+    "sources": [
+      "https://vinearts.ca/products/wine-is-music-hip-hop-chenin-blanc",
+      "https://vinibegood.com/en/vin-blanc/674-Chenin.html",
+      "https://pariswinecompany.com/producer/athletes-du-vin/"
+    ]
+  },
+  "wagner-stempel-weissburgunder": {
+    "producerStory": "Daniel Wagner is the ninth generation of his family at this estate in Siefersheim, a cool, hilly corner of western Rheinhessen with volcanic porphyry soils. He farms certified organic with extensive hand work, and the estate has been a member of Germany's elite VDP growers' association since 2004.",
+    "whyWePourIt": "The 'nothing sharp, nothing oaky' comfort white — our answer for Pinot Grigio drinkers and anyone who finds white wine too aggressive, soft pear with real polish behind it.",
+    "compare": [
+      "vs Hiedler Löss: the two faces of our white list — Wagner-Stempel is soft, pear-like, and calm; the Hiedler is zippy, peppery, and bright. Soft hands vs snap.",
+      "vs Bodega Cerrón Remordimiento Blanco: both rounder whites, but the Wagner-Stempel is quieter and gentler; the Cerrón is riper and fuller, built for buttery and creamy plates."
+    ],
+    "storyMnemonic": "'Stempel' is German for STAMP. Picture Wagner the village postmaster gently pressing a rubber stamp onto a soft white envelope — VICE-boor-goon-der — and a ripe pear slides out, certified 'NO SHARP EDGES.' The stamped-soft white.",
+    "sources": [
+      "https://www.vdp.de/en/die-winzer/rheinhessen/vdpweingut-wagner-stempel",
+      "https://www.wagner-stempel.de/"
+    ]
+  },
+  "darting-durkheimer-fronhof": {
+    "producerStory": "A family winery in Bad Dürkheim in the Pfalz with roots back to 1780, run by Helmut and Ella Darting, farming around 18 hectares of vineyards in and around the town. The Fronhof is one of their own Dürkheim single-vineyard sites, and Riesling — roughly half of what they grow — is the house specialty.",
+    "whyWePourIt": "The spice problem-solver: the only off-dry white by the glass, so it's the safe call whenever Calabrian chili, jalapeño, pickle, or honey-heat shows up on the table.",
+    "compare": [
+      "vs Hiedler Löss: both high-acid whites, but the Darting carries a touch of sweetness that tames chili; the Hiedler is bone-dry and peppery — heat wants the Riesling, greens want the Grüner."
+    ],
+    "storyMnemonic": "DARTING — picture a dart flying across the dining room and popping a flaming jalapeño like a balloon; it rains peach and lime juice. The dart that deactivates heat: that's this Riesling's whole job.",
+    "sources": [
+      "https://wineguide.wein.plus/weingut-darting-inh-helmut-darting",
+      "https://www.darting.de/"
+    ]
+  },
+  "dona-matilde-branco": {
+    "producerStory": "A historic Douro property in the Barros family since 1927 — wine entrepreneur Manoel Moreira de Barros renamed the quinta after his wife, Matilde. His grandson Manuel Ângelo Barros runs it today, and from the mid-1990s the family replanted vineyards with traditional Douro white grapes like Arinto, Viosinho, and Gouveio for table wines.",
+    "whyWePourIt": "The briny-Mediterranean food white: citrus and herbs that lock onto olives, preserved lemon, and capers — flavours that make most whites taste thin.",
+    "compare": [
+      "vs Hiedler Löss: both food whites, but the Branco is a touch rounder and more herbal; the Hiedler is sharper, higher-acid, and peppery — brine vs greens.",
+      "vs Wagner-Stempel Weissburgunder: both medium-acid and easy, but the Branco is citrus-herbal and savoury; the Wagner-Stempel is soft, pear-fruited comfort."
+    ],
+    "sources": [
+      "https://donamatilde.pt/en/a-quinta/",
+      "https://www.elixirwinegroup.com/portugal/dona-matilde"
+    ]
+  },
+  "bodega-cerron-remordimiento-blanco": {
+    "producerStory": "A small family winery in Fuente-Álamo, on the high southern edge of the Jumilla appellation, where the same family has farmed since 1895 — today three siblings of the fourth generation run it. The winery says it earned one of Spain's earliest organic certifications back in 1995, and ferments with wild yeasts in amphorae and old wood.",
+    "whyWePourIt": "Our Chardonnay answer: the fullest white by the glass — ripe lemon and pear with real weight for trout, crab, and buttery pasta — without tipping into a butter-and-vanilla bomb.",
+    "compare": [
+      "vs Wagner-Stempel Weissburgunder: both round whites, but the Cerrón is riper and fuller — the rich-plate pick; the Wagner-Stempel is the softer, quieter sipper.",
+      "vs Bodega Cerrón Remordimiento Tinto: same winery, same 'Remordimiento' name — Blanco is the round Chardonnay, Tinto is the dark smoky Monastrell red. Don't ring in the wrong colour."
+    ],
+    "storyMnemonic": "'Remordimiento' is Spanish for REMORSE. Picture a guest in high, dusty Jumilla wracked with guilt — 'Chardonnay can't grow HERE!' — taking one sip of round, ripe lemon-pear white as the remorse melts off their face. No remorse ordering the fuller white.",
+    "sources": [
+      "https://bodegacerron.com/",
+      "https://murciatoday.com/jumilla-wine-route-bodega-cerr%C3%B3n_1788949-a.html",
+      "https://www.decantalo.com/us/en/remordimiento-blanco.html"
+    ]
+  },
+  "ameztoi-rubentis": {
+    "producerStory": "The Ameztoi family has made Txakoli in Getaria, on Spain's Basque coast, for generations — Ignacio Ameztoi is at least the fifth — with estate vineyards looking straight out over the Bay of Biscay. Rubentis is their field blend of the local Hondarrabi Zuri and Hondarrabi Beltza grapes, drawing on very old Beltza vines the family preserved when neighbours pulled theirs out (the importer cites plantings back to 1840).",
+    "whyWePourIt": "The raw-bar rosé: salty, bone-dry, and lightly spritzy — a coastal counterpoint to the Leitz that makes crudo, oysters, and cucumber taste more like themselves.",
+    "compare": [
+      "vs Leitz Eins Zwei Dry Rosé: the Ameztoi is salty, lean, and spritzy — a wine with sea air in it; the Leitz is still, clean, and red-berried — the crowd-pleaser. Coastal jolt vs easy charm."
+    ],
+    "storyMnemonic": "roo-BEN-tees — picture RUBEN THE BASQUE FISHERMAN cracking oysters on his boat in Getaria while sea spray fizzes into his glass of pink wine, turning it salty and spritzy. Ruben's tea-time at sea = Rubentis: the rosé with sea spray built in.",
+    "sources": [
+      "https://demaisonselections.com/ameztoi/",
+      "https://txakoliameztoi.com/en"
+    ]
+  },
+  "leitz-eins-zwei-dry-rose": {
+    "producerStory": "Johannes Leitz took over his family's small Rüdesheim estate in 1985 and built it into one of the Rheingau's best-known names — the family's winemaking roots go back to 1744. Eins Zwei Dry is his everyday line; the rosé is Pinot Noir sourced mainly from central Rheingau villages.",
+    "whyWePourIt": "The universal crowd-pleaser rosé: clean, dry, and friendly with salad, pizza, and chicken — the pour that never divides a table.",
+    "compare": [
+      "vs Ameztoi Rubentis: the Leitz is the calm one — still, clean red berry; the Ameztoi is the live wire — salty, spritzy, coastal. Easy-dry vs electric-dry."
+    ],
+    "sources": [
+      "https://www.vdp.de/de/die-winzer/rheingau/leitz",
+      "https://wirwinzer.de/2024-eins-zwei-dry-rose-trocken-weingut-leitz.html"
+    ]
+  },
+  "deinhard-deidesheim": {
+    "producerStory": "Made at von Winning in Deidesheim, Pfalz — an estate founded in 1849 as Weingut Dr. Deinhard and dramatically revived under winemaker Stephan Attmann after 2007. The Deinhard label is the estate's fresher, earlier-drinking line, keeping the historic founding name alive.",
+    "whyWePourIt": "Our light-red slot: a soft, cherry-and-earth Pinot that pairs red-wine drinkers with delicate plates — mushrooms, carpaccio, duck, even trout — without bullying the food.",
+    "compare": [
+      "vs Ca' del Baio Langhe: both mid-weight reds for earthy food, but the Pinot is soft and low-tannin; the Nebbiolo has a firm, tea-like grip. Silk vs grip.",
+      "vs Sindicat la Figuera: the Deinhard is lighter, earthier, and quieter; the Figuera is juicier and warm-spiced — the step up in generosity."
+    ],
+    "sources": [
+      "https://www.metrovino.com/von-winning",
+      "https://www.skurnik.com/producer/von-winning/",
+      "https://www.von-winning.de/en/weingut"
+    ]
+  },
+  "ca-del-baio-langhe": {
+    "producerStory": "A fourth-generation Grasso family estate in Treiso, in the heart of the Barbaresco zone, farming around 28 hectares of entirely estate-owned vineyards — the family has been there since the late 1800s. Giulio Grasso runs it with his wife and their three daughters, who are steadily taking over.",
+    "whyWePourIt": "Structure without weight: the tannic, high-acid red for strip steak, lamb, and mushrooms when the table wants grip but not a heavy wine.",
+    "compare": [
+      "vs St. John Claret: both steak reds, but the Nebbiolo's power is tannin and acid in a medium body with rose-and-cherry perfume; the Claret is darker-fruited and rounder. Grip vs cushion.",
+      "vs Bindi Sergardi La Boncia: both high-acid Italians — the Nebbiolo has firmer, tea-like tannin and rose aromatics; the Sangiovese is sour-cherry, lighter-gripped, and tomato-friendly."
+    ],
+    "storyMnemonic": "KAH del BY-oh — 'house of the BAY horse.' Picture a chestnut bay horse in a foggy Piedmont farmhouse, primly sipping black tea with a rose stem in its teeth. Horse + tea + rose = Nebbiolo: tea-grip tannin and rose perfume from the fog (nebbia).",
+    "sources": [
+      "https://cadelbaio.com/en/our-history/",
+      "https://www.kelloggwineselections.com/ca-del-baio"
+    ]
+  },
+  "sindicat-la-figuera": {
+    "producerStory": "A tiny village co-operative in La Figuera, one of the highest, coolest corners of Montsant, originally founded in 1932 and revived in recent years by a handful of local growers — retailers credit encouragement from René Barbier of Priorat fame. They farm old Garnatxa vines (reportedly 30 to 100 years old) and keep the winemaking simple: native yeasts and gentle handling, no flash.",
+    "whyWePourIt": "The juicy middle red — our answer to the Zinfandel ask: generous cherry fruit and warm spice for sausage, salami, lamb, and duck, easier than the Nebbiolo, lighter than the Tinto.",
+    "compare": [
+      "vs Bodega Cerrón Remordimiento Tinto: both warm Spanish reds, but the Figuera is juicy, mid-weight, and fresh; the Tinto is darker, fuller, and smokier — fruit vs muscle.",
+      "vs Deinhard Deidesheim: both easy-drinking reds, but the Figuera brings ripe fruit and warm spice; the Pinot is lighter, earthier, and more delicate."
+    ],
+    "storyMnemonic": "SINDICAT = the growers' UNION; 'figuera' is Catalan for FIG TREE. Picture the village farmers' union of 1932 holding its meeting under one big fig tree on a Catalan mountainside, hands shooting up to vote: 'JUICY!' The fig-tree union of old Garnatxa vines.",
+    "sources": [
+      "https://themodestmerchant.com/pages/winery/sindicat-la-figuera",
+      "https://www.enterwine.com/en/world-of-wine/wineries/sindicat-la-figuera"
+    ]
+  },
+  "bindi-sergardi-la-boncia": {
+    "producerStory": "The Bindi Sergardi family has made wine around Siena since 1349 — they count 23 generations — and today Alessandra Casini Bindi Sergardi leads the estates, carrying on a line of women who ran the business before her. La Boncia is the name of historic family land whose winegrowing past the estate dates back to the Etruscans.",
+    "whyWePourIt": "The tomato-and-pizza red: Sangiovese's high acid is the only thing on the list that meets tomato sauce head-on and stays lively instead of tasting flat.",
+    "compare": [
+      "vs Ca' del Baio Langhe: both high-acid Italian reds, but the Sangiovese is sour-cherry-bright with moderate grip for tomato and pasta; the Nebbiolo is firmer-tannined and more perfumed for steak and lamb.",
+      "vs Sindicat la Figuera: the Boncia is the fresher, tangier red that loves tomato; the Figuera is riper and warmer for sausage without the sauce."
+    ],
+    "storyMnemonic": "lah BOHN-chah sounds like 'the BOUNCY.' Picture a sour cherry bouncing off a Margherita pizza — boing, boing — never going flat, because the acidity keeps it lively. La Boncia = the bouncy tomato red.",
+    "sources": [
+      "https://bindisergardi.it/en/history/",
+      "https://broadbent.com/producers/bindi-sergardi/"
+    ]
+  },
+  "bodega-cerron-remordimiento-tinto": {
+    "producerStory": "Same family winery as the Blanco: a fourth-generation, sibling-run estate in Fuente-Álamo on Jumilla's high southern edge, farming organically since well before it was fashionable (the winery cites one of Spain's earliest organic certifications, 1995). The Tinto draws on older dry-farmed Monastrell from high Mediterranean vineyards, fermented with wild yeasts in amphorae and old wood.",
+    "whyWePourIt": "The biggest glass on the list — our Malbec/Shiraz answer: dark, full, and smoky for ribeye, lamb, and sausage when the table wants muscle.",
+    "compare": [
+      "vs St. John Claret: both steak reds, but the Tinto is darker, smokier, and more rustic-Mediterranean; the Claret is the tidier, more classic Bordeaux shape. Fire vs polish.",
+      "vs Sindicat la Figuera: both warm Spanish reds, but the Tinto is the full-bodied, high-tannin heavyweight; the Figuera is the juicy, easier middleweight."
+    ],
+    "sources": [
+      "https://bodegacerron.com/tienda/remordimiento-tinto/",
+      "https://spanishwinelover.com/bodegas-cerron-talks-terroir-in-jumilla",
+      "https://murciatoday.com/jumilla-wine-route-bodega-cerr%C3%B3n_1788949-a.html"
+    ]
+  },
+  "st-john-claret": {
+    "producerStory": "Not a château — this is the house claret of St. JOHN, the London restaurant that pioneered nose-to-tail cooking, blended for them in Bordeaux with the long-established Sichel family house; co-founder Trevor Gulliver has overseen the partnership for roughly two decades. It's a Cabernet-led blend built deliberately as an honest, drink-with-dinner Bordeaux rather than a collector's wine.",
+    "whyWePourIt": "The safe steak red: recognizable Bordeaux structure that lets a Cabernet drinker order with confidence — dark fruit and grip for beef, no speech required.",
+    "compare": [
+      "vs Ca' del Baio Langhe: the Claret is darker-fruited and rounder — comfort and structure; the Nebbiolo is leaner with firmer, tea-like tannin and rose perfume.",
+      "vs Bodega Cerrón Remordimiento Tinto: the Claret is the classic, savoury, buttoned-up steak red; the Tinto is bigger, smokier, and wilder — polish vs power."
+    ],
+    "sources": [
+      "https://stjohnrestaurant.com/products/st-john-claret-2019",
+      "https://www.the-buyer.net/tasting/wine/st-john-wine-range"
+    ]
+  },
+  "gallina-de-piel-neverwine": {
+    "producerStory": "Created by David Seijas, longtime head sommelier of Spain's legendary elBulli restaurant, under his Gallina de Piel wine project. It's an Albariño-style white de-alcoholized with a gentle vacuum process designed to keep the grape's aromas, and the name is a wink at Nirvana — 'Neverwine, smells like Albariño.'",
+    "whyWePourIt": "Keeps non-drinkers in the pairing game: a 0.0% pour with a genuine wine shape — citrus and salinity for oysters, crudo, and lighter plates — instead of a sugary mocktail.",
+    "compare": [
+      "vs Hiedler Löss: both bright, food-first whites, but the Neverwine is 0.0% and reads a touch softer and slightly sweet; the Grüner has the full dry, peppery snap only alcohol-and-acid structure delivers."
+    ],
+    "sources": [
+      "https://gallinadepunk.com/en/neverwine-albarino/",
+      "https://shop.gallinadepielwines.com/en/producto/neverwine-white-albarino/"
+    ]
+  }
+}

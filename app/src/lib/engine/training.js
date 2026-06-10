@@ -553,7 +553,9 @@ export function expandFor(card, data) {
     pushText(sections, 'The grape', ident);
     pushText(sections, 'Say it', w.say);
     pushText(sections, 'Remember', w.mnemonic);
+    pushText(sections, 'The producer', w.producerStory);
     pushItems(sections, 'Pairs with', w.pair);
+    pushItems(sections, "Don't confuse with", w.compare);
     if (w.objections && w.objections.length) sections.push({ label: 'If they push back', objections: w.objections.slice() });
     pushText(sections, 'Avoid', w.avoid);
     pushText(sections, 'Upgrade bottle', w.upgrade);
