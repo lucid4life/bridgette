@@ -16,8 +16,10 @@ export default defineConfig({
         id: '/today',
         display: 'standalone',
         orientation: 'portrait',
-        theme_color: '#132b3b',
-        background_color: '#132b3b',
+        // Brand cream (navy retired); the in-page theme-color meta tracks the
+        // active theme dynamically (src/lib/state/theme.svelte.ts).
+        theme_color: '#fff8ec',
+        background_color: '#ffeed6',
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },

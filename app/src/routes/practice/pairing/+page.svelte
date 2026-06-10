@@ -103,7 +103,7 @@
   .picker { display: flex; flex-wrap: wrap; gap: 8px; }
   .picker.wines { margin-top: 4px; }
   .explore { text-align: left; margin-top: 22px; }
-  .nudge { border-left: 2px solid var(--highlight); padding-left: 8px; margin: 4px 0; }
+  .nudge { border-left: 2px solid var(--highlight-line); padding-left: 8px; margin: 4px 0; }
   .ans { font-weight: 700; font-size: 20px; margin: 6px 0 0; }
   .pour-link { color: inherit; text-decoration: underline; text-decoration-color: var(--highlight); text-underline-offset: 3px; }
   .why { background: color-mix(in srgb, var(--info) 12%, transparent); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 8px 0 0; }

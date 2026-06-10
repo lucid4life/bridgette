@@ -412,7 +412,7 @@
   /* ── MODULE view ── */
   .module-view .back { margin-bottom: 14px; }
   .read-intro { color: var(--text-muted); margin: 0 0 14px; max-width: 70ch; line-height: 1.55; }
-  .read-block { border-left: 4px solid var(--highlight); }
+  .read-block { border-left: 4px solid var(--highlight-line); }
   .read-block h3 { margin: 0 0 6px; color: var(--text-strong); }
   .lesson-body { margin: 6px 0; line-height: 1.55; }
   .we { background: color-mix(in srgb, var(--highlight) 10%, transparent); border: 1px solid color-mix(in srgb, var(--highlight) 30%, transparent); border-radius: var(--radius-nav); padding: 10px 12px; margin-top: 10px; font-size: 14px; line-height: 1.5; }

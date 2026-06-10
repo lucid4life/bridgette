@@ -151,7 +151,7 @@
 </section>
 
 <style>
-  .onboard { border-left: 4px solid var(--highlight); margin-bottom: 18px; }
+  .onboard { border-left: 4px solid var(--highlight-line); margin-bottom: 18px; }
   .card.link { text-decoration: none; color: inherit; display: block; }
   .card.link:hover { border-color: var(--highlight); }
   .today-search { max-width: 520px; margin: 0 0 22px; }

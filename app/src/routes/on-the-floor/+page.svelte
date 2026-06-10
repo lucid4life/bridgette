@@ -324,7 +324,7 @@
     background: none; color: var(--text-strong); font-size: 13px; font-weight: 700;
     text-transform: uppercase; letter-spacing: .04em; min-height: 40px;
   }
-  .seg[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--text-strong); }
+  .seg[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .seg:hover:not([aria-pressed='true']) { background: var(--surface-hover-strong); }
 
   .search input {

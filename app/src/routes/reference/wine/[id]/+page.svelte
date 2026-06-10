@@ -370,7 +370,7 @@
 
   .say {
     margin: 8px 0 0; padding: 10px 14px; font-size: 15px;
-    border-left: 4px solid var(--highlight); background: color-mix(in srgb, var(--highlight) 10%, transparent);
+    border-left: 4px solid var(--highlight-line); background: color-mix(in srgb, var(--highlight) 10%, transparent);
     border-radius: var(--radius-nav);
   }
   .objections { margin: 4px 0 0; padding-left: 18px; }

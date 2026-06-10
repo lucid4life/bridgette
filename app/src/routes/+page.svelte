@@ -537,7 +537,7 @@
   .typed-row { display: flex; gap: 8px; justify-content: center; }
   .typed-row input { flex: 1; max-width: 320px; padding: 11px 14px; border-radius: var(--radius-btn); border: 1px solid var(--line); font-size: 16px; }
   .scenario { font-style: italic; }
-  .gen-nudge { border-left: 2px solid var(--highlight); padding-left: 8px; max-width: 480px; margin: 4px auto; text-align: left; }
+  .gen-nudge { border-left: 2px solid var(--highlight-line); padding-left: 8px; max-width: 480px; margin: 4px auto; text-align: left; }
   .feedback { font-weight: 800; margin: 0; }
   .feedback.ok { color: var(--ok); }
   .feedback.no { color: var(--accent); }

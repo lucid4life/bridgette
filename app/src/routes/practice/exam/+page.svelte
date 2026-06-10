@@ -257,7 +257,7 @@
   .bar { height: 8px; border-radius: 999px; background: var(--surface-track); overflow: hidden; }
   .bar span { display: block; height: 100%; background: var(--highlight); transition: width .25s ease; }
   .clock { font-variant-numeric: tabular-nums; font-weight: 700; }
-  .clock.low { color: var(--accent); }
+  .clock.low { color: var(--accent-text); }
   .choices { flex-direction: column; }
   .choice { justify-content: flex-start; }
   .choice .key { font-family: var(--font-display); font-weight: 800; margin-right: 8px; opacity: .7; }

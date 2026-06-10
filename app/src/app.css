@@ -1,73 +1,88 @@
 /* app/src/app.css — Bridgette v2 design system. THE visual contract + the
    visual-regression baseline. Three layers:
-     1. PRIMITIVES  — raw palette constants (never consumed by components).
+     1. PRIMITIVES  — the verified brand palette (docs/menu-sync/brand-tokens.md):
+        cream #ffeed6 + orange #f15825 are confirmed brand bytes; the menus print
+        near-black on cream (never navy); brass/green/wood are supporting interior
+        tones. Navy and the old gold are retired. Primitives are never consumed
+        by components directly.
      2. SEMANTIC    — surface/text/accent roles; the ONLY tokens components use.
-     3. SCOPES      — the always-cream "paper" surfaces (.flash / .card.light /
-        .on-cream / table.matrix) re-map the semantic tokens, which is what makes
-        chips/pills/ghost-buttons restyle themselves without per-surface overrides.
+     3. THEMES + SCOPES — :root is the LIGHT (cream-first) default;
+        html[data-theme='dark'] is the warmed espresso dark (plus the
+        prefers-color-scheme auto block, kept byte-identical — tokens.test.ts
+        asserts the two dark blocks match). The always-cream "paper" surfaces
+        (.flash / .card.light / .on-cream / table.matrix) re-map the semantic
+        tokens in BOTH themes — a flashcard is a cream menu card everywhere.
    Translucent washes derive from semantic solids via color-mix(in srgb, X n%,
-   transparent) — byte-identical to the old rgba() literals, but re-themeable.
-   Do NOT introduce generic-AI gradients; extend the Bridgette workbook identity. */
+   transparent). Do NOT introduce generic-AI gradients; extend the Bridgette
+   workbook identity. */
 :root {
-  /* ---- 1. primitives ---- */
-  --cream: #ffeed6;
-  --paper: #fff8ec;
-  --paper-2: #f7dfbf;
-  --ink: #1e384b;
-  --ink-2: #162d3d;
-  --ink-3: #102230;
-  --orange: #f15825;
-  --accent-dark: #a83212;   /* contrast-safe action colour on cream */
-  --label-light: #8f2a12;   /* contrast-safe small label on cream (v1 fix) */
-  --gold: #fcb539;
-  --blue: #437c93;
-  --green: #3f6b54;
-  --muted: #c9bca9;         /* muted text on dark */
-  --muted-paper: #44586a;   /* muted text on cream — 5.09:1 (v1 fix) */
-  --line-dark: rgba(30, 56, 75, .16);
+  /* ---- 1. primitives (brand-verified + tuned supporting tones) ---- */
+  --bb-cream: #ffeed6;      /* verified canvas (live-site CSS) */
+  --bb-paper: #fff8ec;      /* derived lighter cream */
+  --bb-ink: #181512;        /* near-black with a warm cast (print is #000) */
+  --bb-orange: #f15825;     /* verified accent */
+  --bb-coral: #f25c4d;      /* verified print accent */
+  --bb-terracotta: #e87a57; /* verified secondary print accent */
+  --bb-rust: #a83212;       /* OUR derived action tone: brand orange darkened until
+                               cream-on-it / it-on-cream holds 4.5:1 (5.9:1) */
+  --bb-rust-deep: #8f2a12;  /* contrast-safe small label on cream (7.4:1, v1 fix) */
+  --bb-green: #3f5d4e;      /* supporting: the marble-bar green (6.4:1 on cream) */
+  --bb-brass: #b08d4a;      /* supporting: brass fixtures — decorative rules/fills */
+  --bb-brass-bright: #c9a25e; /* brass lifted for TEXT on espresso (7.1:1) */
+  --bb-brass-deep: #6b5121; /* brass darkened for TEXT on cream (6.5:1) */
+  --bb-wood: #6b5a45;       /* supporting warm brown; muted text on cream (5.8:1) */
+  --bb-espresso: #221b15;   /* dark-mode canvas: warm brown-black, never navy */
+  --bb-espresso-2: #2a211a; /* dark-mode bars / panels */
+  --bb-espresso-3: #332a21; /* dark-mode raised */
+  --bb-blue: #437c93;       /* info washes + cool data tone (kept from v1) */
 
-  /* ---- 2. semantic: surfaces ---- */
-  --surface-canvas: var(--ink-3);
-  --surface-sidebar: linear-gradient(180deg, var(--ink), var(--ink-3));
-  --surface-bar: var(--ink);                                          /* topbar / tabbar */
-  --surface-card: color-mix(in srgb, var(--cream) 5%, transparent);   /* resting card */
-  --surface-card-soft: color-mix(in srgb, var(--cream) 4%, transparent);
-  --surface-card-faint: color-mix(in srgb, var(--cream) 2.5%, transparent);
-  --surface-raised: var(--ink-2);                                     /* opaque raised (ring core, selects, toast) */
-  --surface-hover: color-mix(in srgb, var(--cream) 6%, transparent);
-  --surface-hover-strong: color-mix(in srgb, var(--cream) 8%, transparent);
-  --surface-track: color-mix(in srgb, var(--cream) 12%, transparent); /* meter/bar tracks + hairlines */
-  --surface-paper: var(--cream);                                      /* the menu-card face (theme-independent) */
-  --line: rgba(255, 238, 215, .14);
+  /* ---- 2. semantic — LIGHT (cream-first) is the default theme ---- */
+  color-scheme: light;
+  --surface-canvas: var(--bb-cream);
+  --surface-sidebar: linear-gradient(180deg, var(--bb-paper), var(--bb-cream));
+  --surface-bar: var(--bb-paper);                                     /* topbar / tabbar */
+  --surface-card: var(--bb-paper);                                    /* resting card */
+  --surface-card-soft: var(--bb-paper);
+  --surface-card-faint: color-mix(in srgb, var(--bb-ink) 3%, transparent);
+  --surface-raised: #fffdf6;                                          /* opaque raised (ring core, selects, toast) */
+  --surface-hover: color-mix(in srgb, var(--bb-ink) 5%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--bb-ink) 8%, transparent);
+  --surface-track: color-mix(in srgb, var(--bb-ink) 12%, transparent); /* meter/bar tracks + hairlines */
+  --surface-paper: var(--bb-paper);                                   /* the menu-card face */
+  --line: color-mix(in srgb, var(--bb-ink) 14%, transparent);
 
-  /* ---- 2. semantic: text ---- */
-  --text-strong: var(--cream);
-  --text-body: var(--cream);
-  --text-muted: var(--muted);
-  --text-label: var(--label-light);  /* small caps labels on paper */
+  --text-strong: var(--bb-ink);
+  --text-body: var(--bb-ink);
+  --text-muted: var(--bb-wood);
+  --text-label: var(--bb-rust-deep);   /* small caps labels on paper */
 
-  /* ---- 2. semantic: accents ---- */
-  --accent: var(--accent-dark);      /* the action colour: solid buttons, active chips */
-  --accent-ink: var(--cream);        /* text on --accent */
-  --accent-bright: var(--orange);    /* decorative brand pop: active-nav, streak */
-  --highlight: var(--gold);          /* eyebrows, pills, progress fills, lesson rules */
-  --highlight-ink: var(--ink);       /* text on --highlight */
-  --ok: var(--green);                /* status: correct/done */
-  --info: var(--blue);               /* status: explanatory washes, pill.alt */
-  --focus-ring: var(--accent-dark);
+  --accent: var(--bb-rust);            /* the action colour: solid buttons, active chips */
+  --accent-ink: var(--bb-paper);       /* text on --accent */
+  --accent-bright: var(--bb-orange);   /* decorative brand pop: active-nav, fills */
+  --accent-text: var(--bb-rust);       /* accent-coloured TEXT directly on the canvas */
+  --highlight: var(--bb-brass-deep);   /* eyebrows, pills, badges — text-safe brass */
+  --highlight-ink: var(--bb-paper);    /* text on --highlight */
+  --highlight-line: var(--bb-brass);   /* decorative brass: hairline rules, lesson spines */
+  --ok: var(--bb-green);               /* status: correct/done */
+  --info: var(--bb-blue);              /* status: explanatory washes, pill.alt */
+  --focus-ring: var(--bb-rust);
 
-  /* ---- 2. semantic: pills (tone flips on paper) ---- */
-  --pill-tone: var(--gold);
+  --pill-tone: var(--highlight);
   --pill-tint: 18%;
+  --flash-edge: var(--bb-coral);       /* the menu-card's coral top rule */
 
-  /* ---- 2. semantic: inverted table header + map panels (data-viz stays dark-legible) ---- */
-  --table-head-bg: var(--ink-2);
-  --table-head-fg: var(--cream);
-  --map-bg: var(--ink-2);
-  --map-fg: var(--cream);
-  --map-muted: var(--muted);
-  --map-grid: color-mix(in srgb, var(--cream) 12%, transparent);
-  --map-edge: var(--ink-3);
+  /* inverted table header + map panels (the data-viz colours in maps.ts are
+     tuned dark-panel-legible, so the panels stay warm-dark in BOTH themes) */
+  --table-head-bg: var(--bb-espresso-2);
+  --table-head-fg: var(--bb-cream);
+  --map-bg: var(--bb-espresso-2);
+  --map-fg: var(--bb-cream);
+  --map-muted: #cdbb9e;
+  --map-grid: color-mix(in srgb, var(--bb-cream) 12%, transparent);
+  --map-edge: var(--bb-espresso);
+
+  /* paper-grain: tiled SVG noise, ~600B, black-keyed for the light canvas */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.05'/%3E%3C/svg%3E");
 
   /* type */
   --font-display: "Oswald", Impact, "Arial Narrow", sans-serif;
@@ -80,12 +95,12 @@
   --radius-card: 12px;
   --radius-flash: 16px;
 
-  /* shadow + spacing scale */
-  --shadow-flash: 0 24px 60px rgba(0, 0, 0, .35);
-  /* elevation scale: subtle focal hierarchy (1 = base card, 2 = raised, 3 = lifted) */
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, .18);
-  --shadow-2: 0 6px 18px rgba(0, 0, 0, .22);
-  --shadow-3: 0 18px 44px rgba(0, 0, 0, .30);
+  /* warm soft shadows; elevation scale (1 = resting card, 2 = raised hero,
+     3/flash = floating flashcard) */
+  --shadow-1: 0 1px 2px rgba(60, 40, 20, .12);
+  --shadow-2: 0 6px 18px rgba(60, 40, 20, .14);
+  --shadow-3: 0 18px 44px rgba(60, 40, 20, .18);
+  --shadow-flash: 0 24px 60px rgba(60, 40, 20, .22), 0 2px 6px rgba(60, 40, 20, .10);
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -105,27 +120,92 @@
   --screen-max: 1100px;
 }
 
-/* ---- 3. scopes ----
-   .on-dark marks the dark shell screens (focus ring needs the bright highlight
-   there). The paper scope is every always-cream surface: re-mapping the semantic
-   tokens here is what used to be the ".flash .btn.ghost / .card.light .chip /
-   .on-cream .pill" override block — now the components restyle themselves. */
-.on-dark { --focus-ring: var(--gold); }
+/* ---- 3. dark theme: warmed espresso (NEVER navy). Keep this block and the
+   prefers-color-scheme auto block below byte-identical — tokens.test.ts
+   enforces it. ---- */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --surface-canvas: var(--bb-espresso);
+  --surface-sidebar: linear-gradient(180deg, var(--bb-espresso-2), #1c1611);
+  --surface-bar: var(--bb-espresso-2);
+  --surface-card: color-mix(in srgb, var(--bb-cream) 5%, transparent);
+  --surface-card-soft: color-mix(in srgb, var(--bb-cream) 4%, transparent);
+  --surface-card-faint: color-mix(in srgb, var(--bb-cream) 2.5%, transparent);
+  --surface-raised: var(--bb-espresso-3);
+  --surface-hover: color-mix(in srgb, var(--bb-cream) 6%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--bb-cream) 8%, transparent);
+  --surface-track: color-mix(in srgb, var(--bb-cream) 12%, transparent);
+  --surface-paper: var(--bb-cream);
+  --line: color-mix(in srgb, var(--bb-cream) 16%, transparent);
+  --text-strong: var(--bb-cream);
+  --text-body: var(--bb-cream);
+  --text-muted: #cdbb9e;
+  --accent-ink: var(--bb-cream);
+  --accent-text: var(--bb-orange);
+  --highlight: var(--bb-brass-bright);
+  --highlight-ink: var(--bb-espresso);
+  --pill-tint: 14%;
+  --focus-ring: var(--bb-orange);
+  --shadow-1: 0 1px 2px rgba(8, 5, 2, .30);
+  --shadow-2: 0 6px 18px rgba(8, 5, 2, .35);
+  --shadow-3: 0 18px 44px rgba(8, 5, 2, .42);
+  --shadow-flash: 0 24px 60px rgba(8, 5, 2, .50);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.04'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    color-scheme: dark;
+    --surface-canvas: var(--bb-espresso);
+    --surface-sidebar: linear-gradient(180deg, var(--bb-espresso-2), #1c1611);
+    --surface-bar: var(--bb-espresso-2);
+    --surface-card: color-mix(in srgb, var(--bb-cream) 5%, transparent);
+    --surface-card-soft: color-mix(in srgb, var(--bb-cream) 4%, transparent);
+    --surface-card-faint: color-mix(in srgb, var(--bb-cream) 2.5%, transparent);
+    --surface-raised: var(--bb-espresso-3);
+    --surface-hover: color-mix(in srgb, var(--bb-cream) 6%, transparent);
+    --surface-hover-strong: color-mix(in srgb, var(--bb-cream) 8%, transparent);
+    --surface-track: color-mix(in srgb, var(--bb-cream) 12%, transparent);
+    --surface-paper: var(--bb-cream);
+    --line: color-mix(in srgb, var(--bb-cream) 16%, transparent);
+    --text-strong: var(--bb-cream);
+    --text-body: var(--bb-cream);
+    --text-muted: #cdbb9e;
+    --accent-ink: var(--bb-cream);
+    --accent-text: var(--bb-orange);
+    --highlight: var(--bb-brass-bright);
+    --highlight-ink: var(--bb-espresso);
+    --pill-tint: 14%;
+    --focus-ring: var(--bb-orange);
+    --shadow-1: 0 1px 2px rgba(8, 5, 2, .30);
+    --shadow-2: 0 6px 18px rgba(8, 5, 2, .35);
+    --shadow-3: 0 18px 44px rgba(8, 5, 2, .42);
+    --shadow-flash: 0 24px 60px rgba(8, 5, 2, .50);
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.04'/%3E%3C/svg%3E");
+  }
+}
+
+/* ---- 3. paper scope: the always-cream menu-card surfaces (both themes).
+   Re-mapping the semantic tokens here is what restyles chips / pills / ghost
+   buttons / focus rings on the cream faces without per-surface overrides. ---- */
 .on-cream, .card.light, .flash, table.matrix {
-  --text-strong: var(--ink);
-  --text-body: var(--ink);
-  --text-muted: var(--muted-paper);
-  --line: var(--line-dark);
-  --surface-card: color-mix(in srgb, var(--ink) 6%, transparent);
-  --surface-card-soft: color-mix(in srgb, var(--ink) 4%, transparent);
-  --surface-hover: color-mix(in srgb, var(--ink) 5%, transparent);
-  --surface-hover-strong: color-mix(in srgb, var(--ink) 9%, transparent);
-  --surface-track: color-mix(in srgb, var(--ink) 10%, transparent);
-  --focus-ring: var(--accent-dark);  /* v1 fix: dark accent ring on the cream faces */
+  color-scheme: light;
+  --text-strong: var(--bb-ink);
+  --text-body: var(--bb-ink);
+  --text-muted: var(--bb-wood);
+  --line: color-mix(in srgb, var(--bb-ink) 16%, transparent);
+  --surface-card: color-mix(in srgb, var(--bb-ink) 6%, transparent);
+  --surface-card-soft: color-mix(in srgb, var(--bb-ink) 4%, transparent);
+  --surface-hover: color-mix(in srgb, var(--bb-ink) 5%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--bb-ink) 9%, transparent);
+  --surface-track: color-mix(in srgb, var(--bb-ink) 10%, transparent);
+  --focus-ring: var(--bb-rust);  /* v1 fix: dark accent ring on the cream faces */
+  --accent-text: var(--bb-rust);
+  --highlight: var(--bb-brass-deep);
+  --highlight-ink: var(--bb-paper);
   --pill-tone: var(--accent);
   --pill-tint: 12%;
-  --ghost-bg: color-mix(in srgb, var(--ink) 4%, transparent);
-  --ghost-bg-hover: color-mix(in srgb, var(--ink) 9%, transparent);
+  --ghost-bg: color-mix(in srgb, var(--bb-ink) 4%, transparent);
+  --ghost-bg-hover: color-mix(in srgb, var(--bb-ink) 9%, transparent);
 }
 
 * { box-sizing: border-box; }
@@ -133,7 +213,8 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: var(--surface-canvas);
+  background-color: var(--surface-canvas);
+  background-image: var(--grain);
   color: var(--text-body);
   -webkit-font-smoothing: antialiased;
 }
@@ -145,9 +226,8 @@ h1, h2, h3, .brand, .nav-label, .eyebrow {
 button { font: inherit; cursor: pointer; color: inherit; } /* UA default button text is dark — inherit the surface colour */
 a { color: inherit; }
 
-/* focus-visible choreography carried from v1, now token-routed: --focus-ring is
-   the bright highlight inside .on-dark and the dark accent inside the paper scope
-   (the cream flashcard faces), so the old specificity dance collapses. */
+/* focus-visible choreography, token-routed: rust on cream, brand orange on
+   espresso, rust again on the cream paper faces (the old v1 specificity dance). */
 :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 .skip-link {
   position: absolute; left: -999px; top: 0; z-index: 50;
@@ -172,8 +252,8 @@ a { color: inherit; }
   padding: 22px 14px; display: flex; flex-direction: column; gap: 6px;
   position: sticky; top: 0; height: 100vh; height: 100dvh;
 }
-.brand { font-size: 26px; line-height: .95; color: var(--text-strong); padding: 6px 10px 18px; }
-.brand small { display: block; font-size: 11px; color: var(--highlight); letter-spacing: .18em; margin-top: 6px; }
+.brand { font-size: 26px; line-height: .95; font-weight: 700; color: var(--text-strong); padding: 6px 10px 18px; }
+.brand small { display: block; font-size: 11px; font-weight: 700; color: var(--highlight); letter-spacing: .18em; margin-top: 6px; }
 .nav-item {
   display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid transparent;
   border-radius: var(--radius-nav); color: var(--text-body); background: none; width: 100%;
@@ -185,6 +265,7 @@ a { color: inherit; }
 .nav-item[aria-current="page"] { background: color-mix(in srgb, var(--accent-bright) 16%, transparent); border-color: var(--accent-bright); }
 .nav-item[aria-current="page"] .ico { opacity: 1; }
 .sidebar .spacer { flex: 1; }
+.sidebar .side-theme { padding: 4px 6px 8px; }
 .sidebar .foot { padding: 10px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--line); }
 
 .main { min-width: 0; display: flex; flex-direction: column; }
@@ -195,8 +276,16 @@ a { color: inherit; }
 .tabbar { display: none; }
 
 /* ---- shared bits ---- */
+/* Section eyebrows get the brass hairline — the 70s menu rule. (.section-h and
+   .sub-h are route-scoped classes; the global rule still matches the markup.) */
 .h-eyebrow { color: var(--highlight); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; margin: 0 0 4px; font-family: var(--font-display); }
-.screen h1 { font-size: clamp(30px, 4vw, 46px); margin: 0 0 4px; color: var(--text-strong); }
+.h-eyebrow, .section-h, .sub-h { display: flex; align-items: center; gap: 12px; }
+.h-eyebrow::after, .section-h::after, .sub-h::after {
+  content: ""; flex: 1 0 24px; height: 1px;
+  background: color-mix(in srgb, var(--highlight-line) 55%, transparent);
+}
+/* Oswald light (300) for the big screen titles — the brand site pairs 300 + 700. */
+.screen h1 { font-size: clamp(30px, 4vw, 46px); font-weight: 300; letter-spacing: .03em; margin: 0 0 4px; color: var(--text-strong); }
 .sub { color: var(--text-muted); margin: 0 0 22px; max-width: 60ch; }
 .grid { display: grid; gap: 16px; }
 .cols-3 { grid-template-columns: repeat(3, 1fr); }
@@ -239,7 +328,7 @@ a { color: inherit; }
 .ring span { width: 96px; height: 96px; border-radius: 50%; background: var(--surface-raised); display: grid; place-items: center; font-family: var(--font-display); font-size: 30px; }
 .stat { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
 .stat b { font-family: var(--font-display); font-size: 30px; display: block; line-height: 1; }
-.streak { color: var(--accent-bright); font-weight: 800; }
+.streak { color: var(--accent-text); font-weight: 800; }
 
 /* Reference: chips + matrix */
 .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
@@ -249,20 +338,21 @@ a { color: inherit; }
 .winecard .name { font-family: var(--font-display); font-size: 20px; }
 .speak { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-card); color: var(--accent); display: inline-grid; place-items: center; font-size: 18px; }
 .speak[aria-pressed="true"] { background: var(--highlight); border-color: var(--highlight); color: var(--highlight-ink); }
-table.matrix { width: 100%; border-collapse: collapse; background: var(--surface-paper); color: var(--text-strong); border-radius: 10px; overflow: hidden; font-size: 13px; }
+table.matrix { width: 100%; border-collapse: collapse; background: var(--surface-paper); color: var(--text-strong); border-radius: 10px; overflow: hidden; font-size: 13px; box-shadow: var(--shadow-1); }
 .matrix th, .matrix td { border: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; color: var(--text-strong); }
 .matrix thead th { background: var(--table-head-bg); color: var(--table-head-fg); font-family: var(--font-display); text-transform: uppercase; }
 .matrix tbody th { background: color-mix(in srgb, var(--info) 14%, transparent); font-weight: 800; }
 
-/* Practice flashcard + quiz */
-.flash { max-width: 520px; margin: 0 auto; background: var(--surface-paper); color: var(--text-body); border-radius: var(--radius-flash); padding: 28px; text-align: center; min-height: 230px; display: grid; align-content: center; gap: 16px; box-shadow: var(--shadow-flash); }
+/* Practice flashcard + quiz — the floating cream menu card (top of the
+   elevation scale), with the verified coral print-accent as its top rule. */
+.flash { max-width: 520px; margin: 0 auto; background: var(--surface-paper); color: var(--text-body); border-radius: var(--radius-flash); border-top: 3px solid var(--flash-edge); padding: 28px; text-align: center; min-height: 230px; display: grid; align-content: center; gap: 16px; box-shadow: var(--shadow-flash); }
 .flash .q { font-size: 22px; font-weight: 700; font-family: var(--font-display); }
 .flash .ans { color: var(--accent); font-weight: 800; }
 .flash .scenario { color: var(--text-muted); }
 .gradebar { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
 
 /* lessons */
-.lesson { border-left: 4px solid var(--highlight); }
+.lesson { border-left: 4px solid var(--highlight-line); }
 .lesson .we { background: color-mix(in srgb, var(--highlight) 10%, transparent); border: 1px solid color-mix(in srgb, var(--highlight) 30%, transparent); border-radius: var(--radius-nav); padding: 10px; margin-top: 8px; font-size: 14px; }
 
 .note { margin: 26px auto 0; max-width: var(--screen-max); padding: 14px 18px; border: 1px dashed var(--line); border-radius: 10px; color: var(--text-muted); font-size: 13px; }
@@ -277,6 +367,7 @@ table.matrix { width: 100%; border-collapse: collapse; background: var(--surface
   .brand small { display: none; }
   .nav-item { justify-content: center; padding: 12px 0; }
   .nav-item .nav-label { display: none; }
+  .sidebar .side-theme { display: grid; justify-items: center; padding: 4px 0 8px; }
   .sidebar .foot { display: none; }
   .hero { grid-template-columns: 1fr; }
   .cols-3 { grid-template-columns: 1fr 1fr; }
@@ -284,7 +375,7 @@ table.matrix { width: 100%; border-collapse: collapse; background: var(--surface
 @media (max-width: 680px) {
   .app { grid-template-columns: 1fr; }
   .sidebar { display: none; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface-bar); z-index: 5; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface-bar); z-index: 5; }
   .topbar .brand { font-size: 22px; padding: 0; }
   .topbar .brand::before { content: "Bridgette Training"; }
   .topbar .brand small { display: none; }
@@ -295,10 +386,10 @@ table.matrix { width: 100%; border-collapse: collapse; background: var(--surface
   .tab .ico { width: 24px; height: 24px; }
   .tab[aria-current="page"] { color: var(--highlight); }
   /* Spec §5: the matrix becomes stacked dish cards on phones (no h-scroll). */
-  .matrix { font-size: 13px; border-collapse: separate; border-spacing: 0; background: transparent; }
+  .matrix { font-size: 13px; border-collapse: separate; border-spacing: 0; background: transparent; box-shadow: none; }
   .matrix thead { position: absolute; left: -9999px; }
   .matrix tbody, .matrix tr, .matrix th, .matrix td { display: block; }
-  .matrix tr { background: var(--surface-paper); border-radius: 10px; margin-bottom: 12px; padding: 6px 4px; }
+  .matrix tr { background: var(--surface-paper); border-radius: 10px; margin-bottom: 12px; padding: 6px 4px; box-shadow: var(--shadow-1); }
   .matrix tbody th { background: transparent; font-family: var(--font-display); font-size: 16px; text-transform: uppercase; border: 0; padding: 8px 12px 2px; }
   .matrix td { border: 0; padding: 4px 12px; }
   .matrix td::before { content: attr(data-label) ": "; font-weight: 800; color: var(--text-muted); }

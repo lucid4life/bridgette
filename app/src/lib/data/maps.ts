@@ -71,14 +71,14 @@ export const styleMap: { wines: Dot[] } = {
 
 export const CLIMATE_COLOR: Record<string, string> = {
   cool: '#5fa3bd',
-  moderate: 'var(--gold)',
+  moderate: '#fcb539', // data encoding (not chrome): dark-panel gold
   warm: '#e0613f'
 };
 
 // Distinct, dark-panel-legible family colours (dual-coded with labels, never colour
 // alone). Order matches the 5 buckets.
 export const FAMILY_COLOR: Record<string, string> = {
-  'Bubbles & Rosé': 'var(--gold)',
+  'Bubbles & Rosé': '#fcb539', // data encoding (not chrome): dark-panel gold
   'Bright & Crisp Whites': '#5fa3bd',
   'Round Whites': '#7faa8e',
   'Light Reds': '#f0884f',

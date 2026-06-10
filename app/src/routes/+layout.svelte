@@ -4,6 +4,9 @@
   // Import ONLY the Latin subsets we use (drops cyrillic/cyrillic-ext/greek/vietnamese,
   // which the SW would otherwise precache despite the browser never fetching them).
   // latin-ext is required: the menu carries Löss / Grüner / Dürkheimer / Niederösterreich.
+  // 300 + 700 are the two weights the brand site loads (light display titles / bold emphasis).
+  import '@fontsource/oswald/latin-300.css';
+  import '@fontsource/oswald/latin-ext-300.css';
   import '@fontsource/oswald/latin-400.css';
   import '@fontsource/oswald/latin-ext-400.css';
   import '@fontsource/oswald/latin-500.css';
@@ -23,6 +26,7 @@
   import '@fontsource/hanken-grotesk/latin-ext-700.css';
   import { page } from '$app/state';
   import PwaToast from '$lib/components/PwaToast.svelte';
+  import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
   let { children } = $props();
 
@@ -52,7 +56,7 @@
     <nav aria-label="Primary">
       {#each NAV as item (item.href)}
         <a class="nav-item" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
             {#each item.paths as d}<path {d} />{/each}
           </svg>
           <span class="nav-label">{item.label}</span>
@@ -60,6 +64,7 @@
       {/each}
     </nav>
     <div class="spacer"></div>
+    <div class="side-theme"><ThemeToggle /></div>
     <div class="foot">v2 · offline-ready PWA</div>
   </aside>
 
@@ -67,11 +72,12 @@
     <header class="topbar" class:show={isSub}>
       {#if isSub}
         <button class="topbar-back" type="button" aria-label="Back" onclick={back}>
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
           <span>Back</span>
         </button>
       {/if}
       <span class="topbar-brand">Bridgette Training</span>
+      <ThemeToggle compact />
     </header>
     <main id="main" class="screen-wrap" tabindex="-1">
       {@render children()}
@@ -79,7 +85,7 @@
     <nav class="tabbar" aria-label="Bottom navigation">
       {#each NAV as item (item.href)}
         <a class="tab" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined} aria-label={item.label}>
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
             {#each item.paths as d}<path {d} />{/each}
           </svg>
           <span aria-hidden="true">{item.short ?? item.label}</span>
