@@ -443,7 +443,8 @@
         "merlot",
         "left bank",
         "haut-medoc",
-        "french red"
+        "french red",
+        "chateau larose perganson cru bourgeois superieur"
       ],
       "mnemonic": "Haut-Médoc = left-bank Bordeaux = Cabernet-led, cedar and cassis.",
       "vegan": null,
@@ -519,7 +520,7 @@
         "Grilled Octopus Salad",
         "Shrimp & Crab",
         "Maple BBQ Rainbow Trout",
-        "Wood Roasted Cod"
+        "Wood Roasted Halibut"
       ],
       "upgradeFrom": "Crisp seafood whites",
       "pronunciation": {
@@ -601,11 +602,11 @@
         "sweetness": "dry"
       },
       "profile": "A southern-Rhône white led by Marsanne with Viognier lift — white peach, citrus, white flowers and honeysuckle over a stony, mineral finish. The 400m limestone altitude keeps an otherwise sunny site fresh and balanced rather than heavy.",
-      "tenSecond": "A floral, gently full white from the high slopes of the southern Rhône — peach and white flowers with real freshness. Lovely with roast chicken, squash, and creamy plates.",
+      "tenSecond": "A floral, gently full white from the high slopes of the southern Rhône — peach and white flowers with real freshness. Lovely with roast chicken, halibut, and creamy plates.",
       "pairWhy": "Medium body and a round, aromatic mouthfeel match richer vegetable and poultry dishes, while the altitude-driven freshness keeps it from feeling flat against fat or spice.",
       "pair": [
         "Grilled Farm Chicken",
-        "Wood Grilled Winter Squash",
+        "Wood Roasted Halibut",
         "Mushrooms on Toast",
         "Ricotta Dumplings",
         "Burrata Cheese"
@@ -665,7 +666,8 @@
         "catarratto",
         "sicilian white",
         "pinot grigio",
-        "italian white"
+        "italian white",
+        "cusomano lucido"
       ],
       "mnemonic": "Lucido = 'shiny' grape skins = bright, sunny Sicilian white.",
       "vegan": true,
@@ -696,7 +698,7 @@
         "Tuna Crudo",
         "Grilled Octopus Salad",
         "Smashed Cucumbers",
-        "Wood Roasted Cod"
+        "Wood Roasted Halibut"
       ],
       "upgradeFrom": "Crisp seafood whites",
       "pronunciation": {
@@ -739,7 +741,7 @@
         "Maple BBQ Rainbow Trout",
         "Mushrooms on Toast",
         "Ricotta Dumplings",
-        "Wood Roasted Cod"
+        "Wood Roasted Halibut"
       ],
       "upgradeFrom": "Rounder whites",
       "pronunciation": {
@@ -780,7 +782,7 @@
       "pairWhy": "Full body and creamy texture mirror butter, cream and shellfish, while the mineral acid line keeps a rich dish lifted — built for shellfish, roast chicken, and cream sauces.",
       "pair": [
         "Grilled Farm Chicken",
-        "Wood Roasted Cod",
+        "Wood Roasted Halibut",
         "Shrimp & Crab",
         "Ricotta Dumplings",
         "Burrata Cheese"
@@ -797,7 +799,8 @@
         "buisson-charles",
         "vieilles vignes",
         "old vines",
-        "buttery chardonnay"
+        "buttery chardonnay",
+        "merusault"
       ],
       "mnemonic": "Meursault = the rich, creamy heartland of white Burgundy; Vieilles Vignes = old vines = concentration.",
       "vegan": null,
@@ -842,7 +845,8 @@
         "gsm",
         "chateauneuf",
         "cotes du rhone",
-        "french red"
+        "french red",
+        "gigondas les jardinieres 1871"
       ],
       "mnemonic": "Gigondas = Châteauneuf's rugged neighbour; Grenache-led, full and warm.",
       "vegan": true,
@@ -914,7 +918,7 @@
       "tenSecond": "Proper white Burgundy at a friendly price — creamy and ripe-apple-textured from barrel and lees, but with stony grip. The crowd-pleasing Chardonnay for chicken, cod, and creamy pasta.",
       "pairWhy": "Lees-built texture and medium body wrap around butter, cream and roasted flavours, while the pithy dry acidity stops it turning heavy — a natural match for richer fish and poultry.",
       "pair": [
-        "Wood Roasted Cod",
+        "Wood Roasted Halibut",
         "Grilled Farm Chicken",
         "Maple BBQ Rainbow Trout",
         "Ricotta Dumplings",
@@ -1005,7 +1009,7 @@
         "Oysters 1/2 dozen",
         "Tuna Crudo",
         "Shrimp & Crab",
-        "Wood Roasted Cod",
+        "Wood Roasted Halibut",
         "French Fries"
       ],
       "upgradeFrom": "Crisp seafood whites",
@@ -1139,8 +1143,7 @@
         "Grilled Lamb Saddle",
         "Lamb Sausage",
         "26oz Wood Grilled Beef Ribeye",
-        "Italian Sausage",
-        "Wood Grilled Winter Squash"
+        "Italian Sausage"
       ],
       "upgradeFrom": "Steak reds",
       "pronunciation": {
@@ -1184,7 +1187,7 @@
         "Maple BBQ Rainbow Trout",
         "Mushrooms on Toast",
         "Grilled Farm Chicken",
-        "Wood Roasted Cod"
+        "Wood Roasted Halibut"
       ],
       "upgradeFrom": "Light reds",
       "pronunciation": {
@@ -1228,7 +1231,7 @@
         "Tuna Crudo",
         "Shrimp & Crab",
         "Grilled Octopus Salad",
-        "Wood Roasted Cod"
+        "Wood Roasted Halibut"
       ],
       "upgradeFrom": "Crisp seafood whites",
       "pronunciation": {
@@ -1316,7 +1319,7 @@
         "Fennel Salami",
         "Lamb Sausage",
         "Grilled Octopus Salad",
-        "Brussels Sprouts",
+        "Snap Peas",
         "Chicken Sausage"
       ],
       "upgradeFrom": "Rounder whites",
@@ -1358,7 +1361,7 @@
       "tenSecond": "California Chardonnay that drinks like white Burgundy — barrel-built texture but high acid and stony freshness, from the coolest valley in the state. The serious crossover white.",
       "pairWhy": "High acidity and a tight mineral core keep the wine fresh against richer fish and creamy plates, while gentle barrel texture gives just enough weight to match them — Burgundian poise without heavy oak.",
       "pair": [
-        "Wood Roasted Cod",
+        "Wood Roasted Halibut",
         "Maple BBQ Rainbow Trout",
         "Grilled Farm Chicken",
         "Shrimp & Crab",
@@ -1510,7 +1513,8 @@
         "loire",
         "gasnier",
         "pierres chaudes",
-        "breton"
+        "breton",
+        "sandrine & fabrice chinon gasnier pierres chaudes"
       ],
       "mnemonic": "Chinon = the Loire's home of Cabernet Franc; 'Pierres Chaudes' = warm stones = riper, rounder fruit.",
       "vegan": true,
@@ -1807,7 +1811,10 @@
       "pronunciation": {
         "say": "Chimay Blue",
         "respell": "shee-MAY BLOO"
-      }
+      },
+      "aliases": [
+        "chimay blue strong dark ale"
+      ]
     },
     {
       "id": "dandy-the-julia-peach-cobbler-sour",
@@ -1977,6 +1984,60 @@
         "say": "Village Wit",
         "respell": "VILL-ij WIT"
       }
+    },
+    {
+      "id": "peroni-pilsner-0-0",
+      "name": "Peroni Pilsner 0.0",
+      "style": "Non-alcoholic pilsner",
+      "origin": "Vigevano, Italy",
+      "abv": "0.0%",
+      "oz": "330ml",
+      "flavor": "Crisp, dry, lightly bitter — a clean lager profile without the alcohol.",
+      "pairWith": [
+        "French Fries",
+        "Garlic Bread",
+        "Crispy Smashed Potatoes"
+      ],
+      "pronunciation": {
+        "say": "Peroni",
+        "respell": "peh-ROH-nee"
+      }
+    },
+    {
+      "id": "noughty-rouge",
+      "name": "Noughty Rouge",
+      "style": "De-alcoholized red wine (Syrah)",
+      "origin": "South Africa",
+      "abv": "0.5%",
+      "oz": "5oz | 8oz | bottle",
+      "flavor": "Soft dark-berry fruit with light spice; like most de-alcoholized reds it reads slightly sweet — set expectations honestly.",
+      "pairWith": [
+        "Bread & Butter",
+        "Wagyu Beef Carpaccio",
+        "Margherita"
+      ],
+      "pronunciation": {
+        "say": "Noughty Rouge",
+        "respell": "NAW-tee ROOZH"
+      }
+    },
+    {
+      "id": "freixenet-sparkling-wine",
+      "name": "Freixenet Sparkling Wine",
+      "style": "De-alcoholized sparkling wine",
+      "origin": "Spain",
+      "abv": "0.05%",
+      "oz": "5oz | 8oz | bottle",
+      "flavor": "Crisp apple-citrus bubbles — the zero-proof palate reset for salty and fried plates.",
+      "pairWith": [
+        "French Fries",
+        "Cashews",
+        "Oysters 1/2 dozen"
+      ],
+      "pronunciation": {
+        "say": "Freixenet",
+        "respell": "fresh-eh-NET"
+      }
     }
   ],
   "fortifieds": [
@@ -1996,7 +2057,10 @@
       "pronunciation": {
         "say": "Amaro Montenegro",
         "respell": "ah-MAH-roh mon-teh-NEH-groh"
-      }
+      },
+      "aliases": [
+        "montenegro"
+      ]
     },
     {
       "id": "averna",
@@ -2031,7 +2095,10 @@
       "pronunciation": {
         "say": "Barbeito Madeira Rainwater Reserva 5yr",
         "respell": "bar-BAY-too mah-DAIR-ah RAIN-waw-ter reh-ZAIR-vah"
-      }
+      },
+      "aliases": [
+        "barbeito maderia rainwater reserva 5yr"
+      ]
     },
     {
       "id": "boulard-xo-calvados",
@@ -2066,7 +2133,10 @@
       "pronunciation": {
         "say": "Castarède XO Armagnac",
         "respell": "kas-tah-RED eks-OH AR-mahn-yak"
-      }
+      },
+      "aliases": [
+        "casterede xo"
+      ]
     },
     {
       "id": "christian-drouin-xo-calvados",
@@ -2101,7 +2171,10 @@
       "pronunciation": {
         "say": "Château de Montifaud VS Cognac",
         "respell": "shah-TOH duh mon-tee-FOH VEE-ess"
-      }
+      },
+      "aliases": [
+        "chateau de montifaud xs"
+      ]
     },
     {
       "id": "chateau-de-montifaud-vsop-cognac",
@@ -2171,7 +2244,10 @@
       "pronunciation": {
         "say": "Domaine Pouderoux Maury Vendange",
         "respell": "doh-MEN poo-deh-ROO, moh-REE von-DONZH"
-      }
+      },
+      "aliases": [
+        "domaine pouderoux vendage"
+      ]
     },
     {
       "id": "emilio-hidalgo-fino",
@@ -2263,7 +2339,10 @@
       "pronunciation": {
         "say": "Hennessy VS Cognac",
         "respell": "HEN-eh-see VEE-ess"
-      }
+      },
+      "aliases": [
+        "henessey vs"
+      ]
     },
     {
       "id": "hennessy-vsop-cognac",
@@ -2280,7 +2359,10 @@
       "pronunciation": {
         "say": "Hennessy VSOP Cognac",
         "respell": "HEN-eh-see VEE-ess-oh-PEE"
-      }
+      },
+      "aliases": [
+        "henessey vsop"
+      ]
     },
     {
       "id": "hennessy-xo-cognac",
@@ -2297,7 +2379,10 @@
       "pronunciation": {
         "say": "Hennessy XO Cognac",
         "respell": "HEN-eh-see eks-OH"
-      }
+      },
+      "aliases": [
+        "henessey xo"
+      ]
     },
     {
       "id": "kopke-late-bottled-vintage-port-2015",
@@ -2315,7 +2400,10 @@
       "pronunciation": {
         "say": "Kopke Late Bottled Vintage Port 2015",
         "respell": "KOP-kuh layt-BOT-uld VIN-tij PORT"
-      }
+      },
+      "aliases": [
+        "kopke late bottle vintage 2015"
+      ]
     },
     {
       "id": "marolo-milla-camomilla",
@@ -2369,7 +2457,10 @@
       "pronunciation": {
         "say": "Quevedo Tawny 10yr",
         "respell": "keh-VEH-doh TAW-nee"
-      }
+      },
+      "aliases": [
+        "quevado tawny 10yr"
+      ]
     },
     {
       "id": "taylor-fladgate-tawny-40yr",
@@ -2391,7 +2482,7 @@
     },
     {
       "id": "valdespino-cream-sherry-isabela",
-      "name": "Valdespino Cream Sherry \"Isabela\"",
+      "name": "Valdespino Cream Sherry Isabela",
       "type": "cream sherry",
       "origin": "Jerez-Xérès-Sherry DO, Andalucía, Spain",
       "abv": "17.5%",
@@ -2405,7 +2496,10 @@
       "pronunciation": {
         "say": "Valdespino Cream Sherry \"Isabela\"",
         "respell": "val-dess-PEE-noh, ee-sah-BEH-lah"
-      }
+      },
+      "aliases": [
+        "Valdespino Cream Sherry \"Isabela\""
+      ]
     },
     {
       "id": "valdespino-single-vineyard-amontillado-tio-diego",

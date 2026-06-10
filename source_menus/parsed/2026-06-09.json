@@ -1,0 +1,2756 @@
+{
+  "date": "2026-06-09",
+  "menus": {
+    "calgary-dessert-digestifs": {
+      "items": [
+        {
+          "name": "Belvedere 12 Angels Envy",
+          "prices": [
+            23
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Chopin 12 Basil Hayden",
+          "prices": [
+            13
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Grey Goose 12 Basil HaydenTwo by Two",
+          "prices": [
+            12
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Grey Goose La Poire 11 Jefferson’s Ocean",
+          "prices": [
+            23
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Grey Goose L’Orange 11 Jefferson’s",
+          "prices": [
+            13
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Ketel One 10 Michter’s Small Batch",
+          "prices": [
+            19
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Tito’s Handmade 9 Woodford Reserve",
+          "prices": [
+            13
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "gin Woodford Double Oaked",
+          "prices": [
+            16
+          ],
+          "detail": [
+            "1oz",
+            "Dillon’s Melon scotch 1oz",
+            "9"
+          ],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Dillon’s Rose 9 Ardbeg 10yr",
+          "prices": [
+            16
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Empress 1908 13 Auchentoshan 3 Wood",
+          "prices": [
+            16
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Empress Cucumber Lemon 11 BenRiach 10yr",
+          "prices": [
+            15
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Hayman’s Sloe Gin 9 Compass Box Peat Monster",
+          "prices": [
+            12
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Hendrick’s 12 Dalmore Port Wood Reserve",
+          "prices": [
+            25
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Hendrick’s Neptunia 12 Dalmore Port King Alexander III",
+          "prices": [
+            88
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Hendrick’s Oasium 12 Glenfarclas 12yr",
+          "prices": [
+            15
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "No . 3 London Dry 13 Glenfarclas 15yr",
+          "prices": [
+            23
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Okinawa Recipe #2 15 Glenfarclas 17yr",
+          "prices": [
+            25
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Tanqueray No. Ten 12 Glenfidditch 12yr",
+          "prices": [
+            14
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "tequila & mezcal Highland Park 12yr",
+          "prices": [
+            14
+          ],
+          "detail": [
+            "1oz"
+          ],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Highland Park 18yr",
+          "prices": [
+            63
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Casamigos Blanco",
+          "prices": [
+            17
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Johnnie Walker Red",
+          "prices": [
+            9
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Casamigos Resposado",
+          "prices": [
+            19
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Johnnie Walker Black",
+          "prices": [
+            12
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Clase Azul Resposado",
+          "prices": [
+            52
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Lagavulin 8yr",
+          "prices": [
+            19
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Codigo 1530 Blanco Rosa",
+          "prices": [
+            12
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Lagavulin 11yr",
+          "prices": [
+            23
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Don Julio Blanco",
+          "prices": [
+            15
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Macallan 15yr Double Cask",
+          "prices": [
+            57
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Don Julio Resposado",
+          "prices": [
+            17
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Talisker 10yr",
+          "prices": [
+            20
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Don Julio Anejo",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "Herradura Reposado whisk(e)y 1oz",
+            "15"
+          ],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Herradura Anejo 19 Crown Royal Late Harvest",
+          "prices": [
+            10
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Herradura Ultra 18 High West Campfire",
+          "prices": [
+            18
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Patron Silver 14 Jack Daniel’s Tennessee",
+          "prices": [
+            9
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Patron Anejo 19 Jamesons 8",
+          "prices": [
+            5
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Siempre Plata 10 Lot 40 Rye",
+          "prices": [
+            9
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Los Siete Misterios Nikka By the Barrel Japan",
+          "prices": [
+            19
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Doba-Yej Mezcal",
+          "prices": [
+            11
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Rittenhouse Rye",
+          "prices": [
+            11
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Veneno Magico Espadin Mezcal",
+          "prices": [
+            19
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Tullamore D.E.W. 12yr Ireland",
+          "prices": [
+            13
+          ],
+          "detail": [
+            "Veneno Magico"
+          ],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Whistle Pig Piggyback Rye",
+          "prices": [
+            10
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Tapeztate Mezcal",
+          "prices": [
+            30
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Whistle Pig 12yr Rye",
+          "prices": [
+            33
+          ],
+          "detail": [],
+          "section": "spirits",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Writer’s Tears",
+          "prices": [
+            14
+          ],
+          "detail": [],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Bacardi Spiced",
+          "prices": [
+            8
+          ],
+          "detail": [],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Dictador 20yr",
+          "prices": [
+            17
+          ],
+          "detail": [],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Dos Maderas 5+",
+          "prices": [
+            5
+          ],
+          "detail": [],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Triple Aged Rum",
+          "prices": [
+            13
+          ],
+          "detail": [],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Plantaray Original Dark",
+          "prices": [
+            9
+          ],
+          "detail": [],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Plantaray Coconut",
+          "prices": [
+            11
+          ],
+          "detail": [],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "Ron Zacapa 23yr",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "DESSERT & DIGESTIFS"
+          ],
+          "section": "rum",
+          "outOfScope": true,
+          "flags": []
+        },
+        {
+          "name": "The Banana Pie",
+          "prices": [
+            16
+          ],
+          "detail": [
+            "Coffee, Pretzel, Rum Caramel"
+          ],
+          "section": "dessert",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Apple Tatin",
+          "prices": [
+            15
+          ],
+          "detail": [
+            "Armagnac, Cider Caramel, Toasted Hay"
+          ],
+          "section": "dessert",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Chocolate Pot de Crème",
+          "prices": [
+            15
+          ],
+          "detail": [
+            "Salted Chocolate, Sour Cherry"
+          ],
+          "section": "dessert",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Domaine Pouderoux Vendage",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Silky black cherries with 5-spice. Try with the Chocolate Pot de Crème"
+          ],
+          "section": "dessert pairings",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Barbeito Maderia Rainwater Reserva 5yr",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Saltwater caramel, toasted almond, apricot jam. Try with the Apple Tatin"
+          ],
+          "section": "dessert pairings",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Valdespino Cream Sherry Isabela",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Toffee pudding and candied orange. Try with The Banana Pie"
+          ],
+          "section": "dessert pairings",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Emilio Hidalgo Fino",
+          "prices": [
+            8
+          ],
+          "detail": [],
+          "section": "sherry",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Valdespino Single Vineyard Amontillado Tio Diego",
+          "prices": [
+            13
+          ],
+          "detail": [],
+          "section": "sherry",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Emilio Hidalgo Oloroso Gobernador",
+          "prices": [
+            10
+          ],
+          "detail": [],
+          "section": "sherry",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Kopke Late Bottle Vintage 2015",
+          "prices": [
+            12
+          ],
+          "detail": [],
+          "section": "port",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Quevado Tawny 10yr",
+          "prices": [
+            16
+          ],
+          "detail": [],
+          "section": "port",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Taylor Fladgate Tawny 40yr",
+          "prices": [
+            40
+          ],
+          "detail": [],
+          "section": "port",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Boulard XO",
+          "prices": [
+            12
+          ],
+          "detail": [],
+          "section": "calvados",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Christian Drouin XO",
+          "prices": [
+            16
+          ],
+          "detail": [],
+          "section": "calvados",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Casterède XO",
+          "prices": [
+            19
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Darroze 12yr",
+          "prices": [
+            16
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Henessey VS",
+          "prices": [
+            11
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Henessey VSOP",
+          "prices": [
+            16
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Henessey XO",
+          "prices": [
+            51
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Chateau de Montifaud XS",
+          "prices": [
+            11
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Chateau de Montifaud VSOP",
+          "prices": [
+            12
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Chateau de Montifaud XO",
+          "prices": [
+            18
+          ],
+          "detail": [
+            "grappa 1oz"
+          ],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Marolo Milla Camomilla",
+          "prices": [
+            12
+          ],
+          "detail": [
+            "amaro 1oz"
+          ],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Fernet Branca",
+          "prices": [
+            8
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Averna",
+          "prices": [
+            9
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Montenegro",
+          "prices": [
+            9
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Nonino",
+          "prices": [
+            10
+          ],
+          "detail": [],
+          "section": "cognac, armagnac & brandy",
+          "outOfScope": false,
+          "flags": []
+        }
+      ],
+      "unparsed": [
+        "DESSERT & DIGESTIFS",
+        "vodka 1oz bourbon 1oz"
+      ]
+    },
+    "calgary-drink": {
+      "items": [
+        {
+          "name": "Blue Mountain Brut",
+          "prices": [
+            18,
+            29,
+            90
+          ],
+          "detail": [
+            "Chardonnay & Pinot Noir | Okanagan Falls, British Columbia"
+          ],
+          "section": "bubbly",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Fattoria Moretto Semprebon",
+          "prices": [
+            18,
+            29,
+            90
+          ],
+          "detail": [
+            "Lambrusco Grasparossa",
+            "Lambrusco Grasparossa de Castelvetro, Emilia-Romagna, Italy"
+          ],
+          "section": "bubbly",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Raventós i Blanc de Nit Rosé",
+          "prices": [
+            115
+          ],
+          "detail": [
+            "Monastrell | Conca del Riu Anioa, Spain"
+          ],
+          "section": "bubbly",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Hiedler Löss",
+          "prices": [
+            15,
+            24,
+            75
+          ],
+          "detail": [
+            "Grüner Veltliner | Niederosterreich, Austria 2024"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Vini be Good Hip Hop Chenin",
+          "prices": [
+            16,
+            26,
+            80
+          ],
+          "detail": [
+            "Chenin Blanc | Loire Valley, France 2024"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "exclusive"
+          ]
+        },
+        {
+          "name": "Wagner Stempel Weissburgunder",
+          "prices": [
+            17,
+            27,
+            85
+          ],
+          "detail": [
+            "Pinot Blanc | Rheinhessen, Germany 2024"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "exclusive"
+          ]
+        },
+        {
+          "name": "Darting Dürkheimer Fronhof",
+          "prices": [
+            14,
+            23,
+            70
+          ],
+          "detail": [
+            "Riesling | Phaltz, Germany 2023"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "exclusive"
+          ]
+        },
+        {
+          "name": "Dona Matilde Branco",
+          "prices": [
+            14,
+            23,
+            70
+          ],
+          "detail": [
+            "Arinto, Rabigato, Viosinho, Gouveio | Douro, Portugal 2024"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "exclusive"
+          ]
+        },
+        {
+          "name": "Bodega Cerrón Remordimiento Blanco",
+          "prices": [
+            16,
+            26,
+            80
+          ],
+          "detail": [
+            "Chardonnay | Jumilla, Spain 2024"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Denizot Sancerre",
+          "prices": [
+            140
+          ],
+          "detail": [
+            "Sauvignon Blanc | Loire Valley, France 2024"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Ciro Picariello Bru Emm",
+          "prices": [
+            85
+          ],
+          "detail": [
+            "Falanghina | Campania, Italy 2024"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Donnhoff Feinherb",
+          "prices": [
+            100
+          ],
+          "detail": [
+            "Riesling | Nahe, Germany 2023"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Landron Muscadet-Sèvre et Maine Amphibolite",
+          "prices": [
+            95
+          ],
+          "detail": [
+            "Muscadet | Muscadet-Sevre-et-Maine, Loire Valley, France 2023"
+          ],
+          "section": "white",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Ameztoi Rubentis",
+          "prices": [
+            17,
+            27,
+            85
+          ],
+          "detail": [
+            "Hondarrabi Zuri & Beltza | Getariako Txakolina, Spain 2025"
+          ],
+          "section": "rosé",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Deinhard Deidesheim",
+          "prices": [
+            17,
+            27,
+            85
+          ],
+          "detail": [
+            "Pinot Noir | Pfalz, Germany 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Ca’ del Baio Langhe",
+          "prices": [
+            16,
+            26,
+            80
+          ],
+          "detail": [
+            "Nebbiolo | Piedmont, Italy 2024"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "exclusive"
+          ]
+        },
+        {
+          "name": "Sindicat la Figuera",
+          "prices": [
+            16,
+            26,
+            80
+          ],
+          "detail": [
+            "Grenache | Monsant, Spain 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Bindi Sergardi La Boncia",
+          "prices": [
+            15,
+            24,
+            75
+          ],
+          "detail": [
+            "Sangiovese | Chianti Classico, Tuscany, Italy 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Bodega Cerrón Remordimiento Tinto",
+          "prices": [
+            15,
+            24,
+            75
+          ],
+          "detail": [
+            "Monastrell & Garnacha | Jumilla, Spain 2024"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "St. John Claret",
+          "prices": [
+            16,
+            26,
+            80
+          ],
+          "detail": [
+            "Merlot & Cabernet Sauvignon | Bordeaux, France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Terroir Sense Fronteres Negre de Montsant",
+          "prices": [
+            120
+          ],
+          "detail": [
+            "Grenache | Montsant, Spain 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Charlotte & Jean Baptiste Senat Amalgame",
+          "prices": [
+            90
+          ],
+          "detail": [
+            "Grenache Noir, Grenache Blanc & Grenache Gris",
+            "Minervois, France 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Malahierba Vinos Maleza",
+          "prices": [
+            115
+          ],
+          "detail": [
+            "Rufete | Sierra de Salamanca, Spain 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Alta Mora Etna Rosso",
+          "prices": [
+            110
+          ],
+          "detail": [
+            "Nerello Mascalese | Sicily, Italy 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Pierre Thibert Chorey-les-Beaune",
+          "prices": [
+            155
+          ],
+          "detail": [
+            "Pinot Noir | Burgundy, France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Sandrine & Fabrice Chinon Gasnier Pierres Chaudes",
+          "prices": [
+            105
+          ],
+          "detail": [
+            "Cabernet Franc | Loire Valley, France 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Domaine de Colette Coteaux de Colette",
+          "prices": [
+            90
+          ],
+          "detail": [
+            "Gamay | Beaujolais, France 2024"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Cirelli Frizzante Bianco",
+          "prices": [
+            90
+          ],
+          "detail": [
+            "Trebbiano | Abruzzo, Italy"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Griesel Blanc de Noirs",
+          "prices": [
+            130
+          ],
+          "detail": [
+            "Pinot Noir & Pinot Meunier | Hessische Bergstraße, Germany 2021"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Christophe Mignon Adn de Meunier Brut Nature",
+          "prices": [
+            250
+          ],
+          "detail": [
+            "Pinot Meunier | Vallée de la Marne, Champagne, France"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Claire Naudin Mallon",
+          "prices": [
+            95
+          ],
+          "detail": [
+            "Aligoté | Burgundy, France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Eleonore Moreau Petit Chablis",
+          "prices": [
+            115
+          ],
+          "detail": [
+            "Chardonnay | Burgundy, France 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Domaine Breton Pierres Rousses",
+          "prices": [
+            125
+          ],
+          "detail": [
+            "Chenin Blanc | Loire Valley 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Bideona Cabezadas",
+          "prices": [
+            75
+          ],
+          "detail": [
+            "Viura | Rioja Alavesa, Spain 2020"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Maloof Where Ya Pjs At?",
+          "prices": [
+            95
+          ],
+          "detail": [
+            "Skin Contact Pinot Gris | Willamette Valley, USA 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Cusomano Lucido",
+          "prices": [
+            70
+          ],
+          "detail": [
+            "Cataratto | Sicily, Italy 2024"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Clos Bellane Valréas",
+          "prices": [
+            100
+          ],
+          "detail": [
+            "Marsanne, Viognier & Roussanne | Rhône Valley France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Domaine de la Rochette Mâcon-Bussières Mont Sard",
+          "prices": [
+            110
+          ],
+          "detail": [
+            "Chardonnay | Burgundy, France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Domaine Buisson-Charles Merusault Vieilles Vignes",
+          "prices": [
+            350
+          ],
+          "detail": [
+            "Chardonnay | Burgundy, France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Mount Eden Wolff Vineyard",
+          "prices": [
+            150
+          ],
+          "detail": [
+            "Chardonnay | Edna Valley, USA 2021"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Leitz Eins Zwei Dry Rosé",
+          "prices": [
+            16,
+            26,
+            80
+          ],
+          "detail": [
+            "Pinot Noir | Rheingau, Germany 2024"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Castello di Verduno Alba",
+          "prices": [
+            100
+          ],
+          "detail": [
+            "Barbera | Piedmont, Italy 2024"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Brandini Langhe Filari Corti",
+          "prices": [
+            110
+          ],
+          "detail": [
+            "Nebbiolo | Piedmont, Italy 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Kistler",
+          "prices": [
+            295
+          ],
+          "detail": [
+            "Pinot Noir | Russian River Valley, USA 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Castello di Potentino Sacromonte",
+          "prices": [
+            95
+          ],
+          "detail": [
+            "Sangiovese | Tuscany, Italy 2018"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Fletcher Barbaresco Recta Pete",
+          "prices": [
+            200
+          ],
+          "detail": [
+            "Nebbiolo | Piedmont, Italy 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Texier Brézème",
+          "prices": [
+            135
+          ],
+          "detail": [
+            "Syrah | Rhône Valley, France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Algre Valgañon",
+          "prices": [
+            95
+          ],
+          "detail": [
+            "Tempranillo & Grenache | Rioja, Spain 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Gulfi Nerojbleo",
+          "prices": [
+            105
+          ],
+          "detail": [
+            "Nero d'Avola | Sicily, Italy 2022",
+            "Domaine Gour de Chaulé"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Gigondas Les Jardinières .1871",
+          "prices": [
+            155
+          ],
+          "detail": [
+            "Grenache, Syrah & Mourvèdre | Rhône Valley, France 2023"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "Château Larose Perganson Cru Bourgeois Supérieur",
+          "prices": [
+            145
+          ],
+          "detail": [
+            "Cabernet Sauvignon & Merlot",
+            "Haut-Médoc, Bordeaux, France 2018"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Whitehall Lane",
+          "prices": [
+            155
+          ],
+          "detail": [
+            "Merlot | Napa Valley, USA 2021"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Aia Vecchia Sor Ugo Bolgheri Superiore",
+          "prices": [
+            170
+          ],
+          "detail": [
+            "Cabernet Sauv, Merlot & Cabernet Franc | Tuscany, Italy 2022"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": [
+            "v"
+          ]
+        },
+        {
+          "name": "White Rock",
+          "prices": [
+            275
+          ],
+          "detail": [
+            "Cabernet Sauvignon | Napa Valley, USA 2019",
+            "DRINKS"
+          ],
+          "section": "red",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Spicy Sandia",
+          "prices": [
+            20
+          ],
+          "detail": [
+            "tequila. mezcal. watermelon. dry curaçao. lime. saline"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Heartbreak Mountain",
+          "prices": [
+            18
+          ],
+          "detail": [
+            "gin. earl grey tea. lemon. lavender. milk washed"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Doctor Jones",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "averna amaro. red vermouth. orange",
+            "dr. pepper. lemon. mint"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Jr. Stargazer",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "tequila. mezcal. apricot. pickled celery. lime"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Eat, Apres, Love 1.5 oz |",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "rose gin. strawberry cordial. sparkling rose"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "French Export",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "vanilla vodka. calvados. jasmine. lemon. pernod",
+            "no alcohol"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Lovers Mountain",
+          "prices": [
+            12
+          ],
+          "detail": [
+            "noa dry gin. earl grey tea. lemon. lavender. milk washed | 0.04%"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Short Film",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "caleño “light & zesty”. martini floreale. za’atar",
+            "spiced white cranberry. lemon *sesame allergy"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Sunrise Spritz",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "rhubarb. strawberry. non-alcoholic sparkling wine | 0.05%"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Redbull Energy Drink",
+          "prices": [
+            6
+          ],
+          "detail": [
+            "regular or sugar free"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Pop 3",
+          "prices": [
+            75
+          ],
+          "detail": [
+            "coke, diet coke, ginger ale, sprite"
+          ],
+          "section": "cocktails",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Ol’ Beautiful Okami Kasu Japanese Lager",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Calgary, AB | 5.0% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Stella Artois",
+          "prices": [
+            12
+          ],
+          "detail": [
+            "Belgium | 4.6% | 15oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Banded Peak Mount Crushmore Pilsner",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Calgary, AB | 4.4% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Banded Peak Approach Amber Lager",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Calgary, AB | 5.1% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Village Wit",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Calgary, AB | 4.5% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Brewsmith Signature Pub Ale",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Calgary, AB | 4.0% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Establishment Afternoon Delight NEPA",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Calgary, AB | 5.4% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "33 Acres Ocean Pale Ale",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Vancouver, BC | 5.3% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Superflux Happyness IPA",
+          "prices": [
+            11
+          ],
+          "detail": [
+            "Vancouver, BC | 6.5% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Cruel Summer",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "sage vodka. arancione aperitivo. rhubarb. strawberry. lemon"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Paradise City",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "tequila. pineapple rum. cointreau",
+            "toasted coconut. lime. cinnamon"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "White Peach Negroni",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "gin. peach liqueur. blanc aperitif. campari"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Spaghetti Western",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "bourbon. cognac. amaro montenegro",
+            "hazelnut. basil *contains nuts"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Cloud 9",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "gin. elderflower. grapefruit. lime. whites"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Rolling Canoe",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "rye. ruby port. ginger. lemon"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Peroni Pilsner",
+          "prices": [
+            8
+          ],
+          "detail": [
+            "Vigevano, Italy | 0.0% | 330ml"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Gallina de Piel Neverwine",
+          "prices": [
+            10,
+            12,
+            50
+          ],
+          "detail": [
+            "Albarino | Spain | 0.0%"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Noughty Rouge",
+          "prices": [
+            10,
+            12,
+            50
+          ],
+          "detail": [
+            "Syrah | South Africa | 0.5%"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Freixenet Sparkling Wine",
+          "prices": [
+            8,
+            10,
+            40
+          ],
+          "detail": [
+            "Spain | 0.05%"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Banded Peak Microburst Hazy IPA",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Calgary, AB | 6.1% | 16oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Four Winds Nectarous Dry-Hopped Sour",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Delta, BC | 5.5% | 15oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Dandy The Julia Peach Cobbler Sour",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Calgary, AB | 5.0% | 15oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Polyrhythm Matinee Lemon Cream Tart Ale",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Edmonton, AB | 5.0% | 15oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Born Arm Candy Milk Stout",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Calgary, AB | 6.5% | 15oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Fallentimber Honey Buck",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Water Valley, AB | 5.0% | 15oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Uncommon Tropical Cider",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Calgary, AB | 6.0% | 15oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Chimay Blue Strong Dark Ale",
+          "prices": [
+            12
+          ],
+          "detail": [
+            "Belgium | 9.0% | 10oz"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Michelob Ultra",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "USA | 4.0% | 355ml"
+          ],
+          "section": "beer",
+          "outOfScope": false,
+          "flags": []
+        }
+      ],
+      "unparsed": [
+        "DRINKS",
+        "wine",
+        "Bartender's Monthly Feature: Cas"
+      ]
+    },
+    "calgary-food": {
+      "items": [
+        {
+          "name": "French Fries",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Garlic Aioli"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Hummus Chips",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Marash Chili, Preserved Lemon"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Garlic Bread",
+          "prices": [
+            12
+          ],
+          "detail": [
+            "Cheese Curd"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Cashews",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Salt & Vinegar"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Eggplant Fries",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Green Harissa Yogurt"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Roasted Olives",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Herbs, Orange, Chili"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Bread & Butter",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Smoked Tallow, Charred Onion",
+            "vegetables"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Spiced Beet Salad",
+          "prices": [
+            16
+          ],
+          "detail": [
+            "Whipped Feta, Pickled Shallots, Herbs, Pistachio"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Endive",
+          "prices": [
+            16
+          ],
+          "detail": [
+            "Apple Vinaigrette, Fontina, Pecan"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Crispy Smashed Potatoes",
+          "prices": [
+            15
+          ],
+          "detail": [
+            "Charred Shallot Aioli, Avonlea Cheddar, Chive"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Wood Grilled Asparagus",
+          "prices": [
+            18
+          ],
+          "detail": [
+            "Crab, Vadouvan Cream, Brioche"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Smashed Cucumbers",
+          "prices": [
+            18
+          ],
+          "detail": [
+            "Green Tahini Dressing, Toasted Almond, Chili"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Bibb Lettuce",
+          "prices": [
+            16
+          ],
+          "detail": [
+            "Jalapeño Cream, Puffed Grains, Alpine Cheese"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Snap Peas",
+          "prices": [
+            17
+          ],
+          "detail": [
+            "‘Nduja Dressing, Fennel, Pecorino, Bacon Gremolata"
+          ],
+          "section": "snacks",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Margherita",
+          "prices": [
+            20
+          ],
+          "detail": [
+            "Tomato, Mozzarella, Basil"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Chicken Sausage",
+          "prices": [
+            24
+          ],
+          "detail": [
+            "Bacon, Garlic Bechamel, Mushroom, Jalapeño"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Five Cheese",
+          "prices": [
+            23
+          ],
+          "detail": [
+            "Provolone, Fontina, Fior di Latte, Oka, Parmesan"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Fennel Salami",
+          "prices": [
+            25
+          ],
+          "detail": [
+            "Onion, Calabrian Chili, Caramelized Honey"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Italian Sausage",
+          "prices": [
+            24
+          ],
+          "detail": [
+            "Confit Garlic, Charred Kale, Roasted Pepper, Pecorino"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Oysters 1/2 dozen",
+          "prices": [
+            26
+          ],
+          "detail": [
+            "Dill Pickle Granita"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Tuna Crudo",
+          "prices": [
+            20
+          ],
+          "detail": [
+            "Smoked Tonnato, Puttanesca Vinaigrette, Fried Caper, Mint"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Wagyu Beef Carpaccio",
+          "prices": [
+            20
+          ],
+          "detail": [
+            "Mushroom Vinaigrette, Mushroom Salad"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Lamb Sausage",
+          "prices": [
+            18
+          ],
+          "detail": [
+            "Cilantro Vinaigrette, Labneh, Fried Egg"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Burrata Cheese",
+          "prices": [
+            23
+          ],
+          "detail": [
+            "Poached Rhubarb, Strawberry Jam, Olive Oil"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Grilled Octopus Salad",
+          "prices": [
+            19
+          ],
+          "detail": [
+            "Orange, Fennel, Sherry Vinaigrette"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Mushrooms on Toast",
+          "prices": [
+            19
+          ],
+          "detail": [
+            "Mushroom Parfait, Black Truffle, Chervil",
+            "large plates"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Grilled Farm Chicken",
+          "prices": [
+            40
+          ],
+          "detail": [
+            "Chicken Sausage, Dill Gravy, Fries"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Maple BBQ Rainbow Trout",
+          "prices": [
+            38
+          ],
+          "detail": [
+            "Creamed Kale, Smoked Potato Purée"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Wood Grilled Beef Strip Steak",
+          "prices": [
+            52
+          ],
+          "detail": [
+            "Béarnaise, Charred Shallot, Pommes Paillasson, Wild Mushroom Jus"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Wood Roasted Halibut",
+          "prices": [
+            57
+          ],
+          "detail": [
+            "Crab Butter, Snap Peas, Leeks, Brioche"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Grilled Lamb Saddle",
+          "prices": [
+            47
+          ],
+          "detail": [
+            "Warm Merguez Potato Salad, Tender Greens, Labneh, Mint"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Wood Roasted Half Duck",
+          "prices": [
+            46
+          ],
+          "detail": [
+            "Turnips, Bitter Greens, Black Garlic Emulsion"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "26oz Wood Grilled Beef Ribeye",
+          "prices": [
+            125
+          ],
+          "detail": [
+            "Pomme Aligot, Green Peppercorn, Smoked Bone Marrow Jus"
+          ],
+          "section": "small plates",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Italian Pork Sausage",
+          "prices": [
+            23
+          ],
+          "detail": [
+            "Conchiglie, Calabrian Chili"
+          ],
+          "section": "pasta",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Ricotta Dumplings",
+          "prices": [
+            22
+          ],
+          "detail": [
+            "Vodka Tomato Sauce, Basil"
+          ],
+          "section": "pasta",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Shrimp & Crab",
+          "prices": [
+            25
+          ],
+          "detail": [
+            "Linguini, Brown Butter, Chili"
+          ],
+          "section": "pasta",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Bigoli",
+          "prices": [
+            23
+          ],
+          "detail": [
+            "Pomodoro, Crushed Olive, Caper, Parsley"
+          ],
+          "section": "pasta",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Rigatoni",
+          "prices": [
+            22
+          ],
+          "detail": [
+            "Truffled Mushroom, Parmesan Sauce"
+          ],
+          "section": "pasta",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Add Black Truffle",
+          "prices": [
+            10
+          ],
+          "detail": [],
+          "section": "pasta",
+          "outOfScope": false,
+          "flags": []
+        }
+      ],
+      "unparsed": []
+    },
+    "calgary-matinee-late-night": {
+      "items": [
+        {
+          "name": "French Fries",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Garlic Aioli"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Garlic Bread",
+          "prices": [
+            12
+          ],
+          "detail": [
+            "Cheese Curd"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Eggplant Fries",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Green Harissa Yogurt"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Hummus Chips",
+          "prices": [
+            9
+          ],
+          "detail": [
+            "Marash Chili, Preserved Lemon"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Roasted Olives",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Herbs, Orange, Chili"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Cashews",
+          "prices": [
+            10
+          ],
+          "detail": [
+            "Salt & Vinegar"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Spiced Beet Salad",
+          "prices": [
+            16
+          ],
+          "detail": [
+            "Whipped Feta, Pickled Shallots, Herbs, Pistachio"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Bibb Lettuce",
+          "prices": [
+            16
+          ],
+          "detail": [
+            "Jalapeño Cream, Puffed Grains, Alpine Cheese"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Tuna Crudo",
+          "prices": [
+            20
+          ],
+          "detail": [
+            "Smoked Tonnato, Puttanesca Vinaigrette, Fried Caper, Mint"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Oysters 1/2 dozen",
+          "prices": [
+            26
+          ],
+          "detail": [
+            "Dill Pickle Granita"
+          ],
+          "section": "snacks & salads",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Margherita",
+          "prices": [
+            20
+          ],
+          "detail": [
+            "Tomato, Mozzarella, Basil"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Chicken Sausage",
+          "prices": [
+            24
+          ],
+          "detail": [
+            "Bacon, Garlic Bechamel, Mushroom, Jalapeño"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Five Cheese",
+          "prices": [
+            23
+          ],
+          "detail": [
+            "Provolone, Fontina, Fior di Latte, Oka, Parmesan"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Fennel Salami",
+          "prices": [
+            25
+          ],
+          "detail": [
+            "Onion, Calabrian Chili, Caramelized Honey"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        },
+        {
+          "name": "Italian Sausage",
+          "prices": [
+            24
+          ],
+          "detail": [
+            "Confit Garlic, Charred Kale, Roasted Pepper, Pecorino",
+            "DESSERTS ARE AVAILABLE ALL DAY"
+          ],
+          "section": "pizza",
+          "outOfScope": false,
+          "flags": []
+        }
+      ],
+      "unparsed": [
+        "AFTERNOON & LATE NIGHT"
+      ]
+    }
+  }
+}

@@ -54,7 +54,7 @@ export const data = {
         "French Fries",
         "Burrata Cheese",
         "Tuna Crudo",
-        "Wood Roasted Cod"
+        "Wood Roasted Halibut"
       ],
       "avoid": "Very heavy red-meat-only tables may want a red after the first round.",
       "say": "If you want something bright to start, the Blue Mountain Brut is crisp BC bubbles. It is great with oysters, fries, and anything salty or creamy.",
@@ -118,7 +118,7 @@ export const data = {
         "Italian Sausage",
         "Lamb Sausage",
         "Burrata Cheese",
-        "Chicken Sausage pizza"
+        "Chicken Sausage"
       ],
       "avoid": "Do not describe it as sweet unless you taste and confirm the exact sweetness.",
       "say": "This is a chilled sparkling red. It is fruity, not silly, and it is excellent with sausage, salami, cheese, and pizza.",
@@ -180,6 +180,7 @@ export const data = {
       "tenSecond": "The crisp, peppery white — my pick for green, tangy, spicy, or herb-driven plates.",
       "profile": "Lime, green apple, white pepper, herbs, and a very food-friendly snap.",
       "pair": [
+        "Wood Grilled Asparagus",
         "Smashed Cucumbers",
         "Eggplant Fries",
         "Hummus Chips",
@@ -229,7 +230,7 @@ export const data = {
         },
         {
           "cue": "I want something that goes with a bit of everything.",
-          "reply": "That's its job — fresh enough for seafood, textured enough for trout, squash, or burrata."
+          "reply": "That's its job — fresh enough for seafood, textured enough for trout or burrata."
         }
       ],
       "pronunciation": {
@@ -243,17 +244,16 @@ export const data = {
         "sweetness": "dry"
       },
       "structureNote": "Loire Chenin ranges dry to off-dry — confirm sweetness before promising bone-dry.",
-      "tenSecond": "The flexible middle white — fresh enough for seafood, textured enough for trout, squash, and burrata.",
+      "tenSecond": "The flexible middle white — fresh enough for seafood, textured enough for trout and burrata.",
       "profile": "A flexible white with brightness and some roundness. It can handle seafood richness and sweet-savory dishes.",
       "pair": [
         "Grilled Octopus Salad",
         "Maple BBQ Rainbow Trout",
-        "Wood Roasted Cod",
-        "Wood Grilled Winter Squash",
+        "Wood Roasted Halibut",
         "Burrata Cheese"
       ],
       "avoid": "Sweetness is not confirmed; avoid saying bone dry until tasted.",
-      "say": "The Chenin is a great middle lane: fresh enough for seafood, but textured enough for trout, squash, and burrata.",
+      "say": "The Chenin is a great middle lane: fresh enough for seafood, but textured enough for trout and burrata.",
       "mnemonic": "Hip Hop Chenin = flexible flow = bridges crisp and rich.",
       "aliases": [
         "chenin",
@@ -375,7 +375,7 @@ export const data = {
       "profile": "Riesling is the problem solver for spice, pickle, honey, jalapeno, and salty food. It can be dry or off-dry depending on the wine.",
       "pair": [
         "Oysters 1/2 dozen",
-        "Brussels Sprouts",
+        "Snap Peas",
         "Bibb Lettuce",
         "Chicken Sausage",
         "Italian Pork Sausage"
@@ -483,7 +483,7 @@ export const data = {
         },
         {
           "cue": "Is Chardonnay oaky?",
-          "reply": "This one is more ripe fruit and texture than loud oak; it's the fuller white for trout, cod, crab, and creamy pasta."
+          "reply": "This one is more ripe fruit and texture than loud oak; it's the fuller white for trout, halibut, crab, and creamy pasta."
         }
       ],
       "pronunciation": {
@@ -497,17 +497,17 @@ export const data = {
         "sweetness": "dry"
       },
       "structureNote": "Oak and texture not confirmed at bottle level — taste to gauge how rich it reads.",
-      "tenSecond": "The fuller white lane — ripe lemon and pear with enough roundness for trout, cod, crab, and buttery pasta.",
+      "tenSecond": "The fuller white lane — ripe lemon and pear with enough roundness for trout, halibut, crab, and buttery pasta.",
       "profile": "A richer white lane for buttery, creamy, smoked, or seafood dishes with weight.",
       "pair": [
         "Maple BBQ Rainbow Trout",
-        "Wood Roasted Cod",
+        "Wood Roasted Halibut",
         "Shrimp & Crab",
         "Ricotta Dumplings",
         "Garlic Bread"
       ],
       "avoid": "If a guest wants very lean and crisp, steer to Gruner or bubbles.",
-      "say": "For a fuller white, I would use the Spanish Chardonnay. It has enough roundness for trout, cod, crab, and buttery pasta.",
+      "say": "For a fuller white, I would use the Spanish Chardonnay. It has enough roundness for trout, halibut, crab, and buttery pasta.",
       "mnemonic": "Cerrón Blanco = Spanish Chardonnay = the round white answer.",
       "aliases": [
         "chardonnay",
@@ -568,6 +568,7 @@ export const data = {
         "Tuna Crudo",
         "Grilled Octopus Salad",
         "Smashed Cucumbers",
+        "Snap Peas",
         "Fennel Salami"
       ],
       "avoid": "Not the richest choice for steak or duck.",
@@ -611,7 +612,7 @@ export const data = {
         },
         {
           "cue": "Something easy and crowd-pleasing?",
-          "reply": "This is it — friendly with salad, pizza, squash, and chicken, and it won't divide the table."
+          "reply": "This is it — friendly with salad, pizza, snap peas, and chicken, and it won't divide the table."
         }
       ],
       "pronunciation": {
@@ -624,17 +625,17 @@ export const data = {
         "tannin": "low",
         "sweetness": "dry"
       },
-      "tenSecond": "The clean dry rose — easy red berry, refreshing, friendly with salad, pizza, squash, and chicken.",
+      "tenSecond": "The clean dry rose — easy red berry, refreshing, friendly with salad, pizza, snap peas, and chicken.",
       "profile": "A clean dry rose for guests who want refreshing without the spritzy/salty Txakoli character.",
       "pair": [
         "Spiced Beet Salad",
         "Endive",
         "Margherita",
-        "Wood Grilled Winter Squash",
+        "Snap Peas",
         "Grilled Farm Chicken"
       ],
       "avoid": "Too light for ribeye as the main pairing.",
-      "say": "This is the easy dry rose: clean red berry, refreshing, and very friendly with salad, pizza, squash, and chicken.",
+      "say": "This is the easy dry rose: clean red berry, refreshing, and very friendly with salad, pizza, snap peas, and chicken.",
       "mnemonic": "Eins Zwei = one-two = the easy 1-2 dry rose.",
       "aliases": [
         "rose",
@@ -941,11 +942,10 @@ export const data = {
         "sweetness": "dry"
       },
       "tenSecond": "The darker, fuller Spanish red — plum, spice, and smoky earth for lamb, sausage, and ribeye.",
-      "profile": "A fuller, darker red for lamb, sausage, ribeye, roasted squash, and smoky or spicy richness.",
+      "profile": "A fuller, darker red for lamb, sausage, ribeye, and smoky or spicy richness.",
       "pair": [
         "Lamb Sausage",
         "Italian Sausage",
-        "Wood Grilled Winter Squash",
         "Grilled Lamb Saddle",
         "26oz Wood Grilled Beef Ribeye"
       ],
@@ -1118,7 +1118,7 @@ export const data = {
         "Mount Eden Wolff Vineyard",
         "Meursault"
       ],
-      "familiar": "Same grape. Fuller white lane with pear, ripe lemon, and enough roundness for seafood, butter, trout, cod, crab, and creamy pasta.",
+      "familiar": "Same grape. Fuller white lane with pear, ripe lemon, and enough roundness for seafood, butter, trout, halibut, crab, and creamy pasta.",
       "different": "It may not read as a heavy butter-and-vanilla Chardonnay.",
       "phrase": "This is our fuller Chardonnay-style glass; if you want a more classic premium Chardonnay bottle, I can show you Chablis, Mount Eden, or Meursault."
     },
@@ -1584,7 +1584,7 @@ export const data = {
       "menu": "Marash Chili, Preserved Lemon",
       "flavor": "tangy, chili, lemon, creamy chickpea",
       "wine": "Hiedler Löss",
-      "cocktail": "Short Film or Spicy Sandia",
+      "cocktail": "Spicy Sandia",
       "zero": "Short Film",
       "why": "Citrus and chili call for a high-acid white or zesty zero-proof; freshness lifts the lemon and tames the Marash heat.",
       "flags": [
@@ -1929,24 +1929,50 @@ export const data = {
       ]
     },
     {
-      "id": "brussels-sprouts",
-      "name": "Brussels Sprouts",
+      "id": "wood-grilled-asparagus",
+      "name": "Wood Grilled Asparagus",
       "group": "food",
       "category": "Vegetables",
-      "price": "17",
-      "menu": "Tagine Spiced Honey, Pickled Raisins, Crispy Chickpeas, Goats Gouda",
-      "flavor": "sweet-spiced, pickle, bitter greens, cheese",
-      "wine": "Darting Dürkheimer Fronhof",
-      "cocktail": "Cruel Summer",
-      "zero": "Sunrise Spritz",
-      "why": "Honey-spiced sweetness and bitter sprouts are safest with off-dry Riesling freshness; a touch of sweetness tames the spice and acid balances the bitterness.",
+      "price": "18",
+      "menu": "Crab, Vadouvan Cream, Brioche",
+      "flavor": "green, smoky, sweet crab, curry cream",
+      "wine": "Hiedler Löss",
+      "cocktail": "Cloud 9",
+      "zero": "Gallina de Piel Neverwine",
+      "why": "Asparagus fights most wines, but Grüner Veltliner is its classic partner — the white-pepper herbal note echoes the green flavours while high acid cuts the vadouvan cream and stays light with crab.",
       "flags": [
-        "dairy"
+        "shellfish",
+        "dairy",
+        "gluten"
       ],
       "tags": [
         "food",
-        "spice",
-        "vegetable"
+        "vegetable",
+        "seafood",
+        "green"
+      ]
+    },
+    {
+      "id": "snap-peas",
+      "name": "Snap Peas",
+      "group": "food",
+      "category": "Vegetables",
+      "price": "17",
+      "menu": "'Nduja Dressing, Fennel, Pecorino, Bacon Gremolata",
+      "flavor": "sweet peas, spicy 'nduja, salty cheese, pork",
+      "wine": "Ameztoi Rubentis",
+      "cocktail": "Cruel Summer",
+      "zero": "Sunrise Spritz",
+      "why": "Spicy 'nduja and salty pecorino want acid and cool fruit with no tannin — the lightly spritzy rosé cools the chili and scrubs the pork fat while the peas stay sweet.",
+      "flags": [
+        "pork",
+        "dairy",
+        "chili"
+      ],
+      "tags": [
+        "food",
+        "vegetable",
+        "spice"
       ]
     },
     {
@@ -1993,29 +2019,6 @@ export const data = {
         "food",
         "green",
         "spice"
-      ]
-    },
-    {
-      "id": "wood-grilled-winter-squash",
-      "name": "Wood Grilled Winter Squash",
-      "group": "food",
-      "category": "Vegetables",
-      "price": "17",
-      "menu": "Peanut Pesto, Pickled Cranberry, Guanciale, Fried Herbs",
-      "flavor": "smoky squash, peanut, pickle, pork, herbs",
-      "wine": "Bodega Cerrón Remordimiento Tinto",
-      "cocktail": "Cruel Summer",
-      "zero": "Noughty Rouge",
-      "why": "Sweet squash, smoke, peanut, and guanciale need fruit, spice, and enough body; matching weight and a little fruit balance the salt and smoke.",
-      "flags": [
-        "peanut",
-        "pork"
-      ],
-      "tags": [
-        "food",
-        "spice",
-        "smoke",
-        "nuts"
       ]
     },
     {
@@ -2321,22 +2324,22 @@ export const data = {
       ]
     },
     {
-      "id": "wood-roasted-cod",
-      "name": "Wood Roasted Cod",
+      "id": "wood-roasted-halibut",
+      "name": "Wood Roasted Halibut",
       "group": "food",
       "category": "Main",
       "price": "57",
-      "menu": "Shellfish Broth, Choron Emulsion, Sourdough, Bitter Greens",
-      "flavor": "cod, shellfish broth, tomato emulsion, greens",
+      "menu": "Crab Butter, Snap Peas, Leeks, Brioche",
+      "flavor": "halibut, crab butter, sweet leeks, brioche",
       "wine": "Bodega Cerrón Remordimiento Blanco",
       "cocktail": "Cloud 9",
       "zero": "Gallina de Piel Neverwine",
-      "why": "Richer seafood in a shellfish broth needs a fuller white with enough freshness; body matches the broth and acid keeps the cod clean.",
+      "why": "Butter-basted halibut with sweet crab wants a rounder white that keeps its freshness; body matches the crab butter and acid keeps the fish tasting clean.",
       "flags": [
         "fish",
         "shellfish",
         "gluten",
-        "dairy/egg possible"
+        "dairy"
       ],
       "tags": [
         "food",
@@ -2466,7 +2469,7 @@ export const data = {
       "price": "15",
       "menu": "Salted Chocolate, Sour Cherry",
       "flavor": "chocolate, salt, sour cherry",
-      "wine": "Domaine Pouderoux Vendage",
+      "wine": "Domaine Pouderoux Maury Vendange",
       "cocktail": "Spaghetti Western",
       "zero": "Noughty Rouge",
       "why": "Salted chocolate and sour cherry need a fortified red with matching sweetness; black-cherry fortified wine and tawny port flatter the chocolate and salt.",
@@ -2527,7 +2530,7 @@ export const data = {
       "category": "Floral, tea, citrus",
       "price": "18",
       "profile": "gin, Earl Grey tea, lemon, lavender, milk washed",
-      "pair": "Bibb Lettuce, Spiced Beet Salad, Maple BBQ Rainbow Trout, Wood Roasted Cod",
+      "pair": "Bibb Lettuce, Spiced Beet Salad, Maple BBQ Rainbow Trout, Wood Roasted Halibut",
       "caveat": "Milk washed; confirm dairy-allergy language.",
       "say": "This is floral, tea-driven, and very polished. It works well when a guest wants refreshing but not basic.",
       "tags": [
@@ -2607,7 +2610,7 @@ export const data = {
       "category": "Fruity, tropical, sparkling",
       "price": "17",
       "profile": "sage vodka, arancione aperitivo, rhubarb, strawberry, lemon",
-      "pair": "Burrata Cheese, Brussels Sprouts, Chicken Sausage pizza, Wood Grilled Winter Squash",
+      "pair": "Burrata Cheese, Snap Peas, Chicken Sausage pizza",
       "caveat": "Aperitivo and fruit balance.",
       "say": "Cruel Summer is rhubarb-strawberry with sage and citrus. It is bright enough for spice and rich enough for share plates.",
       "tags": [
@@ -2672,7 +2675,7 @@ export const data = {
       "category": "Floral, tea, citrus",
       "price": "17",
       "profile": "gin, elderflower, grapefruit, lime, egg whites",
-      "pair": "Wood Roasted Cod, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes",
+      "pair": "Wood Roasted Halibut, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes",
       "caveat": "Confirm egg-white allergy and vegan language before recommending.",
       "say": "Cloud 9 is citrusy, floral, and lifted. I would use it for seafood, creamy garlic, or lighter fried plates.",
       "tags": [

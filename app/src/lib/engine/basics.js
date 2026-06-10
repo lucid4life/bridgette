@@ -26,7 +26,7 @@ export const FLOOR_BASICS = {
   // The marquee dishes across the families (9) — the pairings a server meets first.
   pairingFoodIds: [
     'french-fries', 'garlic-bread', 'margherita', 'wood-grilled-beef-strip-steak',
-    'grilled-farm-chicken', 'tuna-crudo', 'burrata-cheese', 'wood-roasted-cod', 'grilled-lamb-saddle'
+    'grilled-farm-chicken', 'tuna-crudo', 'burrata-cheese', 'wood-roasted-halibut', 'grilled-lamb-saddle'
   ],
   // The 5 genuinely hard names to say out loud.
   pronunciationWineIds: [
