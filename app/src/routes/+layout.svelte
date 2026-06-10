@@ -96,12 +96,12 @@
   .topbar.show { display: flex; }
   .topbar-back {
     display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 10px;
-    background: none; border: 1px solid var(--line); border-radius: var(--radius-nav); color: var(--cream);
+    background: none; border: 1px solid var(--line); border-radius: var(--radius-nav); color: var(--text-body);
     font-family: var(--font-display); text-transform: uppercase; font-size: 13px; letter-spacing: .04em;
   }
   .topbar-back .ico { width: 18px; height: 18px; }
-  .topbar-back:hover { background: rgba(255, 238, 215, .06); }
-  .topbar-brand { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em; font-size: 18px; color: var(--cream); }
+  .topbar-back:hover { background: var(--surface-hover); }
+  .topbar-brand { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em; font-size: 18px; color: var(--text-strong); }
   /* A11Y-12: the skip link focuses <main> (tabindex -1); don't show a focus ring on the whole region. */
   main:focus { outline: none; }
 </style>

@@ -28,7 +28,7 @@
       : []
   );
 
-  function ringColor(p: number) { return p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--gold)' : 'var(--accent-dark)'; }
+  function ringColor(p: number) { return p >= 80 ? 'var(--ok)' : p >= 40 ? 'var(--highlight)' : 'var(--accent)'; }
 
 </script>
 
@@ -44,7 +44,7 @@
     {#each deckRings as r}
       <div class="ring-card">
         <div class="ring small" role="img" aria-label={`${r.label}: ${r.pct}% mastered`}
-          style={`--p:${mounted ? r.pct : 0}; background:conic-gradient(${ringColor(r.pct)} calc(var(--p) * 3.6deg), rgba(255,238,215,.12) 0)`}>
+          style={`--p:${mounted ? r.pct : 0}; background:conic-gradient(${ringColor(r.pct)} calc(var(--p) * 3.6deg), var(--surface-track) 0)`}>
           <span aria-hidden="true">{r.pct}%</span>
         </div>
         <div class="ring-label">{r.label}</div>
@@ -57,7 +57,7 @@
     {#each tagRings as r}
       <div class="ring-card">
         <div class="ring small" role="img" aria-label={`${r.label}: ${r.pct}% mastered`}
-          style={`--p:${mounted ? r.pct : 0}; background:conic-gradient(${ringColor(r.pct)} calc(var(--p) * 3.6deg), rgba(255,238,215,.12) 0)`}>
+          style={`--p:${mounted ? r.pct : 0}; background:conic-gradient(${ringColor(r.pct)} calc(var(--p) * 3.6deg), var(--surface-track) 0)`}>
           <span aria-hidden="true">{r.pct}%</span>
         </div>
         <div class="ring-label">{r.label}</div>
@@ -72,7 +72,7 @@
         <h3>Mock Exam</h3>
         <div class="exam-hero">
           <div class="ring small" role="img" aria-label={`Latest exam: ${lastExam.score}%`}
-            style={`--p:${mounted ? lastExam.score : 0}; background:conic-gradient(${ringColor(lastExam.score)} calc(var(--p) * 3.6deg), rgba(255,238,215,.12) 0)`}>
+            style={`--p:${mounted ? lastExam.score : 0}; background:conic-gradient(${ringColor(lastExam.score)} calc(var(--p) * 3.6deg), var(--surface-track) 0)`}>
             <span aria-hidden="true">{lastExam.score}%</span>
           </div>
           <div>
@@ -146,21 +146,21 @@
 </section>
 
 <style>
-  .section-h { font-size: 15px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--gold); }
+  .section-h { font-size: 15px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--highlight); }
   .goal-toggle { display: flex; gap: 8px; margin: 0 0 10px; }
   .rings { display: flex; flex-wrap: wrap; gap: 16px; }
   .ring-card { display: grid; justify-items: center; gap: 6px; }
   .ring.small { width: 92px; height: 92px; }
   .ring.small span { width: 68px; height: 68px; font-size: 22px; }
-  .ring-label { font-size: 13px; color: var(--muted); text-transform: capitalize; }
+  .ring-label { font-size: 13px; color: var(--text-muted); text-transform: capitalize; }
   .weak-list { display: flex; flex-wrap: wrap; gap: 6px; }
-  .weak-pill { display: inline-block; font-size: 12px; padding: 6px 11px; border-radius: 999px; background: rgba(168, 50, 18, .18); border: 1px solid rgba(168, 50, 18, .4); color: var(--cream); text-decoration: none; }
-  .weak-pill:hover { background: rgba(168, 50, 18, .3); }
+  .weak-pill { display: inline-block; font-size: 12px; padding: 6px 11px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 18%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); color: var(--text-strong); text-decoration: none; }
+  .weak-pill:hover { background: color-mix(in srgb, var(--accent) 30%, transparent); }
   .exam-hero { display: flex; align-items: center; gap: 14px; }
   .trend { display: flex; align-items: flex-end; gap: 4px; height: 40px; margin-top: 6px; }
   .trend-bar { display: inline-block; width: 10px; border-radius: 3px 3px 0 0; }
   .exam-table { border-collapse: collapse; width: 100%; }
-  .exam-table th, .exam-table td { text-align: left; padding: 5px 12px 5px 0; font-size: 13px; border-bottom: 1px solid rgba(255, 238, 215, .12); }
-  .exam-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .exam-table tbody th { font-weight: 600; color: var(--cream); }
+  .exam-table th, .exam-table td { text-align: left; padding: 5px 12px 5px 0; font-size: 13px; border-bottom: 1px solid var(--surface-track); }
+  .exam-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+  .exam-table tbody th { font-weight: 600; color: var(--text-strong); }
 </style>

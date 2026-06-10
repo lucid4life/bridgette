@@ -373,54 +373,54 @@
 
 <style>
   /* ── shared section headers (ported) ── */
-  .fg-h { font-size: clamp(20px, 2.4vw, 26px); margin: 22px 0 10px; color: var(--cream); }
-  .sub-h { font-size: 15px; margin: 18px 0 10px; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; }
+  .fg-h { font-size: clamp(20px, 2.4vw, 26px); margin: 22px 0 10px; color: var(--text-strong); }
+  .sub-h { font-size: 15px; margin: 18px 0 10px; color: var(--highlight); text-transform: uppercase; letter-spacing: .06em; }
 
   /* ── MAP: course top ── */
   .course-top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 0 0 8px; }
-  .progress-line { margin: 0; font-weight: 700; color: var(--cream); }
-  .btn.continue { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .progress-line { margin: 0; font-weight: 700; color: var(--text-strong); }
+  .btn.continue { background: var(--highlight); border-color: var(--highlight); color: var(--highlight-ink); }
 
   /* ── MAP: module cards ── */
   .mod-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   @media (max-width: 720px) { .mod-grid { grid-template-columns: 1fr; } }
   .mod-card {
     display: flex; flex-direction: column; gap: 4px; text-align: left; width: 100%;
-    background: rgba(255, 238, 215, .05); color: var(--cream);
+    background: var(--surface-card); color: var(--text-strong);
     border: 1px solid var(--line); border-radius: var(--radius-card); padding: 16px; min-height: 120px;
   }
-  .mod-card:hover { border-color: var(--gold); }
-  .mod-card.done { border-color: var(--green); background: rgba(63, 107, 84, .12); }
+  .mod-card:hover { border-color: var(--highlight); }
+  .mod-card.done { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
   /* Locked cards read as dimmed via a darker fill + dashed border, NOT parent
      opacity — opacity composites text against the page and would drop the badge
      below AA contrast (axe wcag143). Text colours below stay full-contrast. */
-  .mod-card.locked { background: rgba(255, 238, 215, .025); border-style: dashed; }
-  .mod-card.locked .mod-blurb { color: var(--muted); }
-  .mod-num { text-transform: uppercase; letter-spacing: .1em; font-size: 11px; margin: 0; color: var(--gold); }
-  .mod-title { margin: 2px 0; font-size: 18px; color: var(--cream); }
-  .mod-blurb { font-size: 14px; line-height: 1.5; color: var(--muted); }
+  .mod-card.locked { background: var(--surface-card-faint); border-style: dashed; }
+  .mod-card.locked .mod-blurb { color: var(--text-muted); }
+  .mod-num { text-transform: uppercase; letter-spacing: .1em; font-size: 11px; margin: 0; color: var(--highlight); }
+  .mod-title { margin: 2px 0; font-size: 18px; color: var(--text-strong); }
+  .mod-blurb { font-size: 14px; line-height: 1.5; color: var(--text-muted); }
   .mod-foot { margin-top: auto; padding-top: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .jump-hint { font-style: italic; }
 
   /* ── state badges ── */
   .badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: 3px 10px; border-radius: var(--radius-chip); }
-  .badge-done { background: rgba(63, 107, 84, .28); color: var(--cream); border: 1px solid var(--green); }
-  .badge-go { background: rgba(252, 181, 57, .18); color: var(--gold); border: 1px solid rgba(252, 181, 57, .5); }
-  .badge-locked { background: rgba(255, 238, 215, .06); color: var(--cream); border: 1px solid var(--line); }
+  .badge-done { background: color-mix(in srgb, var(--ok) 28%, transparent); color: var(--text-strong); border: 1px solid var(--ok); }
+  .badge-go { background: color-mix(in srgb, var(--highlight) 18%, transparent); color: var(--highlight); border: 1px solid color-mix(in srgb, var(--highlight) 50%, transparent); }
+  .badge-locked { background: var(--surface-hover); color: var(--text-strong); border: 1px solid var(--line); }
   .badge.inline { margin: 0 0 6px; }
 
   /* ── MODULE view ── */
   .module-view .back { margin-bottom: 14px; }
-  .read-intro { color: var(--muted); margin: 0 0 14px; max-width: 70ch; line-height: 1.55; }
-  .read-block { border-left: 4px solid var(--gold); }
-  .read-block h3 { margin: 0 0 6px; color: var(--cream); }
+  .read-intro { color: var(--text-muted); margin: 0 0 14px; max-width: 70ch; line-height: 1.55; }
+  .read-block { border-left: 4px solid var(--highlight); }
+  .read-block h3 { margin: 0 0 6px; color: var(--text-strong); }
   .lesson-body { margin: 6px 0; line-height: 1.55; }
-  .we { background: rgba(252, 181, 57, .1); border: 1px solid rgba(252, 181, 57, .3); border-radius: var(--radius-nav); padding: 10px 12px; margin-top: 10px; font-size: 14px; line-height: 1.5; }
+  .we { background: color-mix(in srgb, var(--highlight) 10%, transparent); border: 1px solid color-mix(in srgb, var(--highlight) 30%, transparent); border-radius: var(--radius-nav); padding: 10px 12px; margin-top: 10px; font-size: 14px; line-height: 1.5; }
 
   /* ── reasoning maps (ported) ── */
   .reasoning { margin: 0 0 8px; }
   .maps { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 8px; }
-  .map-card { background: rgba(255, 238, 215, .04); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 16px; }
+  .map-card { background: var(--surface-card-soft); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 16px; }
   @media (max-width: 800px) { .maps { grid-template-columns: 1fr; } }
 
   /* ── wine read cards ── */
@@ -436,12 +436,12 @@
   .qc-choices { display: grid; gap: 8px; max-width: 640px; }
   .qc-choice {
     display: flex; align-items: center; gap: 10px; text-align: left; width: 100%;
-    background: rgba(255, 238, 215, .05); color: var(--cream);
+    background: var(--surface-card); color: var(--text-strong);
     border: 1px solid var(--line); border-radius: var(--radius-nav); padding: 10px 12px; min-height: 44px;
   }
-  .qc-choice:hover:not(:disabled) { border-color: var(--gold); }
-  .qc-choice.correct { background: rgba(63, 107, 84, .3); border-color: var(--green); }
-  .qc-choice.wrong { background: rgba(168, 50, 18, .25); border-color: var(--accent-dark); }
+  .qc-choice:hover:not(:disabled) { border-color: var(--highlight); }
+  .qc-choice.correct { background: color-mix(in srgb, var(--ok) 30%, transparent); border-color: var(--ok); }
+  .qc-choice.wrong { background: color-mix(in srgb, var(--accent) 25%, transparent); border-color: var(--accent); }
   .qc-key { font-family: var(--font-display); font-weight: 800; opacity: .8; }
   .qc-glyph { font-weight: 800; margin-left: 6px; }
   .qc-result { margin: 8px 0 0; min-height: 1.2em; font-weight: 700; }
@@ -450,21 +450,21 @@
   /* ── complete control + confirmation ── */
   .complete-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
   .btn.complete-btn:disabled { opacity: .5; cursor: not-allowed; }
-  .done-card { margin-top: 16px; padding: 16px; border: 1px solid var(--green); background: rgba(63, 107, 84, .14); border-radius: var(--radius-card); }
-  .done-head { margin: 0 0 12px; font-weight: 800; color: var(--cream); }
+  .done-card { margin-top: 16px; padding: 16px; border: 1px solid var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); border-radius: var(--radius-card); }
+  .done-head { margin: 0 0 12px; font-weight: 800; color: var(--text-strong); }
   .done-links { display: flex; flex-wrap: wrap; gap: 12px; }
 
   /* ── deductive grid (ported) ── */
-  .dg { margin-top: 16px; border-left: 4px solid var(--blue); }
-  .dg h3 { margin: 0 0 4px; color: var(--cream); }
+  .dg { margin-top: 16px; border-left: 4px solid var(--info); }
+  .dg h3 { margin: 0 0 4px; color: var(--text-strong); }
   .dg-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 12px 0; }
   .dg-field { display: grid; gap: 4px; font-size: 13px; }
-  .dg-field select { padding: 9px 10px; border-radius: var(--radius-nav); border: 1px solid var(--line); background: var(--ink-2); color: var(--cream); min-height: 42px; }
+  .dg-field select { padding: 9px 10px; border-radius: var(--radius-nav); border: 1px solid var(--line); background: var(--surface-raised); color: var(--text-strong); min-height: 42px; }
   .dg-actions { margin-bottom: 10px; }
   .dg-hits { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
   .dg-hit { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-nav); }
-  .dg-hit.top { border-color: var(--gold); background: rgba(252, 181, 57, .08); }
-  .dg-lead { font-family: var(--font-display); text-transform: uppercase; font-size: 12px; color: var(--gold); }
+  .dg-hit.top { border-color: var(--highlight); background: color-mix(in srgb, var(--highlight) 8%, transparent); }
+  .dg-lead { font-family: var(--font-display); text-transform: uppercase; font-size: 12px; color: var(--highlight); }
   .dg-grape { font-weight: 800; }
-  .dg-name { color: var(--muted); }
+  .dg-name { color: var(--text-muted); }
 </style>

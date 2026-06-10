@@ -46,16 +46,16 @@
 
 <style>
   .regionmap { margin: 0; }
-  svg { width: 100%; aspect-ratio: 5 / 4; background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius-card); }
+  svg { width: 100%; aspect-ratio: 5 / 4; background: var(--map-bg); border: 1px solid var(--line); border-radius: var(--radius-card); }
   /* UX-15: was opacity .65 (= 4.09:1, a 1.4.3 AA fail); full opacity makes it ~7.6:1. */
-  .country { font-size: 4px; fill: var(--muted); font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; text-anchor: middle; }
-  .dot circle { stroke: var(--ink-3); stroke-width: .6; cursor: pointer; }
-  .dot:hover circle, .dot:focus-visible circle { stroke: var(--cream); stroke-width: 1.2; }
-  .dot-label { font-size: 3px; fill: var(--cream); paint-order: stroke; stroke: var(--ink-3); stroke-width: 1px; opacity: 0; pointer-events: none; text-anchor: middle; }
+  .country { font-size: 4px; fill: var(--map-muted); font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; text-anchor: middle; }
+  .dot circle { stroke: var(--map-edge); stroke-width: .6; cursor: pointer; }
+  .dot:hover circle, .dot:focus-visible circle { stroke: var(--map-fg); stroke-width: 1.2; }
+  .dot-label { font-size: 3px; fill: var(--map-fg); paint-order: stroke; stroke: var(--map-edge); stroke-width: 1px; opacity: 0; pointer-events: none; text-anchor: middle; }
   .dot:hover .dot-label, .dot:focus-visible .dot-label { opacity: 1; }
-  .offpanel { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+  .offpanel { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; font-size: 13px; color: var(--text-muted); }
   .chip-dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
-  .legend { list-style: none; display: flex; gap: 6px 14px; padding: 0; margin: 10px 0 0; font-size: 12px; color: var(--muted); text-transform: capitalize; }
+  .legend { list-style: none; display: flex; gap: 6px 14px; padding: 0; margin: 10px 0 0; font-size: 12px; color: var(--text-muted); text-transform: capitalize; }
   .legend li { display: flex; align-items: center; gap: 6px; }
   .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 </style>

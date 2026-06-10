@@ -124,13 +124,13 @@
   input {
     width: 100%; padding: 12px 15px;
     border-radius: var(--radius-btn); border: 1px solid var(--line);
-    background: rgba(255, 238, 215, .05); color: var(--cream); font-size: 16px;
+    background: var(--surface-card); color: var(--text-strong); font-size: 16px;
   }
-  input::placeholder { color: var(--muted); opacity: 1; }
+  input::placeholder { color: var(--text-muted); opacity: 1; }
 
   .results {
     list-style: none; margin: 8px 0 0; padding: 4px;
-    background: rgba(255, 238, 215, .04); border: 1px solid var(--line);
+    background: var(--surface-card-soft); border: 1px solid var(--line);
     border-radius: var(--radius-nav);
   }
   .results li { margin: 0; }
@@ -140,16 +140,16 @@
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     min-height: 44px; padding: 8px 12px;
     border-radius: var(--radius-nav);
-    color: var(--cream); text-decoration: none;
+    color: var(--text-strong); text-decoration: none;
   }
-  .results a:hover { background: rgba(255, 238, 215, .08); }
-  .results a:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+  .results a:hover { background: var(--surface-hover-strong); }
+  .results a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
 
   .label { font-size: 15px; font-weight: 600; }
   .kind {
     flex: none; font-size: 11px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: .06em; color: var(--gold);
+    text-transform: uppercase; letter-spacing: .06em; color: var(--highlight);
   }
 
-  .empty { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+  .empty { margin: 8px 0 0; color: var(--text-muted); font-size: 14px; }
 </style>

@@ -75,7 +75,7 @@
             <div><b>{totalCards}</b><span class="meta">cards total</span></div>
           </div>
           <p style="margin:16px 0 0"><a class="btn" href="/?start=smart"><svg class="cta-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Start Smart Review</a></p>
-          {#if weakest.length}<p class="meta" style="margin-top:14px">Weakest decks: <strong style="color:var(--cream)">{weakest.join(', ')}</strong></p>{/if}
+          {#if weakest.length}<p class="meta" style="margin-top:14px">Weakest decks: <strong style="color:var(--text-strong)">{weakest.join(', ')}</strong></p>{/if}
         </div>
       {:else if heroMode === 'course'}
         <div class="card">
@@ -151,9 +151,9 @@
 </section>
 
 <style>
-  .onboard { border-left: 4px solid var(--gold); margin-bottom: 18px; }
+  .onboard { border-left: 4px solid var(--highlight); margin-bottom: 18px; }
   .card.link { text-decoration: none; color: inherit; display: block; }
-  .card.link:hover { border-color: var(--gold); }
+  .card.link:hover { border-color: var(--highlight); }
   .today-search { max-width: 520px; margin: 0 0 22px; }
-  .section-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+  .section-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-size: 14px; margin: 0 0 12px; }
 </style>

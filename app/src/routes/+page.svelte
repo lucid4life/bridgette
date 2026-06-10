@@ -528,42 +528,42 @@
   .basics-toggle { display: inline-flex; gap: 8px; }
   .basics-note { margin: 8px 0 0; }
   .session-top { max-width: 520px; margin: 0 auto 12px; }
-  .bar { height: 8px; border-radius: 999px; background: rgba(255, 238, 215, .12); overflow: hidden; }
-  .bar span { display: block; height: 100%; background: var(--gold); transition: width .25s ease; }
+  .bar { height: 8px; border-radius: 999px; background: var(--surface-track); overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--highlight); transition: width .25s ease; }
   .conf { display: flex; align-items: center; gap: 8px; justify-content: center; }
   .choices { flex-direction: column; }
   .choice { justify-content: flex-start; }
   .choice .key { font-family: var(--font-display); font-weight: 800; margin-right: 8px; opacity: .7; }
   .typed-row { display: flex; gap: 8px; justify-content: center; }
-  .typed-row input { flex: 1; max-width: 320px; padding: 11px 14px; border-radius: var(--radius-btn); border: 1px solid var(--line-dark); font-size: 16px; }
+  .typed-row input { flex: 1; max-width: 320px; padding: 11px 14px; border-radius: var(--radius-btn); border: 1px solid var(--line); font-size: 16px; }
   .scenario { font-style: italic; }
-  .gen-nudge { border-left: 2px solid var(--gold); padding-left: 8px; max-width: 480px; margin: 4px auto; text-align: left; }
+  .gen-nudge { border-left: 2px solid var(--highlight); padding-left: 8px; max-width: 480px; margin: 4px auto; text-align: left; }
   .feedback { font-weight: 800; margin: 0; }
-  .feedback.ok { color: var(--green); }
-  .feedback.no { color: var(--accent-dark); }
+  .feedback.ok { color: var(--ok); }
+  .feedback.no { color: var(--accent); }
   .reveal:focus { outline: none; } /* focus moved here programmatically on reveal */
   .q:focus { outline: none; } /* prompt is focused programmatically on card entry (A11Y-N2) */
-  .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
-  .confusion { background: rgba(168, 50, 18, .10); border-radius: var(--radius-nav); padding: 8px 10px; font-size: 13px; margin: 6px 0 0; }
+  .why { background: color-mix(in srgb, var(--info) 12%, transparent); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 4px 0 0; }
+  .confusion { background: color-mix(in srgb, var(--accent) 10%, transparent); border-radius: var(--radius-nav); padding: 8px 10px; font-size: 13px; margin: 6px 0 0; }
   /* Rich miss-feedback banner — you-said (accent) over correct (green). */
-  .miss-banner { display: grid; max-width: 460px; margin: 0 auto; border: 1px solid rgba(168, 50, 18, .3); border-radius: var(--radius-nav); overflow: hidden; text-align: left; }
+  .miss-banner { display: grid; max-width: 460px; margin: 0 auto; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: var(--radius-nav); overflow: hidden; text-align: left; }
   .mb { display: flex; align-items: center; gap: 8px; margin: 0; padding: 9px 12px; font-size: 16px; font-weight: 700; }
   .mb-ic { width: 18px; height: 18px; flex: none; }
   .mb-k { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
-  .mb.said { background: rgba(168, 50, 18, .08); color: var(--accent-dark); }
-  .mb.corr { background: rgba(63, 107, 84, .12); color: var(--green); border-top: 1px solid rgba(63, 107, 84, .22); }
+  .mb.said { background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--accent); }
+  .mb.corr { background: color-mix(in srgb, var(--ok) 12%, transparent); color: var(--ok); border-top: 1px solid color-mix(in srgb, var(--ok) 22%, transparent); }
   /* Expand drawer sections (cream face). */
   .exp-sect { margin: 0 0 11px; text-align: left; }
   .exp-sect:last-child { margin-bottom: 0; }
-  .exp-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; font-weight: 700; color: var(--accent-dark); margin: 0 0 3px; }
-  .exp-t { margin: 0; font-size: 14px; color: var(--ink); }
-  .exp-t.sweet { margin-top: 4px; font-size: 13px; color: var(--muted-paper); }
+  .exp-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; font-weight: 700; color: var(--accent); margin: 0 0 3px; }
+  .exp-t { margin: 0; font-size: 14px; color: var(--text-strong); }
+  .exp-t.sweet { margin-top: 4px; font-size: 13px; color: var(--text-muted); }
   .exp-pills { display: flex; flex-wrap: wrap; gap: 6px; }
   .exp-meters { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
-  .exp-obj { margin: 0 0 6px; font-size: 13px; color: var(--ink); }
-  .exp-obj strong { display: block; color: var(--accent-dark); }
-  .exp-picks { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--ink); }
-  .exp-picks b { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-paper); margin-right: 6px; }
+  .exp-obj { margin: 0 0 6px; font-size: 13px; color: var(--text-strong); }
+  .exp-obj strong { display: block; color: var(--accent); }
+  .exp-picks { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--text-strong); }
+  .exp-picks b { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-right: 6px; }
   .summary-hero { display: flex; align-items: center; gap: 18px; margin: 10px 0 4px; flex-wrap: wrap; animation: hero-in .35s ease both; }
   /* UX-04: the --p ring fill is static-correct (animating the registered --p property
      proved fragile across mount timing); a transform/opacity entrance is the reliable delight. */
@@ -572,18 +572,18 @@
   /* CT-12: respelling as stress-marked syllable chunks (stress = weight + gold underline;
      all syllables stay full-ink so contrast holds — colour is never the only cue). */
   .respell { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; justify-content: center; }
-  .syl.stress { font-weight: 800; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
+  .syl.stress { font-weight: 800; text-decoration: underline; text-decoration-color: var(--highlight); text-underline-offset: 3px; }
   .resp-sep { opacity: .4; margin: 0 1px; }
   .resp-gap { width: 10px; display: inline-block; }
   .explain { margin: 8px 0 0; }
-  .explain-link { color: var(--accent-dark); font-weight: 600; font-size: 14px; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; min-height: 24px; }
-  .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent-dark); border-radius: var(--radius-card); background: rgba(168, 50, 18, .14); }
+  .explain-link { color: var(--accent); font-weight: 600; font-size: 14px; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; min-height: 24px; }
+  .hyper { max-width: 520px; margin: 14px auto 0; padding: 12px 16px; border: 2px solid var(--accent); border-radius: var(--radius-card); background: color-mix(in srgb, var(--accent) 14%, transparent); }
   .deck-tile { display: grid; gap: 4px; text-align: left; cursor: pointer; }
   .deck-name { font-family: var(--font-display); font-size: 17px; text-transform: uppercase; }
   /* UX-01 swipe-to-grade: card follows the finger; snap-back is gated by reduced-motion. */
   .flash { touch-action: pan-y; transition: transform .2s ease; }
   .flash.dragging { transition: none; }
-  .flash.swipe-yes { box-shadow: inset 8px 0 0 -2px var(--green); }
-  .flash.swipe-no { box-shadow: inset -8px 0 0 -2px var(--accent-dark); }
+  .flash.swipe-yes { box-shadow: inset 8px 0 0 -2px var(--ok); }
+  .flash.swipe-no { box-shadow: inset -8px 0 0 -2px var(--accent); }
   @media (prefers-reduced-motion: reduce) { .flash { transition: none; } }
 </style>

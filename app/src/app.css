@@ -1,10 +1,15 @@
 /* app/src/app.css — Bridgette v2 design system. THE visual contract + the
-   visual-regression baseline. Tokens + component classes extracted from
-   docs/v2-mockup/bridgette-app-prototype.html and reconciled with v1's
-   contrast/focus fixes (src/styles.css). Do NOT introduce generic-AI gradients;
-   extend the Bridgette workbook identity. */
+   visual-regression baseline. Three layers:
+     1. PRIMITIVES  — raw palette constants (never consumed by components).
+     2. SEMANTIC    — surface/text/accent roles; the ONLY tokens components use.
+     3. SCOPES      — the always-cream "paper" surfaces (.flash / .card.light /
+        .on-cream / table.matrix) re-map the semantic tokens, which is what makes
+        chips/pills/ghost-buttons restyle themselves without per-surface overrides.
+   Translucent washes derive from semantic solids via color-mix(in srgb, X n%,
+   transparent) — byte-identical to the old rgba() literals, but re-themeable.
+   Do NOT introduce generic-AI gradients; extend the Bridgette workbook identity. */
 :root {
-  /* palette */
+  /* ---- 1. primitives ---- */
   --cream: #ffeed6;
   --paper: #fff8ec;
   --paper-2: #f7dfbf;
@@ -19,8 +24,50 @@
   --green: #3f6b54;
   --muted: #c9bca9;         /* muted text on dark */
   --muted-paper: #44586a;   /* muted text on cream — 5.09:1 (v1 fix) */
-  --line: rgba(255, 238, 215, .14);
   --line-dark: rgba(30, 56, 75, .16);
+
+  /* ---- 2. semantic: surfaces ---- */
+  --surface-canvas: var(--ink-3);
+  --surface-sidebar: linear-gradient(180deg, var(--ink), var(--ink-3));
+  --surface-bar: var(--ink);                                          /* topbar / tabbar */
+  --surface-card: color-mix(in srgb, var(--cream) 5%, transparent);   /* resting card */
+  --surface-card-soft: color-mix(in srgb, var(--cream) 4%, transparent);
+  --surface-card-faint: color-mix(in srgb, var(--cream) 2.5%, transparent);
+  --surface-raised: var(--ink-2);                                     /* opaque raised (ring core, selects, toast) */
+  --surface-hover: color-mix(in srgb, var(--cream) 6%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--cream) 8%, transparent);
+  --surface-track: color-mix(in srgb, var(--cream) 12%, transparent); /* meter/bar tracks + hairlines */
+  --surface-paper: var(--cream);                                      /* the menu-card face (theme-independent) */
+  --line: rgba(255, 238, 215, .14);
+
+  /* ---- 2. semantic: text ---- */
+  --text-strong: var(--cream);
+  --text-body: var(--cream);
+  --text-muted: var(--muted);
+  --text-label: var(--label-light);  /* small caps labels on paper */
+
+  /* ---- 2. semantic: accents ---- */
+  --accent: var(--accent-dark);      /* the action colour: solid buttons, active chips */
+  --accent-ink: var(--cream);        /* text on --accent */
+  --accent-bright: var(--orange);    /* decorative brand pop: active-nav, streak */
+  --highlight: var(--gold);          /* eyebrows, pills, progress fills, lesson rules */
+  --highlight-ink: var(--ink);       /* text on --highlight */
+  --ok: var(--green);                /* status: correct/done */
+  --info: var(--blue);               /* status: explanatory washes, pill.alt */
+  --focus-ring: var(--accent-dark);
+
+  /* ---- 2. semantic: pills (tone flips on paper) ---- */
+  --pill-tone: var(--gold);
+  --pill-tint: 18%;
+
+  /* ---- 2. semantic: inverted table header + map panels (data-viz stays dark-legible) ---- */
+  --table-head-bg: var(--ink-2);
+  --table-head-fg: var(--cream);
+  --map-bg: var(--ink-2);
+  --map-fg: var(--cream);
+  --map-muted: var(--muted);
+  --map-grid: color-mix(in srgb, var(--cream) 12%, transparent);
+  --map-edge: var(--ink-3);
 
   /* type */
   --font-display: "Oswald", Impact, "Arial Narrow", sans-serif;
@@ -58,13 +105,36 @@
   --screen-max: 1100px;
 }
 
+/* ---- 3. scopes ----
+   .on-dark marks the dark shell screens (focus ring needs the bright highlight
+   there). The paper scope is every always-cream surface: re-mapping the semantic
+   tokens here is what used to be the ".flash .btn.ghost / .card.light .chip /
+   .on-cream .pill" override block — now the components restyle themselves. */
+.on-dark { --focus-ring: var(--gold); }
+.on-cream, .card.light, .flash, table.matrix {
+  --text-strong: var(--ink);
+  --text-body: var(--ink);
+  --text-muted: var(--muted-paper);
+  --line: var(--line-dark);
+  --surface-card: color-mix(in srgb, var(--ink) 6%, transparent);
+  --surface-card-soft: color-mix(in srgb, var(--ink) 4%, transparent);
+  --surface-hover: color-mix(in srgb, var(--ink) 5%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--ink) 9%, transparent);
+  --surface-track: color-mix(in srgb, var(--ink) 10%, transparent);
+  --focus-ring: var(--accent-dark);  /* v1 fix: dark accent ring on the cream faces */
+  --pill-tone: var(--accent);
+  --pill-tint: 12%;
+  --ghost-bg: color-mix(in srgb, var(--ink) 4%, transparent);
+  --ghost-bg-hover: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: var(--ink-3);
-  color: var(--cream);
+  background: var(--surface-canvas);
+  color: var(--text-body);
   -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3, .brand, .nav-label, .eyebrow {
@@ -75,15 +145,13 @@ h1, h2, h3, .brand, .nav-label, .eyebrow {
 button { font: inherit; cursor: pointer; color: inherit; } /* UA default button text is dark — inherit the surface colour */
 a { color: inherit; }
 
-/* focus-visible choreography carried from v1: dark accent by default, gold on
-   dark surfaces, dark accent restored on the light flashcard faces (the v1
-   specificity fix: .section.dark .flashcard-face out-specifies .section.dark). */
-:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 3px; }
-.on-dark :focus-visible { outline-color: var(--gold); }
-.flashcard-face :focus-visible { outline-color: var(--accent-dark); }
+/* focus-visible choreography carried from v1, now token-routed: --focus-ring is
+   the bright highlight inside .on-dark and the dark accent inside the paper scope
+   (the cream flashcard faces), so the old specificity dance collapses. */
+:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 .skip-link {
   position: absolute; left: -999px; top: 0; z-index: 50;
-  background: var(--gold); color: var(--ink); padding: 10px 16px;
+  background: var(--highlight); color: var(--highlight-ink); padding: 10px 16px;
   border-radius: var(--radius-nav); font-weight: 800;
 }
 .skip-link:focus { left: 8px; top: 8px; }
@@ -99,25 +167,25 @@ a { color: inherit; }
 /* ---- app shell ---- */
 .app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; min-height: 100dvh; }
 .sidebar {
-  background: linear-gradient(180deg, var(--ink), var(--ink-3));
+  background: var(--surface-sidebar);
   border-right: 1px solid var(--line);
   padding: 22px 14px; display: flex; flex-direction: column; gap: 6px;
   position: sticky; top: 0; height: 100vh; height: 100dvh;
 }
-.brand { font-size: 26px; line-height: .95; color: var(--cream); padding: 6px 10px 18px; }
-.brand small { display: block; font-size: 11px; color: var(--gold); letter-spacing: .18em; margin-top: 6px; }
+.brand { font-size: 26px; line-height: .95; color: var(--text-strong); padding: 6px 10px 18px; }
+.brand small { display: block; font-size: 11px; color: var(--highlight); letter-spacing: .18em; margin-top: 6px; }
 .nav-item {
   display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid transparent;
-  border-radius: var(--radius-nav); color: var(--cream); background: none; width: 100%;
+  border-radius: var(--radius-nav); color: var(--text-body); background: none; width: 100%;
   text-align: left; min-height: 46px; text-decoration: none;
 }
 .nav-item .ico { width: 22px; height: 22px; flex: none; opacity: .9; }
 .nav-item .nav-label { font-size: 15px; font-weight: 600; font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em; }
-.nav-item:hover { background: rgba(255, 238, 215, .06); border-color: var(--line); }
-.nav-item[aria-current="page"] { background: rgba(241, 86, 35, .16); border-color: var(--orange); }
+.nav-item:hover { background: var(--surface-hover); border-color: var(--line); }
+.nav-item[aria-current="page"] { background: color-mix(in srgb, var(--accent-bright) 16%, transparent); border-color: var(--accent-bright); }
 .nav-item[aria-current="page"] .ico { opacity: 1; }
 .sidebar .spacer { flex: 1; }
-.sidebar .foot { padding: 10px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); }
+.sidebar .foot { padding: 10px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--line); }
 
 .main { min-width: 0; display: flex; flex-direction: column; }
 .topbar { display: none; }
@@ -127,25 +195,39 @@ a { color: inherit; }
 .tabbar { display: none; }
 
 /* ---- shared bits ---- */
-.h-eyebrow { color: var(--gold); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; margin: 0 0 4px; font-family: var(--font-display); }
-.screen h1 { font-size: clamp(30px, 4vw, 46px); margin: 0 0 4px; color: var(--cream); }
-.sub { color: var(--muted); margin: 0 0 22px; max-width: 60ch; }
+.h-eyebrow { color: var(--highlight); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; margin: 0 0 4px; font-family: var(--font-display); }
+.screen h1 { font-size: clamp(30px, 4vw, 46px); margin: 0 0 4px; color: var(--text-strong); }
+.sub { color: var(--text-muted); margin: 0 0 22px; max-width: 60ch; }
 .grid { display: grid; gap: 16px; }
 .cols-3 { grid-template-columns: repeat(3, 1fr); }
 .cols-2 { grid-template-columns: repeat(2, 1fr); }
-.card { background: rgba(255, 238, 215, .05); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 18px; box-shadow: var(--shadow-1); }
-.card.light { background: var(--cream); color: var(--ink); border-color: var(--line-dark); box-shadow: var(--shadow-2); }
+.card { background: var(--surface-card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 18px; box-shadow: var(--shadow-1); }
+.card.light { background: var(--surface-paper); color: var(--text-body); border-color: var(--line); box-shadow: var(--shadow-2); }
 .card h3 { margin: 0 0 8px; font-size: 18px; }
 .tile-ico { width: 18px; height: 18px; vertical-align: -3px; margin-right: 6px; }
-.pill { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 4px 9px; border-radius: var(--radius-chip); background: rgba(252, 181, 57, .18); color: var(--gold); border: 1px solid rgba(252, 181, 57, .4); }
-.btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--accent-dark); background: var(--accent-dark); color: var(--cream); padding: 12px 18px; border-radius: var(--radius-btn); font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: .04em; text-decoration: none; }
+.pill {
+  display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+  padding: 4px 9px; border-radius: var(--radius-chip);
+  background: color-mix(in srgb, var(--pill-tone) var(--pill-tint), transparent);
+  color: var(--pill-tone);
+  border: 1px solid color-mix(in srgb, var(--pill-tone) 40%, transparent);
+}
+/* The "alt" pill (dish tags etc.) lives on paper surfaces: info-tinted, ink text. */
+.pill.alt {
+  background: color-mix(in srgb, var(--info) 16%, transparent);
+  color: var(--text-strong);
+  border-color: color-mix(in srgb, var(--info) 40%, transparent);
+}
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); padding: 12px 18px; border-radius: var(--radius-btn); font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: .04em; text-decoration: none; }
 .btn:hover { filter: brightness(1.08); }
-.btn.ghost { background: transparent; border-color: var(--line); color: var(--cream); }
-.btn.gold { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.btn.ghost { background: var(--ghost-bg, transparent); border-color: var(--line); color: var(--text-body); }
+.btn.ghost:hover { background: var(--ghost-bg-hover, var(--ghost-bg, transparent)); }
+/* On paper the ghost hover is the ink veil alone (no brightness shift). */
+.on-cream .btn.ghost:hover, .card.light .btn.ghost:hover, .flash .btn.ghost:hover { filter: none; }
+.btn.gold { background: var(--highlight); border-color: var(--highlight); color: var(--highlight-ink); }
 .btn:disabled { opacity: .5; cursor: default; filter: none; }
 .cta-ico { width: 13px; height: 13px; vertical-align: -1px; margin-right: 2px; }
-.meta { color: var(--muted); font-size: 13px; }
-.on-cream .meta, .card.light .meta { color: var(--muted-paper); }
+.meta { color: var(--text-muted); font-size: 13px; }
 
 /* Today */
 .hero { display: grid; grid-template-columns: 1.3fr .7fr; gap: 16px; margin-bottom: 18px; }
@@ -153,89 +235,45 @@ a { color: inherit; }
 /* Animatable conic ring: @property lets the gradient stop tween (spec §6 "rings
    animate up"). The global reduced-motion branch zeroes the transition. */
 @property --p { syntax: '<number>'; inherits: false; initial-value: 0; }
-.ring { --p: 78; width: 128px; height: 128px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto; background: conic-gradient(var(--gold) calc(var(--p) * 1%), rgba(255, 238, 215, .12) 0); transition: --p .6s ease; }
-.ring span { width: 96px; height: 96px; border-radius: 50%; background: var(--ink-2); display: grid; place-items: center; font-family: var(--font-display); font-size: 30px; }
+.ring { --p: 78; width: 128px; height: 128px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto; background: conic-gradient(var(--highlight) calc(var(--p) * 1%), var(--surface-track) 0); transition: --p .6s ease; }
+.ring span { width: 96px; height: 96px; border-radius: 50%; background: var(--surface-raised); display: grid; place-items: center; font-family: var(--font-display); font-size: 30px; }
 .stat { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
 .stat b { font-family: var(--font-display); font-size: 30px; display: block; line-height: 1; }
-.streak { color: var(--orange); font-weight: 800; }
+.streak { color: var(--accent-bright); font-weight: 800; }
 
 /* Reference: chips + matrix */
 .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-.chip { padding: 9px 14px; border-radius: var(--radius-chip); border: 1px solid var(--line); background: rgba(255, 238, 215, .05); color: var(--cream); font-size: 13px; font-weight: 700; }
-.chip[aria-pressed="true"] { background: var(--accent-dark); border-color: var(--accent-dark); color: var(--cream); }
+.chip { padding: 9px 14px; border-radius: var(--radius-chip); border: 1px solid var(--line); background: var(--surface-card); color: var(--text-body); font-size: 13px; font-weight: 700; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .winecard { display: grid; gap: 8px; }
 .winecard .name { font-family: var(--font-display); font-size: 20px; }
-.speak { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--line-dark); background: rgba(30, 56, 75, .06); color: var(--accent-dark); display: inline-grid; place-items: center; font-size: 18px; }
-.speak[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: var(--ink); }
-table.matrix { width: 100%; border-collapse: collapse; background: var(--cream); color: var(--ink); border-radius: 10px; overflow: hidden; font-size: 13px; }
-.matrix th, .matrix td { border: 1px solid var(--line-dark); padding: 10px; text-align: left; vertical-align: top; color: var(--ink); }
-.matrix thead th { background: var(--ink-2); color: var(--cream); font-family: var(--font-display); text-transform: uppercase; }
-.matrix tbody th { background: rgba(67, 124, 147, .14); font-weight: 800; }
+.speak { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-card); color: var(--accent); display: inline-grid; place-items: center; font-size: 18px; }
+.speak[aria-pressed="true"] { background: var(--highlight); border-color: var(--highlight); color: var(--highlight-ink); }
+table.matrix { width: 100%; border-collapse: collapse; background: var(--surface-paper); color: var(--text-strong); border-radius: 10px; overflow: hidden; font-size: 13px; }
+.matrix th, .matrix td { border: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; color: var(--text-strong); }
+.matrix thead th { background: var(--table-head-bg); color: var(--table-head-fg); font-family: var(--font-display); text-transform: uppercase; }
+.matrix tbody th { background: color-mix(in srgb, var(--info) 14%, transparent); font-weight: 800; }
 
 /* Practice flashcard + quiz */
-.flash { max-width: 520px; margin: 0 auto; background: var(--cream); color: var(--ink); border-radius: var(--radius-flash); padding: 28px; text-align: center; min-height: 230px; display: grid; align-content: center; gap: 16px; box-shadow: var(--shadow-flash); }
+.flash { max-width: 520px; margin: 0 auto; background: var(--surface-paper); color: var(--text-body); border-radius: var(--radius-flash); padding: 28px; text-align: center; min-height: 230px; display: grid; align-content: center; gap: 16px; box-shadow: var(--shadow-flash); }
 .flash .q { font-size: 22px; font-weight: 700; font-family: var(--font-display); }
-.flash .ans { color: var(--accent-dark); font-weight: 800; }
+.flash .ans { color: var(--accent); font-weight: 800; }
+.flash .scenario { color: var(--text-muted); }
 .gradebar { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
 
 /* lessons */
-.lesson { border-left: 4px solid var(--gold); }
-.lesson .we { background: rgba(252, 181, 57, .1); border: 1px solid rgba(252, 181, 57, .3); border-radius: var(--radius-nav); padding: 10px; margin-top: 8px; font-size: 14px; }
+.lesson { border-left: 4px solid var(--highlight); }
+.lesson .we { background: color-mix(in srgb, var(--highlight) 10%, transparent); border: 1px solid color-mix(in srgb, var(--highlight) 30%, transparent); border-radius: var(--radius-nav); padding: 10px; margin-top: 8px; font-size: 14px; }
 
-.note { margin: 26px auto 0; max-width: var(--screen-max); padding: 14px 18px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font-size: 13px; }
+.note { margin: 26px auto 0; max-width: var(--screen-max); padding: 14px 18px; border: 1px dashed var(--line); border-radius: 10px; color: var(--text-muted); font-size: 13px; }
 
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-
-/* ---- light-surface overrides (cream flashcard + .card.light) ----
-   The base component styles are tuned for the dark shell (cream text). On the
-   cream surfaces those wash out, so flip ghost buttons / chips / pills / muted
-   text to dark-ink variants. Same specificity as the base rules, declared later
-   so source order wins. */
-.flash .meta, .flash .scenario { color: var(--muted-paper); }
-.flash .btn.ghost,
-.card.light .btn.ghost,
-.on-cream .btn.ghost {
-  color: var(--ink);
-  border-color: var(--line-dark);
-  background: rgba(30, 56, 75, .04);
-}
-.flash .btn.ghost:hover,
-.card.light .btn.ghost:hover,
-.on-cream .btn.ghost:hover { background: rgba(30, 56, 75, .09); filter: none; }
-.flash .chip,
-.card.light .chip,
-.on-cream .chip {
-  color: var(--ink);
-  border-color: var(--line-dark);
-  background: rgba(30, 56, 75, .06);
-}
-.flash .chip[aria-pressed="true"],
-.card.light .chip[aria-pressed="true"],
-.on-cream .chip[aria-pressed="true"] {
-  background: var(--accent-dark);
-  border-color: var(--accent-dark);
-  color: var(--cream);
-}
-/* Pills on cream: gold-on-cream is invisible — use the contrast-safe accent. */
-.flash .pill,
-.card.light .pill,
-.on-cream .pill {
-  background: rgba(168, 50, 18, .12);
-  color: var(--accent-dark);
-  border-color: rgba(168, 50, 18, .4);
-}
-.card.light .pill.alt,
-.on-cream .pill.alt {
-  background: rgba(67, 124, 147, .16);
-  color: var(--ink);
-  border-color: rgba(67, 124, 147, .45);
-}
 
 /* ---- responsive: tablet rail + mobile tab bar ---- */
 @media (max-width: 1000px) {
   .app { grid-template-columns: var(--rail-w) 1fr; }
   .brand { font-size: 0; padding: 6px 0 16px; text-align: center; }
-  .brand::before { content: "BB"; font-size: 24px; font-family: var(--font-display); color: var(--cream); }
+  .brand::before { content: "BB"; font-size: 24px; font-family: var(--font-display); color: var(--text-strong); }
   .brand small { display: none; }
   .nav-item { justify-content: center; padding: 12px 0; }
   .nav-item .nav-label { display: none; }
@@ -246,22 +284,22 @@ table.matrix { width: 100%; border-collapse: collapse; background: var(--cream);
 @media (max-width: 680px) {
   .app { grid-template-columns: 1fr; }
   .sidebar { display: none; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--ink); z-index: 5; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface-bar); z-index: 5; }
   .topbar .brand { font-size: 22px; padding: 0; }
   .topbar .brand::before { content: "Bridgette Training"; }
   .topbar .brand small { display: none; }
   .screen-wrap { padding: 20px 16px 96px; }
   .cols-3, .cols-2, .hero { grid-template-columns: 1fr; }
-  .tabbar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--ink); border-top: 1px solid var(--line); z-index: 10; }
-  .tab { flex: 1; background: none; border: none; color: var(--muted); padding: 9px 0 10px; display: grid; justify-items: center; gap: 3px; min-height: 58px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; text-decoration: none; }
+  .tabbar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface-bar); border-top: 1px solid var(--line); z-index: 10; }
+  .tab { flex: 1; background: none; border: none; color: var(--text-muted); padding: 9px 0 10px; display: grid; justify-items: center; gap: 3px; min-height: 58px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; text-decoration: none; }
   .tab .ico { width: 24px; height: 24px; }
-  .tab[aria-current="page"] { color: var(--gold); }
+  .tab[aria-current="page"] { color: var(--highlight); }
   /* Spec §5: the matrix becomes stacked dish cards on phones (no h-scroll). */
   .matrix { font-size: 13px; border-collapse: separate; border-spacing: 0; background: transparent; }
   .matrix thead { position: absolute; left: -9999px; }
   .matrix tbody, .matrix tr, .matrix th, .matrix td { display: block; }
-  .matrix tr { background: var(--cream); border-radius: 10px; margin-bottom: 12px; padding: 6px 4px; }
+  .matrix tr { background: var(--surface-paper); border-radius: 10px; margin-bottom: 12px; padding: 6px 4px; }
   .matrix tbody th { background: transparent; font-family: var(--font-display); font-size: 16px; text-transform: uppercase; border: 0; padding: 8px 12px 2px; }
   .matrix td { border: 0; padding: 4px 12px; }
-  .matrix td::before { content: attr(data-label) ": "; font-weight: 800; color: var(--muted-paper); }
+  .matrix td::before { content: attr(data-label) ": "; font-weight: 800; color: var(--text-muted); }
 }

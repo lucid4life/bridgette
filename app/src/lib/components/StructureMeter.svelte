@@ -17,9 +17,9 @@
 
 <style>
   .meter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; }
-  .meter-label { font-size: 12px; color: var(--muted-paper); }
-  .meter-val { grid-column: 2; font-size: 12px; font-weight: 800; color: var(--ink); text-transform: capitalize; }
+  .meter-label { font-size: 12px; color: var(--text-muted); }
+  .meter-val { grid-column: 2; font-size: 12px; font-weight: 800; color: var(--text-strong); text-transform: capitalize; }
   .segs { grid-column: 1; display: flex; gap: 3px; }
-  .seg { width: 22px; height: 7px; border-radius: 3px; background: rgba(30, 56, 75, .10); box-shadow: inset 0 0 0 1px rgba(30, 56, 75, .30); }
-  .seg.on { background: var(--accent-dark); }
+  .seg { width: 22px; height: 7px; border-radius: 3px; background: color-mix(in srgb, var(--text-strong) 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text-strong) 30%, transparent); }
+  .seg.on { background: var(--accent); }
 </style>

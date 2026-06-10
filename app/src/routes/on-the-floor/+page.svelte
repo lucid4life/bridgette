@@ -315,50 +315,50 @@
      Uses --accent-dark (not raw --orange) so the cream text clears AA contrast. */
   .segmented {
     display: inline-flex; gap: 4px; padding: 4px; margin: 0 0 18px;
-    background: rgba(255, 238, 215, .05); border: 1px solid var(--line);
+    background: var(--surface-card); border: 1px solid var(--line);
     border-radius: var(--radius-chip);
   }
   .segmented.dir { margin: 4px 0 18px; }
   .seg {
     padding: 9px 18px; border: 1px solid transparent; border-radius: var(--radius-chip);
-    background: none; color: var(--cream); font-size: 13px; font-weight: 700;
+    background: none; color: var(--text-strong); font-size: 13px; font-weight: 700;
     text-transform: uppercase; letter-spacing: .04em; min-height: 40px;
   }
-  .seg[aria-pressed='true'] { background: var(--accent-dark); border-color: var(--accent-dark); color: var(--cream); }
-  .seg:hover:not([aria-pressed='true']) { background: rgba(255, 238, 215, .08); }
+  .seg[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--text-strong); }
+  .seg:hover:not([aria-pressed='true']) { background: var(--surface-hover-strong); }
 
   .search input {
     width: 100%; max-width: 420px; padding: 11px 14px; margin: 0 0 14px;
     border-radius: var(--radius-btn); border: 1px solid var(--line);
-    background: rgba(255, 238, 215, .05); color: var(--cream); font-size: 15px;
+    background: var(--surface-card); color: var(--text-strong); font-size: 15px;
   }
-  .search input::placeholder { color: var(--muted); opacity: 1; }
+  .search input::placeholder { color: var(--text-muted); opacity: 1; }
 
   /* Family lane heading: Oswald display, uppercase, muted, with a hairline. */
   .lane {
     font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em;
-    color: var(--muted); font-size: 15px; margin: 26px 0 12px;
+    color: var(--text-muted); font-size: 15px; margin: 26px 0 12px;
     padding-bottom: 8px; border-bottom: 1px solid var(--line);
   }
   .lane:first-of-type { margin-top: 4px; }
 
   /* Card internals (cream surface — text uses --ink / --muted-paper). */
-  .aliases { display: block; font-size: 12px; font-weight: 400; text-transform: none; letter-spacing: normal; color: var(--muted-paper); margin-top: 3px; }
+  .aliases { display: block; font-size: 12px; font-weight: 400; text-transform: none; letter-spacing: normal; color: var(--text-muted); margin-top: 3px; }
   .flag { margin: 0 0 6px; }
   .winecard-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 2px; }
-  .pour { margin: 0; font-size: 14px; color: var(--ink); }
-  .pour strong { color: var(--ink); }
+  .pour { margin: 0; font-size: 14px; color: var(--text-strong); }
+  .pour strong { color: var(--text-strong); }
   .winecard-pron { margin: 4px 0 0; }
   .upgrade-line { margin: 6px 0 0; }
-  .upgrade-line strong { color: var(--ink); }
+  .upgrade-line strong { color: var(--text-strong); }
   .phrase { margin: 8px 0 0; }
 
   /* The bridge line as the hero — the one sentence the server says. Gold-tinted
      callout matching the existing .why/.we treatment (spec §4a point 3). */
   .bridge {
-    background: rgba(252, 181, 57, .14); border: 1px solid rgba(252, 181, 57, .4);
+    background: color-mix(in srgb, var(--highlight) 14%, transparent); border: 1px solid color-mix(in srgb, var(--highlight) 40%, transparent);
     border-radius: var(--radius-nav); padding: 10px 12px; margin: 10px 0 0;
-    color: var(--ink); font-size: 14px; font-weight: 600;
+    color: var(--text-strong); font-size: 14px; font-weight: 600;
   }
 
   .meters { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; margin: 10px 0 0; }
@@ -367,17 +367,17 @@
   /* Pairings: three picks side by side (wine | cocktail | zero-proof). */
   .picks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 0; }
   .pick {
-    background: rgba(30, 56, 75, .05); border: 1px solid var(--line-dark);
+    background: color-mix(in srgb, var(--text-strong) 5%, transparent); border: 1px solid var(--line);
     border-radius: var(--radius-nav); padding: 8px 10px; display: grid; gap: 3px;
   }
-  .pick-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--label-light); }
-  .pick-val { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .pick-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--text-label); }
+  .pick-val { font-size: 14px; font-weight: 600; color: var(--text-strong); }
 
   /* The shared lever line that justifies all three picks. */
   .lever {
-    background: rgba(252, 181, 57, .14); border: 1px solid rgba(252, 181, 57, .4);
+    background: color-mix(in srgb, var(--highlight) 14%, transparent); border: 1px solid color-mix(in srgb, var(--highlight) 40%, transparent);
     border-radius: var(--radius-nav); padding: 10px 12px; margin: 10px 0 0;
-    color: var(--ink); font-size: 14px;
+    color: var(--text-strong); font-size: 14px;
   }
 
   .best-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }

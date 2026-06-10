@@ -97,17 +97,17 @@
 </section>
 
 <style>
-  .back { color: var(--gold); text-decoration: none; }
+  .back { color: var(--highlight); text-decoration: none; }
   .tabs { display: inline-flex; gap: 8px; margin: 0 0 18px; }
   .grp { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .05em; font-size: 13px; margin: 14px 0 8px; }
   .picker { display: flex; flex-wrap: wrap; gap: 8px; }
   .picker.wines { margin-top: 4px; }
   .explore { text-align: left; margin-top: 22px; }
-  .nudge { border-left: 2px solid var(--gold); padding-left: 8px; margin: 4px 0; }
+  .nudge { border-left: 2px solid var(--highlight); padding-left: 8px; margin: 4px 0; }
   .ans { font-weight: 700; font-size: 20px; margin: 6px 0 0; }
-  .pour-link { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
-  .why { background: rgba(67, 124, 147, .12); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 8px 0 0; }
-  .why.avoid { background: rgba(168, 50, 18, .10); }
+  .pour-link { color: inherit; text-decoration: underline; text-decoration-color: var(--highlight); text-underline-offset: 3px; }
+  .why { background: color-mix(in srgb, var(--info) 12%, transparent); border-radius: var(--radius-nav); padding: 10px; font-size: 14px; margin: 8px 0 0; }
+  .why.avoid { background: color-mix(in srgb, var(--accent) 10%, transparent); }
   .pair-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
   .explain { margin: 10px 0 0; font-size: 14px; }
 </style>

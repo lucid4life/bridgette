@@ -76,7 +76,7 @@
   }
   .toast {
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
-    background: var(--ink-2); border: 1px solid var(--gold); border-radius: var(--radius-card);
+    background: var(--surface-raised); border: 1px solid var(--highlight); border-radius: var(--radius-card);
     padding: 12px 16px; box-shadow: var(--shadow-flash);
   }
   .toast span { font-size: 14px; }

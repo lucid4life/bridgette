@@ -38,5 +38,5 @@
   .family { border-left: 4px solid var(--fam); }
   .steer { margin: 4px 0 10px; line-height: 1.5; }
   .members { display: flex; flex-wrap: wrap; gap: 6px; }
-  .member { font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 999px; background: rgba(255, 238, 215, .07); border: 1px solid var(--line); }
+  .member { font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 999px; background: color-mix(in srgb, var(--text-strong) 7%, transparent); border: 1px solid var(--line); }
 </style>

@@ -46,17 +46,17 @@
 <style>
   .stylemap { margin: 0; }
   .plot-wrap { display: grid; grid-template-columns: auto 1fr; gap: 6px; align-items: stretch; }
-  .axis { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .axis { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
   .axis.y { writing-mode: vertical-rl; transform: rotate(180deg); align-self: center; }
   .axis.x { display: block; text-align: right; margin-top: 2px; }
   .plot { display: grid; }
-  svg { width: 100%; aspect-ratio: 1 / 1; background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius-card); overflow: visible; }
-  .grid { stroke: rgba(255, 238, 215, .12); stroke-width: .5; }
-  .dot-label { font-size: 3.4px; fill: var(--cream); paint-order: stroke; stroke: var(--ink-3); stroke-width: 1px; opacity: 0; pointer-events: none; text-anchor: middle; }
+  svg { width: 100%; aspect-ratio: 1 / 1; background: var(--map-bg); border: 1px solid var(--line); border-radius: var(--radius-card); overflow: visible; }
+  .grid { stroke: var(--map-grid); stroke-width: .5; }
+  .dot-label { font-size: 3.4px; fill: var(--map-fg); paint-order: stroke; stroke: var(--map-edge); stroke-width: 1px; opacity: 0; pointer-events: none; text-anchor: middle; }
   .dot:hover .dot-label, .dot:focus-visible .dot-label { opacity: 1; }
-  .dot circle { stroke: var(--ink-3); stroke-width: .6; cursor: pointer; }
-  .dot:hover circle, .dot:focus-visible circle { stroke: var(--cream); stroke-width: 1.2; }
-  .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 0; margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+  .dot circle { stroke: var(--map-edge); stroke-width: .6; cursor: pointer; }
+  .dot:hover circle, .dot:focus-visible circle { stroke: var(--map-fg); stroke-width: 1.2; }
+  .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 0; margin: 12px 0 0; font-size: 12px; color: var(--text-muted); }
   .legend li { display: flex; align-items: center; gap: 6px; }
   .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 </style>

@@ -346,33 +346,32 @@
   .search input {
     width: 100%; max-width: 420px; padding: 11px 14px; margin: 0 0 8px;
     border-radius: var(--radius-btn); border: 1px solid var(--line);
-    background: rgba(255, 238, 215, .05); color: var(--cream); font-size: 15px;
+    background: var(--surface-card); color: var(--text-strong); font-size: 15px;
   }
-  .search input::placeholder { color: var(--muted); opacity: 1; }
+  .search input::placeholder { color: var(--text-muted); opacity: 1; }
   .meters { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; margin: 2px 0; }
   .sweet { display: flex; align-items: center; gap: 8px; }
-  .sweet b { color: var(--ink); text-transform: capitalize; }
+  .sweet b { color: var(--text-strong); text-transform: capitalize; }
   @media (max-width: 420px) { .meters { grid-template-columns: 1fr; } }
   .winecard-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .winecard-head .name { margin: 0; }
   /* Card names deep-link to /reference/wine/<id>: keep the ink colour, mark the
      affordance with a quiet underline that strengthens on hover/focus. */
-  .namelink { color: inherit; text-decoration: underline; text-decoration-color: rgba(30, 56, 75, .35); text-underline-offset: 3px; }
-  .namelink:hover { color: var(--accent-dark); text-decoration-color: var(--accent-dark); }
+  .namelink { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--text-strong) 35%, transparent); text-underline-offset: 3px; }
+  .namelink:hover { color: var(--accent); text-decoration-color: var(--accent); }
   .winecard-pron { margin: 2px 0 0; }
   .winecard-body { margin: 6px 0 0; font-size: 14px; }
   .winecard-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-  .pill.alt { background: rgba(67, 124, 147, .16); color: var(--ink); border-color: rgba(67, 124, 147, .4); }
   .price-ladder { margin: 4px 0 0; }
-  .price-ladder b { color: var(--ink); }
+  .price-ladder b { color: var(--text-strong); }
   .winecard-profile { margin: 6px 0 0; }
   .best-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
   .upgrade-line { margin: 6px 0 0; }
-  .upgrade-line strong { color: var(--ink); }
+  .upgrade-line strong { color: var(--text-strong); }
   .objections { margin-top: 8px; }
   .objections ul { margin: 6px 0 0; padding-left: 18px; }
-  .objections li { font-size: 13px; margin: 4px 0; color: var(--ink); }
+  .objections li { font-size: 13px; margin: 4px 0; color: var(--text-strong); }
   .objections li b { font-weight: 600; }
-  .obj-h { margin: 4px 0 2px; font-weight: 700; color: var(--ink); }
+  .obj-h { margin: 4px 0 2px; font-weight: 700; color: var(--text-strong); }
   .winecard-profile:first-child { margin-top: 0; }
 </style>

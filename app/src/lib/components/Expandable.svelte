@@ -23,17 +23,17 @@
 </details>
 
 <style>
-  .expandable { border: 1px solid var(--line-dark); border-radius: var(--radius-nav); margin: 10px 0 0; background: rgba(30, 56, 75, .03); }
+  .expandable { border: 1px solid var(--line); border-radius: var(--radius-nav); margin: 10px 0 0; background: color-mix(in srgb, var(--text-strong) 3%, transparent); }
   summary {
     display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 12px;
     cursor: pointer; list-style: none; user-select: none;
     font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em;
-    font-size: 12px; font-weight: 700; color: var(--accent-dark);
+    font-size: 12px; font-weight: 700; color: var(--accent);
   }
   summary::-webkit-details-marker { display: none; }
   summary::marker { content: ''; }
-  summary:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; border-radius: var(--radius-nav); }
-  summary:hover { background: rgba(30, 56, 75, .05); border-radius: var(--radius-nav); }
+  summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-nav); }
+  summary:hover { background: color-mix(in srgb, var(--text-strong) 5%, transparent); border-radius: var(--radius-nav); }
   .chev { width: 16px; height: 16px; flex: none; transition: transform .18s ease; }
   .chev.open { transform: rotate(90deg); }
   .exp-body { padding: 2px 12px 12px; }

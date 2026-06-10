@@ -308,10 +308,10 @@
 </section>
 
 <style>
-  .back { color: var(--gold); text-decoration: none; }
+  .back { color: var(--highlight); text-decoration: none; }
   .sim { text-align: left; }
   .guest { font-size: 17px; }
-  .who { font-family: var(--font-display); text-transform: uppercase; color: var(--accent-dark); font-size: 13px; margin-right: 6px; }
+  .who { font-family: var(--font-display); text-transform: uppercase; color: var(--accent); font-size: 13px; margin-right: 6px; }
   .choices { flex-direction: column; align-items: stretch; }
   .choice { justify-content: flex-start; text-align: left; }
   .choice .key { font-family: var(--font-display); font-weight: 800; margin-right: 8px; opacity: .7; }
@@ -319,8 +319,8 @@
   .ans { font-weight: 600; }
   .ans:focus { outline: none; }
   .feedback { font-weight: 800; margin: 4px 0 0; }
-  .feedback.ok { color: var(--green); }
-  .feedback.no { color: var(--accent-dark); }
+  .feedback.ok { color: var(--ok); }
+  .feedback.no { color: var(--accent); }
   .score { font-size: clamp(40px, 8vw, 72px); margin: 4px 0; }
   h1:focus, .beat-prompt:focus { outline: none; } /* focused programmatically (A11Y-N1/N5) */
 </style>
