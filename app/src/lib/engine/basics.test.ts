@@ -7,9 +7,9 @@ describe('Floor Basics on-ramp set', () => {
   const ids = basicsIdSet(data);
   const valid = new Set(T.allCards(data).map((c) => c.id));
 
-  it('is a curated 30-40 card set', () => {
-    expect(ids.size, `resolved ${ids.size} basics cards`).toBeGreaterThanOrEqual(30);
-    expect(ids.size).toBeLessThanOrEqual(40);
+  it('is a curated 36-46 card set', () => {
+    expect(ids.size, `resolved ${ids.size} basics cards`).toBeGreaterThanOrEqual(36);
+    expect(ids.size).toBeLessThanOrEqual(46);
   });
 
   it('every basics id resolves to a real card (no drift)', () => {

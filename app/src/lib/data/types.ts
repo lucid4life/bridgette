@@ -49,6 +49,7 @@ export interface Wine {
   tenSecond: string;
   profile: string;
   pair: string[];
+  pairWhy?: string; // not authored on glass pours yet (Bottle has it) — render conditionally
   avoid?: string;
   say: string;
   mnemonic?: string;
@@ -75,6 +76,7 @@ export interface Food {
   wine?: string;
   cocktail?: string;
   zero?: string;
+  lever?: string; // pairing-lever id (keys into engine/pairing.js LEVERS)
   why: string;
   flags: string[];
   tags: string[];

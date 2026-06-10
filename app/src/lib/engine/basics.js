@@ -1,5 +1,5 @@
 // app/src/lib/engine/basics.js — the "Floor Basics" study on-ramp (spec §6).
-// A curated ~30-40 high-yield card set a new learner studies FIRST. Authored in
+// A curated ~36-46 high-yield card set a new learner studies FIRST. Authored in
 // human terms (guest asks, wine ids, dish ids) and resolved to card ids through the
 // generators' additive sourceId field — never hardcoded slug strings, so it survives
 // data edits. A test guard (basics.test.ts) asserts the resolved set stays valid.
@@ -32,6 +32,12 @@ export const FLOOR_BASICS = {
   pronunciationWineIds: [
     'hiedler-loss', 'wagner-stempel-weissburgunder', 'deinhard-deidesheim',
     'ca-del-baio-langhe', 'bodega-cerron-remordimiento-tinto'
+  ],
+  // One pairing-LEVER card per lever a new server meets first (6) — the why behind
+  // the marquee pours, so the language lands alongside the matches.
+  principleFoodIds: [
+    'french-fries', '26oz-wood-grilled-beef-ribeye', 'fennel-salami',
+    'bibb-lettuce', 'italian-pork-sausage', 'tuna-crudo'
   ]
 };
 
@@ -44,12 +50,14 @@ export function basicsIdSet(data) {
   const structW = new Set(FLOOR_BASICS.structureWineIds);
   const pairF = new Set(FLOOR_BASICS.pairingFoodIds);
   const pronW = new Set(FLOOR_BASICS.pronunciationWineIds);
+  const prinF = new Set(FLOOR_BASICS.principleFoodIds);
   const out = new Set();
   for (const c of allCards(data)) {
     if (c.deck === 'translator' && asks.has(c.sourceId)) out.add(c.id);
     else if (c.deck === 'wine-identity' && c.id.endsWith(':grape') && ident.has(c.sourceId)) out.add(c.id);
     else if (c.deck === 'structure' && structW.has(c.sourceId)) out.add(c.id);
     else if (c.deck === 'pairing' && pairF.has(c.sourceId)) out.add(c.id);
+    else if (c.deck === 'pairing-principle' && prinF.has(c.sourceId)) out.add(c.id);
     else if (c.deck === 'pronunciation' && pronW.has(c.sourceId)) out.add(c.id);
   }
   return out;

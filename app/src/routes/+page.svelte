@@ -1,6 +1,7 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
   import * as engine from '$lib/engine/training.js';
+  import { LEVERS } from '$lib/engine/pairing.js';
   import { progressStore } from '$lib/state/progress.svelte';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import Expandable from '$lib/components/Expandable.svelte';
@@ -73,6 +74,13 @@
   const showMissBanner = $derived(revealed && pendingCorrect === false && !!feedback && !!feedback.said);
   // The always-available Expand drawer (spec §4b): depth that's already in the data.
   const expanded = $derived(card ? engine.expandFor(card, data).sections : []);
+  // Pairing-lever miss contrast: resolve a lever LABEL (the card answer/choice text)
+  // back to its {label, script} so a miss can contrast the two levers' floor scripts.
+  const leverByLabel: Record<string, { label: string; script: string }> = {};
+  for (const k of Object.keys(LEVERS)) {
+    const lv = (LEVERS as Record<string, { label: string; script: string }>)[k];
+    leverByLabel[lv.label] = lv;
+  }
   // A11Y-18: focus the typed/scenario input on card entry so you can type immediately.
   $effect(() => {
     if (view !== 'session' || revealed) return;
@@ -271,7 +279,7 @@
         <button class="chip" type="button" aria-pressed={progressStore.basicsOnly} onclick={() => progressStore.setBasicsOnly(true)}>Just the basics</button>
         <button class="chip" type="button" aria-pressed={!progressStore.basicsOnly} onclick={() => progressStore.setBasicsOnly(false)}>Study everything</button>
       </div>
-      <p class="meta basics-note">{progressStore.basicsOnly ? 'Smart Review is drawing from the ~36 high-yield Floor Basics — switch to the full deck anytime.' : 'Smart Review is drawing from the full menu.'}</p>
+      <p class="meta basics-note">{progressStore.basicsOnly ? 'Smart Review is drawing from the ~42 high-yield Floor Basics — switch to the full deck anytime.' : 'Smart Review is drawing from the full menu.'}</p>
     </div>
 
     <div class="grid cols-2" style="margin-bottom:24px">
@@ -284,6 +292,11 @@
         <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v10H9l-4 4z"/></svg> Guest Simulator</h3>
         <p class="meta">Ask → Match → Explain → Confirm</p>
         <a class="btn ghost" href="/practice/simulator" style="margin-top:10px">Start</a>
+      </div>
+      <div class="card">
+        <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 21h8M12 15v6M7 3h10v5a5 5 0 0 1-10 0z"/></svg> Pairing Explorer</h3>
+        <p class="meta">Dish ↔ wine, lever by lever</p>
+        <a class="btn ghost" href="/practice/pairing" style="margin-top:10px">Explore</a>
       </div>
       <div class="card">
         <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4l1.6 4.8L18 10l-4.4 1.2L12 16l-1.6-4.8L6 10l4.4-1.2z"/></svg> Mystery Pour</h3>
@@ -396,6 +409,11 @@
               <p class="mb said"><svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg><span class="mb-k">You said</span> <span class="mb-v">{feedback?.said}</span></p>
               <p class="mb corr"><svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg><span class="mb-k">Correct</span> <span class="mb-v">{card.answer}</span></p>
             </div>
+            {#if card.deck === 'pairing-principle' && feedback && leverByLabel[feedback.said] && leverByLabel[card.answer]}
+              <!-- Lever contrast: a missed lever is a wrong MODEL — show both floor scripts side by side. -->
+              <p class="confusion"><strong>You picked:</strong> {feedback.said} — {leverByLabel[feedback.said].script}</p>
+              <p class="confusion"><strong>The lever here:</strong> {card.answer} — {leverByLabel[card.answer].script}</p>
+            {/if}
           {:else}
             {#if card.kind === 'pronounce'}
               <p class="ans respell" aria-label={'Say: ' + card.answer}>{#each respellChunks(card.answer) as word, wi}{#if wi > 0}<span class="resp-gap"> </span>{/if}{#each word as part, pi}{#if pi > 0}<span class="resp-sep" aria-hidden="true">·</span>{/if}<span class="syl" class:stress={part.stress}>{part.syl}</span>{/each}{/each}</p>

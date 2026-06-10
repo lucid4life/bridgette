@@ -5,6 +5,7 @@
 // took an implicit window.BB.data fallback in v1 now REQUIRE an explicit `data` arg.
 
 import { basicsIdSet } from './basics.js';
+import { LEVERS } from './pairing.js';
 
 // ---- constants (spec §8 / research convergence) ----
 export const BOX_DUE_DAYS = { 1: 0, 2: 1, 3: 3, 4: 7, 5: 14 };
@@ -114,6 +115,8 @@ export const DECKS = {
   'wine-identity': { label: 'Wine Identity', learnLink: 'deductive-grid' },
   pronunciation: { label: 'Pronunciation', learnLink: 'pronunciation-primer' },
   pairing: { label: 'Pairing & Why', learnLink: 'pairing-levers' },
+  // Pairing Trainer: not WHICH wine (that's `pairing`) but WHY it works — name the lever.
+  'pairing-principle': { label: 'Pairing Levers', learnLink: 'pairing-levers' },
   structure: { label: 'Structure', learnLink: 'structure-words' },
   mystery: { label: 'Mystery Pour', learnLink: 'deductive-grid' },
   // v2 sprint1 — two under-served core areas finally get retrieval practice.
@@ -255,6 +258,32 @@ function genPairing(data) {
       tags: (f.tags || []).slice()
     };
   });
+}
+
+// Pairing Trainer: one card per printed (dish, pour) pairing asking WHICH lever makes it
+// work (the `pairing` deck already drills WHICH wine). Distractors are other lever labels —
+// deterministic rotation, same as the other generators. The matinee snack menu is a
+// catch-all listing, not a single dish, so it gets no principle card.
+function genPairingPrinciple(data) {
+  const leverLabels = Object.keys(LEVERS).map((k) => LEVERS[k].label);
+  return data.foods
+    .filter((f) => f.wine && f.lever && f.id !== 'matinee-snack-menu')
+    .map((f, i) => {
+      const lv = LEVERS[f.lever];
+      return {
+        id: 'pairing-principle:' + f.id + ':lever',
+        deck: 'pairing-principle', kind: 'discriminate',
+        sourceKind: 'food', sourceId: f.id,
+        prompt: 'You pour ' + f.wine + ' with ' + f.name + '. Which lever makes the pairing work?',
+        answer: lv.label,
+        why: f.why ? lv.script + ' ' + f.why : lv.script,
+        choices: [lv.label].concat(pickDistractors(leverLabels, lv.label, 3, i)),
+        aliases: [],
+        scenario: 'A guest asks why the ' + f.wine + ' works with ' + f.name + '. Name the lever and say it like you would at the table.',
+        learnLink: DECKS['pairing-principle'].learnLink,
+        tags: ['pairing-principle'].concat(f.tags || [])
+      };
+    });
 }
 
 const LEVEL = { low: 1, medium: 2, high: 3 };
@@ -503,6 +532,7 @@ export function generateDeck(deckId, data) {
     case 'wine-identity': return genWineIdentity(data);
     case 'pronunciation': return genPronunciation(data);
     case 'pairing': return genPairing(data);
+    case 'pairing-principle': return genPairingPrinciple(data);
     case 'structure': return genStructure(data);
     case 'mystery': return buildMysteryPour(data);
     case 'cocktail-pairing': return genCocktailPairing(data);
@@ -875,7 +905,7 @@ export function importProgress(json, validIds) {
 // Reason-bearing decks: past the beginner boxes the learner PRODUCES the pour + the
 // one reason out loud, reveals, then self-rates (spec §6). Everything before box 3
 // (and every non-reason deck) keeps the prior mc/typed/scenario/flip behaviour.
-export const REASON_DECKS = new Set(['translator', 'pairing', 'cocktail-pairing', 'wine-dish', 'upsell']);
+export const REASON_DECKS = new Set(['translator', 'pairing', 'pairing-principle', 'cocktail-pairing', 'wine-dish', 'upsell']);
 export function modeForBox(card, box) {
   if (card.kind === 'pronounce') return 'flip';
   // Reason decks PRODUCE at box>=3 even when the card is discriminate (upsell,
