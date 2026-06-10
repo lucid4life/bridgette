@@ -2,6 +2,7 @@
   import { data } from '$lib/data/index';
   import * as engine from '$lib/engine/training.js';
   import { progressStore } from '$lib/state/progress.svelte';
+  import BackupCard from '$lib/components/BackupCard.svelte';
   import type { Card } from '$lib/data/types';
   import { onMount } from 'svelte';
 
@@ -20,28 +21,6 @@
 
   function ringColor(p: number) { return p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--gold)' : 'var(--accent-dark)'; }
 
-  let ioStatus = $state('');
-  function doExport() {
-    try {
-      const blob = new Blob([progressStore.exportJson()], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'bridgette-progress.json';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      ioStatus = 'Progress exported to bridgette-progress.json.';
-    } catch { ioStatus = 'Export not available in this browser.'; }
-  }
-  let fileInput: HTMLInputElement;
-  function onFile(e: Event) {
-    const f = (e.target as HTMLInputElement).files?.[0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = () => { ioStatus = progressStore.importJson(String(r.result)) ? 'Progress imported and merged.' : 'Import failed — not valid progress JSON.'; };
-    r.onerror = () => { ioStatus = "Import failed — couldn't read that file."; };
-    r.readAsText(f);
-    (e.target as HTMLInputElement).value = '';
-  }
 </script>
 
 <svelte:head><title>Progress · Bridgette Training</title></svelte:head>
@@ -112,16 +91,7 @@
     </div>
   </div>
 
-  <div class="card" style="margin-top:16px">
-    <h3>Backup</h3>
-    <p class="meta">Keep your progress safe across devices.</p>
-    <div class="gradebar" style="justify-content:flex-start;margin-top:10px">
-      <button class="btn ghost" type="button" onclick={doExport}>Export</button>
-      <button class="btn ghost" type="button" onclick={() => fileInput.click()}>Import</button>
-      <input bind:this={fileInput} type="file" accept="application/json,.json" onchange={onFile} hidden />
-    </div>
-    <p class="meta" aria-live="polite" style="margin-top:8px">{ioStatus}</p>
-  </div>
+  <div style="margin-top:16px"><BackupCard /></div>
 </section>
 
 <style>
