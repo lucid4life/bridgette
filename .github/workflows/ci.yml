@@ -22,7 +22,10 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: app/package-lock.json
-      - run: npm ci
+      # npm install (not ci): the committed lockfile omits some platform-optional
+      # native deps (@emnapi/*), which `npm ci` rejects but `npm install` resolves —
+      # matching what runs locally and on Vercel.
+      - run: npm install --no-audit --no-fund
       - name: Unit tests (Vitest)
         run: npm test
       - name: Type check (svelte-check)
@@ -39,8 +42,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # check_training.py runs `node --check`/`node -e` on src/data.js and verifies the
+      # dist/ bundle is byte-in-sync — so the runner needs Node AND a fresh bundle build
+      # (dist/ is gitignored, absent on a clean checkout).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Build the v1 single-file bundle
+        run: python build_single_file.py
       - name: v1 structural data gate
         run: python tests/check_training.py
