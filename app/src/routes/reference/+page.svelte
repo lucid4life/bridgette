@@ -1,6 +1,7 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
   import { onMount } from 'svelte';
+  import { page } from '$app/state';
   import { langFor } from '$lib/engine/training.js';
   import { playPronunciation } from '$lib/audio/playPronunciation';
   import StructureMeter from '$lib/components/StructureMeter.svelte';
@@ -13,6 +14,13 @@
   type FullMenu = { bottles: Bottle[]; beers: Beer[]; fortifieds: Fortified[] };
   let fullmenu = $state<FullMenu | null>(null);
   onMount(async () => {
+    // Deep-link support (e.g. the global search lands a zero-proof drink here):
+    // ?filter=<chip>&q=<query> pre-selects the chip + seeds the search box.
+    const params = page.url.searchParams;
+    const fp = params.get('filter');
+    if (fp && (FILTERS as string[]).includes(fp)) filter = fp as Filter;
+    const qp = params.get('q');
+    if (qp) q = qp;
     try { fullmenu = await fetch('/fullmenu.json').then((r) => r.json()); } catch { fullmenu = { bottles: [], beers: [], fortifieds: [] }; }
   });
 

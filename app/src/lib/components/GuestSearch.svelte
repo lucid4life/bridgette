@@ -14,7 +14,18 @@
 
   let query = $state('');
 
-  type Result = { label: string; kind: 'Substitution' | 'Pairing' | 'Wine'; href: string };
+  // Zero-proof drinks the menu prints in pairings (inverted from foods[].zero) so the
+  // global search can surface them — they land in Reference's Zero-proof section.
+  const ZERO_PROOF_NAMES = (() => {
+    const set = new Set<string>();
+    for (const f of data.foods) {
+      if (!f.zero) continue;
+      for (const d of f.zero.split(/\s+or\s+/i).map((s) => s.trim()).filter(Boolean)) set.add(d);
+    }
+    return [...set];
+  })();
+
+  type Result = { label: string; kind: 'Substitution' | 'Pairing' | 'Wine' | 'Zero-proof'; href: string };
 
   // Top ~6, case-insensitive `includes`, ordered Substitution → Pairing → Wine, deduped by href.
   const results = $derived.by<Result[]>(() => {
@@ -48,9 +59,17 @@
         href: '/on-the-floor?view=substitutions&q=' + encodeURIComponent(w.name)
       }));
 
+    const zeros: Result[] = ZERO_PROOF_NAMES
+      .filter((n) => n.toLowerCase().includes(q))
+      .map((n) => ({
+        label: n,
+        kind: 'Zero-proof' as const,
+        href: '/reference?filter=Zero-proof&q=' + encodeURIComponent(n)
+      }));
+
     const seen = new Set<string>();
     const out: Result[] = [];
-    for (const r of [...subs, ...pairs, ...wines]) {
+    for (const r of [...subs, ...pairs, ...wines, ...zeros]) {
       if (seen.has(r.href)) continue;
       seen.add(r.href);
       out.push(r);
