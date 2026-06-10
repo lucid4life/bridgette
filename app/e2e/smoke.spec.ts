@@ -40,6 +40,20 @@ test('guest simulator runs a turn', async ({ page }) => {
   await expect(page.locator('.ans')).toBeVisible();
 });
 
+test('mock exam: start a quick exam, answer a question, advance to the next', async ({ page }) => {
+  await page.goto('/practice/exam');
+  await expect(page.getByRole('heading', { name: /mock menu test/i })).toBeVisible();
+  await page.getByRole('button', { name: /quick exam/i }).click();
+  // question 1 (fresh profile = all MC) with the countdown running
+  await expect(page.locator('.flash')).toBeVisible();
+  await expect(page.locator('.session-top .clock')).toBeVisible();
+  await expect(page.locator('.session-top')).toContainText('Question 1 of');
+  await page.locator('.choices button.choice').first().click();
+  await expect(page.locator('.feedback, .miss-banner')).toBeVisible();
+  await page.getByRole('button', { name: /next/i }).click();
+  await expect(page.locator('.session-top')).toContainText('Question 2 of');
+});
+
 test('reference renders 17 wines with speak buttons + meters', async ({ page }) => {
   await page.goto('/reference');
   await expect(page.locator('.winecard')).toHaveCount(17);

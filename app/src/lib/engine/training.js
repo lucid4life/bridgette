@@ -702,6 +702,7 @@ export function recordReadiness(progress, scored, today) {
 function defaultProgressShape() {
   return {
     schema: 1, cards: {}, decks: {}, tags: {}, readiness: null,
+    examHistory: [], // mock menu-test exams (additive; capped at 20 in migrate/record)
     studyDays: [], // v2 forgiving-streak source of truth (sorted day-numbers)
     streak: { current: 0, lastStudyDate: null },
     settings: { difficulty: 'adaptive', audio: true, goal: 'daily', weeklyTarget: 3, basicsOnly: true }
@@ -842,6 +843,8 @@ export function migrateProgress(raw, validIds) {
     base.studyDays = [base.streak.lastStudyDate];
   }
   if (raw.readiness) base.readiness = raw.readiness;
+  // Mock-exam history (additive): preserve, capped to the most recent 20.
+  if (Array.isArray(raw.examHistory)) base.examHistory = raw.examHistory.slice(-20);
   return base;
 }
 

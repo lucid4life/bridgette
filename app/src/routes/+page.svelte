@@ -309,6 +309,11 @@
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={startReadiness}>Run</button>
       </div>
       <div class="card">
+        <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 3h6v3H9zM6 6h12v15H6zM9 11h6M9 15h4"/></svg> Mock Exam</h3>
+        <p class="meta">30 timed questions · closed book</p>
+        <a class="btn ghost" href="/practice/exam" style="margin-top:10px">Sit it</a>
+      </div>
+      <div class="card">
         <h3><svg class="tile-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 4v4h-4"/></svg> My Mistakes</h3>
         <p class="meta">{weakCount ? weakCount + ' to clean up' : 'Nothing to fix yet'}</p>
         <button class="btn ghost" type="button" style="margin-top:10px" onclick={() => startDrill(progressStore.weakCards())} disabled={weakCount === 0}>Drill</button>

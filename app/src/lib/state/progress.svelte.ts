@@ -89,6 +89,29 @@ export const progressStore = {
     progress = next;
     this.save();
   },
+  /** Append a Mock Exam summary to examHistory (capped 20) — mirrors recordReadiness.
+   *  Per-question Leitner grading happens during the exam via record(); this only
+   *  persists the exam-level summary. */
+  recordExam(scored: ReturnType<typeof engine.scoreReadiness>, durationSec: number, total: number, today?: number) {
+    const t = today ?? engine.dayNumber();
+    const next: Progress = JSON.parse(JSON.stringify(progress));
+    next.examHistory = [
+      ...(next.examHistory ?? []),
+      {
+        taken: t,
+        score: scored.score,
+        byDeck: scored.byDeck || {},
+        weakAreas: (scored.weakAreas || []).slice(0, 8),
+        sureWrong: scored.sureWrong || 0,
+        durationSec,
+        total
+      }
+    ].slice(-20);
+    next.streak = engine.updateStreak(next.streak, t);
+    next.studyDays = addStudyDay(next.studyDays, t);
+    progress = next;
+    this.save();
+  },
   masteryFor(key: string): number {
     return engine.masteryFor(progress, key, data);
   },

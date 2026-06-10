@@ -231,12 +231,23 @@ export interface Readiness {
   byDeck: Record<string, { total: number; correct: number }>;
 }
 export type StreakGoal = 'daily' | 'weekly';
+// One completed Mock Exam (additive; examHistory is capped at 20 entries).
+export interface ExamRecord {
+  taken: number; // dayNumber, same convention as readiness.lastTaken
+  score: number;
+  byDeck: Record<string, { total: number; correct: number }>;
+  weakAreas: string[];
+  sureWrong: number;
+  durationSec: number;
+  total: number;
+}
 export interface Progress {
   schema: number;
   cards: Record<string, CardState>;
   decks: Record<string, { mastery: number }>;
   tags: Record<string, { mastery: number }>;
   readiness: Readiness | null;
+  examHistory: ExamRecord[];
   studyDays: number[];
   streak: Streak;
   settings: { difficulty: string; audio: boolean; goal: StreakGoal; weeklyTarget: number; basicsOnly: boolean };

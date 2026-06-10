@@ -53,4 +53,23 @@ describe('bb_progress_v1 migration (a real v1 user must not lose progress)', () 
     expect(back.cards).toEqual(migrated.cards);
     expect(back.streak).toEqual(migrated.streak);
   });
+
+  it('a progress object WITHOUT examHistory migrates to examHistory: []', () => {
+    const out = T.migrateProgress(golden, validIds);
+    expect(out.examHistory).toEqual([]);
+  });
+
+  it('examHistory (22 entries) keeps the last 20 through migrate → export → import', () => {
+    const entries = Array.from({ length: 22 }, (_, i) => ({
+      taken: 20300 + i, score: 50 + i, byDeck: { pairing: { total: 5, correct: 3 } },
+      weakAreas: ['acidity'], sureWrong: 0, durationSec: 600 + i, total: 30
+    }));
+    const raw = { ...golden, examHistory: entries };
+    const migrated = T.migrateProgress(raw, validIds);
+    expect(migrated.examHistory.length).toBe(20);
+    expect(migrated.examHistory).toEqual(entries.slice(-20));
+    const json = T.exportProgress(migrated, data);
+    const back = T.importProgress(json, validIds)!;
+    expect(back.examHistory).toEqual(entries.slice(-20));
+  });
 });

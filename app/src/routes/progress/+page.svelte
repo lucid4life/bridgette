@@ -18,6 +18,15 @@
   const goal = $derived(progressStore.goal);
   const daily = $derived(progressStore.dailyStreak());
   const weekly = $derived(progressStore.weeklyStreak());
+  // Mock Exams: latest score + last-5 trend + the latest exam's per-deck table.
+  const exams = $derived(progressStore.value.examHistory ?? []);
+  const lastExam = $derived(exams.length ? exams[exams.length - 1] : null);
+  const examTrend = $derived(exams.slice(-5));
+  const examWeakDecks = $derived(
+    lastExam
+      ? Object.keys(lastExam.byDeck).filter((d) => lastExam.byDeck[d].correct < lastExam.byDeck[d].total)
+      : []
+  );
 
   function ringColor(p: number) { return p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--gold)' : 'var(--accent-dark)'; }
 
@@ -55,6 +64,48 @@
       </div>
     {/each}
   </div>
+
+  {#if lastExam}
+    <h2 class="section-h" style="margin-top:22px">Exams</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Mock Exam</h3>
+        <div class="exam-hero">
+          <div class="ring small" role="img" aria-label={`Latest exam: ${lastExam.score}%`}
+            style={`--p:${mounted ? lastExam.score : 0}; background:conic-gradient(${ringColor(lastExam.score)} calc(var(--p) * 3.6deg), rgba(255,238,215,.12) 0)`}>
+            <span aria-hidden="true">{lastExam.score}%</span>
+          </div>
+          <div>
+            <p class="meta" style="margin:0">Latest: {lastExam.score}% · {lastExam.total} questions.</p>
+            <div class="trend" role="img" aria-label={`Last ${examTrend.length} exam scores: ${examTrend.map((e) => e.score + '%').join(', ')}`}>
+              {#each examTrend as e, i (i)}
+                <span class="trend-bar" style={`height:${Math.max(8, e.score)}%; background:${ringColor(e.score)}`}></span>
+              {/each}
+            </div>
+            <p class="meta" style="margin:4px 0 0">Last {examTrend.length} exam{examTrend.length === 1 ? '' : 's'}.</p>
+          </div>
+        </div>
+        {#if examWeakDecks.length}
+          <div class="weak-list" style="margin-top:10px">
+            {#each examWeakDecks as d}
+              <a class="weak-pill" href={'/?deck=' + encodeURIComponent(d)} aria-label={`Drill the ${(engine.DECKS as any)[d]?.label ?? d} deck`}>{(engine.DECKS as any)[d]?.label ?? d}</a>
+            {/each}
+          </div>
+        {/if}
+      </div>
+      <div class="card">
+        <h3>Latest exam by deck</h3>
+        <table class="exam-table">
+          <thead><tr><th scope="col">Deck</th><th scope="col">Score</th></tr></thead>
+          <tbody>
+            {#each Object.keys(lastExam.byDeck) as d}
+              <tr><th scope="row">{(engine.DECKS as any)[d]?.label ?? d}</th><td>{lastExam.byDeck[d].correct}/{lastExam.byDeck[d].total}</td></tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {/if}
 
   <h2 class="visually-hidden">Streak, weak spots, and backup</h2>
   <div class="grid cols-2" style="margin-top:22px">
@@ -105,4 +156,11 @@
   .weak-list { display: flex; flex-wrap: wrap; gap: 6px; }
   .weak-pill { display: inline-block; font-size: 12px; padding: 6px 11px; border-radius: 999px; background: rgba(168, 50, 18, .18); border: 1px solid rgba(168, 50, 18, .4); color: var(--cream); text-decoration: none; }
   .weak-pill:hover { background: rgba(168, 50, 18, .3); }
+  .exam-hero { display: flex; align-items: center; gap: 14px; }
+  .trend { display: flex; align-items: flex-end; gap: 4px; height: 40px; margin-top: 6px; }
+  .trend-bar { display: inline-block; width: 10px; border-radius: 3px 3px 0 0; }
+  .exam-table { border-collapse: collapse; width: 100%; }
+  .exam-table th, .exam-table td { text-align: left; padding: 5px 12px 5px 0; font-size: 13px; border-bottom: 1px solid rgba(255, 238, 215, .12); }
+  .exam-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .exam-table tbody th { font-weight: 600; color: var(--cream); }
 </style>

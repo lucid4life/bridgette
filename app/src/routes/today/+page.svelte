@@ -87,8 +87,8 @@
       {:else}
         <div class="card">
           <h3>You're all caught up</h3>
-          <p class="meta">Course complete and no reviews due — rest is part of spacing. Run a Readiness Check anytime.</p>
-          <p style="margin:16px 0 0"><a class="btn ghost" href="/?start=readiness">Run Readiness Check</a></p>
+          <p class="meta">Course complete and no reviews due — rest is part of spacing. Run a Readiness Check anytime, or sit a timed Mock Exam.</p>
+          <p style="margin:16px 0 0"><a class="btn ghost" href="/?start=readiness">Run Readiness Check</a> <a class="btn ghost" href="/practice/exam">Mock Exam</a></p>
         </div>
       {/if}
       <div class="card" style="text-align:center">
