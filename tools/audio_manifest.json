@@ -1,29 +1,414 @@
 {
   "engine": "elevenlabs",
-  "model_id": "eleven_turbo_v2",
   "voice_id": "EXAVITQu4vr4xnSDxMaL",
   "voice_name": "Sarah - Mature, Reassuring, Confident",
   "output_format": "mp3_44100_128",
-  "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "use_speaker_boost": true, "speed": 1.0 },
-  "default_recipe": "respelling (the on-screen anglicized phonetic) read by the ENGLISH-ONLY model eleven_turbo_v2 — one voice (Sarah), one recipe, so every clip is a consistent English pronunciation.",
-  "note": "Regenerated 2026-06-08 per Adrian ('it needs to all be in English, one voice for all'). The previous batch mixed name-fed clips (eleven_multilingual_v2 applied native German/Italian/Spanish accents) with respell-fed ones, so they sounded inconsistent. Switching to the English-only turbo model + feeding the respelling for ALL 17 removes the language-switching: Sarah reads every name in the same English voice. text = exact string sent to TTS (= the on-screen respelling). build_audio_js.py keys clip membership off mp3 presence, not this file.",
-  "wines": {
-    "blue-mountain-brut": { "text": "BLOO MOWN-tin BROOT", "language": "en", "source": "respell" },
-    "fattoria-moretto-semprebon": { "text": "fah-TOH-ree-ah moh-REH-toh sem-preh-BOHN", "language": "en", "source": "respell" },
-    "hiedler-loss": { "text": "HEED-ler LURSS", "language": "en", "source": "respell" },
-    "vini-be-good-hip-hop-chenin": { "text": "VEE-nee beh good hip hop SHEN-in", "language": "en", "source": "respell" },
-    "wagner-stempel-weissburgunder": { "text": "VAHG-ner SHTEM-pel VICE-boor-goon-der", "language": "en", "source": "respell" },
-    "darting-durkheimer-fronhof": { "text": "DAR-ting DEWRK-hy-mer FROHN-hohf", "language": "en", "source": "respell" },
-    "dona-matilde-branco": { "text": "DOH-nah ma-TEEL-deh BRAHN-koo", "language": "en", "source": "respell" },
-    "bodega-cerron-remordimiento-blanco": { "text": "boh-DEH-gah seh-RROHN reh-mor-dee-MYEN-toh BLAHN-koh", "language": "en", "source": "respell" },
-    "ameztoi-rubentis": { "text": "ah-MES-toy roo-BEN-tees", "language": "en", "source": "respell" },
-    "leitz-eins-zwei-dry-rose": { "text": "LITES ines tsvy dry roh-ZAY", "language": "en", "source": "respell" },
-    "deinhard-deidesheim": { "text": "DINE-hart DY-des-hime", "language": "en", "source": "respell" },
-    "ca-del-baio-langhe": { "text": "kah del BY-oh LAHN-geh", "language": "en", "source": "respell" },
-    "sindicat-la-figuera": { "text": "sin-dee-KAHT lah fee-GEH-rah", "language": "en", "source": "respell" },
-    "bindi-sergardi-la-boncia": { "text": "BEEN-dee ser-GAR-dee lah BOHN-chah", "language": "en", "source": "respell" },
-    "bodega-cerron-remordimiento-tinto": { "text": "boh-DEH-gah seh-RROHN reh-mor-dee-MYEN-toh TEEN-toh", "language": "en", "source": "respell" },
-    "st-john-claret": { "text": "saynt jon KLA-ret", "language": "en", "source": "respell" },
-    "gallina-de-piel-neverwine": { "text": "gah-YEE-nah deh pyel NEV-er-wine", "language": "en", "source": "respell" }
+  "settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style": 0,
+    "use_speaker_boost": true,
+    "speed": 1
+  },
+  "default_recipe": "PER-NAME, one voice (Sarah) for every clip. Recipe C = the REAL NAME fed to eleven_multilingual_v2 with a language hint (best for Romance + most names). Recipe B = the naturalized lowercase respell fed to eleven_turbo_v2 in English (used where the multilingual model mangles the name or grade letters like XO/VS/12yr). Recipe A (legacy caps respell + turbo) survives only where it beat both (hiedler-loss).",
+  "note": "Regenerated 2026-06-10 via the ElevenLabs MCP with an STT verification loop: every clip was transcribed back by native-language speech-to-text and accepted only if the transcript matched the real name (see docs/menu-sync + session notes). 47 clips won with recipe C, 18 with recipe B; hiedler-loss kept its legacy clip (multilingual rendered it as 'Hitler löst' — rejected). Covers glass wines + bottles + fortifieds (65 regenerated of 81 total; English/brand names kept their original clips).",
+  "clips": {
+    "hiedler-loss": {
+      "recipe": "A-legacy",
+      "text": "HEED-ler LURSS",
+      "model": "eleven_turbo_v2",
+      "language": "en",
+      "note": "kept: legacy clip verified good by deu STT ('Hiedler Lörs'); recipe C rejected"
+    },
+    "aia-vecchia-sor-ugo-bolgheri-superiore": {
+      "recipe": "C",
+      "text": "Aia Vecchia Sor Ugo Bolgheri Superiore",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "algre-valganon": {
+      "recipe": "B",
+      "text": "ah-leh-greh val-gah-nyon",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "alta-mora-etna-rosso": {
+      "recipe": "C",
+      "text": "Alta Mora Etna Rosso",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "amaro-montenegro": {
+      "recipe": "C",
+      "text": "Amaro Montenegro",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "ameztoi-rubentis": {
+      "recipe": "B",
+      "text": "ah-mes-toy roo-ben-tees",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "averna": {
+      "recipe": "C",
+      "text": "Averna",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "barbeito-madeira-rainwater-reserva-5yr": {
+      "recipe": "B",
+      "text": "bar-bay-too mah-dair-ah rain-waw-ter reh-zair-vah",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "bideona-cabezadas": {
+      "recipe": "C",
+      "text": "Bideona Cabezadas",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "bindi-sergardi-la-boncia": {
+      "recipe": "C",
+      "text": "Bindi Sergardi La Boncia",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "bodega-cerron-remordimiento-blanco": {
+      "recipe": "C",
+      "text": "Bodega Cerrón Remordimiento Blanco",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "bodega-cerron-remordimiento-tinto": {
+      "recipe": "C",
+      "text": "Bodega Cerrón Remordimiento Tinto",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "boulard-xo-calvados": {
+      "recipe": "B",
+      "text": "boo-lar eks-oh kal-vah-dohs",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "brandini-langhe-filari-corti": {
+      "recipe": "C",
+      "text": "Brandini Langhe Filari Corti",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "ca-del-baio-langhe": {
+      "recipe": "C",
+      "text": "Ca' del Baio Langhe",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "castarede-xo-armagnac": {
+      "recipe": "B",
+      "text": "kas-tah-red eks-oh ar-mahn-yak",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "castello-di-potentino-sacromonte": {
+      "recipe": "C",
+      "text": "Castello di Potentino Sacromonte",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "castello-di-verduno-alba": {
+      "recipe": "C",
+      "text": "Castello di Verduno Alba",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "charlotte-jean-baptiste-senat-amalgame": {
+      "recipe": "C",
+      "text": "Charlotte & Jean Baptiste Senat Amalgame",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "chateau-de-montifaud-vs-cognac": {
+      "recipe": "B",
+      "text": "shah-toh duh mon-tee-foh vee-ess",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "chateau-de-montifaud-vsop-cognac": {
+      "recipe": "B",
+      "text": "shah-toh duh mon-tee-foh vee-ess-oh-pee",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "chateau-de-montifaud-xo-cognac": {
+      "recipe": "B",
+      "text": "shah-toh duh mon-tee-foh eks-oh",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "chateau-larose-perganson": {
+      "recipe": "C",
+      "text": "Château Larose Perganson",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "christian-drouin-xo-calvados": {
+      "recipe": "B",
+      "text": "krees-tee-ahn droo-an eks-oh kal-vah-dohs",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "christophe-mignon-adn-de-meunier-brut-nature": {
+      "recipe": "C",
+      "text": "Christophe Mignon ADN de Meunier Brut Nature",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "cirelli-frizzante-bianco": {
+      "recipe": "C",
+      "text": "Cirelli Frizzante Bianco",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "ciro-picariello-bru-emm": {
+      "recipe": "C",
+      "text": "Ciro Picariello Bru Emm",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "claire-naudin-mallon": {
+      "recipe": "B",
+      "text": "klair noh-dan mah-lohn",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "clos-bellane-valreas": {
+      "recipe": "C",
+      "text": "Clos Bellane Valréas",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "cusumano-lucido": {
+      "recipe": "C",
+      "text": "Cusumano Lucido",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "darroze-12yr-armagnac": {
+      "recipe": "B",
+      "text": "dah-rohz ar-mahn-yak",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "darting-durkheimer-fronhof": {
+      "recipe": "C",
+      "text": "Darting Dürkheimer Fronhof",
+      "model": "eleven_multilingual_v2",
+      "language": "de"
+    },
+    "deinhard-deidesheim": {
+      "recipe": "B",
+      "text": "dine-hart dy-des-hime",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "denizot-sancerre": {
+      "recipe": "C",
+      "text": "Denizot Sancerre",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "domaine-breton-pierres-rousses": {
+      "recipe": "B",
+      "text": "doh-men bruh-tohn pee-air rooss",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "domaine-buisson-charles-meursault-vieilles-vignes": {
+      "recipe": "C",
+      "text": "Domaine Buisson-Charles Meursault Vieilles Vignes",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "domaine-de-colette-coteaux-de-colette": {
+      "recipe": "C",
+      "text": "Domaine de Colette Coteaux de Colette",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "domaine-de-la-rochette-macon-bussieres-mont-sard": {
+      "recipe": "C",
+      "text": "Domaine de la Rochette Mâcon-Bussières Mont Sard",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "domaine-gour-de-chaule-gigondas-les-jardinieres": {
+      "recipe": "C",
+      "text": "Domaine Gour de Chaulé Gigondas Les Jardinières",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "domaine-pouderoux-maury-vendange": {
+      "recipe": "C",
+      "text": "Domaine Pouderoux Maury Vendange",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "dona-matilde-branco": {
+      "recipe": "C",
+      "text": "Dona Matilde Branco",
+      "model": "eleven_multilingual_v2",
+      "language": "pt"
+    },
+    "donnhoff-feinherb": {
+      "recipe": "C",
+      "text": "Donnhoff Feinherb",
+      "model": "eleven_multilingual_v2",
+      "language": "de"
+    },
+    "eleonore-moreau-petit-chablis": {
+      "recipe": "C",
+      "text": "Eleonore Moreau Petit Chablis",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "emilio-hidalgo-fino": {
+      "recipe": "C",
+      "text": "Emilio Hidalgo Fino",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "emilio-hidalgo-oloroso-gobernador": {
+      "recipe": "C",
+      "text": "Emilio Hidalgo Oloroso Gobernador",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "fattoria-moretto-semprebon": {
+      "recipe": "C",
+      "text": "Fattoria Moretto Semprebon",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "fernet-branca": {
+      "recipe": "C",
+      "text": "Fernet Branca",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "fletcher-barbaresco-recta-pete": {
+      "recipe": "C",
+      "text": "Fletcher Barbaresco Recta Pete",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "griesel-blanc-de-noirs": {
+      "recipe": "C",
+      "text": "Griesel Blanc de Noirs",
+      "model": "eleven_multilingual_v2",
+      "language": "de"
+    },
+    "gulfi-nerojbleo": {
+      "recipe": "B",
+      "text": "gool-fee neh-roy-bleh-oh",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "kopke-late-bottled-vintage-port-2015": {
+      "recipe": "B",
+      "text": "kop-kuh layt-bot-uld vin-tij port",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "landron-muscadet-sevre-et-maine-amphibolite": {
+      "recipe": "C",
+      "text": "Landron Muscadet-Sevre et Maine Amphibolite",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "leitz-eins-zwei-dry-rose": {
+      "recipe": "C",
+      "text": "Leitz Eins Zwei Dry Rosé",
+      "model": "eleven_multilingual_v2",
+      "language": "de"
+    },
+    "malahierba-vinos-maleza": {
+      "recipe": "B",
+      "text": "mah-lah-yehr-bah mah-leh-sah, roo-feh-teh",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "marolo-milla-camomilla": {
+      "recipe": "C",
+      "text": "Marolo Milla Camomilla",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "nonino": {
+      "recipe": "C",
+      "text": "Nonino",
+      "model": "eleven_multilingual_v2",
+      "language": "it"
+    },
+    "pierre-thibert-chorey-les-beaune": {
+      "recipe": "C",
+      "text": "Pierre Thibert Chorey-les-Beaune",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "quevedo-tawny-10yr": {
+      "recipe": "B",
+      "text": "keh-veh-doh taw-nee",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "raventos-i-blanc-de-nit-rose": {
+      "recipe": "C",
+      "text": "Raventós i Blanc de Nit Rosé",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "sandrine-fabrice-gasnier-chinon-pierres-chaudes": {
+      "recipe": "C",
+      "text": "Sandrine & Fabrice Gasnier Chinon Pierres Chaudes",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "sindicat-la-figuera": {
+      "recipe": "C",
+      "text": "Sindicat la Figuera",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "terroir-sense-fronteres-negre-de-montsant": {
+      "recipe": "B",
+      "text": "teh-roir sen-seh fron-teh-res neh-greh deh mon-sahn",
+      "model": "eleven_turbo_v2",
+      "language": "en"
+    },
+    "texier-brezeme": {
+      "recipe": "C",
+      "text": "Texier Brézème",
+      "model": "eleven_multilingual_v2",
+      "language": "fr"
+    },
+    "valdespino-cream-sherry-isabela": {
+      "recipe": "C",
+      "text": "Valdespino Cream Sherry \"Isabela\"",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "valdespino-single-vineyard-amontillado-tio-diego": {
+      "recipe": "C",
+      "text": "Valdespino Single Vineyard Amontillado Tio Diego",
+      "model": "eleven_multilingual_v2",
+      "language": "es"
+    },
+    "wagner-stempel-weissburgunder": {
+      "recipe": "C",
+      "text": "Wagner-Stempel Weissburgunder",
+      "model": "eleven_multilingual_v2",
+      "language": "de"
+    }
   }
 }

@@ -76,10 +76,14 @@ def synth(key, voice_id, model_id, fmt, settings, text):
 def main():
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     voice_id = manifest["voice_id"]
-    model_id = manifest["model_id"]
     fmt = manifest.get("output_format", "mp3_44100_128")
     settings = manifest.get("settings", {})
-    wines = manifest["wines"]
+    # 2026-06-10 schema: per-clip recipes under "clips", each carrying its own
+    # model (recipe C = eleven_multilingual_v2 + real name; B = eleven_turbo_v2
+    # + naturalized respell). The old flat "wines" + top-level model_id schema
+    # is still accepted for older manifests.
+    wines = manifest.get("clips") or manifest["wines"]
+    default_model = manifest.get("model_id", "eleven_multilingual_v2")
 
     if voice_id in ("", "PENDING_PREVIEW"):
         sys.exit("audio_manifest.json voice_id is not set — run the preview/voice-pick step first.")
@@ -97,6 +101,7 @@ def main():
             skipped += 1
             continue
         text = spec["text"]
+        model_id = spec.get("model", default_model)
         try:
             audio = synth(key, voice_id, model_id, fmt, settings, text)
         except urllib.error.HTTPError as exc:
