@@ -4,6 +4,7 @@
 import { browser } from '$app/environment';
 import { data } from '$lib/data/index';
 import * as engine from '$lib/engine/training.js';
+import { basicsIdSet } from '$lib/engine/basics.js';
 import { addStudyDay, dailyStreak, weeklyStreak } from '$lib/engine/streak.js';
 import type { Card, Progress, StreakGoal } from '$lib/data/types';
 
@@ -91,9 +92,12 @@ export const progressStore = {
   masteryFor(key: string): number {
     return engine.masteryFor(progress, key, data);
   },
-  /** Cards due across all decks today (for the Today cockpit). */
+  /** Cards due today (for the Today cockpit). When basics-mode is on, counts only the
+   *  Floor-Basics set — so the "due" number matches what Smart Review will actually draw. */
   dueCount(today = engine.dayNumber()): number {
+    const basics = progress.settings.basicsOnly ? basicsIdSet(data) : null;
     return engine.allCards(data).filter((c: Card) => {
+      if (basics && !basics.has(c.id)) return false;
       const st = progress.cards[c.id];
       return st && engine.isDue(st, today);
     }).length;
