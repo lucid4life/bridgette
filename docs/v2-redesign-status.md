@@ -1,5 +1,7 @@
 # Bridgette Training — v2 Redesign Build-out Status (2026-06-08)
 
+> **Continued 2026-06-09 →** This redesign was followed by a **study-redesign pivot** (cut the at-the-table direction; re-centered on studying with app-wide brief→Expand + rich miss-feedback + a Floor-Basics on-ramp). See [`v2-study-redesign-status.md`](v2-study-redesign-status.md).
+
 **Branch:** `v2-app` (NOT merged, NOT deployed — Adrian deploys). **All gates green throughout:**
 191→195 Vitest (incl. the frozen card-id snapshot) · svelte-check 0/0 · 14 Playwright (axe-WCAG-AA per route / smoke / offline) · production build · v1 `python tests/check_training.py` PASS.
 **Frozen contract intact:** card-id slugs are additive-only (snapshot 279 → 295, only net-new ids); `bb_progress_v1` untouched; a new `bb_course_v1` key holds course state.
