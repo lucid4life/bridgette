@@ -93,10 +93,11 @@
       pills: [b.family, b.type],
       priceBottle: b.priceBottle,
       vegan: b.vegan, exclusive: b.exclusive,
-      pron: b.pronunciation,
+      pron: b.pronunciation, lang: langFor(b.country),
       grape: b.grape, region: b.region, country: b.country, vintage: b.vintage, climate: b.climate,
       structure: b.structure,
       tenSecond: b.tenSecond, profile: b.profile,
+      producerStory: b.producerStory, whyWePourIt: b.whyWePourIt,
       pair: b.pair, pairWhy: b.pairWhy,
       mnemonic: b.mnemonic
     };

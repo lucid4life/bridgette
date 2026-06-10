@@ -119,6 +119,8 @@ export interface Bottle {
   mnemonic: string;
   vegan: boolean | null;
   exclusive: boolean;
+  producerStory?: string;
+  whyWePourIt?: string;
 }
 
 export interface Beer {
