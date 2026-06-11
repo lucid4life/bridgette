@@ -54,11 +54,15 @@
     })
   );
   // Search the Food + Cocktail tabs too (spec §5 lists "food" as a search axis).
+  // Official-syllabus fields (ingredients/allergens/description) are searchable too,
+  // so "burrata" or "shellfish" finds the dishes that carry them.
   const foods = $derived(
     data.foods.filter((f) => {
       if (!ql) return true;
-      const hay = [f.name, f.category, f.menu, f.flavor, f.wine ?? '', f.cocktail ?? '', f.zero ?? '', f.why, ...(f.tags ?? [])]
-        .join(' ').toLowerCase();
+      const hay = [
+        f.name, f.category, f.menu, f.flavor, f.wine ?? '', f.cocktail ?? '', f.zero ?? '', f.why,
+        f.description ?? '', ...(f.ingredients ?? []), ...(f.allergens ?? []), ...(f.tags ?? [])
+      ].join(' ').toLowerCase();
       return hay.includes(ql);
     })
   );
@@ -187,13 +191,28 @@
       <span class="visually-hidden">Search dishes by name, ingredient, or pairing</span>
       <input type="search" bind:value={q} placeholder="Search a dish — oysters, lamb, truffle…" autocomplete="off" />
     </label>
-    <p class="meta" aria-live="polite" style="margin:0 0 12px">{foods.length} of {data.foods.length} dishes</p>
+    <div class="foods-bar">
+      <p class="meta" aria-live="polite">{foods.length} of {data.foods.length} dishes</p>
+      <a class="cram-link" href="/reference/cram">Print cram sheet →</a>
+    </div>
+    <p class="meta compliance">Allergen flags are from the official syllabus — always confirm with the kitchen before promising a guest.</p>
     {#if foods.length}
     <div class="grid cols-2 on-cream">
       {#each foods as f (f.id)}
         <article class="card light">
           <h3>{f.name}</h3>
           <div class="meta">{f.category} · {f.price}</div>
+          {#if f.description}<p class="food-desc">{f.description}</p>{/if}
+          {#if f.ingredients?.length}
+            <p class="food-comps"><span class="comps-label">Components:</span> {#each f.ingredients as ing, i}{#if i > 0}{', '}{/if}{#if i < 3}<b>{ing}</b>{:else}{ing}{/if}{/each}</p>
+          {/if}
+          {#if f.allergens?.length || f.vegan === true}
+            <div class="food-allergens">
+              {#each f.allergens ?? [] as a}<span class="pill">{a}</span>{/each}
+              {#if f.vegan === true}<span class="pill alt">vegan</span>{/if}
+            </div>
+          {/if}
+          {#if f.allergenNote}<p class="meta allergen-note">{f.allergenNote}</p>{/if}
           {#if f.wine}<p class="winecard-body"><strong>{f.wine}</strong> — {f.why}</p>{/if}
           {#if f.cocktail}<p class="meta">Cocktail: <strong>{f.cocktail}</strong></p>{/if}
           {#if f.zero}<p class="meta">Zero-proof: <strong>{f.zero}</strong></p>{/if}
@@ -368,6 +387,18 @@
   .best-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
   .upgrade-line { margin: 6px 0 0; }
   .upgrade-line strong { color: var(--text-strong); }
+  /* Food cards: official-syllabus enrichment (description / components / allergens). */
+  .foods-bar { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; margin: 0 0 4px; }
+  .foods-bar .meta { margin: 0; }
+  .cram-link { font-size: 13px; font-weight: 700; color: var(--accent-text); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent-text) 45%, transparent); text-underline-offset: 3px; }
+  .cram-link:hover { text-decoration-color: var(--accent-text); }
+  .compliance { margin: 0 0 12px; max-width: 70ch; }
+  .food-desc { margin: 6px 0 0; font-size: 14px; }
+  .food-comps { margin: 8px 0 0; font-size: 14px; }
+  .food-comps .comps-label { color: var(--text-muted); font-size: 13px; }
+  .food-comps b { color: var(--text-strong); } /* first three = the "name a few components" money items */
+  .food-allergens { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .allergen-note { margin: 6px 0 0; }
   .objections { margin-top: 8px; }
   .objections ul { margin: 6px 0 0; padding-left: 18px; }
   .objections li { font-size: 13px; margin: 4px 0; color: var(--text-strong); }

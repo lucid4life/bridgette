@@ -378,7 +378,7 @@
         {/if}
 
         {#if cardMode === 'produce'}
-          <p class="meta gen-nudge">Say your pour and the one reason it works — out loud. Then reveal.</p>
+          <p class="meta gen-nudge">{card.scenario || 'Say your pour and the one reason it works — out loud. Then reveal.'}</p>
           <div class="gradebar">
             <button class="btn gold" type="button" onclick={flipReveal}>Reveal answer</button>
           </div>
