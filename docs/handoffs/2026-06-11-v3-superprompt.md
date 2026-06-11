@@ -142,8 +142,18 @@ retrieval successes. No scheduler internals in the UI — ranks only.
 2. **Stage 2 Allergens + Playbook complete** (translator, table map, legend).
 3. **Stage 3 Bar** (builds worked-example flow, Matinee, arc-of-service).
 4. **Stage 4 Wine + Prep-my-bottle; Stage 5 Pairings.**
-5. **Polish**: View Transitions, Web Speech fallback for pronunciation, photo
-   ingestion when I supply dish photos, 60-second burst game.
+5. **Polish**: View Transitions, Web Speech fallback for pronunciation,
+   60-second burst game.
+
+**Photo scraping (runs alongside Phase 1, its own subagent):** pull dish and
+cocktail imagery that already exists publicly — bridgettebar.com (Squarespace
+galleries/section images) and Bridgette Bar Calgary's public Instagram — and
+map what you can confidently identify to `foodId`/`cocktailId` in an ingestion
+manifest (`app-v3/static/img/manifest.json`); optimize to webp ≤120KB, store in
+`app-v3/static/img/`. Coverage WILL be partial — every teach/lookup card ships
+with a graceful no-photo state, and never guess a match (a wrong dish photo is
+worse than none; unmatched images are dropped). Personal training use only; I'll
+replace/extend with my own photos taken at work later.
 
 ## Process requirements
 
@@ -162,10 +172,11 @@ retrieval successes. No scheduler internals in the UI — ranks only.
 - Use subagent teams liberally to protect context; sequence anything that runs
   npm in the same directory.
 
-## Defaults I've accepted unless I say otherwise in this session
+## Decisions confirmed by me (2026-06-11 — do not re-ask)
 
-- Dish photos: text-first now; design every teach/lookup card with a photo slot
-  + graceful no-photo state. I'll supply photos later.
+- Dish/cocktail photos: SCRAPE what exists now (site + public Instagram, see
+  the photo-scraping step above); photo slots with graceful no-photo states
+  for everything unmatched; I'll supply my own photos later.
 - Fresh progress (no v2 import).
-- Free recall self-graded; allergens tap-to-select + confidence.
-- Phased shipping (Stage 1 first, same night).
+- Free recall self-graded reveal; allergen cards tap-to-select + confidence.
+- Phased shipping (Stage 1 ships first, same session).
