@@ -123,7 +123,11 @@ export const DECKS = {
   'cocktail-pairing': { label: 'Cocktail Pairing', learnLink: 'pairing-levers' },
   // The reverse pairing direction: pouring this wine, which dish do you steer them to?
   'wine-dish': { label: 'Wine → Dish', learnLink: 'pairing-levers' },
-  upsell: { label: 'Upselling', learnLink: 'talking-to-a-guest' }
+  upsell: { label: 'Upselling', learnLink: 'talking-to-a-guest' },
+  // Task 2 — the official menu syllabus (Task 1 data) gets retrieval practice:
+  // what's IN each dish, and which allergen flags it carries.
+  components: { label: 'Dish Components', learnLink: 'know-the-dish' },
+  allergens: { label: 'Allergen Flags', learnLink: 'know-the-dish' }
 };
 
 const COUNTRY_LANG = {
@@ -525,6 +529,117 @@ function genUpsell(data) {
   });
 }
 
+// ---------------- Task 2: official-syllabus food decks ----------------
+// The standing compliance line — EVERY allergen teach ends with it, verbatim.
+const KITCHEN_CONFIRM = 'Always confirm allergens with the kitchen before promising a guest.';
+
+function endStop(s) {
+  s = String(s).trim();
+  return /[.!?]$/.test(s) ? s : s + '.';
+}
+
+function wordSet(s) {
+  const out = {};
+  String(s).toLowerCase().split(/[^a-z0-9]+/).forEach((w) => { if (w) out[w] = 1; });
+  return out;
+}
+
+// Shared teach line for a dish's allergen flags: flags + note (when present) +
+// the standing compliance sentence. Used by both genAllergens and expandFor so
+// the card why and the Expand drawer can never drift apart.
+function allergenLine(f) {
+  return f.allergens.join(', ') + '. ' +
+    (f.allergenNote ? endStop(f.allergenNote) + ' ' : '') + KITCHEN_CONFIRM;
+}
+
+// Dish Components: for every food carrying the official ingredients list, drill the
+// NON-OBVIOUS component — the first ingredient that shares no word with the dish name
+// (so Tuna Crudo never asks about "Tuna"); fallback = first ingredient. Distractors
+// are ingredients from OTHER dishes (same category preferred) that are NOT in this
+// dish — deterministic rotation, same style as the other generators. aliases carry
+// the FULL list so produce-mode grading accepts any genuine component.
+function genComponents(data) {
+  const foods = data.foods.filter((f) => f.ingredients && f.ingredients.length >= 1);
+  return foods.map((f, i) => {
+    const nameWords = wordSet(f.name);
+    const sharesNoNameWord = (ing) => {
+      const ws = Object.keys(wordSet(ing));
+      for (let k = 0; k < ws.length; k++) if (nameWords[ws[k]]) return false;
+      return true;
+    };
+    const answer = f.ingredients.find(sharesNoNameWord) || f.ingredients[0];
+    const mine = {};
+    f.ingredients.forEach((x) => { mine[String(x).toLowerCase()] = 1; });
+    // Candidate pools (deduped case-insensitively, never an ingredient of THIS dish):
+    // same-category dishes first, the rest only as a fallback fill.
+    const seen = {};
+    const collect = (sameCategory) => {
+      const pool = [];
+      foods.forEach((o) => {
+        if (o.id === f.id || (o.category === f.category) !== sameCategory) return;
+        o.ingredients.forEach((ing) => {
+          const k = String(ing).toLowerCase();
+          if (mine[k] || seen[k]) return;
+          seen[k] = 1;
+          pool.push(ing);
+        });
+      });
+      return pool;
+    };
+    const sameCat = collect(true);
+    const distractors = pickDistractors(sameCat, answer, 3, i);
+    if (distractors.length < 3) {
+      pickDistractors(collect(false), answer, 3 - distractors.length, i).forEach((d) => {
+        if (distractors.indexOf(d) === -1) distractors.push(d);
+      });
+    }
+    return {
+      id: 'components:' + f.id + ':pick',
+      deck: 'components', kind: 'recall',
+      sourceKind: 'food', sourceId: f.id,
+      prompt: 'Which of these is IN the ' + f.name + '?',
+      answer: answer,
+      why: 'Official components: ' + f.ingredients.join(', ') + '.',
+      choices: [answer].concat(distractors),
+      aliases: f.ingredients.slice(),
+      scenario: 'A guest asks what comes on the ' + f.name + '. Name 3 components, then check the official list.',
+      learnLink: DECKS.components.learnLink,
+      tags: ['components', 'food'].concat((f.tags || []).filter((t) => t !== 'food'))
+    };
+  });
+}
+
+// Allergen Flags: for every food with normalized flags. Answer is the FIRST
+// (syllabus-salient) flag; distractors come from the GLOBAL allergen vocabulary
+// minus ALL of this dish's flags — a second-listed flag is still a correct answer,
+// never a foil. aliases carry the remaining flags so a typed/produced answer naming
+// ANY genuine flag grades correct.
+function genAllergens(data) {
+  const vocab = [];
+  const seenV = {};
+  data.foods.forEach((f) => {
+    (f.allergens || []).forEach((a) => { if (!seenV[a]) { seenV[a] = 1; vocab.push(a); } });
+  });
+  return data.foods.filter((f) => f.allergens && f.allergens.length >= 1).map((f, i) => {
+    const answer = f.allergens[0];
+    const mine = {};
+    f.allergens.forEach((a) => { mine[String(a).toLowerCase()] = 1; });
+    const pool = vocab.filter((a) => !mine[String(a).toLowerCase()]);
+    return {
+      id: 'allergens:' + f.id + ':flag',
+      deck: 'allergens', kind: 'recall',
+      sourceKind: 'food', sourceId: f.id,
+      prompt: 'Which allergen flag does the ' + f.name + ' carry?',
+      answer: answer,
+      why: 'Allergen flags: ' + allergenLine(f),
+      choices: [answer].concat(pickDistractors(pool, answer, 3, i)),
+      aliases: f.allergens.slice(1),
+      learnLink: DECKS.allergens.learnLink,
+      tags: ['allergens', 'food'].concat((f.tags || []).filter((t) => t !== 'food'))
+    };
+  });
+}
+
 export function generateDeck(deckId, data) {
   if (!data) throw new Error('engine.generateDeck: data is required');
   switch (deckId) {
@@ -538,6 +653,8 @@ export function generateDeck(deckId, data) {
     case 'cocktail-pairing': return genCocktailPairing(data);
     case 'wine-dish': return genWineDish(data);
     case 'upsell': return genUpsell(data);
+    case 'components': return genComponents(data);
+    case 'allergens': return genAllergens(data);
     default: return [];
   }
 }
@@ -605,6 +722,10 @@ export function expandFor(card, data) {
     if (f.category || f.flavor) pushText(sections, 'The dish', [f.category, f.flavor].filter(Boolean).join(' · '));
     pushText(sections, 'The lever', f.why);
     if (f.wine || f.cocktail || f.zero) sections.push({ label: 'The picks', picks: { wine: f.wine, cocktail: f.cocktail, zero: f.zero } });
+    // Task 2 — official-syllabus depth (additive: appended AFTER the existing sections).
+    pushText(sections, 'The official description', f.description);
+    if (f.ingredients && f.ingredients.length) pushText(sections, 'Official components', f.ingredients.join(', '));
+    if (f.allergens && f.allergens.length) pushText(sections, 'Allergen flags', allergenLine(f));
   }
   return { sections: sections };
 }
@@ -908,7 +1029,10 @@ export function importProgress(json, validIds) {
 // Reason-bearing decks: past the beginner boxes the learner PRODUCES the pour + the
 // one reason out loud, reveals, then self-rates (spec §6). Everything before box 3
 // (and every non-reason deck) keeps the prior mc/typed/scenario/flip behaviour.
-export const REASON_DECKS = new Set(['translator', 'pairing', 'pairing-principle', 'cocktail-pairing', 'wine-dish', 'upsell']);
+// `components` joins them (Task 2): past the beginner boxes the real-world skill is
+// free-recalling a few components of the dish, not recognising one in a line-up —
+// aliases carry the full official list so any genuine component grades correct.
+export const REASON_DECKS = new Set(['translator', 'pairing', 'pairing-principle', 'cocktail-pairing', 'wine-dish', 'upsell', 'components']);
 export function modeForBox(card, box) {
   if (card.kind === 'pronounce') return 'flip';
   // Reason decks PRODUCE at box>=3 even when the card is discriminate (upsell,

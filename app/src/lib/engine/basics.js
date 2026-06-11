@@ -1,5 +1,5 @@
 // app/src/lib/engine/basics.js — the "Floor Basics" study on-ramp (spec §6).
-// A curated ~36-46 high-yield card set a new learner studies FIRST. Authored in
+// A curated ~54-64 high-yield card set a new learner studies FIRST. Authored in
 // human terms (guest asks, wine ids, dish ids) and resolved to card ids through the
 // generators' additive sourceId field — never hardcoded slug strings, so it survives
 // data edits. A test guard (basics.test.ts) asserts the resolved set stays valid.
@@ -38,6 +38,17 @@ export const FLOOR_BASICS = {
   principleFoodIds: [
     'french-fries', '26oz-wood-grilled-beef-ribeye', 'fennel-salami',
     'bibb-lettuce', 'italian-pork-sausage', 'tuna-crudo'
+  ],
+  // Task 2 — food-runner week picks: the 10 dishes a runner describes first (what's
+  // IN them) and the 8 highest-stakes allergen calls.
+  componentsFoodIds: [
+    'french-fries', 'garlic-bread', 'hummus-chips', 'burrata-cheese', 'margherita',
+    'tuna-crudo', 'ricotta-dumplings', 'wood-grilled-beef-strip-steak',
+    'grilled-farm-chicken', 'oysters-1-2-dozen'
+  ],
+  allergensFoodIds: [
+    'french-fries', 'hummus-chips', 'cashews', 'shrimp-crab', 'snap-peas',
+    'burrata-cheese', 'wood-grilled-asparagus', 'bread-butter'
   ]
 };
 
@@ -51,6 +62,8 @@ export function basicsIdSet(data) {
   const pairF = new Set(FLOOR_BASICS.pairingFoodIds);
   const pronW = new Set(FLOOR_BASICS.pronunciationWineIds);
   const prinF = new Set(FLOOR_BASICS.principleFoodIds);
+  const compF = new Set(FLOOR_BASICS.componentsFoodIds);
+  const algF = new Set(FLOOR_BASICS.allergensFoodIds);
   const out = new Set();
   for (const c of allCards(data)) {
     if (c.deck === 'translator' && asks.has(c.sourceId)) out.add(c.id);
@@ -59,6 +72,8 @@ export function basicsIdSet(data) {
     else if (c.deck === 'pairing' && pairF.has(c.sourceId)) out.add(c.id);
     else if (c.deck === 'pairing-principle' && prinF.has(c.sourceId)) out.add(c.id);
     else if (c.deck === 'pronunciation' && pronW.has(c.sourceId)) out.add(c.id);
+    else if (c.deck === 'components' && compF.has(c.sourceId)) out.add(c.id);
+    else if (c.deck === 'allergens' && algF.has(c.sourceId)) out.add(c.id);
   }
   return out;
 }

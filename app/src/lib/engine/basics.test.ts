@@ -7,9 +7,12 @@ describe('Floor Basics on-ramp set', () => {
   const ids = basicsIdSet(data);
   const valid = new Set(T.allCards(data).map((c) => c.id));
 
-  it('is a curated 36-46 card set', () => {
-    expect(ids.size, `resolved ${ids.size} basics cards`).toBeGreaterThanOrEqual(36);
-    expect(ids.size).toBeLessThanOrEqual(46);
+  it('is a curated 54-64 card set', () => {
+    // Deliberate Task 2 bump: was 36-46 (42 resolved). componentsFoodIds (+10) and
+    // allergensFoodIds (+8) add exactly 18 → 60 resolved; window shifts by the true
+    // delta, same buffer width.
+    expect(ids.size, `resolved ${ids.size} basics cards`).toBeGreaterThanOrEqual(54);
+    expect(ids.size).toBeLessThanOrEqual(64);
   });
 
   it('every basics id resolves to a real card (no drift)', () => {
