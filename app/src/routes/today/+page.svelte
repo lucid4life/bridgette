@@ -52,6 +52,12 @@
   <h1>{greeting}, Adrian</h1>
   <p class="sub">Small, consistent sessions beat cramming — let's keep the streak alive.</p>
 
+  <nav class="track-row" aria-label="Training tracks">
+    <a class="btn" href="/food">Food</a>
+    <a class="btn ghost" href="/bar">Bar</a>
+    <a class="btn ghost" href="/wine">Wine</a>
+  </nav>
+
   <div class="today-search"><GuestSearch /></div>
 
   {#if !studied}
@@ -155,5 +161,7 @@
   .card.link { text-decoration: none; color: inherit; display: block; }
   .card.link:hover { border-color: var(--highlight); }
   .today-search { max-width: 520px; margin: 0 0 22px; }
+  /* Track row — mobile reach into the role hubs; Food (solid) leads while runner shifts ramp up. */
+  .track-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 20px; }
   .section-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-size: 14px; margin: 0 0 12px; }
 </style>

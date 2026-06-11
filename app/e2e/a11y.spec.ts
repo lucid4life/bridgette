@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
-const ROUTES = ['/', '/today', '/on-the-floor', '/learn', '/reference', '/reference/wine/hiedler-loss', '/progress', '/practice/simulator', '/practice/pairing', '/practice/exam'];
+const ROUTES = ['/', '/today', '/on-the-floor', '/learn', '/reference', '/reference/wine/hiedler-loss', '/reference/cram', '/progress', '/practice/simulator', '/practice/pairing', '/practice/exam', '/food', '/bar', '/wine'];
 const THEMES = ['light', 'dark'] as const;
 
 // Axe must measure the SETTLED state — the .screen entrance fade transiently lowers

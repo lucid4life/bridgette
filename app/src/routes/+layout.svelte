@@ -37,6 +37,12 @@
     { href: '/learn', label: 'Learn', paths: ['M3 7l9-4 9 4-9 4z', 'M7 10v5c0 1 2 3 5 3s5-2 5-3v-5'] },
     { href: '/reference', label: 'Reference', paths: ['M5 4h12a2 2 0 012 2v14H7a2 2 0 01-2-2z', 'M9 4v16'] }
   ];
+  // Role-based training tracks — sidebar only (the mobile tabbar stays 5 items).
+  const TRACKS = [
+    { href: '/food', label: 'Food', paths: ['M4 17h16', 'M6 17a6 6 0 0 1 12 0', 'M12 11V9'] },
+    { href: '/bar', label: 'Bar', paths: ['M5 5h14l-7 8z', 'M12 13v6', 'M9 19h6'] },
+    { href: '/wine', label: 'Wine', paths: ['M7 3h10v4a5 5 0 0 1-10 0z', 'M12 12v7', 'M9 19h6'] }
+  ];
   const current = $derived(page.url.pathname);
   const navHrefs = NAV.map((n) => n.href);
   const isSub = $derived(!navHrefs.includes(current)); // a non-top-level route (e.g. the simulator)
@@ -55,6 +61,17 @@
     <div class="brand">Bridgette<br />Training<small>Calgary</small></div>
     <nav aria-label="Primary">
       {#each NAV as item (item.href)}
+        <a class="nav-item" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            {#each item.paths as d}<path {d} />{/each}
+          </svg>
+          <span class="nav-label">{item.label}</span>
+        </a>
+      {/each}
+    </nav>
+    <p class="nav-group" id="tracks-label">Tracks</p>
+    <nav aria-labelledby="tracks-label">
+      {#each TRACKS as item (item.href)}
         <a class="nav-item" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
             {#each item.paths as d}<path {d} />{/each}
@@ -110,4 +127,15 @@
   .topbar-brand { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em; font-size: 18px; color: var(--text-strong); }
   /* A11Y-12: the skip link focuses <main> (tabindex -1); don't show a focus ring on the whole region. */
   main:focus { outline: none; }
+  /* Sidebar "Tracks" group label — matches the sidebar's muted small-caps voice. */
+  .nav-group {
+    margin: 14px 0 2px; padding: 0 12px;
+    font-family: var(--font-display); text-transform: uppercase; letter-spacing: .14em;
+    font-size: 11px; font-weight: 700; color: var(--text-muted);
+  }
+  /* Icon-rail width (app.css hides .nav-label here): collapse the text to a
+     hairline separator — the element stays in the tree for aria-labelledby. */
+  @media (max-width: 1000px) {
+    .nav-group { font-size: 0; margin: 8px 6px 2px; padding: 8px 0 0; border-top: 1px solid var(--line); }
+  }
 </style>
