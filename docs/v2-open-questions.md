@@ -110,7 +110,7 @@ Follow-ups queued from the same pass (deliberately not done tonight):
 
 10. **Exam blueprint inclusion.** The new `components`/`allergens` decks are excluded from `EXAM_BLUEPRINT` (guard test in `components-allergens.test.ts`). *Decide:* add a food-knowledge section to mock exams after the first shifts.
 11. **Typed-mode nudge copy is wine-flavored** ("say the one structural reason it fits") for ALL decks at box ≥4 — pre-existing wart, now slightly wider with the allergens deck. The produce-mode equivalent was fixed tonight (uses `card.scenario` when present). *Decide:* deck-aware typed nudge copy.
-12. **Beverage syllabus (Jan 2025) phase** still pending: cocktail builds deck + enrichment for menu-current items only; service-guide lessons; onboarding-package mining; pronunciation clips for new drillable terms.
+12. **Beverage syllabus (Jan 2025) phase** — ~~cocktail builds deck + enrichment~~ DONE later the same night (13 menu-current cocktails enriched, `builds` deck, know-the-build + arc-of-service lessons, deep onboarding/service mining). Still pending: pronunciation clips for new drillable terms; bar-manuals/wine-master-syllabus integration when Adrian obtains them (see 23).
 
 13. **Certs email conflict.** Manager's email said send WHMIS/ProServe to ktutt@bridgettebar.com; the Onboarding Package (p.17) says screenshot to vkemp@bridgettebar.com. *Send to both / confirm tomorrow.*
 
@@ -121,3 +121,14 @@ Follow-ups queued from the same pass (deliberately not done tonight):
 16. **Repo is public.** Official internal-doc extracts stay LOCAL-only (`docs/handoffs/2026-06-10-service-extract.md`, untracked); lessons paraphrase internal standards. *Consider making `lucid4life/bridgette` private — Vercel auto-deploy works fine with private repos.*
 
 17. **Track architecture follow-ups** (from the tracks-hub review; fine as-is for 3 tracks / 12 modules, revisit when bar/wine tracks gain modules): per-module `alwaysUnlocked` should become a track-level unlock policy; `TRACK_ORDER` (learn page) and the `CourseTrack` union (curriculum.ts) are two places to update per new track; the learn-page `HASH_MODULE_ALIASES` map is a bandaid for engine learnLinks that don't match a module id — point learnLinks at module ids at source when the next deck lands; hub operational facts (runner's checklist / table map / day one) are hardcoded markup — move to the data layer if a second track needs the same treatment. Also accepted-for-now: after the 10-module wine course completes, "Continue →" points at the food modules (desirable for this user).
+
+Beverage Syllabus (Jan 2025) integration — same day, later pass (`docs/handoffs/beverage-syllabus-2025-01.parsed.json` merged into `src/data.js` cocktails via `tools/merge_beverage_syllabus.mjs`):
+
+18. **Cocktails without official builds:** Spicy Sandia and Lovers Mountain are newer than the Jan-2025 beverage syllabus — no official spec integrated. *Ask for the current spec sheet / the "bar manuals" the Service Guide references (p.5) before bar shifts.*
+19. **Cloud 9 hidden egg.** Syllabus flags Eggs but no egg appears in its printed build (likely egg-white foam — it's served up). Kept official + noted in allergenNote. *Confirm at the bar.*
+20. **Beverage syllabus inconsistencies (kept official, noted):** Doctor Jones description mentions fresh lemon absent from its build; sulphites flagged on Eat, Apres, Love but not on Rolling Canoe (ruby port) or Sunrise Spritz (NA sparkling); Paradise City's cinnamon-sugar/pink-salt rim appears only in its description.
+21. **Typo fixes applied to official beverage text:** "Absinth Rinse"→"Absinthe Rinse" (French Export); "Za'tar Syrup"→"Za'atar Syrup" and "Martini Florale"→"Martini Floreale" (Short Film).
+22. **Syllabus-only drinks not integrated** (off the current menu): First Wives Club (eggs + almond), 0-Proof Heartbreak Mountain (milk-clarified — the doc omits a Dairy flag; also 0.04% ABV per doc), Long Game.
+23. **Bar manuals + master wine syllabus exist** per the docs — request copies (they're the real authority on wine/cocktail service ritual). Wednesday FOH wine tastings with sommelier Sharla Swanson; expect an assigned bottle to research and present at preshift — the app's wine deep-dive pages are the prep tool.
+
+24. **Refactor inflection point = the wine-master-syllabus integration** (from the builds-deck review; all fine as-is today): unify cocktail `build` vs food `ingredients` naming OR keep the split deliberately; extract a shared generator factory if a 4th components-style deck lands; share the two near-identical `tools/merge_*_syllabus.mjs` scripts as a lib at the 3rd document; move hub "house facts" to the data layer if a 4th track hub appears. Revisit alongside item 17.

@@ -1686,6 +1686,36 @@ export const data = {
         ],
         "answer": 1
       }
+    },
+    {
+      "id": "know-the-build",
+      "title": "Know the build: what's actually in the glass",
+      "body": "The bartender's version of know-the-dish is know-the-build: for every cocktail on the list, know its name plus the key components in the glass, so you can romance the drink the moment you set it down — 'This is the Jr. Stargazer: tequila and mezcal with apricot, celery shrub, and lime.' The frame that makes builds stick: everything non-branded behind the bar — every syrup, cordial, infusion, and prep — is MADE IN-HOUSE from proprietary recipes; branded spirits appear only where they serve the drink best. And the menu evolves seasonally around a few enduring signatures, so specs change — read the build, don't assume last season's recipe. Allergens live behind the bar too, which is exactly why the service guide has servers qualify allergies AT THE DRINK ORDER, not just at food. Learn these flags cold: Heartbreak Mountain is milk-washed (dairy). Spaghetti Western carries hazelnut (Frangelico). Paradise City has coconut. Short Film's za'atar syrup means sesame. Cloud 9 flags egg. Then the same rule as the kitchen: name the flag from memory, but ALWAYS confirm with the bar before promising a guest anything. An allergen answer is never a guess.",
+      "workedExample": "A guest with a nut allergy is curious about the Spaghetti Western. You, from memory: 'That one carries hazelnut — there's Frangelico in the build — so let's steer clear.' You offer a safe lane instead: 'If you want the same rich, spirit-forward feel, Rolling Canoe is rye and ruby port with ginger and lemon.' Then, before anything is promised, you check with the bar — specs evolve, and the bartender confirms nothing nut-adjacent has entered either build. Flag named instantly, guest steered confidently, bar confirmed before the promise — the same name-it-then-verify-it rhythm you already use with the kitchen.",
+      "quickCheck": {
+        "q": "A guest with a dairy allergy is eyeing the cocktail list. Which drink is the trap?",
+        "choices": [
+          "White Peach Negroni — it's keg-tapped",
+          "Heartbreak Mountain — it's milk-washed",
+          "Doctor Jones — it's amaro-based"
+        ],
+        "answer": 1
+      }
+    },
+    {
+      "id": "arc-of-service",
+      "title": "The arc of service at Bridgette",
+      "body": "Every table rides the same arc, and you have touchpoints all along it. It starts before the guest: section detailed, candles lit before dinner, OpenTable notes checked — a birthday note means a team-signed card is on the table before they arrive. Greet within one to two minutes. Water first, poured with the glasses staying on the table. Then beverages — guide the menu, never ask 'ready to order drinks?', and qualify allergies right now, because dairy and nuts live behind the bar. The bartender builds drinks FIFO and pours nothing that isn't rung in; the runner stabs the chit, trays every drink, lands it on the guest's right with the garnish facing right, and says its name. Menu tour, then coursing — cold before hot, never more than four courses. Food goes out by seat number, never auctioned, romanced with its name plus three components. Quality check two minutes after they dig in, with a specific question. Clear only when everyone's finished; crumb onto a fresh plate; reset. Dessert menus for every guest. Separate bills without hesitation. After payment, service keeps going: water, coats, the door, a real goodbye. Then the candle goes to the corner until the table is sanitized — and back to centre when it's ready again.",
+      "workedExample": "6:15, four guests at 302. Greeted inside two minutes; water poured, glasses on the table. At the drink order one guest flags a shellfish allergy — it goes on every item she orders and every seat-0 share. Cocktails come up FIFO; the runner trays them over, places each on the right, garnish right, naming every drink. Two courses, cold first. Food lands by seat number: 'This is our grilled octopus salad with fennel and orange in a sherry vinaigrette.' Two minutes in: 'How are you enjoying the cauliflower?' All four finish; clear, crumb, reset, dessert menus for everyone. Separate bills on the magnetic board. Coats, door, invite back. Candle to the corner until the table's sanitized.",
+      "quickCheck": {
+        "q": "A finished cocktail has been sitting at the service bar for over a minute — and it's not for your table. What's the move?",
+        "choices": [
+          "Leave it; the server who rang it in runs their own drinks",
+          "Run it yourself — FIFO, and any drink sitting more than a minute gets delivered by whoever sees it",
+          "Ask the bartender to remake it so it goes out fresh"
+        ],
+        "answer": 1
+      }
     }
   ],
   "foods": [
@@ -3268,6 +3298,24 @@ export const data = {
       "pair": "Bibb Lettuce, Spiced Beet Salad, Maple BBQ Rainbow Trout, Wood Roasted Halibut",
       "caveat": "Milk washed; confirm dairy-allergy language.",
       "say": "This is floral, tea-driven, and very polished. It works well when a guest wants refreshing but not basic.",
+      "build": [
+        "Gin",
+        "Earl Grey Tea Syrup",
+        "Lemon",
+        "Lavender Bitters",
+        "Milk Clarified"
+      ],
+      "description": "This milk-clarified gin cocktail blends Earl Grey tea, fresh lemon, and lavender bitters for a delicately floral and herbal profile. Silky smooth and crystal clear, it’s light, refreshing, and effortlessly drinkable with a soft citrus finish. Served over a large clear rock of ice.",
+      "flavorTags": [
+        "Floral",
+        "Gin",
+        "Light",
+        "Smooth"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "allergenNote": "Milk-clarified build (dairy used in clarification, drink is strained clear but contains milk proteins).",
       "tags": [
         "cocktail",
         "floral",
@@ -3284,6 +3332,21 @@ export const data = {
       "pair": "Lamb Sausage, Bigoli, Rigatoni, Wood Roasted Half Duck",
       "caveat": "Amaro bitterness; better for adventurous guests.",
       "say": "Doctor Jones is the fun amaro lane: bitter, citrusy, cola-spiced, and great with richer savory plates.",
+      "build": [
+        "Amaro Averna",
+        "Sweet Vermouth",
+        "Dry Curacao",
+        "Dr. Pepper Syrup",
+        "Mint"
+      ],
+      "description": "Refreshing and crisp, this low-ABV cocktail is thoughtfully balanced with herbal depth and bright citrus. Amaro Averna and sweet vermouth provide a rich, bittersweet backbone, while dry curaçao and fresh lemon lift the palate. Dr. Pepper syrup ties everything together with subtle spice and warmth. Finished with fresh mint and a maraschino cherry, it’s vibrant, playful, and easy to enjoy.",
+      "flavorTags": [
+        "Refreshing",
+        "Crisp",
+        "Citrus",
+        "Balanced"
+      ],
+      "allergens": [],
       "tags": [
         "cocktail",
         "bitter",
@@ -3300,6 +3363,23 @@ export const data = {
       "pair": "Oysters, Tuna Crudo, Smashed Cucumbers, Fennel Salami",
       "caveat": "Pickled celery and mezcal profile; not for every guest.",
       "say": "Jr. Stargazer is bright and a little savory, with tequila, mezcal, apricot, pickled celery, and lime.",
+      "build": [
+        "Blanco Tequila",
+        "Mezcal",
+        "Apricot Liqueur",
+        "Celery Shrub",
+        "Lime",
+        "Smoked Maldon"
+      ],
+      "description": "This margarita-inspired cocktail features a split base of blanco tequila and mezcal, offering a balance of bright agave and gentle smoke. Celery shrub adds crisp acidity and subtle bitterness, while apricot liqueur softens the smokiness with ripe stone-fruit sweetness. Fresh lime sharpens the finish, and a touch of smoked Maldon salt enhances depth and complexity. The result is fruit-forward, well-acidic, and delicately smoky.",
+      "flavorTags": [
+        "Agave-Forward",
+        "Subtly Smoky",
+        "Bright",
+        "Fruity",
+        "Savory"
+      ],
+      "allergens": [],
       "tags": [
         "cocktail",
         "spice",
@@ -3316,6 +3396,23 @@ export const data = {
       "pair": "Burrata Cheese, Margherita, Spiced Beet Salad, dessert starters",
       "caveat": "Fruit-forward and sparkling.",
       "say": "This is the softer sparkling rose cocktail: great if someone wants fruit and bubbles without going heavy.",
+      "build": [
+        "Dillon’s Rose Gin",
+        "Strawberry Cordial",
+        "Lemon",
+        "Sparkling Rosé Wine"
+      ],
+      "description": "This spritz-style cocktail is bright, fruit-forward, and reminiscent of a stroll through a summer berry patch. Rose-infused gin is paired with house strawberry cordial and fresh lemon to create a vibrant, aromatic base, then topped with sparkling rosé wine for a crisp, effervescent finish.",
+      "flavorTags": [
+        "Fruity",
+        "Floral",
+        "Bright",
+        "Effervescent"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "allergenNote": "Sulphites from the sparkling rosé wine top.",
       "tags": [
         "cocktail",
         "sparkling",
@@ -3332,6 +3429,21 @@ export const data = {
       "pair": "Apple Tatin, Endive, Grilled Octopus Salad, Maple BBQ Rainbow Trout",
       "caveat": "Pernod/anise note may be polarizing.",
       "say": "French Export has apple, jasmine, lemon, and a little anise. It is lovely with apple, fennel, seafood, and lighter plates.",
+      "build": [
+        "Absolut Vanilla Vodka",
+        "Apple Brandy (Calvados)",
+        "Jasmine Tea Syrup",
+        "Lemon",
+        "Absinthe Rinse"
+      ],
+      "description": "This aromatic cocktail layers vanilla vodka and apple brandy with the delicate florality of jasmine tea. Bright lemon adds lift, while a subtle absinthe rinse frames the drink with a whisper of anise. The result is softly floral, lightly spiced, and beautifully balanced with a clean, lingering finish.",
+      "flavorTags": [
+        "Orchard Fruit",
+        "Soft Vanilla",
+        "Bright",
+        "Aromatic"
+      ],
+      "allergens": [],
       "tags": [
         "cocktail",
         "floral",
@@ -3348,6 +3460,20 @@ export const data = {
       "pair": "Burrata Cheese, Snap Peas, Chicken Sausage pizza",
       "caveat": "Aperitivo and fruit balance.",
       "say": "Cruel Summer is rhubarb-strawberry with sage and citrus. It is bright enough for spice and rich enough for share plates.",
+      "build": [
+        "Sage Infused Vodka",
+        "Starlino Arancione Aperitivo",
+        "Strawberry Rhubarb Syrup",
+        "Lemon"
+      ],
+      "description": "This vibrant cocktail brings together sage-infused vodka and Starlino Arancione for a balance of herbal depth and bright citrus. Strawberry-rhubarb syrup adds gentle fruit sweetness and tartness, while fresh lemon keeps the finish crisp and refreshing. Served up and garnished with a fresh sage leaf, it’s aromatic, balanced, and quietly complex.",
+      "flavorTags": [
+        "Herbal",
+        "Citrus-Forward",
+        "Fruity",
+        "Bright"
+      ],
+      "allergens": [],
       "tags": [
         "cocktail",
         "fruit",
@@ -3364,6 +3490,24 @@ export const data = {
       "pair": "Burrata Cheese, Grilled Octopus Salad, Margherita, Chicken Sausage",
       "caveat": "Tropical and coconut-forward.",
       "say": "Paradise City is the tropical lane: pineapple, coconut, lime, and cinnamon. Great with cheese, spice, and pizza.",
+      "build": [
+        "Blanco Tequila",
+        "Planteray Pineapple Rum",
+        "Cointreau",
+        "Toasted Coconut Syrup",
+        "Lime"
+      ],
+      "description": "The Paradise City is the love child of a piña colada and a margarita: tropical, bright, and irresistibly smooth. Lush coconut and citrus notes are balanced by a subtle sweetness, while the rim of cinnamon sugar and pink Himalayan salt adds warmth, contrast, and a touch of indulgence to every sip.",
+      "flavorTags": [
+        "Coconut",
+        "Bright Citrus",
+        "Tropical",
+        "Toasty"
+      ],
+      "allergens": [
+        "coconut"
+      ],
+      "allergenNote": "Cinnamon-sugar and pink Himalayan salt rim mentioned in description but not in the ingredient list.",
       "tags": [
         "cocktail",
         "tropical",
@@ -3380,6 +3524,21 @@ export const data = {
       "pair": "Lamb Sausage, Bigoli, Rigatoni, Wood Roasted Half Duck",
       "caveat": "Bitter Campari profile.",
       "say": "This is a softer Negroni direction with peach, but it still has that bitter aperitivo backbone.",
+      "build": [
+        "Beefeater Gin",
+        "Campari",
+        "Mattei Blanc Aperitif",
+        "Peach Liqueur",
+        "Saline"
+      ],
+      "description": "This house-made White Peach Negroni is keg-tapped and nitrogenated for a soft, velvety texture with just a hint of effervescence. Beefeater gin and Campari provide the classic bitter backbone, while Mattei Blanc and peach liqueur add gentle sweetness and ripe stone-fruit character. Balanced with a touch of saline, it’s bittersweet, peach-forward, and exceptionally smooth.",
+      "flavorTags": [
+        "Bittersweet",
+        "Peach-Forward",
+        "Herbal",
+        "Smooth"
+      ],
+      "allergens": [],
       "tags": [
         "cocktail",
         "bitter",
@@ -3396,6 +3555,24 @@ export const data = {
       "pair": "Wood Grilled Beef Strip Steak, 26oz Wood Grilled Beef Ribeye, Mushrooms on Toast, Chocolate Pot de Crème",
       "caveat": "Contains nuts.",
       "say": "Spaghetti Western is richer and nuttier, with bourbon, cognac, Montenegro, hazelnut, and basil. It does contain nuts.",
+      "build": [
+        "Bourbon",
+        "Cognac",
+        "Amaro Montenegro",
+        "Frangelico",
+        "Basil",
+        "Tiki Bitters"
+      ],
+      "description": "Spaghetti Western is a rich cocktail that bridges old-world elegance and frontier boldness. Bourbon and cognac form a warm, structured base, layered with the bittersweet complexity of Amaro Montenegro and the nutty richness of Frangelico. Fresh basil adds a green, aromatic lift, while tiki bitters bring subtle spice and depth. Bold and balanced, it’s smooth, savory-leaning, and quietly complex.",
+      "flavorTags": [
+        "Spirit-Forward",
+        "Nutty",
+        "Herbal"
+      ],
+      "allergens": [
+        "tree nuts"
+      ],
+      "allergenNote": "Tree nut is hazelnut (Frangelico).",
       "tags": [
         "cocktail",
         "rich",
@@ -3413,6 +3590,25 @@ export const data = {
       "pair": "Wood Roasted Halibut, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes",
       "caveat": "Confirm egg-white allergy and vegan language before recommending.",
       "say": "Cloud 9 is citrusy, floral, and lifted. I would use it for seafood, creamy garlic, or lighter fried plates.",
+      "build": [
+        "Beefeater Gin",
+        "Elderflower Liqueur",
+        "Pink Grapefruit Liqueur",
+        "Simple Syrup",
+        "Lime",
+        "Peychaud's Bitters Spritz"
+      ],
+      "description": "Cloud 9 is a bright, lifted gin sour served up with a delicate balance of floral and citrus notes. Beefeater gin forms a crisp backbone, softened by elderflower and vibrant pink grapefruit liqueur. Fresh lime adds brightness, while a gentle spritz of Peychaud’s bitters finishes the drink with subtle spice and color.",
+      "flavorTags": [
+        "Floral",
+        "Citrus-Forward",
+        "Bright",
+        "Light"
+      ],
+      "allergens": [
+        "eggs"
+      ],
+      "allergenNote": "Allergies says Eggs but no egg white appears in the printed ingredient list — likely an unlisted egg-white foam in this gin sour. Verify build at the bar.",
       "tags": [
         "cocktail",
         "citrus",
@@ -3429,6 +3625,20 @@ export const data = {
       "pair": "Wood Grilled Beef Strip Steak, Grilled Farm Chicken, The Banana Pie, Apple Tatin",
       "caveat": "Whiskey-forward but brightened with ginger and lemon.",
       "say": "Rolling Canoe is whiskey, port, ginger, and lemon. It is a strong call for steak or a richer after-dinner drink.",
+      "build": [
+        "Rye",
+        "Ruby Port",
+        "Ginger Syrup",
+        "Lemon"
+      ],
+      "description": "Rolling Canoe is a bright, crowd-favourite cocktail and a true staple at Bridgette Bar. Ruby port and rye whiskey create a rich yet approachable base, lifted by fresh lemon and warming ginger syrup. Shaken and served on the rocks with a lemon twist, it’s vibrant, balanced, and endlessly drinkable — a classic that’s stood the test of time.",
+      "flavorTags": [
+        "Bright",
+        "Balanced",
+        "Ginger-Spiced"
+      ],
+      "allergens": [],
+      "allergenNote": "Doc says N/A, but ruby port is a fortified wine and typically contains sulphites — inconsistent with the sulphite flag on Eat, Aprés, Love. Verify.",
       "tags": [
         "cocktail",
         "rich",
@@ -3462,6 +3672,22 @@ export const data = {
       "pair": "Hummus Chips, Smashed Cucumbers, Endive, Eggplant Fries",
       "caveat": "Sesame allergy note on menu.",
       "say": "Short Film is zesty and spiced, with white cranberry and lemon. Great for a no-alcohol guest who wants complexity.",
+      "build": [
+        "Caleno Light and Zesty “Gin”",
+        "Martini Floreale",
+        "Za'atar Syrup",
+        "Spiced White Cranberry"
+      ],
+      "description": "Short Film is a layered, non-alcoholic cocktail that balances bright citrus with savory herbal spice. Caleno Light & Zesty “Gin” and Martini Floreale create a floral, botanical base, while za’atar syrup adds unexpected depth and warmth. Spiced white cranberry brings a crisp, gently tart finish. Shaken and served on the rocks, then garnished with a fresh mint top, it’s refreshing, expressive, and quietly complex.",
+      "flavorTags": [
+        "Herbal",
+        "Citrus-Forward",
+        "Savory"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "allergenNote": "Sesame from the za'atar syrup.",
       "tags": [
         "cocktail",
         "zero-proof",
@@ -3478,6 +3704,19 @@ export const data = {
       "pair": "Burrata Cheese, Spiced Beet Salad, Apple Tatin, The Banana Pie",
       "caveat": "Very low alcohol listed.",
       "say": "Sunrise Spritz is the lighter fruit-sparkling no-alcohol option: rhubarb, strawberry, and bubbles.",
+      "build": [
+        "Strawberry Rhubarb Syrup",
+        "Lemon",
+        "Freixenet NA Sparkling Wine"
+      ],
+      "description": "Sunrise Spritz is a bright, refreshing non-alcoholic cocktail that balances sweet-tart strawberry rhubarb with fresh lemon. Finished with crisp Freixenet NA sparkling wine, it’s light, vibrant, and beautifully effervescent",
+      "flavorTags": [
+        "Fruity",
+        "Effervescent",
+        "Light"
+      ],
+      "allergens": [],
+      "allergenNote": "Doc says N/A, but dealcoholized sparkling wine commonly contains sulphites. Verify.",
       "tags": [
         "cocktail",
         "zero-proof",

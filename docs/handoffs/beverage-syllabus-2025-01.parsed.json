@@ -1,0 +1,281 @@
+{
+  "source": "Beverage Syllabus — Updated January 2025 (Bridgette Bar Calgary). Parsed 2026-06-10 from C:/Users/abeek/Downloads/Beverage_Syllabus_-_Updated_January_2025_(1).txt. NOTE: syllabus predates the June 2026 menu — some drinks are discontinued, some current cocktails are absent.",
+  "conceptNotes": [
+    "The concept of the menu is “chic Euro-timelessness meets alpine mid-century modern.” The menu evolves periodically to reflect seasonal ingredients and the creative direction of our Beverage Director, with a small number of signature cocktails remaining as enduring mainstays.",
+    "All non-branded cocktail components—including syrups, infusions, cordials, and preparations—are crafted in-house using proprietary recipes. Branded products (such as spirits and select mixers) are used where they best serve the integrity of the drink."
+  ],
+  "drinks": [
+    {
+      "name": "HEARTBREAK MOUNTAIN",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "heartbreak-mountain",
+      "build": [
+        "Gin",
+        "Earl Grey Tea Syrup",
+        "Lemon",
+        "Lavender Bitters",
+        "Milk Clarified"
+      ],
+      "description": "This milk-clarified gin cocktail blends Earl Grey tea, fresh lemon, and lavender bitters for a delicately floral and herbal profile. Silky smooth and crystal clear, it’s light, refreshing, and effortlessly drinkable with a soft citrus finish. Served over a large clear rock of ice.",
+      "flavorTags": ["Floral", "Gin", "Light", "Smooth"],
+      "allergensRaw": "Dairy",
+      "allergens": ["dairy"],
+      "allergenNote": "Milk-clarified build (dairy used in clarification, drink is strained clear but contains milk proteins)."
+    },
+    {
+      "name": "First Wives Club",
+      "section": "COCKTAILS",
+      "matchedCocktailId": null,
+      "build": [
+        "Pisco",
+        "Cocchi Rosa",
+        "Spiced White Cranberry Syrup",
+        "Orgeat",
+        "Lemon",
+        "Lime",
+        "Egg Whites",
+        "Soda"
+      ],
+      "description": "This modern take on a Ramos Gin Fizz is bright with layered citrus and warm baking spices. Nutty orgeat syrup enhances the drink’s toasty spice notes, balanced by fresh citrus and crisp white cranberries. Finished with a luxuriously large foam and garnished with delicate dried rose petals, it’s both aromatic and visually striking.",
+      "flavorTags": ["Citrus", "Spiced", "Nutty", "Floral", "Sweet"],
+      "allergensRaw": "Eggs, Almond (nuts)",
+      "allergens": ["eggs", "tree nuts"],
+      "allergenNote": "Tree nut is almond (orgeat syrup); egg whites in the build."
+    },
+    {
+      "name": "Doctor Jones",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "doctor-jones",
+      "build": [
+        "Amaro Averna",
+        "Sweet Vermouth",
+        "Dry Curacao",
+        "Dr. Pepper Syrup",
+        "Mint"
+      ],
+      "description": "Refreshing and crisp, this low-ABV cocktail is thoughtfully balanced with herbal depth and bright citrus. Amaro Averna and sweet vermouth provide a rich, bittersweet backbone, while dry curaçao and fresh lemon lift the palate. Dr. Pepper syrup ties everything together with subtle spice and warmth. Finished with fresh mint and a maraschino cherry, it’s vibrant, playful, and easy to enjoy.",
+      "flavorTags": ["Refreshing", "Crisp", "Citrus", "Balanced"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": null
+    },
+    {
+      "name": "Jr. Stargazer",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "jr-stargazer",
+      "build": [
+        "Blanco Tequila",
+        "Mezcal",
+        "Apricot Liqueur",
+        "Celery Shrub",
+        "Lime",
+        "Smoked Maldon"
+      ],
+      "description": "This margarita-inspired cocktail features a split base of blanco tequila and mezcal, offering a balance of bright agave and gentle smoke. Celery shrub adds crisp acidity and subtle bitterness, while apricot liqueur softens the smokiness with ripe stone-fruit sweetness. Fresh lime sharpens the finish, and a touch of smoked Maldon salt enhances depth and complexity. The result is fruit-forward, well-acidic, and delicately smoky.",
+      "flavorTags": ["Agave-Forward", "Subtly Smoky", "Bright", "Fruity", "Savory"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": null
+    },
+    {
+      "name": "Eat, Aprés, Love.",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "eat-apres-love",
+      "build": [
+        "Dillon’s Rose Gin",
+        "Strawberry Cordial",
+        "Lemon",
+        "Sparkling Rosé Wine"
+      ],
+      "description": "This spritz-style cocktail is bright, fruit-forward, and reminiscent of a stroll through a summer berry patch. Rose-infused gin is paired with house strawberry cordial and fresh lemon to create a vibrant, aromatic base, then topped with sparkling rosé wine for a crisp, effervescent finish.",
+      "flavorTags": ["Fruity", "Floral", "Bright", "Effervescent"],
+      "allergensRaw": "Sulphites",
+      "allergens": ["sulphites"],
+      "allergenNote": "Sulphites from the sparkling rosé wine top."
+    },
+    {
+      "name": "French Export",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "french-export",
+      "build": [
+        "Absolut Vanilla Vodka",
+        "Apple Brandy (Calvados)",
+        "Jasmine Tea Syrup",
+        "Lemon",
+        "Absinth Rinse"
+      ],
+      "description": "This aromatic cocktail layers vanilla vodka and apple brandy with the delicate florality of jasmine tea. Bright lemon adds lift, while a subtle absinthe rinse frames the drink with a whisper of anise. The result is softly floral, lightly spiced, and beautifully balanced with a clean, lingering finish.",
+      "flavorTags": ["Orchard Fruit", "Soft Vanilla", "Bright", "Aromatic"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": null
+    },
+    {
+      "name": "Cruel Summer",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "cruel-summer",
+      "build": [
+        "Sage Infused Vodka",
+        "Starlino Arancione Aperitivo",
+        "Strawberry Rhubarb Syrup",
+        "Lemon"
+      ],
+      "description": "This vibrant cocktail brings together sage-infused vodka and Starlino Arancione for a balance of herbal depth and bright citrus. Strawberry-rhubarb syrup adds gentle fruit sweetness and tartness, while fresh lemon keeps the finish crisp and refreshing. Served up and garnished with a fresh sage leaf, it’s aromatic, balanced, and quietly complex.",
+      "flavorTags": ["Herbal", "Citrus-Forward", "Fruity", "Bright"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": null
+    },
+    {
+      "name": "Paradise City",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "paradise-city",
+      "build": [
+        "Blanco Tequila",
+        "Planteray Pineapple Rum",
+        "Cointreau",
+        "Toasted Coconut Syrup",
+        "Lime"
+      ],
+      "description": "The Paradise City is the love child of a piña colada and a margarita: tropical, bright, and irresistibly smooth. Lush coconut and citrus notes are balanced by a subtle sweetness, while the rim of cinnamon sugar and pink Himalayan salt adds warmth, contrast, and a touch of indulgence to every sip.",
+      "flavorTags": ["Coconut", "Bright Citrus", "Tropical", "Toasty"],
+      "allergensRaw": "Coconut",
+      "allergens": ["coconut"],
+      "allergenNote": "Cinnamon-sugar and pink Himalayan salt rim mentioned in description but not in the ingredient list."
+    },
+    {
+      "name": "White Peach Negroni",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "white-peach-negroni",
+      "build": [
+        "Beefeater Gin",
+        "Campari",
+        "Mattei Blanc Aperitif",
+        "Peach Liqueur",
+        "Saline"
+      ],
+      "description": "This house-made White Peach Negroni is keg-tapped and nitrogenated for a soft, velvety texture with just a hint of effervescence. Beefeater gin and Campari provide the classic bitter backbone, while Mattei Blanc and peach liqueur add gentle sweetness and ripe stone-fruit character. Balanced with a touch of saline, it’s bittersweet, peach-forward, and exceptionally smooth.",
+      "flavorTags": ["Bittersweet", "Peach-Forward", "Herbal", "Smooth"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": null
+    },
+    {
+      "name": "Spaghetti Western",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "spaghetti-western",
+      "build": [
+        "Bourbon",
+        "Cognac",
+        "Amaro Montenegro",
+        "Frangelico",
+        "Basil",
+        "Tiki Bitters"
+      ],
+      "description": "Spaghetti Western is a rich cocktail that bridges old-world elegance and frontier boldness. Bourbon and cognac form a warm, structured base, layered with the bittersweet complexity of Amaro Montenegro and the nutty richness of Frangelico. Fresh basil adds a green, aromatic lift, while tiki bitters bring subtle spice and depth. Bold and balanced, it’s smooth, savory-leaning, and quietly complex.",
+      "flavorTags": ["Spirit-Forward", "Nutty", "Herbal"],
+      "allergensRaw": "Hazelnut",
+      "allergens": ["tree nuts"],
+      "allergenNote": "Tree nut is hazelnut (Frangelico)."
+    },
+    {
+      "name": "Cloud 9",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "cloud-9",
+      "build": [
+        "Beefeater Gin",
+        "Elderflower Liqueur",
+        "Pink Grapefruit Liqueur",
+        "Simple Syrup",
+        "Lime",
+        "Peychaud's Bitters Spritz"
+      ],
+      "description": "Cloud 9 is a bright, lifted gin sour served up with a delicate balance of floral and citrus notes. Beefeater gin forms a crisp backbone, softened by elderflower and vibrant pink grapefruit liqueur. Fresh lime adds brightness, while a gentle spritz of Peychaud’s bitters finishes the drink with subtle spice and color.",
+      "flavorTags": ["Floral", "Citrus-Forward", "Bright", "Light"],
+      "allergensRaw": "Eggs",
+      "allergens": ["eggs"],
+      "allergenNote": "Allergies says Eggs but no egg white appears in the printed ingredient list — likely an unlisted egg-white foam in this gin sour. Verify build at the bar."
+    },
+    {
+      "name": "Rolling Canoe",
+      "section": "COCKTAILS",
+      "matchedCocktailId": "rolling-canoe",
+      "build": [
+        "Rye",
+        "Ruby Port",
+        "Ginger Syrup",
+        "Lemon"
+      ],
+      "description": "Rolling Canoe is a bright, crowd-favourite cocktail and a true staple at Bridgette Bar. Ruby port and rye whiskey create a rich yet approachable base, lifted by fresh lemon and warming ginger syrup. Shaken and served on the rocks with a lemon twist, it’s vibrant, balanced, and endlessly drinkable — a classic that’s stood the test of time.",
+      "flavorTags": ["Bright", "Balanced", "Ginger-Spiced"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": "Doc says N/A, but ruby port is a fortified wine and typically contains sulphites — inconsistent with the sulphite flag on Eat, Aprés, Love. Verify."
+    },
+    {
+      "name": "Sunrise Spritz",
+      "section": "NA COCKTAILS",
+      "matchedCocktailId": "sunrise-spritz",
+      "build": [
+        "Strawberry Rhubarb Syrup",
+        "Lemon",
+        "Freixenet NA Sparkling Wine"
+      ],
+      "description": "Sunrise Spritz is a bright, refreshing non-alcoholic cocktail that balances sweet-tart strawberry rhubarb with fresh lemon. Finished with crisp Freixenet NA sparkling wine, it’s light, vibrant, and beautifully effervescent",
+      "flavorTags": ["Fruity", "Effervescent", "Light"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": "Doc says N/A, but dealcoholized sparkling wine commonly contains sulphites. Verify."
+    },
+    {
+      "name": "0-Proof Heartbreak Mountain",
+      "section": "NA COCKTAILS",
+      "matchedCocktailId": null,
+      "build": [
+        "Noa Dry “Gin”",
+        "Earl Grey Tea",
+        "Lemon",
+        "Lavendeer Bitters",
+        "Milk Clarified"
+      ],
+      "description": "This milk-clarified 0-proof gin cocktail blends Earl Grey tea, fresh lemon, and lavender bitters for a delicately floral and herbal profile. Silky smooth and crystal clear, it’s light, refreshing, and effortlessly drinkable with a soft citrus finish. Served over a large clear rock of ice.",
+      "flavorTags": ["Floral", "Gin", "Light", "Smooth"],
+      "allergensRaw": "**NOTE: Uses lavender bitters which contains alcohol. This cocktail is 0.04% ABV.",
+      "allergens": ["dairy"],
+      "allergenNote": "INFERRED: doc's Allergies field contains only an ABV note and omits dairy, but the build lists Milk Clarified — treat as containing dairy until verified. Doc note: uses lavender bitters which contain alcohol; the cocktail is 0.04% ABV (not strictly zero-proof)."
+    },
+    {
+      "name": "Short Film",
+      "section": "NA COCKTAILS",
+      "matchedCocktailId": "short-film",
+      "build": [
+        "Caleno Light and Zesty “Gin”",
+        "Martini Florale",
+        "Za'tar Syrup",
+        "Spiced White Cranberry"
+      ],
+      "description": "Short Film is a layered, non-alcoholic cocktail that balances bright citrus with savory herbal spice. Caleno Light & Zesty “Gin” and Martini Floreale create a floral, botanical base, while za’atar syrup adds unexpected depth and warmth. Spiced white cranberry brings a crisp, gently tart finish. Shaken and served on the rocks, then garnished with a fresh mint top, it’s refreshing, expressive, and quietly complex.",
+      "flavorTags": ["Herbal", "Citrus-Forward", "Savory"],
+      "allergensRaw": "Sesame",
+      "allergens": ["sesame"],
+      "allergenNote": "Sesame from the za'atar syrup."
+    },
+    {
+      "name": "Long Game",
+      "section": "NA COCKTAILS",
+      "matchedCocktailId": null,
+      "build": [
+        "Cut Above NA Agave Spirit",
+        "Martini Vibrante",
+        "Raspberry Cardamom Syrup",
+        "Lime",
+        "Cold Brew"
+      ],
+      "description": "The Long Game is a thoughtfully layered, shaken non-alcoholic cocktail served up with a soft, foamy top. Cut Above NA Agave Spirit and Martini Vibrante create a bittersweet, botanical backbone, while raspberry-cardamom syrup adds bright fruit and gentle spice. Fresh lime sharpens the profile, and a touch of cold brew lends depth and quiet bitterness. Smooth, balanced, and intriguingly complex.",
+      "flavorTags": ["Bittersweet", "Fruity", "Bright"],
+      "allergensRaw": "N/A",
+      "allergens": [],
+      "allergenNote": "Contains cold brew (caffeine) — not an allergen but worth flagging to guests."
+    }
+  ]
+}
