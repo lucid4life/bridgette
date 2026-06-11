@@ -1,6 +1,6 @@
 <script lang="ts">
   import { data } from '$lib/data/index';
-  import type { Food } from '$lib/data/types';
+  import type { Cocktail, Food } from '$lib/data/types';
 
   // Group dishes by menu category in the data's natural order (Snacks → Dessert).
   // Foods without official `ingredients` are skipped — that drops the
@@ -22,16 +22,22 @@
     const m = s.match(/^.*?[.!?](?=\s|$)/);
     return m ? m[0] : s;
   }
+
+  // Cocktail builds (Jan-2025 beverage syllabus): only drinks with an official
+  // build[] make the sheet; the rest (Spicy Sandia, Lovers Mountain — newer than
+  // the syllabus) are named in a no-spec note instead.
+  const builtCocktails: Cocktail[] = data.cocktails.filter((c) => c.build?.length);
+  const noSpecNames: string[] = data.cocktails.filter((c) => !c.build?.length).map((c) => c.name);
 </script>
 
-<svelte:head><title>Food Cram · Bridgette Training</title></svelte:head>
+<svelte:head><title>Menu Cram · Bridgette Training</title></svelte:head>
 
 <section class="screen cram">
   <header class="cram-head">
     <p class="h-eyebrow">Reference · Cram sheet</p>
-    <h1>Bridgette Bar — Food Cram</h1>
-    <p class="src">Official Food Syllabus · June 2026</p>
-    <p class="compliance">Allergen flags from the official syllabus. ALWAYS confirm with the kitchen before promising a guest.</p>
+    <h1>Bridgette Bar — Menu Cram</h1>
+    <p class="src">Official Food Syllabus (June 2026) · Cocktail Builds (Jan 2025)</p>
+    <p class="compliance">Allergen flags from the official syllabi. ALWAYS confirm with the kitchen — or the bar, for cocktails — before promising a guest.</p>
     <button class="btn no-print" type="button" onclick={() => window.print()}>Print</button>
   </header>
 
@@ -56,6 +62,29 @@
   {/each}
 
   <p class="footnote">Off-menu dairy-free option: Sorbet (rotating Noto Gelato flavour) — per syllabus, not on the printed menu.</p>
+
+  <!-- Cocktail builds — same .cat/.dish structure as the food categories, so the
+       print rules (page break before, entries avoid splitting) apply unchanged. -->
+  <section class="cat">
+    <h2>Cocktail builds — official (Jan 2025 syllabus)</h2>
+    {#each builtCocktails as c (c.id)}
+      <article class="dish">
+        <h3 class="dish-name">{c.name} <span class="price">${c.price}</span></h3>
+        <p class="comps">{#each c.build ?? [] as ing, i}{#if i > 0}{', '}{/if}{#if i < 3}<b>{ing}</b>{:else}{ing}{/if}{/each}</p>
+        {#if c.allergens?.length || c.allergenNote}
+          <p class="allerg">
+            {#if c.allergens?.length}<span class="warn" aria-hidden="true">⚠</span><span class="visually-hidden">Allergens:</span> {c.allergens.join(' · ')}{/if}
+            {#if c.allergenNote}<span class="note">({c.allergenNote})</span>{/if}
+          </p>
+        {/if}
+        {#if c.description}<p class="desc">{firstSentence(c.description)}</p>{/if}
+      </article>
+    {/each}
+  </section>
+
+  {#if noSpecNames.length}
+    <p class="footnote">No official spec yet: {noSpecNames.join(', ')} — ask at the bar.</p>
+  {/if}
 </section>
 
 <style>

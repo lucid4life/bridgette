@@ -26,10 +26,11 @@
   let completionTick = $state(0);
 
   // ── track grouping (fixed display order) ──────────────────────────────────
-  // Food-runner first shifts display FIRST (shifts start now), but its modules
-  // are nums 11–12 — appended after the wine chain so existing unlock/persisted
-  // progress is untouched. They carry alwaysUnlocked, so they never show locked.
-  const TRACK_ORDER: CourseTrack[] = ['Food runner — first shifts', 'Foundations', 'Know the list', 'Floor moves', 'On the floor'];
+  // Food-runner first shifts and Behind the bar display FIRST (shifts start
+  // now), but their modules are nums 11–14 — appended after the wine chain so
+  // existing unlock/persisted progress is untouched. They carry alwaysUnlocked,
+  // so they never show locked.
+  const TRACK_ORDER: CourseTrack[] = ['Food runner — first shifts', 'Behind the bar', 'Foundations', 'Know the list', 'Floor moves', 'On the floor'];
   const byTrack = $derived(
     TRACK_ORDER
       .map((track) => ({ track, modules: curriculum.filter((m) => m.track === track) }))
@@ -159,7 +160,7 @@
   <section class="screen">
     <p class="h-eyebrow">Learn</p>
     <h1>Your course</h1>
-    <p class="sub">Food-runner first shifts up top, then the ten-module wine course. Pass each to unlock the next — or jump ahead anytime.</p>
+    <p class="sub">Food-runner and bar tracks up top, then the ten-module wine course. Pass each to unlock the next — or jump ahead anytime.</p>
 
     <div class="course-top">
       <p class="progress-line" aria-live="polite">

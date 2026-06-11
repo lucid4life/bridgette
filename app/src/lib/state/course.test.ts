@@ -28,7 +28,7 @@ const fakeStorage = makeLocalStorage();
 import { courseStore } from './course.svelte';
 import { curriculum } from '../data/curriculum';
 
-const TOTAL = curriculum.length; // 10 wine modules + 2 food-runner modules (nums 11–12, appended)
+const TOTAL = curriculum.length; // 10 wine + 3 food-runner (11–13) + 1 behind-the-bar (14), all appended
 
 // Reset between tests: clear storage, then reload the store into a clean state.
 beforeEach(() => {
@@ -41,10 +41,12 @@ beforeEach(() => {
 describe('fresh store (no completions)', () => {
   it('has the correct total', () => {
     expect(courseStore.total).toBe(TOTAL);
-    // Deliberate bump 10 → 12: the 'Food runner — first shifts' track added
-    // know-the-dish + running-food AFTER the wine chain (nums 11–12), so the
-    // wine modules' ids, nums, and unlock order are unchanged.
-    expect(TOTAL).toBe(12);
+    // Deliberate bump 12 → 14: arc-of-service (num 13, food-runner track) and
+    // know-the-build (num 14, new 'Behind the bar' track) are APPENDED after
+    // the existing chain — the append-only invariant means modules 1–12 keep
+    // their ids, nums, and unlock order, so persisted bb_course_v1 progress
+    // is untouched. Only ever bump this literal by appending modules.
+    expect(TOTAL).toBe(14);
   });
 
   it('module 1 (how-wine-works) is unlocked', () => {

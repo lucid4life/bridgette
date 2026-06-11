@@ -7,12 +7,15 @@
 // Modules 1–10 are the original wine course — their ids and nums are FROZEN
 // (persisted progress in bb_course_v1 is keyed by module id, and the unlock
 // chain is keyed by num order, so existing state must never shift).
-// The 'Food runner — first shifts' track (nums 11–12) is appended AFTER the
-// wine chain so it never re-gates a wine module; it carries alwaysUnlocked
-// so the UI surfaces it immediately, and the Learn page displays it first.
+// The 'Food runner — first shifts' track (nums 11–13) and the 'Behind the bar'
+// track (num 14) are appended AFTER the wine chain so they never re-gate a
+// wine module; they carry alwaysUnlocked so the UI surfaces them immediately,
+// and the Learn page displays them first. Modules 1–12 ids/nums are likewise
+// FROZEN now that progress has shipped against them — only ever append.
 
 export type CourseTrack =
   | 'Food runner — first shifts'
+  | 'Behind the bar'
   | 'Foundations'
   | 'Know the list'
   | 'Floor moves'
@@ -141,6 +144,30 @@ export const curriculum: CourseModule[] = [
     blurb: "Seat numbers do the talking — seat 1 to your left, shared plates to the middle, never 'who had the chicken?'.",
     lessonId: 'running-food',
     seedDeck: 'allergens',
+    alwaysUnlocked: true
+  },
+  {
+    id: 'arc-of-service',
+    num: 13,
+    track: 'Food runner — first shifts',
+    title: 'The arc of service',
+    blurb: 'Every table rides the same arc — greet in two minutes, allergies at the drink order, FIFO drinks, a real goodbye.',
+    lessonId: 'arc-of-service',
+    // seedDeck 'upsell': the arc's beverage touchpoint is guest-facing recommendation
+    // language ("guide the menu, never ask 'ready to order drinks?'") — that's the
+    // upsell deck's lane; 'pairing' drills food↔wine theory, which module 6 owns.
+    seedDeck: 'upsell',
+    alwaysUnlocked: true
+  },
+  // ── Behind the bar (appended after the food-runner track; see header) ──
+  {
+    id: 'know-the-build',
+    num: 14,
+    track: 'Behind the bar',
+    title: "Know the build: what's in the glass",
+    blurb: "Name plus key components for every cocktail, cold — and the allergen flags that live behind the bar.",
+    lessonId: 'know-the-build',
+    seedDeck: 'builds',
     alwaysUnlocked: true
   }
 ];

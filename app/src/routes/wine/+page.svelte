@@ -40,6 +40,12 @@
       <p class="meta">In the reference, each wine name opens its full page.</p>
     </a>
   </div>
+
+  <h2 class="section-h">Preshift</h2>
+  <div class="card fact">
+    <h3>Preshift bottle presentations</h3>
+    <p class="fact-line">Wednesday FOH wine tastings with the sommelier — and every server and bartender gets assigned a bottle to research and present at preshift. Prep with the <a href="/reference">wine deep-dive pages</a>.</p>
+  </div>
 </section>
 
 <style>
@@ -47,4 +53,8 @@
   .card.link { text-decoration: none; color: inherit; display: block; }
   .card.link:hover { border-color: var(--highlight); }
   .drills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .fact { border-left: 4px solid var(--highlight); }
+  .fact-line { margin: 0; line-height: 1.5; }
+  .fact-line a { font-weight: 700; color: var(--text-strong); text-decoration-color: var(--highlight); }
+  .fact-line a:hover { color: var(--highlight); }
 </style>

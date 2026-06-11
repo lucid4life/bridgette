@@ -66,10 +66,15 @@
       return hay.includes(ql);
     })
   );
+  // Official-syllabus fields (build/flavorTags/allergens/description) are searchable
+  // too, so "mezcal" or "dairy" finds the drinks that carry them.
   const cocktails = $derived(
     data.cocktails.filter((c) => {
       if (!ql) return true;
-      const hay = [c.name, c.category, c.profile, c.pair, c.say, ...(c.tags ?? [])].join(' ').toLowerCase();
+      const hay = [
+        c.name, c.category, c.profile, c.pair, c.say, c.description ?? '',
+        ...(c.build ?? []), ...(c.flavorTags ?? []), ...(c.allergens ?? []), ...(c.tags ?? [])
+      ].join(' ').toLowerCase();
       return hay.includes(ql);
     })
   );
@@ -229,17 +234,29 @@
       <span class="visually-hidden">Search cocktails by name, ingredient, or pairing</span>
       <input type="search" bind:value={q} placeholder="Search a cocktail — mezcal, amaro, citrus…" autocomplete="off" />
     </label>
-    <p class="meta" aria-live="polite" style="margin:0 0 12px">{cocktails.length} of {data.cocktails.length} cocktails</p>
+    <p class="meta" aria-live="polite" style="margin:0 0 4px">{cocktails.length} of {data.cocktails.length} cocktails</p>
+    <p class="meta compliance">Cocktail allergen flags are from the official syllabus — always confirm with the bar.</p>
     {#if cocktails.length}
     <div class="grid cols-2 on-cream">
       {#each cocktails as c (c.id)}
         <article class="card light">
           <h3>{c.name}</h3>
           <div class="meta">{c.category} · {c.price}</div>
+          {#if c.description}<p class="food-desc">{c.description}</p>{/if}
           {#if c.profile}<p class="meta">{c.profile}</p>{/if}
+          {#if c.build?.length}
+            <p class="food-comps"><span class="comps-label">Build:</span> {#each c.build as ing, i}{#if i > 0}{', '}{/if}{#if i < 3}<b>{ing}</b>{:else}{ing}{/if}{/each}</p>
+          {/if}
+          {#if c.flavorTags?.length}
+            <div class="winecard-tags">{#each c.flavorTags as t}<span class="pill alt">{t}</span>{/each}</div>
+          {/if}
           <p class="winecard-body">{c.say}</p>
           {#if c.pair}<p class="meta">Great with: <strong>{c.pair}</strong></p>{/if}
           {#if c.caveat}<p class="meta">Note: {c.caveat}</p>{/if}
+          {#if c.allergens?.length}
+            <div class="food-allergens">{#each c.allergens as a}<span class="pill">{a}</span>{/each}</div>
+          {/if}
+          {#if c.allergenNote}<p class="meta allergen-note">{c.allergenNote}</p>{/if}
         </article>
       {/each}
     </div>
