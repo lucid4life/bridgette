@@ -4,8 +4,9 @@
 //   - IndexedDB `bb3` via `idb` (stores: `items` keyed by itemId, `meta` single record)
 //   - COMPACT full-state JSON mirrored to localStorage `bb3_progress_v1` on every
 //     write — iOS has a history of eating IndexedDB, the mirror is the recovery path.
-//   - Load order: idb first; if idb is empty/unavailable/corrupt but the mirror
-//     exists, restore from the mirror and write it back to idb.
+//   - Load order: read BOTH; when both are valid the higher `meta.writeSeq` wins
+//     (tie → idb) and the loser is healed from the winner. A lone survivor
+//     (idb or mirror) wins outright; missing writeSeq counts as 0.
 //   - SSR/test-safe: missing indexedDB/localStorage fall back to in-memory, never throw.
 // FRESH START — no v2 progress import.
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
@@ -49,6 +50,9 @@ export interface ProgressMeta {
   settings: { lessonsPerDay: number };
   unitDone: Record<string, UnitDoneVia>;
   dayLog: Record<number, DayEntry>;
+  /** Monotonic persist counter — at load the side (idb/mirror) with the higher
+   * seq wins. Optional: a snapshot from before the counter existed counts as 0. */
+  writeSeq?: number;
 }
 
 export interface ProgressState {
@@ -71,7 +75,8 @@ export function defaultState(): ProgressState {
       streak: { current: 0, lastDay: null, freezeUsedWeekOf: null },
       settings: { lessonsPerDay: 8 },
       unitDone: {},
-      dayLog: {}
+      dayLog: {},
+      writeSeq: 0
     }
   };
 }
@@ -233,6 +238,7 @@ export function _resetStore(): void {
   backend?.close();
   backend = null;
   storagePersistRequested = false;
+  idbStale = false; // re-derived at the next load's seq comparison
 }
 
 // --- localStorage mirror (best-effort; never throws) -----------------------
@@ -270,17 +276,38 @@ function requestStoragePersist(): void {
 
 // --- write path -------------------------------------------------------------
 
+/** writeSeq of a loaded state — a snapshot from before the counter existed counts as 0. */
+function seqOf(state: ProgressState): number {
+  return typeof state.meta.writeSeq === 'number' ? state.meta.writeSeq : 0;
+}
+
+/**
+ * True after any swallowed idb write failure: idb may be missing earlier deltas,
+ * so incremental putItem/putMeta writes are unsafe — they could stamp a partial
+ * item set with the current writeSeq, letting it beat the complete mirror at the
+ * next load. Until a full writeAll lands, every persist rewrites the whole state
+ * atomically: it either commits in full or leaves idb's old meta (old writeSeq)
+ * in place, in which case the mirror wins the next load.
+ */
+let idbStale = false;
+
 /** Mirror first (the iOS safety net), then idb. Mutations never throw on persistence. */
 async function persist(state: ProgressState, itemId?: string): Promise<void> {
+  state.meta.writeSeq = seqOf(state) + 1;
   writeMirror(state);
   const b = await getBackend();
   try {
-    if (itemId !== undefined && state.items[itemId]) {
-      await b.putItem(itemId, plain(state.items[itemId]));
+    if (idbStale) {
+      await b.writeAll(plain(state));
+      idbStale = false;
+    } else {
+      if (itemId !== undefined && state.items[itemId]) {
+        await b.putItem(itemId, plain(state.items[itemId]));
+      }
+      await b.putMeta(plain(state.meta)); // meta (the new seq) LAST — only after the item landed
     }
-    await b.putMeta(plain(state.meta));
   } catch {
-    // idb write failed — the mirror above is the recovery path
+    idbStale = true; // idb write failed — the mirror above is the recovery path
   }
 }
 
@@ -295,26 +322,24 @@ export function persistMeta(state: ProgressState): Promise<void> {
 
 export async function loadProgress(now: Date = new Date()): Promise<ProgressState> {
   const b = await getBackend();
-  let state: ProgressState | null = null;
+  let idbState: ProgressState | null = null;
   try {
-    state = await b.read();
+    idbState = await b.read();
   } catch {
-    state = null; // unreadable idb counts as corrupt
+    idbState = null; // unreadable idb counts as corrupt
   }
-  if (!state) {
-    const mirrored = readMirror();
-    if (mirrored) {
-      state = mirrored;
-      try {
-        await b.writeAll(plain(mirrored)); // restore idb from the mirror
-      } catch {
-        // keep going — the mirror itself still exists
-      }
-    }
+  const mirrored = readMirror();
+  // Both valid → the higher writeSeq wins (tie → idb, the historic preference).
+  // A silently-failed idb write leaves idb stale but readable; without the seq
+  // check the trailing persist would clobber the newer mirror with that state.
+  let state = idbState;
+  if (mirrored && (!idbState || seqOf(mirrored) > seqOf(idbState))) {
+    state = mirrored;
+    idbStale = true; // idb lost (or never had) this state — persist below heals it in full
   }
   if (!state) state = defaultState();
   tickStreak(state, now); // a freeze may be spent (or a dead streak zeroed) at open
-  await persist(state);
+  await persist(state); // winner → mirror + idb: the losing side is healed here
   requestStoragePersist();
   return state;
 }

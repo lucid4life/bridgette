@@ -2,7 +2,7 @@
 // mutations, derived selectors. Spec: docs/handoffs/2026-06-11-v3-phase1-spec.md.
 // fake-indexeddb backs the idb tests; a Map-backed shim stands in for localStorage.
 import 'fake-indexeddb/auto';
-import { IDBFactory } from 'fake-indexeddb';
+import { IDBFactory, IDBObjectStore } from 'fake-indexeddb';
 import { openDB } from 'idb';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { newItemSrs, type ItemSrs } from '../srs/scheduler';
@@ -65,6 +65,13 @@ function sampleState(): ProgressState {
   };
 }
 
+/** Make every idb put throw — simulates iOS silently eating IndexedDB writes. */
+function breakIdbPuts() {
+  return vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(() => {
+    throw new Error('idb write eaten');
+  });
+}
+
 beforeEach(() => {
   vi.stubGlobal('indexedDB', new IDBFactory());
   vi.stubGlobal('localStorage', lsShim());
@@ -86,7 +93,8 @@ describe('loadProgress', () => {
         streak: { current: 0, lastDay: null, freezeUsedWeekOf: null },
         settings: { lessonsPerDay: 8 },
         unitDone: {},
-        dayLog: {}
+        dayLog: {},
+        writeSeq: 1 // bumped by the load-time persist
       }
     });
   });
@@ -181,6 +189,56 @@ describe('loadProgress', () => {
     await loadProgress(T);
     await loadProgress(T);
     expect(persist).toHaveBeenCalledTimes(1);
+  });
+
+  // --- writeSeq: the fresher of idb/mirror wins at load --------------------
+
+  it('prefers the newer mirror after a silent idb write failure, and heals idb to it', async () => {
+    const s1 = await loadProgress(T);
+    await introduceItem(s1, 'food:halibut', T); // idb + mirror in sync
+
+    const put = breakIdbPuts();
+    await recordReview(s1, 'food:halibut', 'good', T); // mirror gets the delta, idb does not
+    put.mockRestore();
+
+    _resetStore(); // new session: idb holds STALE-but-valid state, mirror is newer
+    const s2 = await loadProgress(T);
+    expect(s2.items['food:halibut'].correct).toBe(1); // the mirror's newer state won
+
+    // proof of heal: kill the mirror, reload from idb alone
+    localStorage.removeItem(MIRROR_KEY);
+    _resetStore();
+    const s3 = await loadProgress(T);
+    expect(s3.items['food:halibut'].correct).toBe(1);
+  });
+
+  it('an older mirror does not roll back newer idb state (and is healed forward)', async () => {
+    const s1 = await loadProgress(T);
+    await introduceItem(s1, 'food:halibut', T);
+    const staleMirror = localStorage.getItem(MIRROR_KEY)!; // snapshot before the review
+    await recordReview(s1, 'food:halibut', 'good', T); // idb + mirror both advance
+    localStorage.setItem(MIRROR_KEY, staleMirror); // mirror reverts (e.g. restored backup)
+
+    _resetStore();
+    const s2 = await loadProgress(T);
+    expect(s2.items['food:halibut'].correct).toBe(1); // newer idb won
+    const healed = JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState;
+    expect(healed.items['food:halibut'].correct).toBe(1); // mirror healed forward
+  });
+
+  it('a failed idb heal never leaves idb partial: the next successful write is the full state', async () => {
+    localStorage.setItem(MIRROR_KEY, JSON.stringify(sampleState())); // mirror-only state
+
+    const put = breakIdbPuts();
+    const s1 = await loadProgress(T); // heal-back to idb fails silently
+    put.mockRestore(); // idb recovers
+    await introduceItem(s1, 'food:gnocchi', T); // first write after recovery
+
+    localStorage.removeItem(MIRROR_KEY);
+    _resetStore();
+    const s2 = await loadProgress(T); // idb alone must hold the FULL state
+    expect(s2.items['food:halibut']).toBeDefined(); // not just the freshly written item
+    expect(s2.items['food:gnocchi']).toBeDefined();
   });
 });
 
