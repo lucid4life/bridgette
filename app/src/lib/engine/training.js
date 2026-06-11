@@ -127,7 +127,10 @@ export const DECKS = {
   // Task 2 — the official menu syllabus (Task 1 data) gets retrieval practice:
   // what's IN each dish, and which allergen flags it carries.
   components: { label: 'Dish Components', learnLink: 'know-the-dish' },
-  allergens: { label: 'Allergen Flags', learnLink: 'know-the-dish' }
+  allergens: { label: 'Allergen Flags', learnLink: 'know-the-dish' },
+  // Task D2 — the official Beverage Syllabus gets the same treatment: what's IN
+  // each cocktail (the official build, in syllabus order).
+  builds: { label: 'Cocktail Builds', learnLink: 'know-the-build' }
 };
 
 const COUNTRY_LANG = {
@@ -530,8 +533,11 @@ function genUpsell(data) {
 }
 
 // ---------------- Task 2: official-syllabus food decks ----------------
-// The standing compliance line — EVERY allergen teach ends with it, verbatim.
+// The standing compliance lines — EVERY allergen teach ends with one, verbatim.
+// Food is confirmed with the KITCHEN; drinks are confirmed with the BAR (Task D2) —
+// same standing rule, different counter. The kitchen sentence is frozen byte-for-byte.
 const KITCHEN_CONFIRM = 'Always confirm allergens with the kitchen before promising a guest.';
+const BAR_CONFIRM = 'Always confirm allergens with the bar before promising a guest.';
 
 function endStop(s) {
   s = String(s).trim();
@@ -544,13 +550,15 @@ function wordSet(s) {
   return out;
 }
 
-// Shared teach line for a dish's allergen flags: flags + note (when present) +
-// the standing compliance sentence. Used by both genAllergens and expandFor so
-// the card why and the Expand drawer can never drift apart.
-function allergenLine(f) {
-  return f.allergens.join(', ') + '. ' +
-    (f.allergenNote ? endStop(f.allergenNote) + ' ' : '') + KITCHEN_CONFIRM;
+// Shared teach line for a record's allergen flags: flags + note (when present) +
+// the standing compliance sentence for whichever counter owns the item (kitchen
+// for dishes, bar for cocktails). Used by the generators AND expandFor so the
+// card why and the Expand drawer can never drift apart.
+function allergenLineFor(rec, confirm) {
+  return rec.allergens.join(', ') + '. ' +
+    (rec.allergenNote ? endStop(rec.allergenNote) + ' ' : '') + confirm;
 }
+function allergenLine(f) { return allergenLineFor(f, KITCHEN_CONFIRM); }
 
 // Dish Components: for every food carrying the official ingredients list, drill the
 // NON-OBVIOUS component — the first ingredient that shares no word with the dish name
@@ -640,6 +648,58 @@ function genAllergens(data) {
   });
 }
 
+// Task D2 — Cocktail Builds: for every cocktail carrying the official build, drill
+// the NON-OBVIOUS component — the first build item that shares no word with the
+// drink name (so the White Peach Negroni never asks about "Peach Liqueur");
+// fallback = first item. Distractors are build items from OTHER cocktails that are
+// NOT in this build (case-insensitive) — deterministic rotation, mirroring
+// genComponents. aliases carry the FULL build so produce-mode grading accepts any
+// genuine component. Allergen-flagged drinks teach the flags + note and end with
+// the BAR-confirm sentence (drinks come from the bar, not the kitchen).
+function genBuilds(data) {
+  const cocktails = data.cocktails.filter((c) => c.build && c.build.length >= 1);
+  return cocktails.map((c, i) => {
+    const nameWords = wordSet(c.name);
+    const sharesNoNameWord = (item) => {
+      const ws = Object.keys(wordSet(item));
+      for (let k = 0; k < ws.length; k++) if (nameWords[ws[k]]) return false;
+      return true;
+    };
+    const answer = c.build.find(sharesNoNameWord) || c.build[0];
+    const mine = {};
+    c.build.forEach((x) => { mine[String(x).toLowerCase()] = 1; });
+    // Distractor pool: every OTHER cocktail's build items, deduped case-insensitively,
+    // never an item of THIS build (a shared "Lemon" must never be a foil).
+    const seen = {};
+    const pool = [];
+    cocktails.forEach((o) => {
+      if (o.id === c.id) return;
+      o.build.forEach((item) => {
+        const k = String(item).toLowerCase();
+        if (mine[k] || seen[k]) return;
+        seen[k] = 1;
+        pool.push(item);
+      });
+    });
+    const allergenTail = (c.allergens && c.allergens.length)
+      ? ' Allergen flags: ' + allergenLineFor(c, BAR_CONFIRM)
+      : '';
+    return {
+      id: 'builds:' + c.id + ':pick',
+      deck: 'builds', kind: 'recall',
+      sourceKind: 'cocktail', sourceId: c.id,
+      prompt: 'Which of these is IN the ' + c.name + '?',
+      answer: answer,
+      why: 'Official build: ' + c.build.join(', ') + '.' + allergenTail,
+      choices: [answer].concat(pickDistractors(pool, answer, 3, i)),
+      aliases: c.build.slice(),
+      scenario: "A guest asks what's in the " + c.name + '. Name the build.',
+      learnLink: DECKS.builds.learnLink,
+      tags: ['builds', 'cocktail'].concat((c.tags || []).filter((t) => t !== 'cocktail'))
+    };
+  });
+}
+
 export function generateDeck(deckId, data) {
   if (!data) throw new Error('engine.generateDeck: data is required');
   switch (deckId) {
@@ -655,6 +715,7 @@ export function generateDeck(deckId, data) {
     case 'upsell': return genUpsell(data);
     case 'components': return genComponents(data);
     case 'allergens': return genAllergens(data);
+    case 'builds': return genBuilds(data);
     default: return [];
   }
 }
@@ -675,7 +736,8 @@ export function sourceForCard(card, data) {
     case 'wine': return data.wines.find((w) => w.id === card.sourceId) || null;
     case 'food': return data.foods.find((f) => f.id === card.sourceId) || null;
     case 'translator': return data.translator.find((t) => slug(t.ask) === card.sourceId) || null;
-    case 'cocktail': return data.cocktails.find((c) => c.name === card.sourceId) || null;
+    // Task D2 builds cards carry the cocktail id; older callers may pass the name.
+    case 'cocktail': return data.cocktails.find((c) => c.id === card.sourceId || c.name === card.sourceId) || null;
     default: return null;
   }
 }
@@ -726,6 +788,14 @@ export function expandFor(card, data) {
     pushText(sections, 'The official description', f.description);
     if (f.ingredients && f.ingredients.length) pushText(sections, 'Official components', f.ingredients.join(', '));
     if (f.allergens && f.allergens.length) pushText(sections, 'Allergen flags', allergenLine(f));
+  } else if (card.sourceKind === 'cocktail') {
+    // Task D2 — official Beverage Syllabus depth for cocktail-sourced cards.
+    const ck = src;
+    pushText(sections, 'The official description', ck.description);
+    if (ck.build && ck.build.length) pushText(sections, 'The official build', ck.build.join(', '));
+    pushItems(sections, 'Flavor tags', ck.flavorTags);
+    // Drinks are confirmed with the BAR (the kitchen sentence stays food-only).
+    if (ck.allergens && ck.allergens.length) pushText(sections, 'Allergen flags', allergenLineFor(ck, BAR_CONFIRM));
   }
   return { sections: sections };
 }
@@ -1032,7 +1102,8 @@ export function importProgress(json, validIds) {
 // `components` joins them (Task 2): past the beginner boxes the real-world skill is
 // free-recalling a few components of the dish, not recognising one in a line-up —
 // aliases carry the full official list so any genuine component grades correct.
-export const REASON_DECKS = new Set(['translator', 'pairing', 'pairing-principle', 'cocktail-pairing', 'wine-dish', 'upsell', 'components']);
+// `builds` joins for the same reason (Task D2): a bartender names the build out loud.
+export const REASON_DECKS = new Set(['translator', 'pairing', 'pairing-principle', 'cocktail-pairing', 'wine-dish', 'upsell', 'components', 'builds']);
 export function modeForBox(card, box) {
   if (card.kind === 'pronounce') return 'flip';
   // Reason decks PRODUCE at box>=3 even when the card is discriminate (upsell,

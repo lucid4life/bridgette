@@ -199,5 +199,6 @@ describe('wiring — allCards, expandFor, Floor Basics, exam decoupling', () => 
   it('mock exams are NOT coupled to the new decks (planned follow-up, not tonight)', () => {
     expect(EXAM_BLUEPRINT).not.toHaveProperty('components');
     expect(EXAM_BLUEPRINT).not.toHaveProperty('allergens');
+    expect(EXAM_BLUEPRINT).not.toHaveProperty('builds'); // Task D2: same decoupling
   });
 });
