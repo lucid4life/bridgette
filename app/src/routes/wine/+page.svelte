@@ -49,11 +49,15 @@
 </section>
 
 <style>
+  /* Wine-track identity: the site's steel teal (the configured-but-unused
+     palette slot) carries this hub's hairlines/spines. Decorative only —
+     text tokens stay theme-managed. */
+  section.screen { --highlight-line: var(--bb-teal); }
   .section-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-size: 14px; margin: 22px 0 12px; }
   .card.link { text-decoration: none; color: inherit; display: block; }
   .card.link:hover { border-color: var(--highlight); }
   .drills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
-  .fact { border-left: 4px solid var(--highlight); }
+  .fact { border-left: 4px solid var(--highlight-line); }
   .fact-line { margin: 0; line-height: 1.5; }
   .fact-line a { font-weight: 700; color: var(--text-strong); text-decoration-color: var(--highlight); }
   .fact-line a:hover { color: var(--highlight); }

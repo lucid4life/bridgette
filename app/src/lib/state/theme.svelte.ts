@@ -8,7 +8,7 @@ export type ThemeMode = 'light' | 'dark' | 'auto';
 
 const KEY = 'bb_theme';
 const BAR_LIGHT = '#fff8ec'; // --surface-bar (light)
-const BAR_DARK = '#2a211a';  // --surface-bar (dark)
+const BAR_DARK = '#1c3242';  // --surface-bar (dark, slate-mid)
 const ORDER: Record<ThemeMode, ThemeMode> = { auto: 'dark', dark: 'light', light: 'auto' };
 
 function saved(): ThemeMode {

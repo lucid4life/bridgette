@@ -1,85 +1,92 @@
-/* app/src/app.css — Bridgette v2 design system. THE visual contract + the
+/* app/src/app.css — Bridgette v3 design system. THE visual contract + the
    visual-regression baseline. Three layers:
-     1. PRIMITIVES  — the verified brand palette (docs/menu-sync/brand-tokens.md):
-        cream #ffeed6 + orange #f15825 are confirmed brand bytes; the menus print
-        near-black on cream (never navy); brass/green/wood are supporting interior
-        tones. Navy and the old gold are retired. Primitives are never consumed
-        by components directly.
+     1. PRIMITIVES  — the verified brand palette (docs/menu-sync/brand-tokens.md,
+        updated from the 2026-06-11 full-site HSL audit): the live site is a
+        five-colour Squarespace system — cream #ffeed7 canvas, SLATE #1e384b ink
+        + dark bands, orange #f15623 primary accent, marigold #fcb539 hero bands,
+        steel teal #437c93 (configured palette slot). The printed menus add
+        near-black ink + coral/terracotta. v1 was navy-everywhere, v2 was
+        brown-everywhere; v3 is the site's own recipe: cream pages, slate ink,
+        colour-blocked bands. Primitives are never consumed by components.
      2. SEMANTIC    — surface/text/accent roles; the ONLY tokens components use.
      3. THEMES + SCOPES — :root is the LIGHT (cream-first) default;
-        html[data-theme='dark'] is the warmed espresso dark (plus the
-        prefers-color-scheme auto block, kept byte-identical — tokens.test.ts
-        asserts the two dark blocks match). The always-cream "paper" surfaces
-        (.flash / .card.light / .on-cream / table.matrix) re-map the semantic
-        tokens in BOTH themes — a flashcard is a cream menu card everywhere.
+        html[data-theme='dark'] is the deep-slate dark (the site's splash/footer
+        band; the prefers-color-scheme auto block is kept byte-identical —
+        tokens.test.ts asserts the two dark blocks match). The always-cream
+        "paper" surfaces (.flash / .card.light / .on-cream / table.matrix)
+        re-map the semantic tokens in BOTH themes — a flashcard is a printed
+        menu card everywhere (black-ink-on-cream, coral rule). The .sidebar is
+        the site's slate nav/footer band in BOTH themes (the light/dark blend).
    Translucent washes derive from semantic solids via color-mix(in srgb, X n%,
    transparent). Do NOT introduce generic-AI gradients; extend the Bridgette
    workbook identity. */
 :root {
-  /* ---- 1. primitives (brand-verified + tuned supporting tones) ---- */
-  --bb-cream: #ffeed6;      /* verified canvas (live-site CSS) */
-  --bb-paper: #fff8ec;      /* derived lighter cream */
-  --bb-ink: #181512;        /* near-black with a warm cast (print is #000) */
-  --bb-orange: #f15825;     /* verified accent */
-  --bb-coral: #f25c4d;      /* verified print accent */
-  --bb-terracotta: #e87a57; /* verified secondary print accent */
-  --bb-rust: #a83212;       /* OUR derived action tone: brand orange darkened until
-                               cream-on-it / it-on-cream holds 4.5:1 (5.9:1) */
-  --bb-rust-deep: #8f2a12;  /* contrast-safe small label on cream (7.4:1, v1 fix) */
-  --bb-green: #3f5d4e;      /* supporting: the marble-bar green (6.4:1 on cream) */
-  --bb-brass: #b08d4a;      /* supporting: brass fixtures — decorative rules/fills */
-  --bb-brass-bright: #c9a25e; /* brass lifted for TEXT on espresso (7.1:1) */
-  --bb-brass-deep: #6b5121; /* brass darkened for TEXT on cream (6.5:1) */
-  --bb-wood: #6b5a45;       /* supporting warm brown; muted text on cream (5.8:1) */
-  --bb-espresso: #221b15;   /* dark-mode canvas: warm brown-black, never navy */
-  --bb-espresso-2: #2a211a; /* dark-mode bars / panels */
-  --bb-espresso-3: #332a21; /* dark-mode raised */
-  --bb-blue: #437c93;       /* info washes + cool data tone (kept from v1) */
+  /* ---- 1. primitives (brand-verified via the live-site palette audit) ---- */
+  --bb-cream: #ffeed7;        /* site --white-hsl: the canvas */
+  --bb-paper: #fff8ec;        /* derived lighter cream */
+  --bb-ink: #181512;          /* PRINT ink — the menu-card (paper) faces only */
+  --bb-stone: #5c5346;        /* muted print tone on the paper faces (7.1:1) */
+  --bb-slate: #1e384b;        /* site --black-hsl: THE ink + the dark bands */
+  --bb-slate-muted: #4a6478;  /* slate lifted for muted text on cream (5.4:1) */
+  --bb-slate-mid: #1c3242;    /* dark-theme bars / panels */
+  --bb-slate-deep: #14222d;   /* dark-theme canvas (slate deepened) */
+  --bb-slate-raised: #264457; /* dark-theme raised surfaces */
+  --bb-orange: #f15623;       /* site --accent-hsl: buttons, links, bright bands */
+  --bb-orange-bright: #f4703f;/* orange lifted for TEXT on the slate canvas (5.6:1) */
+  --bb-ember: #b8420f;        /* brand orange darkened until text/fills hold AA on cream (4.8:1) */
+  --bb-ember-deep: #9c3a0c;   /* small labels on cream (6.6:1) */
+  --bb-marigold: #fcb539;     /* site --lightAccent-hsl: hero bands, hairlines, dark-theme highlight */
+  --bb-ochre: #7a5410;        /* marigold darkened for TEXT on cream (6.0:1) */
+  --bb-teal: #437c93;         /* site --darkAccent-hsl: info washes + wine-track identity */
+  --bb-teal-deep: #2e6075;    /* teal darkened for TEXT on cream (6.1:1) */
+  --bb-coral: #f25c4d;        /* verified print accent — the flashcard top rule */
+  --bb-terracotta: #e87a57;   /* verified secondary print accent */
+  --bb-green: #3f5d4e;        /* supporting status green (correct/done) */
 
   /* ---- 2. semantic — LIGHT (cream-first) is the default theme ---- */
   color-scheme: light;
   --surface-canvas: var(--bb-cream);
-  --surface-sidebar: linear-gradient(180deg, var(--bb-paper), var(--bb-cream));
-  --surface-bar: var(--bb-paper);                                     /* topbar / tabbar */
+  --surface-sidebar: linear-gradient(180deg, var(--bb-slate), var(--bb-slate-deep)); /* the site's slate band */
+  --surface-bar: var(--bb-paper);                                     /* topbar / tabbar (site header is cream) */
   --surface-card: var(--bb-paper);                                    /* resting card */
   --surface-card-soft: var(--bb-paper);
-  --surface-card-faint: color-mix(in srgb, var(--bb-ink) 3%, transparent);
+  --surface-card-faint: color-mix(in srgb, var(--bb-slate) 4%, transparent);
   --surface-raised: #fffdf6;                                          /* opaque raised (ring core, selects, toast) */
-  --surface-hover: color-mix(in srgb, var(--bb-ink) 5%, transparent);
-  --surface-hover-strong: color-mix(in srgb, var(--bb-ink) 8%, transparent);
-  --surface-track: color-mix(in srgb, var(--bb-ink) 12%, transparent); /* meter/bar tracks + hairlines */
+  --surface-hover: color-mix(in srgb, var(--bb-slate) 6%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--bb-slate) 10%, transparent);
+  --surface-track: color-mix(in srgb, var(--bb-slate) 14%, transparent); /* meter/bar tracks + hairlines */
   --surface-paper: var(--bb-paper);                                   /* the menu-card face */
-  --line: color-mix(in srgb, var(--bb-ink) 14%, transparent);
+  --line: color-mix(in srgb, var(--bb-slate) 16%, transparent);
 
-  --text-strong: var(--bb-ink);
-  --text-body: var(--bb-ink);
-  --text-muted: var(--bb-wood);
-  --text-label: var(--bb-rust-deep);   /* small caps labels on paper */
+  --text-strong: var(--bb-slate);
+  --text-body: var(--bb-slate);
+  --text-muted: var(--bb-slate-muted);
+  --text-label: var(--bb-ember-deep);  /* small caps labels on paper */
 
-  --accent: var(--bb-rust);            /* the action colour: solid buttons, active chips */
+  --accent: var(--bb-ember);           /* the action colour: solid buttons, active chips */
   --accent-ink: var(--bb-paper);       /* text on --accent */
   --accent-bright: var(--bb-orange);   /* decorative brand pop: active-nav, fills */
-  --accent-text: var(--bb-rust);       /* accent-coloured TEXT directly on the canvas */
-  --highlight: var(--bb-brass-deep);   /* eyebrows, pills, badges — text-safe brass */
+  --accent-text: var(--bb-ember);      /* accent-coloured TEXT directly on the canvas */
+  --highlight: var(--bb-ochre);        /* eyebrows, pills, badges — text-safe marigold */
   --highlight-ink: var(--bb-paper);    /* text on --highlight */
-  --highlight-line: var(--bb-brass);   /* decorative brass: hairline rules, lesson spines */
+  --highlight-line: var(--bb-marigold);/* decorative marigold: hairline rules, lesson spines */
   --ok: var(--bb-green);               /* status: correct/done */
-  --info: var(--bb-blue);              /* status: explanatory washes, pill.alt */
-  --focus-ring: var(--bb-rust);
+  --info: var(--bb-teal);              /* status: explanatory washes, pill.alt */
+  --focus-ring: var(--bb-ember);
 
   --pill-tone: var(--highlight);
   --pill-tint: 18%;
   --flash-edge: var(--bb-coral);       /* the menu-card's coral top rule */
 
-  /* inverted table header + map panels (the data-viz colours in maps.ts are
-     tuned dark-panel-legible, so the panels stay warm-dark in BOTH themes) */
-  --table-head-bg: var(--bb-espresso-2);
+  /* inverted table header + map panels — the site's slate newsletter band
+     (the data-viz colours in maps.ts are tuned dark-panel-legible) */
+  --table-head-bg: var(--bb-slate);
   --table-head-fg: var(--bb-cream);
-  --map-bg: var(--bb-espresso-2);
+  --map-bg: var(--bb-slate);
   --map-fg: var(--bb-cream);
-  --map-muted: #cdbb9e;
+  --map-muted: #b9c6cf;
   --map-grid: color-mix(in srgb, var(--bb-cream) 12%, transparent);
-  --map-edge: var(--bb-espresso);
+  --map-edge: var(--bb-slate-deep);
 
   /* paper-grain: tiled SVG noise, ~600B, black-keyed for the light canvas */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.05'/%3E%3C/svg%3E");
@@ -95,12 +102,12 @@
   --radius-card: 12px;
   --radius-flash: 16px;
 
-  /* warm soft shadows; elevation scale (1 = resting card, 2 = raised hero,
+  /* slate-cast soft shadows; elevation scale (1 = resting card, 2 = raised hero,
      3/flash = floating flashcard) */
-  --shadow-1: 0 1px 2px rgba(60, 40, 20, .12);
-  --shadow-2: 0 6px 18px rgba(60, 40, 20, .14);
-  --shadow-3: 0 18px 44px rgba(60, 40, 20, .18);
-  --shadow-flash: 0 24px 60px rgba(60, 40, 20, .22), 0 2px 6px rgba(60, 40, 20, .10);
+  --shadow-1: 0 1px 2px rgba(30, 45, 62, .12);
+  --shadow-2: 0 6px 18px rgba(30, 45, 62, .14);
+  --shadow-3: 0 18px 44px rgba(30, 45, 62, .18);
+  --shadow-flash: 0 24px 60px rgba(30, 45, 62, .22), 0 2px 6px rgba(30, 45, 62, .10);
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -120,66 +127,69 @@
   --screen-max: 1100px;
 }
 
-/* ---- 3. dark theme: warmed espresso (NEVER navy). Keep this block and the
+/* ---- 3. dark theme: deep slate — the site's splash/footer band as a canvas
+   (the brand's own dark; espresso brown retired). Keep this block and the
    prefers-color-scheme auto block below byte-identical — tokens.test.ts
    enforces it. ---- */
 html[data-theme='dark'] {
   color-scheme: dark;
-  --surface-canvas: var(--bb-espresso);
-  --surface-sidebar: linear-gradient(180deg, var(--bb-espresso-2), #1c1611);
-  --surface-bar: var(--bb-espresso-2);
-  --surface-card: color-mix(in srgb, var(--bb-cream) 5%, transparent);
+  --surface-canvas: var(--bb-slate-deep);
+  --surface-sidebar: linear-gradient(180deg, var(--bb-slate), var(--bb-slate-deep));
+  --surface-bar: var(--bb-slate-mid);
+  --surface-card: color-mix(in srgb, var(--bb-cream) 6%, transparent);
   --surface-card-soft: color-mix(in srgb, var(--bb-cream) 4%, transparent);
   --surface-card-faint: color-mix(in srgb, var(--bb-cream) 2.5%, transparent);
-  --surface-raised: var(--bb-espresso-3);
-  --surface-hover: color-mix(in srgb, var(--bb-cream) 6%, transparent);
-  --surface-hover-strong: color-mix(in srgb, var(--bb-cream) 8%, transparent);
+  --surface-raised: var(--bb-slate-raised);
+  --surface-hover: color-mix(in srgb, var(--bb-cream) 7%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--bb-cream) 10%, transparent);
   --surface-track: color-mix(in srgb, var(--bb-cream) 12%, transparent);
   --surface-paper: var(--bb-cream);
   --line: color-mix(in srgb, var(--bb-cream) 16%, transparent);
   --text-strong: var(--bb-cream);
   --text-body: var(--bb-cream);
-  --text-muted: #cdbb9e;
-  --accent-ink: var(--bb-cream);
-  --accent-text: var(--bb-orange);
-  --highlight: var(--bb-brass-bright);
-  --highlight-ink: var(--bb-espresso);
+  --text-muted: #c9c3b5;
+  --accent: var(--bb-orange);
+  --accent-ink: var(--bb-slate-deep);
+  --accent-text: var(--bb-orange-bright);
+  --highlight: var(--bb-marigold);
+  --highlight-ink: var(--bb-slate-deep);
   --pill-tint: 14%;
-  --focus-ring: var(--bb-orange);
-  --shadow-1: 0 1px 2px rgba(8, 5, 2, .30);
-  --shadow-2: 0 6px 18px rgba(8, 5, 2, .35);
-  --shadow-3: 0 18px 44px rgba(8, 5, 2, .42);
-  --shadow-flash: 0 24px 60px rgba(8, 5, 2, .50);
+  --focus-ring: var(--bb-orange-bright);
+  --shadow-1: 0 1px 2px rgba(4, 12, 18, .30);
+  --shadow-2: 0 6px 18px rgba(4, 12, 18, .35);
+  --shadow-3: 0 18px 44px rgba(4, 12, 18, .42);
+  --shadow-flash: 0 24px 60px rgba(4, 12, 18, .50);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.04'/%3E%3C/svg%3E");
 }
 @media (prefers-color-scheme: dark) {
   html:not([data-theme]) {
     color-scheme: dark;
-    --surface-canvas: var(--bb-espresso);
-    --surface-sidebar: linear-gradient(180deg, var(--bb-espresso-2), #1c1611);
-    --surface-bar: var(--bb-espresso-2);
-    --surface-card: color-mix(in srgb, var(--bb-cream) 5%, transparent);
+    --surface-canvas: var(--bb-slate-deep);
+    --surface-sidebar: linear-gradient(180deg, var(--bb-slate), var(--bb-slate-deep));
+    --surface-bar: var(--bb-slate-mid);
+    --surface-card: color-mix(in srgb, var(--bb-cream) 6%, transparent);
     --surface-card-soft: color-mix(in srgb, var(--bb-cream) 4%, transparent);
     --surface-card-faint: color-mix(in srgb, var(--bb-cream) 2.5%, transparent);
-    --surface-raised: var(--bb-espresso-3);
-    --surface-hover: color-mix(in srgb, var(--bb-cream) 6%, transparent);
-    --surface-hover-strong: color-mix(in srgb, var(--bb-cream) 8%, transparent);
+    --surface-raised: var(--bb-slate-raised);
+    --surface-hover: color-mix(in srgb, var(--bb-cream) 7%, transparent);
+    --surface-hover-strong: color-mix(in srgb, var(--bb-cream) 10%, transparent);
     --surface-track: color-mix(in srgb, var(--bb-cream) 12%, transparent);
     --surface-paper: var(--bb-cream);
     --line: color-mix(in srgb, var(--bb-cream) 16%, transparent);
     --text-strong: var(--bb-cream);
     --text-body: var(--bb-cream);
-    --text-muted: #cdbb9e;
-    --accent-ink: var(--bb-cream);
-    --accent-text: var(--bb-orange);
-    --highlight: var(--bb-brass-bright);
-    --highlight-ink: var(--bb-espresso);
+    --text-muted: #c9c3b5;
+    --accent: var(--bb-orange);
+    --accent-ink: var(--bb-slate-deep);
+    --accent-text: var(--bb-orange-bright);
+    --highlight: var(--bb-marigold);
+    --highlight-ink: var(--bb-slate-deep);
     --pill-tint: 14%;
-    --focus-ring: var(--bb-orange);
-    --shadow-1: 0 1px 2px rgba(8, 5, 2, .30);
-    --shadow-2: 0 6px 18px rgba(8, 5, 2, .35);
-    --shadow-3: 0 18px 44px rgba(8, 5, 2, .42);
-    --shadow-flash: 0 24px 60px rgba(8, 5, 2, .50);
+    --focus-ring: var(--bb-orange-bright);
+    --shadow-1: 0 1px 2px rgba(4, 12, 18, .30);
+    --shadow-2: 0 6px 18px rgba(4, 12, 18, .35);
+    --shadow-3: 0 18px 44px rgba(4, 12, 18, .42);
+    --shadow-flash: 0 24px 60px rgba(4, 12, 18, .50);
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.04'/%3E%3C/svg%3E");
   }
 }
@@ -191,21 +201,43 @@ html[data-theme='dark'] {
   color-scheme: light;
   --text-strong: var(--bb-ink);
   --text-body: var(--bb-ink);
-  --text-muted: var(--bb-wood);
+  --text-muted: var(--bb-stone);
   --line: color-mix(in srgb, var(--bb-ink) 16%, transparent);
   --surface-card: color-mix(in srgb, var(--bb-ink) 6%, transparent);
   --surface-card-soft: color-mix(in srgb, var(--bb-ink) 4%, transparent);
   --surface-hover: color-mix(in srgb, var(--bb-ink) 5%, transparent);
   --surface-hover-strong: color-mix(in srgb, var(--bb-ink) 9%, transparent);
   --surface-track: color-mix(in srgb, var(--bb-ink) 10%, transparent);
-  --focus-ring: var(--bb-rust);  /* v1 fix: dark accent ring on the cream faces */
-  --accent-text: var(--bb-rust);
-  --highlight: var(--bb-brass-deep);
+  --focus-ring: var(--bb-ember);  /* v1 fix: dark accent ring on the cream faces */
+  /* The print accent runs DEEP ember on the cream faces: it must hold 4.5 even
+     over accent-tinted washes (miss banner), and the ink on it is pinned to
+     paper so dark-theme --accent-ink (slate) can never leak into the card. */
+  --accent: var(--bb-ember-deep);
+  --accent-ink: var(--bb-paper);
+  --accent-text: var(--bb-ember-deep);
+  --highlight: var(--bb-ochre);
   --highlight-ink: var(--bb-paper);
-  --pill-tone: var(--accent);
+  --pill-tone: var(--bb-ember-deep);
   --pill-tint: 12%;
   --ghost-bg: color-mix(in srgb, var(--bb-ink) 4%, transparent);
   --ghost-bg-hover: color-mix(in srgb, var(--bb-ink) 9%, transparent);
+}
+
+/* ---- 3b. slate band scope: the sidebar is the brand site's nav/footer band —
+   slate in BOTH themes. This is the light/dark blend every Bridgette page runs
+   (cream page, slate band, marigold + orange accents on the band). ---- */
+.sidebar {
+  color-scheme: dark;
+  --text-strong: var(--bb-cream);
+  --text-body: var(--bb-cream);
+  --text-muted: #b9c6cf;
+  --line: color-mix(in srgb, var(--bb-cream) 18%, transparent);
+  --surface-hover: color-mix(in srgb, var(--bb-cream) 8%, transparent);
+  --surface-hover-strong: color-mix(in srgb, var(--bb-cream) 11%, transparent);
+  --highlight: var(--bb-marigold);
+  --highlight-ink: var(--bb-slate-deep);
+  --accent-bright: var(--bb-orange);
+  --focus-ring: var(--bb-marigold);
 }
 
 * { box-sizing: border-box; }
@@ -223,11 +255,15 @@ h1, h2, h3, .brand, .nav-label, .eyebrow {
   letter-spacing: .02em;
 }
 .brand, .nav-label, .eyebrow { text-transform: uppercase; }
+/* The brand site renders ALL headings lowercase (verified Squarespace config:
+   --heading-font-text-transform: lowercase) — the single most recognizable
+   Bridgette typographic trait. h3 (dish/wine names) keeps its authored case. */
+h1, h2 { text-transform: lowercase; }
 button { font: inherit; cursor: pointer; color: inherit; } /* UA default button text is dark — inherit the surface colour */
 a { color: inherit; }
 
-/* focus-visible choreography, token-routed: rust on cream, brand orange on
-   espresso, rust again on the cream paper faces (the old v1 specificity dance). */
+/* focus-visible choreography, token-routed: ember on cream, lifted orange on
+   the slate dark canvas, ember again on the cream paper faces. */
 :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 .skip-link {
   position: absolute; left: -999px; top: 0; z-index: 50;

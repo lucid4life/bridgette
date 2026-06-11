@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // Computed canvas colours (body background-color) per theme.
-const CREAM = 'rgb(255, 238, 214)'; // #ffeed6
-const ESPRESSO = 'rgb(34, 27, 21)'; // #221b15
+const CREAM = 'rgb(255, 238, 215)'; // #ffeed7 (site --white-hsl)
+const SLATE = 'rgb(20, 34, 45)'; // #14222d (deep slate, site dark band)
 
 test('defaults to the light cream theme with no saved choice (light OS)', async ({ page }) => {
   await page.goto('/today');
@@ -15,13 +15,13 @@ test('toggle switches to dark, persists across reload, and updates theme-color',
   // fresh profile = auto; first cycle lands on dark
   await page.getByRole('button', { name: /^Theme: Auto/ }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('body')).toHaveCSS('background-color', ESPRESSO);
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#2a211a');
+  await expect(page.locator('body')).toHaveCSS('background-color', SLATE);
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#1c3242');
   expect(await page.evaluate(() => localStorage.getItem('bb_theme'))).toBe('dark');
 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('body')).toHaveCSS('background-color', ESPRESSO);
+  await expect(page.locator('body')).toHaveCSS('background-color', SLATE);
 
   // cycle on: dark -> light -> auto (storage cleared)
   await page.getByRole('button', { name: /^Theme: Dark/ }).click();
@@ -35,11 +35,11 @@ test('toggle switches to dark, persists across reload, and updates theme-color',
 
 test.describe('OS dark preference with no saved choice', () => {
   test.use({ colorScheme: 'dark' });
-  test('auto applies the espresso dark theme', async ({ page }) => {
+  test('auto applies the slate dark theme', async ({ page }) => {
     await page.goto('/today');
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
-    await expect(page.locator('body')).toHaveCSS('background-color', ESPRESSO);
-    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#2a211a');
+    await expect(page.locator('body')).toHaveCSS('background-color', SLATE);
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#1c3242');
   });
 });
 

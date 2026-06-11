@@ -56,10 +56,12 @@
 </section>
 
 <style>
+  /* Bar-track identity: marigold (the default --highlight-line) carries this
+     hub's hairlines/spines — the site's hero-band colour. */
   .section-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-size: 14px; margin: 22px 0 12px; }
   .card.link { text-decoration: none; color: inherit; display: block; }
   .card.link:hover { border-color: var(--highlight); }
-  .fact { border-left: 4px solid var(--highlight); }
+  .fact { border-left: 4px solid var(--highlight-line); }
   .fact-line { margin: 0; line-height: 1.5; }
 
   /* Start here — an ordered run sheet (same pattern as the food hub's plan). */

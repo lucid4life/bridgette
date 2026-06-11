@@ -69,6 +69,8 @@
 </section>
 
 <style>
+  /* Food-track identity: the brand orange carries this hub's hairlines/spines. */
+  section.screen { --highlight-line: var(--bb-orange); }
   .section-h { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-size: 14px; margin: 22px 0 12px; }
 
   /* Tonight's plan — an ordered run sheet. */

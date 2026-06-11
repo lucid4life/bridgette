@@ -15,7 +15,7 @@
         var t = localStorage.getItem('bb_theme');
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
         if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches))
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#2a211a');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1c3242');
       } catch (e) { /* storage unavailable: stay on auto */ }
     </script>
     %sveltekit.head%

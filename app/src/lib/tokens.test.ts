@@ -99,23 +99,26 @@ describe('design tokens (visual contract)', () => {
     expect(css).toContain(tok + ':');
   });
 
-  it('keeps the verified brand bytes (cream, orange) and the proven rust action tone', () => {
-    expect(css).toMatch(/--bb-cream:\s*#ffeed6/);
-    expect(css).toMatch(/--bb-orange:\s*#f15825/);
-    expect(css).toMatch(/--bb-rust:\s*#a83212/);
-    expect(css).toMatch(/--bb-coral:\s*#f25c4d/);
+  it('keeps the verified site-palette bytes (2026-06-11 HSL audit) + the print coral', () => {
+    expect(css).toMatch(/--bb-cream:\s*#ffeed7/); // site --white-hsl
+    expect(css).toMatch(/--bb-slate:\s*#1e384b/); // site --black-hsl (ink + dark bands)
+    expect(css).toMatch(/--bb-orange:\s*#f15623/); // site --accent-hsl
+    expect(css).toMatch(/--bb-marigold:\s*#fcb539/); // site --lightAccent-hsl
+    expect(css).toMatch(/--bb-teal:\s*#437c93/); // site --darkAccent-hsl
+    expect(css).toMatch(/--bb-coral:\s*#f25c4d/); // print accent (menu PDFs)
+    expect(css).toMatch(/--bb-ember:\s*#b8420f/); // OUR derived AA action tone
   });
 
-  it('retires navy and the unverified gold from all surfaces', () => {
-    expect(css).not.toMatch(/#1e384b|#162d3d|#102230|#132b3b/i);
-    expect(css).not.toMatch(/#fcb539/i);
-    expect(css).not.toMatch(/rgba\(30,\s*56,\s*75/);
-    expect(css).not.toMatch(/rgba\(255,\s*238,\s*215/);
+  it('retires the v2 espresso/brass/rust/wood derivatives (the "too brown" set)', () => {
+    expect(css).not.toMatch(/#221b15|#2a211a|#332a21|#1c1611/i); // espresso family
+    expect(css).not.toMatch(/#a83212|#8f2a12/i); // rust family
+    expect(css).not.toMatch(/#b08d4a|#c9a25e|#6b5121/i); // brass family
+    expect(css).not.toMatch(/#6b5a45/i); // wood
   });
 
-  it('light is the default theme (cream canvas) and dark is espresso, never navy', () => {
+  it('light is the default theme (cream canvas) and dark is deep slate, never brown', () => {
     expect(lookup('--surface-canvas', LIGHT)).toBe('var(--bb-cream)');
-    expect(lookup('--surface-canvas', DARK)).toBe('var(--bb-espresso)');
+    expect(lookup('--surface-canvas', DARK)).toBe('var(--bb-slate-deep)');
   });
 
   it('the explicit dark block and the prefers-color-scheme auto block are identical', () => {
@@ -123,9 +126,9 @@ describe('design tokens (visual contract)', () => {
     expect(css.match(/@media \(prefers-color-scheme: dark\)[\s\S]*?html:not\(\[data-theme\]\)/)).not.toBeNull();
   });
 
-  it('the paper scope keeps the cream menu-card face in both themes', () => {
+  it('the paper scope keeps the printed-menu face (ink on cream) in both themes', () => {
     expect(paper['--text-body']).toBe('var(--bb-ink)');
-    expect(paper['--focus-ring']).toBe('var(--bb-rust)'); // v1 flashcard-face fix, token-routed
+    expect(paper['--focus-ring']).toBe('var(--bb-ember)'); // v1 flashcard-face fix, token-routed
     expect(lookup('--surface-paper', DARK)).toBe('var(--bb-cream)');
   });
 
@@ -209,7 +212,34 @@ describe.each([
     const track = over(token('--surface-track', paperChain), paperFace);
     expect(contrast(token('--accent', paperChain), track)).toBeGreaterThanOrEqual(3);
   });
-  it('matrix header: cream on the espresso head >= 4.5', () => {
+  it('matrix header: cream on the slate head >= 4.5', () => {
     expect(contrast(token('--table-head-fg', theme), token('--table-head-bg', theme))).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
+/* The sidebar is the brand site's slate nav/footer band in BOTH themes — its
+   scope re-maps the text tokens to cream-on-slate. Verify against both ends
+   of the band gradient (slate top, slate-deep bottom). */
+describe('WCAG contrast — sidebar slate band (both themes)', () => {
+  const side = block(/3b\. slate band scope[\s\S]*?\.sidebar\s*\{([\s\S]*?)\n\}/);
+  const onSlate = [side, root];
+  const slate = resolve('var(--bb-slate)', [root]);
+  const slateDeep = resolve('var(--bb-slate-deep)', [root]);
+
+  it('nav text (cream) and muted text on both gradient ends >= 4.5', () => {
+    for (const bg of [slate, slateDeep]) {
+      expect(contrast(token('--text-body', onSlate), bg)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(token('--text-muted', onSlate), bg)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+  it('marigold highlight (brand small, Tracks label) on slate >= 4.5', () => {
+    expect(contrast(token('--highlight', onSlate), slate)).toBeGreaterThanOrEqual(4.5);
+  });
+  it('active nav item: cream label over the 16% orange wash on slate >= 4.5', () => {
+    const wash = over({ ...resolve('var(--bb-orange)', [root]), a: 0.16 }, slate);
+    expect(contrast(token('--text-body', onSlate), wash)).toBeGreaterThanOrEqual(4.5);
+  });
+  it('focus ring (marigold) on slate >= 3', () => {
+    expect(contrast(token('--focus-ring', onSlate), slate)).toBeGreaterThanOrEqual(3);
   });
 });
