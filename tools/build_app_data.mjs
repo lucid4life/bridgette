@@ -1,5 +1,6 @@
 // tools/build_app_data.mjs — single source of truth: src/data.js -> app/src/lib/data/data.js
-// Byte-reproducible (mirrors tools/build_audio_js.py). Run: node tools/build_app_data.mjs
+// (and the same artifacts into app-v3/). Byte-reproducible (mirrors tools/build_audio_js.py).
+// Run: node tools/build_app_data.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -26,11 +27,16 @@ const full = JSON.parse(readFileSync(root + 'src/data-fullmenu.json', 'utf8'));
 // untouched while the app translator deck + Reference get them.
 data.translator = data.translator.concat(full.translatorRows);
 
-const header =
-  '// app/src/lib/data/data.js — GENERATED from src/data.js by tools/build_app_data.mjs.\n' +
-  '// Do NOT edit by hand. Edit src/data.js and re-run: node tools/build_app_data.mjs\n';
+// v2 + v3 receive identical artifacts; only the header path comment differs.
+const APPS = ['app', 'app-v3'];
+
 const body = 'export const data = ' + JSON.stringify(data, null, 2) + ';\n';
-writeFileSync(root + 'app/src/lib/data/data.js', header + body);
+for (const app of APPS) {
+  const header =
+    '// ' + app + '/src/lib/data/data.js — GENERATED from src/data.js by tools/build_app_data.mjs.\n' +
+    '// Do NOT edit by hand. Edit src/data.js and re-run: node tools/build_app_data.mjs\n';
+  writeFileSync(root + app + '/src/lib/data/data.js', header + body);
+}
 
 // PERF-03 (real): bottles/beers/fortifieds are Reference-only and consumed by no engine
 // deck, the progress store, or any other route. Emit them as a STATIC JSON ASSET that the
@@ -38,10 +44,12 @@ writeFileSync(root + 'app/src/lib/data/data.js', header + body);
 // generated data leaf-modules into one shared chunk regardless of dynamic-import or
 // manualChunks boundaries, so a module split silently fails; a fetched asset is never in
 // any route chunk.) Precached by the SW `json` glob, so offline still works.
-writeFileSync(
-  root + 'app/static/fullmenu.json',
-  JSON.stringify({ bottles: full.bottles, beers: full.beers, fortifieds: full.fortifieds })
-);
+for (const app of APPS) {
+  writeFileSync(
+    root + app + '/static/fullmenu.json',
+    JSON.stringify({ bottles: full.bottles, beers: full.beers, fortifieds: full.fortifieds })
+  );
+}
 
 console.log('wrote data.js (' + data.wines.length + ' wines) + static/fullmenu.json (' +
   full.bottles.length + ' bottles, ' + full.beers.length + ' beers, ' + full.fortifieds.length + ' fortifieds)');

@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "cards": {
+    "translator:cabernet-sauvignon:ask": { "box": 5, "due": 20300, "lastSeen": 20286, "correct": 7, "wrong": 1, "consecutiveWrong": 0 },
+    "wine-identity:st-john-claret:grape": { "box": 3, "due": 20290, "lastSeen": 20287, "correct": 4, "wrong": 2, "consecutiveWrong": 0 },
+    "pronunciation:hiedler-loss:say": { "box": 4, "due": 20294, "lastSeen": 20287, "correct": 5, "wrong": 1, "consecutiveWrong": 0 },
+    "pairing:26oz-wood-grilled-beef-ribeye:match": { "box": 2, "due": 20288, "lastSeen": 20287, "correct": 1, "wrong": 3, "consecutiveWrong": 1 },
+    "structure:acidity-hiedler-loss:pick": { "box": 1, "due": 20287, "lastSeen": 20287, "correct": 0, "wrong": 2, "consecutiveWrong": 2 },
+    "DEAD:orphan:card": { "box": 5, "due": 1, "lastSeen": 1, "correct": 9, "wrong": 0, "consecutiveWrong": 0 }
+  },
+  "streak": { "current": 6, "lastStudyDate": 20287 },
+  "settings": { "difficulty": "adaptive", "audio": true },
+  "readiness": { "lastScore": 78, "lastTaken": 20286, "weakAreas": ["acidity", "regions"], "byDeck": { "structure": { "total": 3, "correct": 1 } } }
+}

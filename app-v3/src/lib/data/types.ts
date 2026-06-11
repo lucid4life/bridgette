@@ -1,0 +1,268 @@
+// app/src/lib/data/types.ts — typed contract for the v2 data model.
+export type LMH = 'low' | 'medium' | 'high';
+export type Sweetness = 'dry' | 'off-dry' | 'medium-dry' | 'medium-sweet' | 'sweet';
+export type Climate = 'cool' | 'moderate' | 'warm';
+export type WineFamily =
+  | 'Bubbles & Rosé'
+  | 'Bright & Crisp Whites'
+  | 'Round Whites'
+  | 'Light Reds'
+  | 'Structured Reds';
+
+export interface Structure {
+  acidity: LMH;
+  body: LMH;
+  tannin: LMH;
+  sweetness: Sweetness;
+}
+
+export interface Pronunciation {
+  say: string;
+  respell: string;
+}
+
+export interface Objection {
+  cue: string;
+  reply: string;
+}
+
+export interface Wine {
+  id: string;
+  name: string;
+  group: 'wine';
+  category: string;
+  glass: boolean;
+  price: string;
+  grape: string;
+  region: string;
+  country: string;
+  vintage: string;
+  exclusive: boolean;
+  vegan: boolean | null; // true = menu 'v'; null = unconfirmed (confirm rule applies)
+  veganNote?: string;
+  pronunciation: Pronunciation;
+  structure: Structure;
+  structureNote?: string;
+  climate: Climate;
+  family: WineFamily;
+  objections: Objection[];
+  tenSecond: string;
+  profile: string;
+  pair: string[];
+  pairWhy?: string; // not authored on glass pours yet (Bottle has it) — render conditionally
+  avoid?: string;
+  say: string;
+  mnemonic?: string;
+  aliases: string[];
+  upgrade?: string;
+  tags: string[];
+  serviceTemp?: string | null; // fast-follow stub (spec §12)
+  glassware?: string | null; // fast-follow stub (spec §12)
+  // Deep-dive enrichment (additive; not authored yet — render conditionally):
+  producerStory?: string; // who makes it / the estate story
+  whyWePourIt?: string; // why this bottle earned its slot on the list
+  compare?: string[]; // "vs <other pour>: …" discrimination rows
+  storyMnemonic?: string; // a narrative hook alongside the one-line mnemonic
+}
+
+export interface Food {
+  id: string;
+  name: string;
+  group: 'food';
+  category: string;
+  price: string;
+  menu: string;
+  flavor: string;
+  wine?: string;
+  cocktail?: string;
+  zero?: string;
+  lever?: string; // pairing-lever id (keys into engine/pairing.js LEVERS)
+  why: string;
+  flags: string[];
+  // Official enrichment (source: Food Syllabus June 2026) — additive:
+  ingredients?: string[]; // official components, in syllabus order
+  description?: string; // official dish description (whitespace-normalized)
+  allergens?: string[]; // normalized lowercase allergen tokens (official)
+  allergenNote?: string; // official caveats — omissions/subs/cross-contamination
+  vegan?: boolean; // only where the syllabus states vegan outright
+  tags: string[];
+}
+
+export interface Cocktail {
+  id: string;
+  name: string;
+  group: 'cocktail';
+  category: string;
+  price: string;
+  profile: string;
+  pair: string;
+  caveat?: string;
+  say: string;
+  // Official enrichment (source: Beverage Syllabus Jan 2025, official; menu-current items only) — additive:
+  build?: string[]; // official build components, in syllabus order
+  description?: string; // official drink description (whitespace-normalized)
+  flavorTags?: string[]; // official syllabus flavor tags
+  allergens?: string[]; // normalized lowercase allergen tokens (official)
+  allergenNote?: string; // official caveats — clarification builds, hidden flags, verify-at-bar notes
+  tags: string[];
+}
+
+// By-the-bottle wine (Phase B full-menu expansion). No glass price / objections /
+// 'say' (those are glass-pour fields); carries priceBottle + the upgrade lane instead.
+export interface Bottle {
+  id: string;
+  name: string;
+  grape: string;
+  region: string;
+  country: string;
+  vintage: string;
+  priceBottle: number | null;
+  family: WineFamily;
+  type: string; // 'Red' | 'White' | 'Sparkling' | 'Other'
+  climate: Climate;
+  structure: Structure;
+  profile: string;
+  tenSecond: string;
+  pairWhy: string;
+  pair: string[];
+  upgradeFrom: string; // which by-the-glass lane this bottle is the upgrade for
+  pronunciation: Pronunciation;
+  aliases: string[];
+  mnemonic: string;
+  vegan: boolean | null;
+  exclusive: boolean;
+  producerStory?: string;
+  whyWePourIt?: string;
+}
+
+export interface Beer {
+  id: string;
+  name: string;
+  style: string;
+  origin: string;
+  abv: string;
+  oz: string;
+  flavor: string;
+  pairWith: string[];
+  pronunciation: Pronunciation | null;
+}
+
+export interface Fortified {
+  id: string;
+  name: string;
+  type: string; // 'amaro' | 'cognac' | 'tawny port' | 'cream sherry' | ...
+  origin: string;
+  abv: string;
+  sweetness: string;
+  profile: string;
+  pairWith: string[];
+  servedAs: string; // 'digestif' | 'dessert pairing' | 'both'
+  pronunciation: Pronunciation;
+}
+
+export interface Translator {
+  ask: string;
+  aliases: string[];
+  bestGlass: string;
+  bottleOptions: string[];
+  familiar: string;
+  different: string;
+  phrase: string;
+}
+
+export interface QuickCheck {
+  q: string;
+  choices: string[];
+  answer: number;
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  body: string;
+  workedExample: string;
+  quickCheck: QuickCheck;
+}
+
+export interface BridgetteData {
+  schemaVersion: number;
+  confirm: { vegan: string; allergens: string };
+  wines: Wine[];
+  translator: Translator[];
+  lessons: Lesson[];
+  foods: Food[];
+  cocktails: Cocktail[];
+  beerZero: string[];
+  bottleLadders: [string, string][];
+  bottleMap: [string, string][];
+  // NOTE: bottles/beers/fortifieds are NOT here — they're Reference-only and live in the
+  // code-split '$lib/data/fullmenu' module (PERF-03), kept off the shared data chunk.
+}
+
+// Engine card (generated by training.js generateDeck/allCards).
+export type CardKind = 'recall' | 'pronounce' | 'discriminate';
+export interface Card {
+  id: string;
+  deck: string;
+  kind: CardKind;
+  prompt: string;
+  answer: string;
+  why?: string;
+  choices?: string[];
+  aliases?: string[];
+  scenario?: string;
+  audioText?: string;
+  lang?: string;
+  wineId?: string;
+  // Additive source linkage (NOT part of the frozen `id` slug) — lets the Expand
+  // drawer + miss-feedback resolve a card to its rich source record. sourceFoodId/
+  // sourceWineId carry the second record for the two bridge decks (wine-dish).
+  sourceKind?: 'wine' | 'translator' | 'food' | 'cocktail';
+  sourceId?: string;
+  sourceFoodId?: string;
+  sourceWineId?: string;
+  learnLink: string;
+  tags: string[];
+}
+
+// Persisted Leitner state (localStorage key "bb_progress_v1").
+export interface CardState {
+  box: number;
+  due: number;
+  lastSeen: number;
+  correct: number;
+  wrong: number;
+  consecutiveWrong: number;
+}
+export interface Streak {
+  current: number;
+  lastStudyDate: number | null;
+}
+export interface Readiness {
+  lastScore: number;
+  lastTaken: number;
+  weakAreas: string[];
+  byDeck: Record<string, { total: number; correct: number }>;
+}
+export type StreakGoal = 'daily' | 'weekly';
+// One completed Mock Exam (additive; examHistory is capped at 20 entries).
+export interface ExamRecord {
+  taken: number; // dayNumber, same convention as readiness.lastTaken
+  score: number;
+  byDeck: Record<string, { total: number; correct: number }>;
+  weakAreas: string[];
+  sureWrong: number;
+  durationSec: number;
+  total: number;
+}
+export interface Progress {
+  schema: number;
+  cards: Record<string, CardState>;
+  decks: Record<string, { mastery: number }>;
+  tags: Record<string, { mastery: number }>;
+  readiness: Readiness | null;
+  examHistory: ExamRecord[];
+  studyDays: number[];
+  streak: Streak;
+  settings: { difficulty: string; audio: boolean; goal: StreakGoal; weeklyTarget: number; basicsOnly: boolean };
+}
