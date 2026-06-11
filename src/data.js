@@ -133,6 +133,17 @@ window.BB.data = {
           choices:["Say it's fine — the crab can probably come off","Name the crab flag from memory, then confirm with the kitchen before promising anything","Guess from the menu description so you don't slow the table down"],
           answer:1
         }
+      },
+      {
+        id:"running-food",
+        title:"Running food at Bridgette: seats, no auctions, romance",
+        body:"Running food is priority one at Bridgette — hot food goes out hot, and everyone runs food, whatever their section. Seat numbers do the talking: every item is rung in with a seat number, and shared dishes are seat 0. Seat 1 is always to your left as you approach the table, and numbers run clockwise from there. Seat 1 sits on the banquette, and for mid-room tables it's the left seat with its back to the kitchen. Because the chit already says who gets what, you never auction — no 'who had the chicken?'. When the plate lands, romance it: the dish's name plus three components — 'This is our grilled octopus salad with fennel and orange in a sherry vinaigrette.' Most plates are shared, so the right sharing cutlery travels with every dish. Allergies are entered on every item that seat orders — including shared seat-0 items — so every kitchen station sees them; when in doubt, confirm with the kitchen before anything leaves. You'll run drinks too: first made, first delivered, regardless of whose table — and anything sitting more than a minute, you take it. Drinks land on the guest's right, garnish facing right, hands on the stem or base only. Excuse yourself when you reach in, and never reach across a guest.",
+        workedExample:"The pass hands you the grilled octopus salad; the chit reads table 308, seat 0. Table 308 is in the west section. As you approach, seat 1 is on your left on the banquette — but seat 0 means the plate goes to the centre, sharing cutlery alongside. 'Excuse me — this is our grilled octopus salad, with fennel and orange in a sherry vinaigrette.' Quick scan before you leave: share plates down, water levels fine. No auctioning — the seat number already told you everything.",
+        quickCheck:{
+          q:"As you approach a table at Bridgette, where is seat 1?",
+          choices:["The seat closest to the kitchen","Always to your left, with seats numbered clockwise from there","Wherever the oldest guest is sitting"],
+          answer:1
+        }
       }
     ],
   foods: [

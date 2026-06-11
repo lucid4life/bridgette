@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { data } from '$lib/data/index';
   import { deduce, DG_DIMS } from '$lib/engine/wineschool.js';
   import { DECKS, generateDeck } from '$lib/engine/training.js';
@@ -25,7 +26,10 @@
   let completionTick = $state(0);
 
   // ── track grouping (fixed display order) ──────────────────────────────────
-  const TRACK_ORDER: CourseTrack[] = ['Foundations', 'Know the list', 'Floor moves', 'On the floor'];
+  // Food-runner first shifts display FIRST (shifts start now), but its modules
+  // are nums 11–12 — appended after the wine chain so existing unlock/persisted
+  // progress is untouched. They carry alwaysUnlocked, so they never show locked.
+  const TRACK_ORDER: CourseTrack[] = ['Food runner — first shifts', 'Foundations', 'Know the list', 'Floor moves', 'On the floor'];
   const byTrack = $derived(
     TRACK_ORDER
       .map((track) => ({ track, modules: curriculum.filter((m) => m.track === track) }))
@@ -54,6 +58,31 @@
     const n = courseStore.nextModule();
     openMod(n ?? curriculum[0]);
   }
+
+  // ── hash deep-linking (/learn#<lessonId> from hubs + engine learnLinks) ────
+  // Engine "Explain this" links and hub links target a LESSON id (e.g.
+  // #know-the-dish, #common-substitutions); we resolve to the module that
+  // carries that lesson. Module ids are accepted too. 'deductive-grid' is a
+  // learnLink with no lesson of its own — its tool lives in the how-to-taste
+  // module. onMount (not $effect) on purpose: openMod reads reactive course
+  // state, and an effect would re-open the hash module after every completion.
+  const HASH_MODULE_ALIASES: Record<string, string> = { 'deductive-grid': 'how-to-taste' };
+  function moduleForHash(rawHash: string): CourseModule | null {
+    let key: string;
+    try {
+      key = decodeURIComponent(rawHash.replace(/^#/, ''));
+    } catch {
+      return null; // malformed percent-encoding in the hash — ignore
+    }
+    if (!key) return null;
+    const target = HASH_MODULE_ALIASES[key] ?? key;
+    return curriculum.find((m) => m.lessonId === target || m.id === target) ?? null;
+  }
+  function openFromHash() {
+    const m = moduleForHash(window.location.hash);
+    if (m) openMod(m);
+  }
+  onMount(openFromHash);
 
   // ── per-module quick check (lesson-driven OR data-driven seed deck) ────────
   type QuickCheck = { q: string; choices: string[]; answer: number };
@@ -123,13 +152,14 @@
 </script>
 
 <svelte:head><title>Learn · Bridgette Training</title></svelte:head>
+<svelte:window onhashchange={openFromHash} />
 
 {#if view === 'map'}
   <!-- ═══════════════════ MAP VIEW ═══════════════════ -->
   <section class="screen">
     <p class="h-eyebrow">Learn</p>
-    <h1>Your wine course</h1>
-    <p class="sub">Ten modules, foundations first. Pass each to unlock the next — or jump ahead anytime.</p>
+    <h1>Your course</h1>
+    <p class="sub">Food-runner first shifts up top, then the ten-module wine course. Pass each to unlock the next — or jump ahead anytime.</p>
 
     <div class="course-top">
       <p class="progress-line" aria-live="polite">
@@ -147,7 +177,7 @@
       <div class="mod-grid">
         {#each group.modules as m (m.id)}
           {@const done = courseStore.isCompleted(m.id)}
-          {@const unlocked = courseStore.isUnlocked(m.id)}
+          {@const unlocked = m.alwaysUnlocked === true || courseStore.isUnlocked(m.id)}
           {@const isNext = nextUp?.id === m.id}
           <button
             class="mod-card"

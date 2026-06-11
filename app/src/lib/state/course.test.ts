@@ -28,7 +28,7 @@ const fakeStorage = makeLocalStorage();
 import { courseStore } from './course.svelte';
 import { curriculum } from '../data/curriculum';
 
-const TOTAL = curriculum.length; // should be 10
+const TOTAL = curriculum.length; // 10 wine modules + 2 food-runner modules (nums 11–12, appended)
 
 // Reset between tests: clear storage, then reload the store into a clean state.
 beforeEach(() => {
@@ -41,7 +41,10 @@ beforeEach(() => {
 describe('fresh store (no completions)', () => {
   it('has the correct total', () => {
     expect(courseStore.total).toBe(TOTAL);
-    expect(TOTAL).toBe(10);
+    // Deliberate bump 10 → 12: the 'Food runner — first shifts' track added
+    // know-the-dish + running-food AFTER the wine chain (nums 11–12), so the
+    // wine modules' ids, nums, and unlock order are unchanged.
+    expect(TOTAL).toBe(12);
   });
 
   it('module 1 (how-wine-works) is unlocked', () => {
@@ -99,7 +102,7 @@ describe('after complete("how-wine-works")', () => {
   });
 });
 
-// ─── Completing all 10 modules ────────────────────────────────────────────────
+// ─── Completing all modules ──────────────────────────────────────────────────
 
 describe('after completing all modules', () => {
   beforeEach(() => {
@@ -108,8 +111,8 @@ describe('after completing all modules', () => {
     }
   });
 
-  it('completedCount() is 10', () => {
-    expect(courseStore.completedCount()).toBe(10);
+  it('completedCount() equals the curriculum size', () => {
+    expect(courseStore.completedCount()).toBe(TOTAL);
   });
 
   it('nextModule() returns null', () => {

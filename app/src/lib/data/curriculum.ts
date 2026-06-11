@@ -1,10 +1,22 @@
-// app/src/lib/data/curriculum.ts — 10-module mastery-gated course definition.
-// Each module has a stable kebab id, a display order (num 1..10), a track,
+// app/src/lib/data/curriculum.ts — mastery-gated course definition.
+// Each module has a stable kebab id, a display order (num), a track,
 // and optional links to a lesson entry (lessonId) and a Practice deck (seedDeck).
 // The state layer (course.svelte.ts) enforces sequential unlock; the UI may
 // separately allow a "jump ahead" override while still surfacing this signal.
+//
+// Modules 1–10 are the original wine course — their ids and nums are FROZEN
+// (persisted progress in bb_course_v1 is keyed by module id, and the unlock
+// chain is keyed by num order, so existing state must never shift).
+// The 'Food runner — first shifts' track (nums 11–12) is appended AFTER the
+// wine chain so it never re-gates a wine module; it carries alwaysUnlocked
+// so the UI surfaces it immediately, and the Learn page displays it first.
 
-export type CourseTrack = 'Foundations' | 'Know the list' | 'Floor moves' | 'On the floor';
+export type CourseTrack =
+  | 'Food runner — first shifts'
+  | 'Foundations'
+  | 'Know the list'
+  | 'Floor moves'
+  | 'On the floor';
 export type ModuleContent = 'families' | 'whites' | 'reds' | 'cocktails';
 
 export interface CourseModule {
@@ -16,6 +28,7 @@ export interface CourseModule {
   lessonId?: string;   // links to a data.lessons entry for read + quick-check content
   content?: ModuleContent; // data-driven module kind (no lessonId)
   seedDeck?: string;   // the Practice deck id this module introduces (for a "drill it now" link)
+  alwaysUnlocked?: boolean; // UI treats as unlocked regardless of the sequential chain
 }
 
 export const curriculum: CourseModule[] = [
@@ -108,5 +121,26 @@ export const curriculum: CourseModule[] = [
     blurb: "Say the hard names with confidence — Weissburgunder, Hiedler Löss, Ca' del Baio.",
     lessonId: 'pronunciation-primer',
     seedDeck: 'pronunciation'
+  },
+  // ── Food runner — first shifts (appended after the wine chain; see header) ──
+  {
+    id: 'know-the-dish',
+    num: 11,
+    track: 'Food runner — first shifts',
+    title: 'Know the dish: components & allergens',
+    blurb: 'Three components per plate, cold — and allergen flags you name first, then verify with the kitchen.',
+    lessonId: 'know-the-dish',
+    seedDeck: 'components',
+    alwaysUnlocked: true
+  },
+  {
+    id: 'running-food',
+    num: 12,
+    track: 'Food runner — first shifts',
+    title: 'Running food: seats, no auctions, romance',
+    blurb: "Seat numbers do the talking — seat 1 to your left, shared plates to the middle, never 'who had the chicken?'.",
+    lessonId: 'running-food',
+    seedDeck: 'allergens',
+    alwaysUnlocked: true
   }
 ];
