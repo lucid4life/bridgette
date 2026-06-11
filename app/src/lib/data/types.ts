@@ -79,6 +79,12 @@ export interface Food {
   lever?: string; // pairing-lever id (keys into engine/pairing.js LEVERS)
   why: string;
   flags: string[];
+  // Official enrichment (source: Food Syllabus June 2026) — additive:
+  ingredients?: string[]; // official components, in syllabus order
+  description?: string; // official dish description (whitespace-normalized)
+  allergens?: string[]; // normalized lowercase allergen tokens (official)
+  allergenNote?: string; // official caveats — omissions/subs/cross-contamination
+  vegan?: boolean; // only where the syllabus states vegan outright
   tags: string[];
 }
 

@@ -91,3 +91,23 @@ These were decided autonomously while Adrian was at work (he delegated the calls
    Hip Hop Chenin (grower-collective story from Vine Arts + producer site only) and
    Sindicat la Figuera (importer/retailer pages only). Fine to ship; double-check
    if a guest ever pushes for detail. (2026-06-09 enrichment pass.)
+
+## 2026-06-10 — Food Syllabus (June 2026) integration
+
+Official syllabus (`docs/handoffs/food-syllabus-2026-06.parsed.json`) merged into `src/data.js` foods via `tools/merge_food_syllabus.mjs`. Conflicts/decisions:
+
+1. **Sorbet is off-menu.** The syllabus includes it but says "not on our menu... our dairy-free option" (rotating Noto Gelato flavour). Kept OUT of `data.foods`; surface as a cram-sheet footnote only.
+2. **Shrimp & Crab pasta shape contradiction.** Syllabus ingredients say "Bigoli" but its own description opens "Linguini is a long, flat pasta…". Data keeps the printed-menu linguini in `menu` and the official ingredients as-is. *Confirm the actual pasta shape at work.*
+3. **Rigatoni lists Pork** on its Allergies line, but no pork appears in its ingredients or description (parmesan/mushroom béchamel) — possible carry-over error from a previous menu. Kept (official). *Confirm with kitchen.*
+4. **Ricotta Dumplings: unlisted egg + vodka.** The description says the dumpling dough contains egg and the sauce contains vodka; neither appears on its Allergies line. Noted in `allergenNote`. *Confirm.*
+5. **Duck/Trout soy-miso mismatch.** Wood Roasted Half Duck's turnip relish contains miso (soy) but soy isn't listed on its Allergies line; Maple BBQ Trout lists "Soy (Tamari)" while its description says miso. Noted in each `allergenNote`. *Confirm.*
+6. **Lamb Sausage lists Pork** despite being a lamb kefta — plausible via casing or a bacon component (cf. the lamb saddle's merguez containing bacon). Kept (official). *Confirm.*
+7. **Roasted Olives "allergy" is cross-contamination prose only** ("Possible gluten cross contamination from pizza oven."). Normalized to `allergens:["gluten"]` plus an `allergenNote` clarifying gluten is not an ingredient of the dish.
+8. **Typo fixes applied to official text** (the only edits to syllabus wording): "Flor di Latte" → "Fior di Latte" (Margherita ingredient), "Italian Merigue" → "Italian Meringue" (Banana Pie ingredient), "ndjua" → "'nduja" (Snap Peas description, 2 spots).
+9. **Alliums policy.** Syllabus "Alliums (Onion and Garlic)" is normalized to separate `onion`/`garlic` tokens; note the doc often lists only one of the two on other dishes, so treat onion/garlic flags as best-effort and confirm at the kitchen when it matters.
+
+Follow-ups queued from the same pass (deliberately not done tonight):
+
+10. **Exam blueprint inclusion.** The new `components`/`allergens` decks are excluded from `EXAM_BLUEPRINT` (guard test in `components-allergens.test.ts`). *Decide:* add a food-knowledge section to mock exams after the first shifts.
+11. **Typed-mode nudge copy is wine-flavored** ("say the one structural reason it fits") for ALL decks at box ≥4 — pre-existing wart, now slightly wider with the allergens deck. The produce-mode equivalent was fixed tonight (uses `card.scenario` when present). *Decide:* deck-aware typed nudge copy.
+12. **Beverage syllabus (Jan 2025) phase** still pending: cocktail builds deck + enrichment for menu-current items only; service-guide lessons; onboarding-package mining; pronunciation clips for new drillable terms.

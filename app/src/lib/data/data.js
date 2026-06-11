@@ -1656,6 +1656,21 @@ export const data = {
         ],
         "answer": 0
       }
+    },
+    {
+      "id": "know-the-dish",
+      "title": "Know the dish: components & allergens",
+      "body": "Food running has its own bar, and the manager set it plainly: knowing multiple items in each dish will surpass expectations. So make THREE your floor — for every plate you carry, be able to name three components without looking at anything. The frame that makes them stick is the menu concept itself. This menu is CHEF-DRIVEN SEASONAL: it changes with the seasons and Chef JP's inspiration, with a few signature mainstays that never leave. It's built to be shared FAMILY-STYLE — plates of various sizes hitting the middle of the table. And the focal point of the kitchen is the WOOD-FIRED GRILL, fuelled by applewood — a very hard wood with a long burning life and a mild, pleasant smoke you'll taste across the menu. Nearly everything that isn't a whole food is made in house: pizza dough rested at least five days for that soft, chewy texture, every pasta from scratch. Components are knowledge; allergens are SAFETY. Learn each dish's flags cold so you can name them instantly — and then ALWAYS confirm with the kitchen before promising a guest anything. An allergen answer is never a guess and never pure memory: name it, then verify it, every single time.",
+      "workedExample": "A guest points at the menu: 'What's in the Snap Peas?' You, without looking: 'Sweet snap peas and shaved fennel in a creamy 'nduja dressing — 'nduja is a spicy spreadable salami — topped with shaved pecorino and a bacon gremolata.' Three-plus components, ten seconds, done. Then they add: 'My partner has a pork allergy.' Now the move changes: ''Nduja is pork and so is the bacon gremolata, so this one won't work as-is — let me check with the kitchen before we lock anything in.' You named the flags from memory, and you STILL confirmed with the kitchen. That order — name it, then verify it — is the whole job.",
+      "quickCheck": {
+        "q": "A guest with a shellfish allergy asks if the Wood Grilled Asparagus is safe. You remember it comes with crab. What do you do?",
+        "choices": [
+          "Say it's fine — the crab can probably come off",
+          "Name the crab flag from memory, then confirm with the kitchen before promising anything",
+          "Guess from the menu description so you don't slow the table down"
+        ],
+        "answer": 1
+      }
     }
   ],
   "foods": [
@@ -1676,6 +1691,16 @@ export const data = {
         "garlic aioli",
         "confirm fryer details"
       ],
+      "ingredients": [
+        "Fries",
+        "Salt",
+        "Garlic Aioli"
+      ],
+      "description": "Shoestring fries, tossed in salt and served with garlic aioli.",
+      "allergens": [
+        "eggs"
+      ],
+      "allergenNote": "Sub Ketchup and *this dish is vegan (vegan when aioli is substituted with ketchup)",
       "tags": [
         "food",
         "fries",
@@ -1699,6 +1724,20 @@ export const data = {
       "flags": [
         "confirm sesame/tahini"
       ],
+      "ingredients": [
+        "Hummus Chips",
+        "Hummus",
+        "Preserved Lemon",
+        "Green Olive",
+        "Aleppo Chili",
+        "Olive Oil"
+      ],
+      "description": "The hummus is made into a dough with tapioca flour, steamed, sliced thinly and dehydrated. Once dehydrated, it is placed in the deep fryer where it puffs and crisps up to make a chip. The chips are seasoned with toasted sesame and Aleppo chili, and served with hummus topped with preserved lemon, minced green olives and a finishing olive oil.",
+      "allergens": [
+        "sesame"
+      ],
+      "allergenNote": "*This dish is vegan",
+      "vegan": true,
       "tags": [
         "food",
         "spice",
@@ -1719,6 +1758,18 @@ export const data = {
       "zero": "Peroni Pilsner 0.0",
       "why": "Melted cheese and garlic fat need acid or bubbles to cut richness; a rounder white or crisp beer keeps it from feeling heavy.",
       "flags": [
+        "dairy",
+        "gluten"
+      ],
+      "ingredients": [
+        "Bread",
+        "Cheese Curd",
+        "Garlic Butter",
+        "Parmesan",
+        "Chives"
+      ],
+      "description": "Cheese curds wrapped in buttery bread in a rectangle shape and deep fried until golden brown. Bread is basted in garlic butter and topped with grated parmesan cheese and chives.",
+      "allergens": [
         "dairy",
         "gluten"
       ],
@@ -1744,6 +1795,16 @@ export const data = {
       "flags": [
         "tree nuts"
       ],
+      "ingredients": [
+        "Cashews",
+        "Salt and Vinegar Spice"
+      ],
+      "description": "These cashews are a play on salt & vinegar chips. The cashews have been boiled lightly in white vinegar, and then dusted with lots of salt, some icing sugar and white vinegar powder (made from dehydrating white vinegar). They are baked lightly to crystallize the outside to make them crunchy.",
+      "allergens": [
+        "tree nuts"
+      ],
+      "allergenNote": "*This dish is vegan",
+      "vegan": true,
       "tags": [
         "food",
         "nuts",
@@ -1767,6 +1828,18 @@ export const data = {
         "dairy",
         "confirm spice heat"
       ],
+      "ingredients": [
+        "Eggplant",
+        "Nori (Dried Seaweed)",
+        "Panko Breadcrumbs",
+        "Green Harissa Yogurt"
+      ],
+      "description": "Eggplant is cut into the shape of fries tossed in a milk / egg wash and breaded with panko / nori crumble. Pieces are deep fried until golden and stacked up. Served with green harissa yogurt.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "eggs"
+      ],
       "tags": [
         "food",
         "spice",
@@ -1789,6 +1862,18 @@ export const data = {
       "flags": [
         "confirm pits"
       ],
+      "ingredients": [
+        "Castelvetrano Olives",
+        "Orange Peel",
+        "Calabrian Chili",
+        "Thyme",
+        "Rosemary"
+      ],
+      "description": "Castelvetrano olives are a small, Italian green olive with a mild brininess and buttery finish. The olives are roasted in the wood fired oven after being marinated in orange peel, Calabrian chili, thyme and rosemary.",
+      "allergens": [
+        "gluten"
+      ],
+      "allergenNote": "Possible cross contamination from pizza oven only - gluten is not an ingredient of the dish",
       "tags": [
         "food",
         "olive",
@@ -1813,6 +1898,16 @@ export const data = {
         "gluten",
         "dairy"
       ],
+      "ingredients": [
+        "Smoked Tallow",
+        "Charred Onion"
+      ],
+      "description": "Smoked tallow is made from our beef trim that is rendered down into a fat which is then smoked. We then take that smoked beef fat and whip it into the butter. It is then topped with charred onion powder and served with our sourdough.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "onion"
+      ],
       "tags": [
         "food",
         "rich",
@@ -1835,6 +1930,18 @@ export const data = {
       "flags": [
         "raw shellfish"
       ],
+      "ingredients": [
+        "East Coast Oysters",
+        "Dill Pickle Granita (shaved ice made from homemade dill pickle brine)",
+        "Horseradish",
+        "Lemon",
+        "Tabasco"
+      ],
+      "description": "Oysters will change periodically but always sourced from the East Coast. They are served ice cold on a bed of coarse salt and garnished with a dill pickle granita, horseradish and lemon.",
+      "allergens": [
+        "shellfish"
+      ],
+      "allergenNote": "'Seafood, Shellfish' - oysters are molluscan shellfish; normalized to shellfish",
       "tags": [
         "food",
         "seafood",
@@ -1860,6 +1967,20 @@ export const data = {
         "raw seafood",
         "fish"
       ],
+      "ingredients": [
+        "Smoked Tonnato",
+        "Puttanesca Vinaigrette",
+        "Fried Caper",
+        "Mint"
+      ],
+      "description": "Yellowfin Ahi Tuna is lightly cured in salt, sugar, and lime, then sliced thin and layered over a smoked tuna tonnato, a creamy blend of garlic labneh, aioli, capers, lemon juice, and smoked tuna. Beneath, a bright puttanesca vinaigrette of tomato, olive, caper, garlic, fish sauce, and olive oil anchors the dish with depth and salinity. It’s finished with pickled shallots, sliced Castelvetrano olives, fried capers, torn mint, and a generous amount of olive oil. A final whisper of yuzu zest ties everything together with an unexpected, lively lift.",
+      "allergens": [
+        "onion",
+        "garlic",
+        "dairy",
+        "fish"
+      ],
+      "allergenNote": "Dairy cannot be omitted",
       "tags": [
         "food",
         "seafood",
@@ -1883,6 +2004,21 @@ export const data = {
         "raw/rare beef",
         "confirm preparation"
       ],
+      "ingredients": [
+        "Cured Wagyu Beef",
+        "Mushroom Vinaigrette",
+        "Parmesan Frico",
+        "Horseradish",
+        "Garlic Chips",
+        "Sliced Mushrooms",
+        "Chives"
+      ],
+      "description": "Wagyu Beef comes from Brant Lake Farms in Alberta. Thinly sliced raw Wagyu beef eye of round (velvety and flavorful) is topped with a pickled mushroom salad garnished with crispy parmesan, garlic chips, chives and dressed with a mushroom vinaigrette, pan drippings, sherry vinegar and horseradish.",
+      "allergens": [
+        "dairy",
+        "garlic"
+      ],
+      "allergenNote": "Dairy can be omitted",
       "tags": [
         "food",
         "beef",
@@ -1906,6 +2042,23 @@ export const data = {
         "egg",
         "dairy"
       ],
+      "ingredients": [
+        "Lamb Sausage",
+        "Garlic Labneh",
+        "Cilantro Vinaigrette",
+        "Fried Egg",
+        "Potato Crunch",
+        "Watercress"
+      ],
+      "description": "Lamb Kefta (spiced lamb sausage). Sausage is grilled over wood fire and served with roasted garlic labneh (thickened yogurt), cilantro vinaigrette, a sunny side up fried egg, crunchy potato & watercress.",
+      "allergens": [
+        "dairy",
+        "pork",
+        "eggs",
+        "sesame",
+        "garlic"
+      ],
+      "allergenNote": "Dairy can be omitted",
       "tags": [
         "food",
         "lamb",
@@ -1930,6 +2083,18 @@ export const data = {
         "pine nuts",
         "chili"
       ],
+      "ingredients": [
+        "Poached Rhubarb",
+        "Strawberry Jam",
+        "Olive Oil",
+        "Sourdough"
+      ],
+      "description": "Burrata is a soft-centered variation of mozzarella. Cow’s milk mozzarella curds are melted and stretched around a soft cheese center, to provide a runny inside and chewy exterior. Our burrata cheese will be served with a strawberry jam (strawberries cooked down with shallot, pepper and red wine vinegar, and seasoned with elderflower syrup), topped with fresh Alberta rhubarb that has been gently poached in elderflower syrup. We top the dish with a generous amount of maldon salt, black pepper, and extra virgin olive oil. As always the burrata is served with our house sourdough charred on the wood burning gill.",
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "allergenNote": "Gluten: can sub bread with Hummus Chips",
       "tags": [
         "food",
         "cheese",
@@ -1953,6 +2118,21 @@ export const data = {
       "flags": [
         "seafood"
       ],
+      "ingredients": [
+        "Braised Octopus",
+        "Shaved Fennel",
+        "Orange Segments",
+        "Chives",
+        "Fennel Salt",
+        "Sherry-Soy Vinaigrette"
+      ],
+      "description": "Our Octopus comes from Vancouver Island. Octopus is slowly braised in red wine and then grilled over wood fire to develop its tender smoky flavour. It is then cut into bite size pieces and topped with a salad made from shaved fennel and orange segments, dressed with a sherry-soy vinaigrette and fennel salt.",
+      "allergens": [
+        "soy",
+        "onion",
+        "shellfish"
+      ],
+      "allergenNote": "'Seafood' refers to octopus (molluscan shellfish); normalized to shellfish",
       "tags": [
         "food",
         "seafood",
@@ -1976,6 +2156,21 @@ export const data = {
         "gluten",
         "confirm dairy"
       ],
+      "ingredients": [
+        "Mushroom Parfait",
+        "Black Truffle",
+        "Chervil"
+      ],
+      "description": "For this dish, we prepare a rich mushroom custard—essentially a smooth, spreadable mousse built from a deeply flavorful base of sautéed mushrooms and shallots, deglazed with port, Madeira, and white wine. The mixture is enriched with butter and egg, then gently cooked until it develops a silky, custard-like texture that is both light and intensely savory. The custard is piped generously onto slices of toasted pain de mie. On top, we add a mushroom condiment inspired by XO sauce, made with shredded oyster mushrooms and dried porcini, slowly cooked with garlic, chili, and shallots, then seasoned with tamari and brown sugar for depth and umami. To finish, the dish is garnished with a generous grating of fresh black truffle as well as a thyme honey spiked with a small amount of sherry vinegar for an acidic boost.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "eggs",
+        "onion",
+        "garlic",
+        "soy"
+      ],
+      "allergenNote": "Soy is from tamari",
       "tags": [
         "food",
         "mushroom",
@@ -1999,6 +2194,19 @@ export const data = {
         "dairy",
         "pistachio"
       ],
+      "ingredients": [
+        "Whipped Feta",
+        "Pickled Shallots",
+        "Pistachio",
+        "Dill",
+        "Mint"
+      ],
+      "description": "We toss the beets in a spice mix called Ras El Hanout (A North African spice mixture) and simple vinaigrette. We lay the beets on top of whipped feta. The salad is garnished with pickled shallots, toasted pistachios, fresh dill, and mint.",
+      "allergens": [
+        "dairy",
+        "tree nuts"
+      ],
+      "allergenNote": "Dairy can be omitted; nuts can be omitted",
       "tags": [
         "food",
         "vegetable",
@@ -2023,6 +2231,18 @@ export const data = {
         "dairy",
         "pecan"
       ],
+      "ingredients": [
+        "Apple Vinaigrette",
+        "Fontina",
+        "Pecan"
+      ],
+      "description": "For this dish, endive leaves are tossed in an apple vinaigrette made with Granny Smith apple, verjus, shallot, honey, Dijon, and apple cider vinegar, along with fresh chopped tarragon. The salad is layered with endive, compressed apples (verjus, apple cider vinegar, sugar), shaved Fontina cheese, and toasted pecans, then finished with a final layer of Fontina on top.",
+      "allergens": [
+        "dairy",
+        "onion",
+        "tree nuts"
+      ],
+      "allergenNote": "Dairy can be omitted",
       "tags": [
         "food",
         "salad",
@@ -2046,6 +2266,19 @@ export const data = {
         "dairy",
         "egg in aioli possible"
       ],
+      "ingredients": [
+        "Charred Shallot Aioli",
+        "Avonlea Cheddar",
+        "Chive"
+      ],
+      "description": "Baby potatoes are steamed until cooked and then smashed into chunks. They will be fried to order and tossed in a sour cream and onion spice (chive powder, buttermilk powder, garlic powder and salt). They are plated on top of a charred shallot and sour cream aioli (charred shallots are blended with egg yolks, Dijon, sherry vinegar and truffle oil, canola oil is emulsified in and sour cream is folded through to finish), and topped with Avonlea cheddar (an aged cheddar from PEI).",
+      "allergens": [
+        "eggs",
+        "garlic",
+        "onion",
+        "dairy"
+      ],
+      "allergenNote": "Eggs can be omitted",
       "tags": [
         "food",
         "potato",
@@ -2070,6 +2303,20 @@ export const data = {
         "dairy",
         "gluten"
       ],
+      "ingredients": [
+        "Crab",
+        "Vadouvan Cream",
+        "Brioche"
+      ],
+      "description": "Our asparagus comes from Taminga farms in Alberta. The asparagus is briefly steamed until just tender and then finished over the coals on our wood burning grill. The charred spears are topped with a generous portion of crab and a vadouvan cream sauce (vadouvan is a french curry powder that includes a large amount of garlic and shallot). The dish is then topped with a vibrant herb oil and brioche croutons for texture.",
+      "allergens": [
+        "dairy",
+        "onion",
+        "garlic",
+        "gluten",
+        "shellfish"
+      ],
+      "allergenNote": "Dairy, onion, garlic cannot be removed; gluten and crustacean (crab) can be removed",
       "tags": [
         "food",
         "vegetable",
@@ -2095,6 +2342,21 @@ export const data = {
         "dairy",
         "chili"
       ],
+      "ingredients": [
+        "'Nduja Dressing",
+        "Fennel",
+        "Pecorino",
+        "Bacon Gremolata"
+      ],
+      "description": "Snap peas are sliced into bite sized pieces and tossed with thinly shaved fennel and chopped pea shoots. The salad is dressed in a creamy ‘nduja dressing (‘nduja is a spicy spreadable salami – the dressing is made of ‘nduja blended with cream, buttermilk, black pepper, lemon juice, and garlic aioli). The salad is topped with shaved pecorino (sheep’s milk cheese), as well as a bacon gremolata (chiffonade parsley, lemon zest, bread crumb and bacon crumb.",
+      "allergens": [
+        "dairy",
+        "pork",
+        "eggs",
+        "garlic",
+        "gluten"
+      ],
+      "allergenNote": "Dairy, pork, eggs, garlic cannot be removed; gluten can be removed; this dish is not vegetarian",
       "tags": [
         "food",
         "vegetable",
@@ -2119,6 +2381,21 @@ export const data = {
         "almond",
         "chili"
       ],
+      "ingredients": [
+        "Green Tahini Dressing",
+        "Toasted Almond",
+        "Chili"
+      ],
+      "description": "The cucumbers for the salad are cut on a bias and smashed, they are cured in salt, sugar and lime zest, and then marinated in a mixture of cilantro stems, garlic, and jalapeño. The dressing is made from blanched mint, cilantro, and parsley that is blended into a paste with tahini, garlic purée, sugar, and salt. The salad is composed of marinaded smashed cucumbers, tossed with the green tahini dressing and topped with an almond rayu that consists of leek, ginger, gochugaru (dried Korean chili pepper), fried garlic and soy sauce. The salad is finished with sweet pickled shallots, and bachelor buttons from basil ranch.",
+      "allergens": [
+        "sesame",
+        "tree nuts",
+        "garlic",
+        "onion",
+        "soy",
+        "gluten"
+      ],
+      "allergenNote": "Nuts are almond",
       "tags": [
         "food",
         "spice",
@@ -2143,6 +2420,17 @@ export const data = {
         "dairy",
         "jalapeño"
       ],
+      "ingredients": [
+        "Jalapeño Cream",
+        "Puffed Grains",
+        "Alpine Cheese"
+      ],
+      "description": "We toss the lettuce in a jalapeno cream (jalapeno vinegar, mayo) although it does say cream, it is dairy free. The salad is garnished with fresh dill, puffed black quinoa (quinoa that is cooked and then deep fried to give a salty crunch to the dish (gluten free)) and cheese shavings of a local cheese, called Nostrala.",
+      "allergens": [
+        "dairy",
+        "eggs"
+      ],
+      "allergenNote": "Jalapeño cream itself is dairy free (per description); dairy comes from the Nostrala cheese",
       "tags": [
         "food",
         "green",
@@ -2165,6 +2453,19 @@ export const data = {
       "flags": [
         "dairy",
         "gluten"
+      ],
+      "ingredients": [
+        "Pizza Dough",
+        "Tomato Sauce",
+        "Fior di Latte",
+        "Provolone",
+        "Basil"
+      ],
+      "description": "House made pizza dough is rested for 5 days to develop flavour and create a perfectly soft and chewy texture. Dough is stretched to 12 inches and topped with house made tomato sauce, fior di latte, provolone, and basil, then cooked in our wood fired pizza oven until the crust has puffed up and has a slight char. Finished with fresh basil, olive oil and salt.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "garlic"
       ],
       "tags": [
         "food",
@@ -2191,6 +2492,24 @@ export const data = {
         "gluten",
         "jalapeño"
       ],
+      "ingredients": [
+        "Pizza Dough",
+        "Garlic Béchamel",
+        "Provolone",
+        "Bacon",
+        "Pickled Jalapeno",
+        "Mushrooms",
+        "Chicken Sausage",
+        "Parmesan"
+      ],
+      "description": "The dough is stretched to 12 inches and topped with garlic béchamel, house made chicken sausage, bacon, pickled jalapenos, roasted mushrooms, provolone and then cooked in our wood fired pizza oven until the crust has puffed up and has a slight char. The pizza is finished with shredded parmesan and a finishing oil.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "pork",
+        "garlic",
+        "onion"
+      ],
       "tags": [
         "food",
         "pizza",
@@ -2215,6 +2534,23 @@ export const data = {
         "dairy",
         "gluten"
       ],
+      "ingredients": [
+        "Pizza Dough",
+        "Garlic Béchamel",
+        "Fior di Latte",
+        "Fontina",
+        "Oka",
+        "Parmesan",
+        "Provolone",
+        "Cracked Black Pepper"
+      ],
+      "description": "The dough is stretched to 12 inches and topped with garlic béchamel, fior di latte, fontina, oka, parmesan, and provolone and then cooked in our wood fired pizza oven until the crust has puffed up and has a slight char. The pizza is finished with salt, fresh cracked black pepper. *Optional fresh shaved black truffle for $10.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "garlic",
+        "onion"
+      ],
       "tags": [
         "food",
         "pizza",
@@ -2238,6 +2574,20 @@ export const data = {
         "pork",
         "chili",
         "gluten"
+      ],
+      "ingredients": [
+        "Shaved Onion",
+        "Calabrian Chili",
+        "Caramelized Honey",
+        "Basil"
+      ],
+      "description": "This pizza will feature Neil Malik’s spicy fennel salami. The salami is made from pork seasoned with toasted fennel seed, cayenne pepper, chili flakes, Hungarian paprika, salt, and red wine. For the onions we take yellow onion and shave it thin on the slicer. The pizza is made with fior di latte and our red sauce. It is then finished with basil and caramelized honey (consisting of Calabrian chili, black pepper, salt. It is cooked until the sugars in the honey turn amber)",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "garlic",
+        "pork",
+        "onion"
       ],
       "tags": [
         "food",
@@ -2264,6 +2614,20 @@ export const data = {
         "dairy",
         "gluten"
       ],
+      "ingredients": [
+        "Confit Garlic",
+        "Charred Kale",
+        "Roasted Pepper",
+        "Pecorino"
+      ],
+      "description": "We start with our classic pizza sauce as the base, then add provolone, fior di latte, chunks of Italian sausage, confit garlic cloves, roasted red pepper sofrito (red bell pepper, onion, fennel, garlic, Calabrian chili), and kale that had been marinated with garlic oil and salt. After cooking, the kale gets a little chard which adds a nice depth to the pizza. We finish with Maldon salt and grated pecorino.",
+      "allergens": [
+        "dairy",
+        "pork",
+        "onion",
+        "garlic",
+        "gluten"
+      ],
       "tags": [
         "food",
         "pizza",
@@ -2287,6 +2651,24 @@ export const data = {
         "pork",
         "gluten",
         "chili"
+      ],
+      "ingredients": [
+        "Spinach Conchiglie",
+        "Italian Pork Sausage",
+        "Shallot",
+        "Garlic",
+        "Butter",
+        "White Wine",
+        "Parmesan",
+        "Calabrian Chili"
+      ],
+      "description": "House made Italian pork sausage is sautéed with shallots, garlic and Calabrian chili and then deglazed with white wine to create a sauce that is finished with mint. The sauce is tossed with house made spinach conchiglie (shell pasta) and garnished with parmesan cheese.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "pork",
+        "garlic",
+        "onion"
       ],
       "tags": [
         "food",
@@ -2312,6 +2694,18 @@ export const data = {
         "dairy",
         "gluten"
       ],
+      "ingredients": [
+        "Vodka Tomato Sauce",
+        "Basil"
+      ],
+      "description": "Super light airy dumplings, as light as a dumpling can get while keeping its shape. Made with ricotta cheese, tiny bit of flour and a small amount of egg. Rolled around in flour and poached briefly so the outside is lightly set skin of flour, and the inside is melty and cheesy. With a sauce made from tomatoes, onion, chili, and vodka finished with parmesan and fresh basil.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "garlic",
+        "onion"
+      ],
+      "allergenNote": "Eggs appear in the description (dumpling dough) but are not listed on the Allergies line; vodka (alcohol) in sauce also unlisted",
       "tags": [
         "food",
         "pasta",
@@ -2338,6 +2732,20 @@ export const data = {
         "dairy",
         "chili"
       ],
+      "ingredients": [
+        "Bigoli",
+        "Brown Butter",
+        "Chili"
+      ],
+      "description": "Linguini is a long, flat pasta that is similar to spaghetti but slightly wider and flatter, the noodles are tossed in a rich brown-butter cream sauce built from brown butter, cream, garlic, and lemon. Fresh shrimp and crab are folded in with a touch of torn basil. The dish is finished with chili oil (Aleppo pepper, fennel seed, dried oregano, sesame, crispy garlic, and crispy shallots). To finish, we garnish with more basil and garlic breadcrumbs made from our sourdough.",
+      "allergens": [
+        "dairy",
+        "shellfish",
+        "onion",
+        "garlic",
+        "sesame",
+        "gluten"
+      ],
       "tags": [
         "food",
         "pasta",
@@ -2361,6 +2769,21 @@ export const data = {
       "flags": [
         "gluten"
       ],
+      "ingredients": [
+        "Pomodoro",
+        "Crushed Olive",
+        "Caper",
+        "Parsley"
+      ],
+      "description": "This dish is a Bridgette version of the classic pasta puttanesca. Bigoli is a thick, spaghetti-style pasta from Italy’s Veneto region. Traditionally made with whole wheat or buckwheat flour, our version is crafted with semolina for a lighter, silkier texture. The sauce is composed of San Marzano tomato left slightly chunky with onion, garlic, and bay leaf. We then mix in a red pepper sofrito consisting of red bell peppers, fennel, onion, garlic, Calabrian chili, and olive oil. Chopped capers as well as crushed olives add a salty and briny element while the addition of a small amount of fish sauce adds an extra umami element in place of the traditional preserved anchovies. The pasta is finished with fresh chopped parsley and is plated with a good amount of extra virgin olive oil and grana padano cheese.",
+      "allergens": [
+        "gluten",
+        "onion",
+        "garlic",
+        "dairy",
+        "fish"
+      ],
+      "allergenNote": "'Seafood' = fish sauce; both the cheese and the fish sauce can be omitted",
       "tags": [
         "food",
         "pasta",
@@ -2385,6 +2808,22 @@ export const data = {
         "dairy",
         "gluten"
       ],
+      "ingredients": [
+        "Rigatoni",
+        "Parmesan Sauce",
+        "Mushrooms",
+        "Parmesan",
+        "Truffle Oil"
+      ],
+      "description": "Parmesan stock and mushrooms are added to a béchamel sauce and tossed with house made rigatoni and garnished with parmesan cheese and truffle oil. *Optional fresh shaved black truffle for $10.",
+      "allergens": [
+        "dairy",
+        "gluten",
+        "garlic",
+        "pork",
+        "onion"
+      ],
+      "allergenNote": "Pork is listed on the Allergies line but no pork ingredient appears in the ingredients or description - confirm with kitchen",
       "tags": [
         "food",
         "pasta",
@@ -2408,6 +2847,19 @@ export const data = {
       "flags": [
         "confirm sausage ingredients"
       ],
+      "ingredients": [
+        "Chicken Sausage",
+        "Dill Gravy",
+        "Fries"
+      ],
+      "description": "Chickens are brined in honey and slowly grilled over our wood fire. Served with house made chicken sausage with preserved lemon, fries, roasted garlic aioli, and chicken gravy made with fresh dill, chives, and reduced chicken stock. 8 ounces of chicken breast (bone in) and 4 ounces of chicken sausage. The plate is large and great to share!",
+      "allergens": [
+        "gluten",
+        "dairy",
+        "pork",
+        "eggs"
+      ],
+      "allergenNote": "All listed allergens (gluten, dairy, pork, eggs) can be omitted",
       "tags": [
         "food",
         "chicken",
@@ -2431,6 +2883,19 @@ export const data = {
         "fish",
         "dairy"
       ],
+      "ingredients": [
+        "Steel Head Trout (B.C/Saskatchewan)",
+        "Creamed Kale",
+        "Smoked Potato Puree"
+      ],
+      "description": "Maple BBQ trout marinated in our version of Kabayaki (eel sauce, but we use maple syrup, smoked oil, miso and calabrian chili) and served with smoked potato puree, creamed kale (finely chopped kale and spinach enriched with reduced cream and mascarpone cheese) and potato crunch.",
+      "allergens": [
+        "dairy",
+        "fish",
+        "soy",
+        "garlic"
+      ],
+      "allergenNote": "'Seafood' refers to the trout (fish); soy listed as tamari (description mentions miso)",
       "tags": [
         "food",
         "seafood",
@@ -2456,6 +2921,19 @@ export const data = {
         "beef",
         "dairy/egg in Béarnaise"
       ],
+      "ingredients": [
+        "Béarnaise",
+        "Charred Shallot and Mushrooms",
+        "Pommes Paillasson",
+        "Wild Mushroom Jus"
+      ],
+      "description": "Alberta Certified Angus Beef is served with béarnaise which does not contain any butter (smoked beef fat, eggs, shallots, vinegar, white wine, tarragon). Steak is coated in our steak spice (black pepper, kosher salt, onion and garlic powder, coriander and thyme) cooked over the wood fire to a medium rare unless specified and served with pomme paillasson (basically like a McDonald’s hash brown but better). The dish is finished with wild mushrooms folded into our jus (mushrooms will vary throughout the season), charred shallot (shallot that is charred then compressed in vinegar, which are then peeled like petals) then finished with a charred onion powder on top.",
+      "allergens": [
+        "onion",
+        "dairy",
+        "eggs"
+      ],
+      "allergenNote": "Dairy and eggs can be omitted",
       "tags": [
         "food",
         "steak",
@@ -2483,6 +2961,21 @@ export const data = {
         "gluten",
         "dairy"
       ],
+      "ingredients": [
+        "Crab Butter",
+        "Snap Peas",
+        "Leeks",
+        "Brioche"
+      ],
+      "description": "Whole halibut are line caught on the pacific coast and brought in several times a week. The halibut portions are roasted in the wood burning oven and served with lightly sauteed snap peas and braised leeks. The dish is finished with a crab butter sauce (portions of crab meat are folded through a crab and lobster butter sauce) and topped with torn brioche croutons and chervil.",
+      "allergens": [
+        "shellfish",
+        "dairy",
+        "garlic",
+        "onion",
+        "gluten"
+      ],
+      "allergenNote": "Crustaceans, dairy, garlic, onion cannot be removed; gluten can be removed but cross contamination still possible from pizza oven. Note: halibut itself is fish - the listed 'Crustaceans' refers to the crab/lobster butter",
       "tags": [
         "food",
         "seafood",
@@ -2508,6 +3001,20 @@ export const data = {
         "dairy",
         "spice"
       ],
+      "ingredients": [
+        "Warm Merguez Potato Salad",
+        "Tender Greens",
+        "Labneh",
+        "Mint"
+      ],
+      "description": "Our lamb saddle is sourced from Sun Gold Farms in Innisfail Alberta. The lamb saddle will be rolled with our house made merguez sausage (lamb, bacon, harissa paste, cumin, coriander, fennel seeds, paprika), it will be plated on top of garlic labneh, with a warm merguez potato salad (merguez sausage, deep fried baby potatoes, pickled shallots, sauteed onions), the lamb saddle will be finish with house made dukkha (ras el hanout, toast pumpkin seeds, white sesame seeds), jus then finished with a herb salad (mustard greens, parsley, mint seasoned with olive oil and charred lemon).",
+      "allergens": [
+        "dairy",
+        "pork",
+        "sesame",
+        "garlic",
+        "onion"
+      ],
       "tags": [
         "food",
         "lamb",
@@ -2531,6 +3038,18 @@ export const data = {
       "flags": [
         "confirm sauce allergens"
       ],
+      "ingredients": [
+        "Turnips",
+        "Bitter Greens",
+        "Black Garlic Emulsion"
+      ],
+      "description": "We source this duck from Brome Lake (Quebec duck farm). For this duck dish we use the breast and leg just like in previous duck dishes. The duck is glazed with a rosemary gastrique (caramelized honey, rosemary, apple cider vinegar, garlic and star anise) and seasoned with coriander, Aleppo and black sesame. It is served with a black garlic emulsion (honey, cider, garlic) and turnips done two ways, first with a turnip relish (turnips, duck fat, miso, and butter) the second is turnips cooked barigoule style (braised in white wine, olive oil, aromatics).",
+      "allergens": [
+        "garlic",
+        "dairy",
+        "sesame"
+      ],
+      "allergenNote": "Description mentions miso (soy) in the turnip relish, but soy is not listed on the Allergies line",
       "tags": [
         "food",
         "duck",
@@ -2556,6 +3075,18 @@ export const data = {
         "dairy",
         "bone marrow"
       ],
+      "ingredients": [
+        "Pomme Aligot",
+        "Green Peppercorn",
+        "Smoked Bone Marrow Jus"
+      ],
+      "description": "26oz bone in Canada prime beef is portioned to 26 ounces before being coated in our steak spice (black pepper, kosher salt, onion and garlic powder, coriander and thyme) and cooked on our wood burning grill to medium if not specified – do ask for cook on this on as many people prefer medium cook for ribeye as it does contain significantly more fat than our previous cuts. The ribeye is sliced and served with our jus that is enriched with roasted and smoked bone marrow as well as green peppercorns (unripe brined peppercorns). We serve the ribeye with pomme aligot as a side. Pomme aligot is a French dish from the Aubrac region that consists of mashed potatoes enriched with a generous amount of cheese. For ours we use the same smoked potato puree as on the trout as a base and whip finely chopped cheese curds through for a rich, cheesy mash.",
+      "allergens": [
+        "dairy",
+        "garlic",
+        "onion"
+      ],
+      "allergenNote": "Dairy in pomme aligot; garlic and onion in steak rub",
       "tags": [
         "food",
         "steak",
@@ -2582,6 +3113,23 @@ export const data = {
         "dairy",
         "confirm nuts"
       ],
+      "ingredients": [
+        "Banana",
+        "Italian Meringue",
+        "Coffee",
+        "Pretzel Crust",
+        "Rum Caramel"
+      ],
+      "description": "A modern revision of the longstanding and beloved Banana Pie – this version leans more heavily on the banoffee (toffee and banana) flavour profiles, while retaining the core and image of the original pie itself. It is a multi-layered pie that begins with the trademark 1)salted pretzel crust, a layer of 2)banana jam that have been caramelized with butter and brown sugar, a 3)pudding made with pureed roasted banana and cinnamon, 4)fresh banana slices, a layer of 5)aerated cold-brew coffee cream, and lastly a heaping mound (but not quite as much as the original) of toasted 6)Italian meringue. It is served with a 7)rum caramel on top made with banana skins, spiced rum, and espresso. Much more intricate and balanced, with tons of banana flavours and textures – and sure to be an impressive ‘wow factor’ dessert for the guests.",
+      "allergens": [
+        "gluten",
+        "eggs",
+        "dairy",
+        "gelatin",
+        "pork",
+        "alcohol"
+      ],
+      "allergenNote": "Gelatin is pork based (pork added to normalized array for dietary filtering); alcohol can be omitted",
       "tags": [
         "food",
         "dessert"
@@ -2603,6 +3151,19 @@ export const data = {
       "flags": [
         "dairy/gluten possible"
       ],
+      "ingredients": [
+        "Armagnac",
+        "Cider Caramel",
+        "Toasted Hay"
+      ],
+      "description": "A Tatin is a classic French upside-down caramelized fruit tart. We slowly cook apples in caramel and warm spices like cinnamon, green cardamom, nutmeg, and long pepper until deeply browned and glossy, then cap them with puff pastry and bake until crisp and golden. For service, the tart is topped with a honey tuille and warmed through, then served with Armagnac cream, hay buttermilk gelato, and a side ramekin of apple-cider caramel. The dish gives you full winter vibes like warming alcohol and spice, deeply caramelized fruit, and toasty hay gelato to round everything out.",
+      "allergens": [
+        "gluten",
+        "dairy",
+        "alcohol",
+        "eggs"
+      ],
+      "allergenNote": "No mods",
       "tags": [
         "food",
         "dessert"
@@ -2625,6 +3186,16 @@ export const data = {
         "dairy",
         "confirm egg"
       ],
+      "ingredients": [
+        "Salted Chocolate",
+        "Sour Cherry"
+      ],
+      "description": "An iteration of our much-loved pot de crème, built around a Black Forest profile. A round gluten-free chocolate cake layered with sour cherry jam is topped with our fruity dark chocolate custard and baked together. For service, it’s finished with salted chocolate caramel, chocolate crumble, and cherry buttermilk gelato. Giving the dish a deep, creamy chocolate lifted by vibrant bright cherry acidity.",
+      "allergens": [
+        "dairy",
+        "eggs"
+      ],
+      "allergenNote": "No mods",
       "tags": [
         "food",
         "dessert",
