@@ -1,6 +1,9 @@
 // Task 2 — two new drill decks over the official menu syllabus (Task 1 data):
 // "Dish Components" (components:<foodId>:pick) and "Allergen Flags"
 // (allergens:<foodId>:flag). Written TDD-first: these specs define the decks.
+// Extension: the allergens deck ALSO mints one card per allergen-flagged
+// COCKTAIL (allergens:<cocktailId>:flag) — bar-confirm sentence, know-the-build
+// learnLink, distractors from the UNION (food + cocktail) allergen vocabulary.
 import { describe, it, expect } from 'vitest';
 import * as T from './training.js';
 import { FLOOR_BASICS, basicsIdSet } from './basics.js';
@@ -8,12 +11,15 @@ import { EXAM_BLUEPRINT } from './exam.js';
 import { data } from '../data/index';
 
 const KITCHEN_CONFIRM = 'Always confirm allergens with the kitchen before promising a guest.';
+const BAR_CONFIRM = 'Always confirm allergens with the bar before promising a guest.';
 const lc = (s: any) => String(s).toLowerCase();
 const words = (s: any) => lc(s).split(/[^a-z0-9]+/).filter(Boolean);
 
 const foodById = new Map(data.foods.map((f: any) => [f.id, f]));
+const cocktailById = new Map(data.cocktails.map((c: any) => [c.id, c]));
 const withIngredients = data.foods.filter((f: any) => f.ingredients && f.ingredients.length >= 1);
 const withAllergens = data.foods.filter((f: any) => f.allergens && f.allergens.length >= 1);
+const cocktailsWithAllergens = data.cocktails.filter((c: any) => c.allergens && c.allergens.length >= 1);
 
 describe('Dish Components deck', () => {
   const cards = T.generateDeck('components', data);
@@ -99,8 +105,15 @@ describe('Dish Components deck', () => {
 
 describe('Allergen Flags deck', () => {
   const cards = T.generateDeck('allergens', data);
+  const foodCards = cards.filter((c: any) => c.sourceKind === 'food');
+  const cocktailCards = cards.filter((c: any) => c.sourceKind === 'cocktail');
+  // Food-only vocabulary: the 41 frozen food cards draw their foils from HERE only.
   const vocab = new Set<string>();
   data.foods.forEach((f: any) => (f.allergens || []).forEach((a: string) => vocab.add(a)));
+  // Union vocabulary (food tokens first, then cocktail-only tokens): the foil pool
+  // for the cocktail cards.
+  const unionVocab = new Set<string>(vocab);
+  data.cocktails.forEach((c: any) => (c.allergens || []).forEach((a: string) => unionVocab.add(a)));
 
   it('is registered in DECKS with the know-the-dish learnLink', () => {
     expect((T.DECKS as any).allergens).toBeTruthy();
@@ -108,24 +121,41 @@ describe('Allergen Flags deck', () => {
     expect((T.DECKS as any).allergens.learnLink).toBe('know-the-dish');
   });
 
-  it('mints one card per food with allergen flags (derived count, 41 today)', () => {
+  it('mints one card per food AND one per cocktail with allergen flags (derived counts, 41 + 6 today)', () => {
     expect(withAllergens.length).toBeGreaterThanOrEqual(1);
-    expect(cards.length).toBe(withAllergens.length);
+    expect(cocktailsWithAllergens.length).toBeGreaterThanOrEqual(1);
+    expect(foodCards.length).toBe(withAllergens.length);
+    expect(cocktailCards.length).toBe(cocktailsWithAllergens.length);
+    expect(cards.length).toBe(withAllergens.length + cocktailsWithAllergens.length);
   });
 
-  it('every id mints ONLY the new allergens:<foodId>:flag namespace', () => {
+  it('cocktail cards exist for EXACTLY the cocktails carrying flags', () => {
+    const minted = cocktailCards.map((c: any) => c.sourceId).sort();
+    const flagged = cocktailsWithAllergens.map((c: any) => c.id).sort();
+    expect(minted).toEqual(flagged);
+  });
+
+  it('every id mints ONLY the allergens:<itemId>:flag namespace; food cards keep know-the-dish, cocktail cards link know-the-build', () => {
     for (const c of cards) {
       expect(c.id, c.id).toMatch(/^allergens:[a-z0-9-]+:flag$/);
       expect(c.id).toBe('allergens:' + c.sourceId + ':flag');
       expect(c.deck).toBe('allergens');
       expect(c.kind).toBe('recall');
+    }
+    for (const c of foodCards) {
       expect(c.sourceKind).toBe('food');
-      expect(c.learnLink).toBe('know-the-dish');
+      expect(c.learnLink, c.id).toBe('know-the-dish');
+      expect(foodById.get(c.sourceId), 'unknown food: ' + c.sourceId).toBeTruthy();
+    }
+    for (const c of cocktailCards) {
+      expect(c.sourceKind).toBe('cocktail');
+      expect(c.learnLink, c.id).toBe('know-the-build');
+      expect(cocktailById.get(c.sourceId), 'unknown cocktail: ' + c.sourceId).toBeTruthy();
     }
   });
 
-  it('answer is the dish\'s FIRST allergen; NO other choice is on the dish; distractors come from the global vocabulary', () => {
-    for (const c of cards) {
+  it('answer is the dish\'s FIRST allergen; NO other choice is on the dish; food distractors stay within the FOOD vocabulary (frozen cards)', () => {
+    for (const c of foodCards) {
       const f: any = foodById.get(c.sourceId);
       expect(c.answer, c.id).toBe(f.allergens[0]);
       expect(c.choices.length, c.id).toBe(4);
@@ -136,19 +166,66 @@ describe('Allergen Flags deck', () => {
         if (ch === c.answer) continue;
         // CRITICAL: a second-listed flag is still a CORRECT answer — never a foil.
         expect(mine.has(lc(ch)), c.id + ' distractor is a real flag on the dish: ' + ch).toBe(false);
-        expect(vocab.has(ch), c.id + ' distractor outside the allergen vocabulary: ' + ch).toBe(true);
+        expect(vocab.has(ch), c.id + ' distractor outside the FOOD allergen vocabulary: ' + ch).toBe(true);
       }
     }
   });
 
-  it('why carries the full flag list, the allergenNote when present, and ALWAYS ends with the kitchen-confirm sentence', () => {
+  it('cocktail cards: answer is the drink\'s FIRST allergen; prompt mirrors the food prompt; aliases carry the remaining flags', () => {
+    for (const c of cocktailCards) {
+      const ck: any = cocktailById.get(c.sourceId);
+      expect(c.answer, c.id).toBe(ck.allergens[0]);
+      expect(c.prompt, c.id).toBe('Which allergen flag does the ' + ck.name + ' carry?');
+      expect(c.aliases, c.id).toEqual(ck.allergens.slice(1));
+      expect(c.tags, c.id).toContain('allergens');
+      expect(c.tags, c.id).toContain('cocktail');
+    }
+  });
+
+  it('union-vocab safety: NO distractor on ANY card (food or cocktail) is a true flag of its item; cocktail foils come from the union vocabulary', () => {
     for (const c of cards) {
+      const item: any = c.sourceKind === 'food' ? foodById.get(c.sourceId) : cocktailById.get(c.sourceId);
+      const mine = new Set(item.allergens.map(lc));
+      expect(c.choices.length, c.id).toBe(4);
+      expect(new Set(c.choices).size, c.id + ' dup choices').toBe(4);
+      expect(c.choices).toContain(c.answer);
+      for (const ch of c.choices) {
+        if (ch === c.answer) continue;
+        expect(mine.has(lc(ch)), c.id + ' distractor is a real flag of the item: ' + ch).toBe(false);
+        expect(unionVocab.has(ch), c.id + ' distractor outside the union vocabulary: ' + ch).toBe(true);
+      }
+    }
+  });
+
+  it('cocktail foils draw on the UNION pool, not the cocktail-only tokens: some cocktail card carries a FOOD-ONLY foil', () => {
+    // The cocktail vocabulary (6 tokens) could fill 3 foils by itself — this proves
+    // the pool is genuinely food + cocktail by demanding a foil that exists ONLY in
+    // the food vocabulary (e.g. gluten, shellfish), never on any cocktail.
+    const cocktailVocab = new Set<string>();
+    data.cocktails.forEach((c: any) => (c.allergens || []).forEach((a: string) => cocktailVocab.add(a)));
+    const foodOnlyFoil = cocktailCards.some((c: any) =>
+      c.choices.some((ch: string) => ch !== c.answer && vocab.has(ch) && !cocktailVocab.has(ch)));
+    expect(foodOnlyFoil).toBe(true);
+  });
+
+  it('food why carries flags + allergenNote and ALWAYS ends with the kitchen-confirm sentence, byte-exact', () => {
+    for (const c of foodCards) {
       const f: any = foodById.get(c.sourceId);
       expect(c.why, c.id).toContain(f.allergens.join(', '));
       if (f.allergenNote) expect(c.why, c.id).toContain(f.allergenNote);
       expect(c.why.endsWith(KITCHEN_CONFIRM), c.id + ' why must end with the compliance sentence').toBe(true);
       expect(c.tags, c.id).toContain('allergens');
       expect(c.tags, c.id).toContain('food');
+    }
+  });
+
+  it('cocktail why carries flags + allergenNote, ends with the EXACT bar-confirm sentence, and never says "kitchen"', () => {
+    for (const c of cocktailCards) {
+      const ck: any = cocktailById.get(c.sourceId);
+      expect(c.why, c.id).toContain(ck.allergens.join(', '));
+      if (ck.allergenNote) expect(c.why, c.id).toContain(ck.allergenNote);
+      expect(c.why.endsWith(BAR_CONFIRM), c.id + ' why must end with the BAR compliance sentence').toBe(true);
+      expect(lc(c.why), c.id + ' drinks are confirmed with the bar, never the kitchen').not.toContain('kitchen');
     }
   });
 
@@ -159,10 +236,11 @@ describe('Allergen Flags deck', () => {
 });
 
 describe('wiring — allCards, expandFor, Floor Basics, exam decoupling', () => {
-  it('allCards picks up both new decks', () => {
+  it('allCards picks up both new decks (allergens = flagged foods + flagged cocktails)', () => {
     const all = T.allCards(data).map((c: any) => c.id);
     expect(all.filter((id: string) => id.startsWith('components:')).length).toBe(withIngredients.length);
-    expect(all.filter((id: string) => id.startsWith('allergens:')).length).toBe(withAllergens.length);
+    expect(all.filter((id: string) => id.startsWith('allergens:')).length)
+      .toBe(withAllergens.length + cocktailsWithAllergens.length);
   });
 
   it('expandFor on a components card surfaces the official description, components, and allergen flags', () => {
@@ -194,6 +272,19 @@ describe('wiring — allCards, expandFor, Floor Basics, exam decoupling', () => 
     const alg = [...ids].filter((id) => id.startsWith('allergens:'));
     expect(comp.length, 'every componentsFoodId resolves').toBe(FLOOR_BASICS.componentsFoodIds.length);
     expect(alg.length, 'every allergensFoodId resolves').toBe(FLOOR_BASICS.allergensFoodIds.length);
+  });
+
+  it('the 6 cocktail allergen cards do NOT leak into Floor Basics — resolution stays exactly 60', () => {
+    const ids = basicsIdSet(data);
+    expect(ids.size, 'Floor Basics resolved size').toBe(60);
+    const alg = [...ids].filter((id) => id.startsWith('allergens:'));
+    // allergensFoodIds resolves by deck+sourceId over FOOD ids only (8 picks).
+    expect(alg.length).toBe(FLOOR_BASICS.allergensFoodIds.length);
+    for (const id of alg) {
+      const sourceId = id.split(':')[1];
+      expect(cocktailById.has(sourceId), id + ' resolved from a cocktail — basics leak').toBe(false);
+      expect(FLOOR_BASICS.allergensFoodIds, id).toContain(sourceId);
+    }
   });
 
   it('mock exams are NOT coupled to the new decks (planned follow-up, not tonight)', () => {

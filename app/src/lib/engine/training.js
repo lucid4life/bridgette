@@ -622,13 +622,20 @@ function genComponents(data) {
 // minus ALL of this dish's flags — a second-listed flag is still a correct answer,
 // never a foil. aliases carry the remaining flags so a typed/produced answer naming
 // ANY genuine flag grades correct.
+// Extension: the SAME deck also mints one card per allergen-flagged COCKTAIL
+// (allergens:<cocktailId>:flag — additive ids; the 41 food ids stay byte-frozen).
+// Cocktail cards link the bar lesson (know-the-build), end with the BAR-confirm
+// sentence (drinks come from the bar, not the kitchen), and draw their foils from
+// the UNION vocabulary (food + cocktail tokens) minus ALL of this drink's flags.
+// The food cards keep the FOOD-only foil pool so their content never shifts when
+// cocktail-only tokens (sulphites, coconut) join the union.
 function genAllergens(data) {
   const vocab = [];
   const seenV = {};
   data.foods.forEach((f) => {
     (f.allergens || []).forEach((a) => { if (!seenV[a]) { seenV[a] = 1; vocab.push(a); } });
   });
-  return data.foods.filter((f) => f.allergens && f.allergens.length >= 1).map((f, i) => {
+  const foodCards = data.foods.filter((f) => f.allergens && f.allergens.length >= 1).map((f, i) => {
     const answer = f.allergens[0];
     const mine = {};
     f.allergens.forEach((a) => { mine[String(a).toLowerCase()] = 1; });
@@ -646,6 +653,31 @@ function genAllergens(data) {
       tags: ['allergens', 'food'].concat((f.tags || []).filter((t) => t !== 'food'))
     };
   });
+  // Union vocabulary: food tokens first (insertion order above), then any
+  // cocktail-only tokens — same dedupe, deterministic order.
+  const unionVocab = vocab.slice();
+  data.cocktails.forEach((c) => {
+    (c.allergens || []).forEach((a) => { if (!seenV[a]) { seenV[a] = 1; unionVocab.push(a); } });
+  });
+  const cocktailCards = data.cocktails.filter((c) => c.allergens && c.allergens.length >= 1).map((c, i) => {
+    const answer = c.allergens[0];
+    const mine = {};
+    c.allergens.forEach((a) => { mine[String(a).toLowerCase()] = 1; });
+    const pool = unionVocab.filter((a) => !mine[String(a).toLowerCase()]);
+    return {
+      id: 'allergens:' + c.id + ':flag',
+      deck: 'allergens', kind: 'recall',
+      sourceKind: 'cocktail', sourceId: c.id,
+      prompt: 'Which allergen flag does the ' + c.name + ' carry?',
+      answer: answer,
+      why: 'Allergen flags: ' + allergenLineFor(c, BAR_CONFIRM),
+      choices: [answer].concat(pickDistractors(pool, answer, 3, i)),
+      aliases: c.allergens.slice(1),
+      learnLink: 'know-the-build', // cocktail cards link the BAR lesson, not know-the-dish
+      tags: ['allergens', 'cocktail'].concat((c.tags || []).filter((t) => t !== 'cocktail'))
+    };
+  });
+  return foodCards.concat(cocktailCards);
 }
 
 // Task D2 — Cocktail Builds: for every cocktail carrying the official build, drill
