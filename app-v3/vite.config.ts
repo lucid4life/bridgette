@@ -8,6 +8,11 @@ export default defineConfig({
     SvelteKitPWA({
       // Never auto-reload mid-session: prompt the user to refresh (spec §13).
       registerType: 'prompt',
+      // Absolute registration: the generated register code defaults to the
+      // page-relative `./sw.js`, so a deep-link first visit (e.g. /playbook)
+      // requests /playbook/sw.js → 404 and the PWA never gets offline support.
+      base: '/',
+      scope: '/',
       manifest: {
         name: 'Bridgette Trainer',
         short_name: 'Bridgette',
