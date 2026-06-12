@@ -418,10 +418,15 @@ describe('reverseMcFor: which dish carries the component', () => {
 
   // The two findings that motivated the name rules, pinned by name so a data
   // edit that re-introduces either fails loudly.
-  it('Shrimp & Crab (component "Bigoli") never deals the dish Bigoli as a wrong choice', () => {
+  it('Shrimp & Crab (component "Linguini", June-syllabus shape fix) never name-leaks a dish into the choices', () => {
+    // 2026-06-12: ingredients[0] corrected "Bigoli" → "Linguini" per the dish's
+    // own description + printed-menu line (the syllabus ingredients line carried
+    // the error; "Bigoli" is a separate dish). The dish Bigoli is now a FAIR
+    // distractor (no name collision), so the original pin moved to the rule
+    // itself: no choice may be named by a word of the dealt component.
     const mc = reverseMcFor(dishItem('shrimp-crab'));
-    expect(mc.component).toBe('Bigoli'); // the ingredient — still the rarest tell
-    expect(mc.choices).not.toContain('Bigoli'); // the dish — never a distractor
+    expect(mc.component).toBe('Linguini'); // still the rarest tell, first-in-list
+    for (const choice of mc.choices) expect(wordOverlap(choice, mc.component)).toBe(false);
   });
 
   it('Hummus Chips never asks about its own name ("Hummus Chips" is its first ingredient)', () => {

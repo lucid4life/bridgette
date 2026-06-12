@@ -1,0 +1,892 @@
+{
+ "gaps": [
+  {
+   "what": "The allergy-to-dish INVERSION — 'a guest can't have X, which dishes CAN you recommend?' — is the documented two-week bar, and it is never asked in any drill, and no surface can even answer it as a lookup. Every existing allergen interaction runs dish→flag; the job (and the bar) runs flag→dish.",
+   "whereItLives": "Substrate fully exists: foods[].allergens + allergenNote (omit/sub caveats) in C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\lib\\data\\data.js (foods: lines 1721-3273). Drill machinery to mirror: reverseMcFor in C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\lib\\journey\\items.ts (lines 289-324).",
+   "surfacedToday": "Only per-dish: allergen chips on TeachCard/Playbook/cram/RomanceCard/FlashReveal. /playbook has NO allergen filter and its search (playbook/+page.svelte lines 22-27) indexes only name/ingredients/description — typing 'dairy' does not reliably surface dairy-free dishes. There is no 'show me everything safe for a shellfish allergy' view anywhere.",
+   "quizzedToday": "Never. Allergen MC ('Which allergen flag does the X carry?'), allergen sweep, and the mock-test allergen slot are all dish→flag. reverse-mc inverts components, not allergens.",
+   "proposal": "Two-part, ~1 day total. (1) Mint a 'safe call' MC in items.ts mirroring reverseMcFor: prompt 'A guest can't have <allergen> — which of these can you recommend?'; answer = a dish NOT carrying the flag, 3 distractors = same-category dishes that DO carry it. Hard exclusions for the safe slot: dishes whose allergenNote reveals an unlisted allergen (ricotta-dumplings has eggs in the dough but not on the Allergies line; wood-roasted-half-duck has miso/soy unlisted) must never be the 'safe' answer for that allergen; reveal always shows the confirm-with-kitchen line. Wire it as a 5th slot in MOCK_TYPE_ROTATION (mock-test.ts line 26) and as a second round on /allergens. (2) Add allergen exclude-filter chips to /playbook (12-token vocabulary; 'safe' vs 'safe with mod' tier from allergenNote) so the floor lookup matches the bar.",
+   "testRelevance": "critical"
+  },
+  {
+   "what": "allergenNote modifiability knowledge — CAN-omit vs CANNOT-omit vs sub-available vs cross-contamination — is shown as fine print everywhere but never quizzed. These are exactly the judgment calls the test/floor demands: dairy CAN come off the Carpaccio/Lamb Sausage/Beet Salad/Endive but CANNOT come off Tuna Crudo/Asparagus/Halibut; Burrata's gluten subs to Hummus Chips; Roasted Olives' gluten is pizza-oven cross-contamination only (not an ingredient); Halibut's gluten is removable BUT cross-contamination persists; Grilled Farm Chicken: ALL four flags omittable; Apple Tatin & Pot de Crème: 'No mods'; Banana Pie gelatin is pork-based, alcohol omittable.",
+   "whereItLives": "foods[].allergenNote in data.js (e.g., wood-grilled-asparagus line 2364, wood-roasted-halibut line 3023, burrata-cheese line 2142, roasted-olives line 1921, grilled-farm-chicken line 2907, apple-tatin line 3211); raw source in docs/handoffs/food-syllabus-2026-06.parsed.json allergensRaw fields.",
+   "surfacedToday": "Yes, passively — allergenNote renders on TeachCard (line 110), Playbook (line 81), cram (line 60), RomanceCard (line 97), FlashReveal. But several notes are parser annotations leaking to guest-facing surfaces ('normalized to shellfish', 'pork added to normalized array for dietary filtering') rather than clean floor language.",
+   "quizzedToday": "Never. The allergen MC's why-text includes the note as feedback after answering, but no question ever turns on it.",
+   "proposal": "Author a small mods table (foodId → per-allergen: omit | sub | cc-only | no-mods), sourced 1:1 from allergensRaw — ~41 rows, an hour of authoring. Mint a 'mods MC': 'Guest wants the Wood Roasted Halibut but can't have gluten — what's the call?' with choices like 'Gluten can come off, but warn: pizza-oven cross-contamination is still possible' / 'No mods on this one' / 'Sub available' / 'It can simply be omitted, no caveats'. Run it as an optional second lap on /allergens and/or a wheel slot in the mock test. Side benefit: the table replaces parser-annotation notes with clean guest-facing text on the cram sheet.",
+   "testRelevance": "high"
+  },
+  {
+   "what": "The Sorbet is in the official June syllabus and missing from data.js entirely — and it is THE answer for a dairy-allergic guest at dessert (all three in-app desserts carry dairy+eggs with 'No mods'). Official text: rotating Noto Gelato flavour, off-menu, 'our dairy-free option for guests. Please ask the Chef what the rotating flavour is that week.'",
+   "whereItLives": "docs/handoffs/food-syllabus-2026-06.parsed.json lines 464-474 (matchedFoodId: null — the only unmatched dish). Absent from data.js foods (41 dishes + matinee meta; syllabus has 42 incl. Sorbet).",
+   "surfacedToday": "Nowhere — not in playbook, cram, teach, or any drill.",
+   "quizzedToday": "Never.",
+   "proposal": "Add a sorbet record to data.js (category Dessert, price as printed or 'ask', ingredients ['Rotating Noto Gelato Sorbet Flavor'], description verbatim, allergens [], note 'off-menu dairy-free option — ask the Chef for this week's flavour'). Surfaces in playbook/cram for free. Keep it OFF the 41-dish path roster (UNIT_FOOD_IDS) so frozen card ids and counts stay intact, but make it the dairy-safe dessert answer in the gap-1 'safe call' drill and add one authored service-style item ('A dairy-allergic guest wants dessert — what's the move?'). ~2 hours.",
+   "testRelevance": "high"
+  },
+  {
+   "what": "Full flag-SET recall is never required. The allergen MC's answer is always the dish's FIRST flag, and its own other flags are excluded from distractors (training.js genAllergens) — so Adrian can clear the entire sweep and mock test while knowing exactly one flag per dish. The bar is 'know EVERY allergen flag' — Snap Peas carries 5 (dairy/pork/eggs/garlic/gluten), Mushrooms on Toast and Smashed Cucumbers carry 6.",
+   "whereItLives": "Deck mint: app-v3/src/lib/engine/training.js lines 620-653 (answer = f.allergens[0], distractors = vocab minus ALL own flags, remaining flags only as typed-answer aliases). Consumed by allergenMcFor in items.ts lines 203-220, /allergens, and the mock-test wheel.",
+   "surfacedToday": "Full sets render everywhere (chips on teach/playbook/cram/reveals).",
+   "quizzedToday": "Only single-flag recognition; never the complete set, never 'which is NOT a flag'.",
+   "proposal": "Cheapest 1-day build that certifies the set: an 'odd one out' variant minted at runtime (no frozen-id churn): 'Which of these is NOT a flag on the Snap Peas?' — choices = 3 real flags + 1 non-flag (answer). Works for every dish with ≥3 flags (most of the menu); for 1-2-flag dishes ask 'How many flags does X carry?' or keep the existing card. Alternate/bigger: a multi-select 'call all N flags' grid reusing the allergen sweep session shell. Add the NOT-variant as a coin-flip alternate inside the existing allergen-mc wheel slot.",
+   "testRelevance": "high"
+  },
+  {
+   "what": "Stale pre-June fields on Burrata Cheese actively mis-teach: data.js menu='Red Pepper Jelly, Pine Nuts, Calabrian Chili', flavor/flags mention pine nuts + chili — but the official June syllabus (and data.js's own ingredients/description) say strawberry jam, poached rhubarb, sourdough. The menu line prints prominently on the TeachCard (line 86) and Playbook for every rep. Related: Shrimp & Crab's ingredients[0] is 'Bigoli' while its menu line and description say Linguini (the error is in the source syllabus ingredients line) — cued/free/romance pass bars train Adrian to say 'Bigoli' for the linguini dish.",
+   "whereItLives": "data.js burrata-cheese lines 2113-2148 (menu line 2120, flags 2126-2130, flavor 2121); shrimp-crab lines 2762-2799 (ingredients[0] line 2781 vs menu line 2768). Official truth: parsed.json lines 145-155 and 398-408. NOTE: data.js is GENERATED — fix src/data.js and re-run tools/build_app_data.mjs.",
+   "surfacedToday": "Yes — wrongly. The stale burrata menu line and the 'Bigoli' component render on teach, playbook, cram, and are the cued/free/romance answers.",
+   "quizzedToday": "The wrong 'Bigoli' token IS quizzed (it is in the cued/free answer string and eligible as the reverse-MC component); burrata's stale menu line is shown-not-quizzed.",
+   "proposal": "Pure data fix, <1 hour + test re-freeze check: update burrata menu/flavor/flags to the strawberry-rhubarb-sourdough version; change shrimp-crab ingredients[0] to 'Linguini' (keep a confirm-with-kitchen note since the syllabus ingredients line itself says Bigoli). Verify against the printed menu before Sunday. Watch the 428 frozen v2 card ids / reverse-MC distractor tests when ingredients change.",
+   "testRelevance": "high"
+  },
+  {
+   "what": "Explain-it glossary knowledge — the official descriptions define ~18 terms a guest will ask about ('nduja = spicy spreadable salami; vadouvan = French curry powder; kefta; labneh = thickened yogurt; burrata = mozzarella with soft center; bigoli = Veneto pasta, ours is semolina; pomme aligot = Aubrac cheesy mash; barigoule; kabayaki-style maple glaze; gastrique; Castelvetrano = mild buttery green olive; fior di latte; merguez; dukkah; dill pickle granita; tonnato; conchiglie = shell pasta; pomme paillasson) — is shown in description prose but never directly tested.",
+   "whereItLives": "Embedded in foods[].description strings throughout data.js foods (1721-3273); same text in the parsed syllabus.",
+   "surfacedToday": "Yes — descriptions render on TeachCard, Playbook, romance model line, free-recall detail.",
+   "quizzedToday": "Only implicitly via self-graded romance/free recall; no question ever turns on a definition. The real menu test commonly asks exactly these ('What is 'nduja?').",
+   "proposal": "Author a ~18-row term→dish→definition table extracted verbatim from official descriptions (2 hours), then mint a glossary MC reusing the existing MC shell: 'A guest asks: what's 'nduja?' — 4 definition choices, distractors drawn from the other terms' definitions. Add as a short standalone round on /test ('the curveballs') or fold into preshift. No frozen-deck impact (runtime mint, new ids).",
+   "testRelevance": "high"
+  },
+  {
+   "what": "Vegan/vegetarian knowledge is under-modeled and untested: the syllabus marks THREE dishes vegan (Hummus Chips, Cashews, French Fries-with-ketchup-sub) but data.js carries vegan:true on only two — French Fries' flag was dropped (only the allergenNote sentence remains), so the Playbook vegan pill and cram VEGAN tag both miss it. Snap Peas' official 'this dish is not vegetarian' trap (a salad with pork twice) is note-only. No drill ever asks 'a vegan guest wants snacks — what can you offer?'",
+   "whereItLives": "parsed.json french-fries vegan:true (line 22) vs data.js french-fries (lines 1722-1755, no vegan key; grep confirms only lines 1785/1852 carry vegan in foods). Vegan pill: playbook/+page.svelte line 69; cram line 61. Snap-peas note: data.js line 2404.",
+   "surfacedToday": "Partially — vegan pill/tag on 2 of 3 dishes; notes in fine print.",
+   "quizzedToday": "Never (no vegan/vegetarian question exists in any deck).",
+   "proposal": "Half-day: (1) data fix — add vegan:true (or veganWithMod) to french-fries in src/data.js + rebuild; (2) include 'vegan' and 'vegetarian' as constraints in the gap-1 safe-call drill (vegan answers: hummus chips, cashews, fries-with-ketchup; explicitly make Snap Peas a featured wrong-answer with the 'not vegetarian' why-text); (3) the standing data.confirm line already covers the framing.",
+   "testRelevance": "medium"
+  },
+  {
+   "what": "The official syllabus conceptNotes — chef-driven seasonal (Chef JP), family-style shared plates, wood-fired grill focal point fueled by APPLEWOOD (hard wood, long burn, mild flavour), everything non-whole-food made in-house, pizza dough rested 5+ days, all pasta from scratch — have zero v3 surface and zero quiz. They exist only inside data.js lessons[] prose ('know-the-dish', lines 1660-1674), and app-v3 never renders data.lessons (grep: no consumer). Menu tests routinely ask these ('What wood do we burn?', 'How long is the dough rested?').",
+   "whereItLives": "docs/handoffs/food-syllabus-2026-06.parsed.json conceptNotes (lines 4-11); prose-only copy in data.js lessons 'know-the-dish' (line 1663); NOT in SERVICE_ITEMS (app-v3/src/lib/journey/service-items.ts) or any v3 route.",
+   "surfacedToday": "Not in v3 (the lessons array is dead data in this app).",
+   "quizzedToday": "Never in v3.",
+   "proposal": "2-3 hours: author 5-6 concept items in the existing ServiceItem shape (prompt/answer/3 distractors/why citing the syllabus) — applewood + why; chef-driven seasonal + signature mainstays; family-style; in-house rule; 5-day dough; scratch pasta — and append to SERVICE_ITEMS so the day-one unit, checkpoint, and reviews pick them up automatically via the existing machinery. (Check the '16 service' count assertions in stages/items tests.)",
+   "testRelevance": "medium"
+  },
+  {
+   "what": "Price knowledge: every dish price is rendered on every surface (teach leader line, playbook dotted leader, cram, romance meta) but never quizzed.",
+   "whereItLives": "foods[].price in data.js; rendered TeachCard line 84, playbook line 65, cram line 51, RomanceCard line 66.",
+   "surfacedToday": "Yes, prominently and consistently.",
+   "quizzedToday": "Never.",
+   "proposal": "Recommend NOT building for Monday — the documented bar (romance, explain, allergens, recommend-around-allergies) doesn't name prices, and passive exposure on every card is likely sufficient. If wanted later: a 10-question 'price ladder' MC (which costs more / what does X cost, $-rounded distractors) is a 2-hour bolt-on to the MC shell.",
+   "testRelevance": "low"
+  }
+ ],
+ "terms": [
+  {
+   "term": "aioli",
+   "respell": "ay-OH-lee",
+   "dishes": [
+    "french-fries",
+    "crispy-smashed-potatoes",
+    "grilled-farm-chicken",
+    "snap-peas",
+    "tuna-crudo"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on French Fries and Crispy Smashed Potatoes. Short word — multilingual would over-Italianize (ah-YOH-lee); turbo respell gives the confident anglicized server version. TTS text: 'ay oh lee'."
+  },
+  {
+   "term": "burrata",
+   "respell": "buh-RAH-tah",
+   "dishes": [
+    "burrata-cheese"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Dish name. Language hint: it."
+  },
+  {
+   "term": "carpaccio",
+   "respell": "kar-PAH-choh",
+   "dishes": [
+    "wagyu-beef-carpaccio"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Dish name. Language hint: it. Common stumble: 'car-PASS-ee-oh'."
+  },
+  {
+   "term": "wagyu",
+   "respell": "WAH-gyoo",
+   "dishes": [
+    "wagyu-beef-carpaccio"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Dish name. Japanese loanword — anglicized respell to turbo, not multilingual. Common stumble: 'WAG-yoo'/'wah-GOO'."
+  },
+  {
+   "term": "crudo",
+   "respell": "KROO-doh",
+   "dishes": [
+    "tuna-crudo"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Dish name. Language hint: it."
+  },
+  {
+   "term": "tonnato",
+   "respell": "toh-NAH-toh",
+   "dishes": [
+    "tuna-crudo"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient (Smoked Tonnato). Language hint: it."
+  },
+  {
+   "term": "puttanesca",
+   "respell": "poo-tah-NES-kah",
+   "dishes": [
+    "tuna-crudo",
+    "bigoli"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on Tuna Crudo (Puttanesca Vinaigrette); Bigoli description calls the dish 'a Bridgette version of pasta puttanesca'. Language hint: it."
+  },
+  {
+   "term": "bigoli",
+   "respell": "bee-GOH-lee",
+   "dishes": [
+    "bigoli",
+    "shrimp-crab"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Dish name. Language hint: it. Data quirk: Shrimp & Crab lists 'Bigoli' as ingredient #1 though its menu/description say linguini — keep both dish links."
+  },
+  {
+   "term": "pomodoro",
+   "respell": "poh-moh-DOR-oh",
+   "dishes": [
+    "bigoli"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on Bigoli. Language hint: it."
+  },
+  {
+   "term": "conchiglie",
+   "respell": "kon-KEEL-yeh",
+   "dishes": [
+    "italian-pork-sausage"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient (Spinach Conchiglie = shell pasta). Language hint: it. Top mangle risk on the floor ('kon-CHIG-lee')."
+  },
+  {
+   "term": "pecorino",
+   "respell": "peh-koh-REE-noh",
+   "dishes": [
+    "snap-peas",
+    "italian-sausage"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "First-3 ingredient on Snap Peas; menu line on Italian Sausage pizza. Language hint: it."
+  },
+  {
+   "term": "fior di latte",
+   "respell": "FYOR dee LAH-teh",
+   "dishes": [
+    "margherita",
+    "five-cheese",
+    "fennel-salami",
+    "italian-sausage"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "First-3 ingredient on Margherita and Five Cheese (also its menu line); in Fennel Salami and Italian Sausage descriptions. Language hint: it."
+  },
+  {
+   "term": "fontina",
+   "respell": "fon-TEE-nah",
+   "dishes": [
+    "endive",
+    "five-cheese"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on Endive; menu line on Five Cheese. Language hint: it."
+  },
+  {
+   "term": "margherita",
+   "respell": "mar-geh-REE-tah",
+   "dishes": [
+    "margherita"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Dish name. Language hint: it. Classic stumble: saying 'margarita' (the cocktail) — hard G, no 'd' sound."
+  },
+  {
+   "term": "granita",
+   "respell": "grah-NEE-tah",
+   "dishes": [
+    "oysters-1-2-dozen"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + ingredient (Dill Pickle Granita) on Oysters. Language hint: it."
+  },
+  {
+   "term": "Castelvetrano",
+   "respell": "kas-tel-veh-TRAH-noh",
+   "dishes": [
+    "roasted-olives",
+    "tuna-crudo"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "First-3 ingredient on Roasted Olives (Castelvetrano Olives); in Tuna Crudo description. Language hint: it."
+  },
+  {
+   "term": "Calabrian",
+   "respell": "kuh-LAH-bree-un",
+   "dishes": [
+    "roasted-olives",
+    "burrata-cheese",
+    "fennel-salami",
+    "italian-pork-sausage",
+    "italian-sausage",
+    "maple-bbq-rainbow-trout",
+    "bigoli"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "English adjective (not Italian 'calabrese') — feed turbo the respell so it doesn't get re-Italianized. Menu lines on Burrata, Fennel Salami, Italian Pork Sausage; first-3 ingredient on Roasted Olives; in 3 more descriptions. Highest-frequency term on the menu."
+  },
+  {
+   "term": "'nduja",
+   "respell": "en-DOO-yah",
+   "dishes": [
+    "snap-peas"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient ('Nduja Dressing). Leading apostrophe + silent-ish n makes it the single biggest mangle risk for both servers and TTS — definitely recipe B. TTS text: 'en doo yah'."
+  },
+  {
+   "term": "gremolata",
+   "respell": "greh-moh-LAH-tah",
+   "dishes": [
+    "snap-peas"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line (Bacon Gremolata) on Snap Peas. Language hint: it."
+  },
+  {
+   "term": "frico",
+   "respell": "FREE-koh",
+   "dishes": [
+    "wagyu-beef-carpaccio"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "First-3 ingredient (Parmesan Frico = crispy parmesan). Short two-syllable word — turbo respell per the short/odd-word rule."
+  },
+  {
+   "term": "Marash",
+   "respell": "mah-RAHSH",
+   "dishes": [
+    "hummus-chips"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu line (Marash Chili) on Hummus Chips — note the ingredients array says Aleppo Chili instead; both are Turkish/Syrian chili names a guest may ask about. Turkish place name, anglicize via turbo."
+  },
+  {
+   "term": "harissa",
+   "respell": "hah-REE-sah",
+   "dishes": [
+    "eggplant-fries",
+    "grilled-lamb-saddle"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu line on Eggplant Fries (Green Harissa Yogurt); in Lamb Saddle description (merguez contains harissa paste). Arabic loanword — anglicized respell to turbo."
+  },
+  {
+   "term": "tahini",
+   "respell": "tah-HEE-nee",
+   "dishes": [
+    "smashed-cucumbers"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient (Green Tahini Dressing). Arabic loanword — turbo respell."
+  },
+  {
+   "term": "labneh",
+   "respell": "LAB-neh",
+   "dishes": [
+    "lamb-sausage",
+    "grilled-lamb-saddle",
+    "tuna-crudo"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "First-3 ingredient on Lamb Sausage (Garlic Labneh) and Lamb Saddle; in Tuna Crudo description. Romance line should add the gloss 'thickened yogurt'. Arabic loanword — turbo respell."
+  },
+  {
+   "term": "nori",
+   "respell": "NOR-ee",
+   "dishes": [
+    "eggplant-fries"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "First-3 ingredient on Eggplant Fries — data already glosses it '(Dried Seaweed)'. Short Japanese word — turbo respell."
+  },
+  {
+   "term": "vadouvan",
+   "respell": "vah-doo-VAHN",
+   "dishes": [
+    "wood-grilled-asparagus"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient (Vadouvan Cream). French curry blend — language hint: fr. Description gives the gloss: 'a French curry powder with lots of garlic and shallot'."
+  },
+  {
+   "term": "béchamel",
+   "respell": "bay-shah-MEL",
+   "dishes": [
+    "chicken-sausage",
+    "five-cheese",
+    "rigatoni"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on Chicken Sausage pizza (Garlic Béchamel); first-3 on Five Cheese; in Rigatoni description. Language hint: fr."
+  },
+  {
+   "term": "béarnaise",
+   "respell": "bair-NEZ",
+   "dishes": [
+    "wood-grilled-beef-strip-steak"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on Strip Steak. Language hint: fr. Bonus talking point: Bridgette's contains no butter (smoked beef fat instead)."
+  },
+  {
+   "term": "confit",
+   "respell": "kon-FEE",
+   "dishes": [
+    "italian-sausage"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient (Confit Garlic). Language hint: fr. Stumble risk: pronouncing the final T."
+  },
+  {
+   "term": "brioche",
+   "respell": "bree-OSH",
+   "dishes": [
+    "wood-grilled-asparagus",
+    "wood-roasted-halibut"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + ingredient on both dishes. Language hint: fr."
+  },
+  {
+   "term": "chervil",
+   "respell": "SHER-vil",
+   "dishes": [
+    "mushrooms-on-toast",
+    "wood-roasted-halibut"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on Mushrooms on Toast; in Halibut description. English herb name but unfamiliar — turbo with respell (soft 'sh' start)."
+  },
+  {
+   "term": "endive",
+   "respell": "EN-dyve",
+   "dishes": [
+    "endive"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Dish name. Two accepted pronunciations — anglicized 'EN-dyve' recommended for the floor ('on-DEEV' is the French curly type). Turbo respell so the model doesn't pick the French reading."
+  },
+  {
+   "term": "merguez",
+   "respell": "mair-GEZ",
+   "dishes": [
+    "grilled-lamb-saddle"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient (Warm Merguez Potato Salad). North-African/French sausage — language hint: fr."
+  },
+  {
+   "term": "pommes paillasson",
+   "respell": "pom pah-yah-SOHN",
+   "dishes": [
+    "wood-grilled-beef-strip-steak"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient. Language hint: fr. Description gloss for romancing: 'like a McDonald's hash brown but better'."
+  },
+  {
+   "term": "pomme aligot",
+   "respell": "pom ah-lee-GOH",
+   "dishes": [
+    "26oz-wood-grilled-beef-ribeye"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on the Ribeye. Language hint: fr. Gloss: cheesy whipped mash from the Aubrac (OH-brak) region — silent T."
+  },
+  {
+   "term": "jus",
+   "respell": "ZHOO",
+   "dishes": [
+    "wood-grilled-beef-strip-steak",
+    "26oz-wood-grilled-beef-ribeye",
+    "grilled-lamb-saddle"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu lines: Wild Mushroom Jus (steak), Smoked Bone Marrow Jus (ribeye, first-3); in Lamb Saddle description. One syllable — classic 'juss' stumble. Turbo respell; very short clips are exactly where multilingual failed before, but STT-verify this one (try TTS text 'zhoo' vs fr-multilingual 'jus' if turbo says 'zoo')."
+  },
+  {
+   "term": "tatin",
+   "respell": "tah-TAN",
+   "dishes": [
+    "apple-tatin"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Dish name (Apple Tatin). Language hint: fr — needs the nasal final vowel, which turbo respells render poorly. Stumble risk: 'TAY-tin'."
+  },
+  {
+   "term": "Armagnac",
+   "respell": "ar-mahn-YAK",
+   "dishes": [
+    "apple-tatin"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "must",
+   "note": "Menu line + first-3 ingredient on Apple Tatin. Proven precedent: existing castarede/darroze clips in audio_manifest.json use recipe B 'ar-mahn-yak'."
+  },
+  {
+   "term": "pot de crème",
+   "respell": "poh duh KREM",
+   "dishes": [
+    "chocolate-pot-de-creme"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "must",
+   "note": "Dish name (Chocolate Pot de Crème). Language hint: fr. Stumble risk: 'pot dee cream'."
+  },
+  {
+   "term": "vinaigrette",
+   "respell": "vin-uh-GRET",
+   "dishes": [
+    "tuna-crudo",
+    "wagyu-beef-carpaccio",
+    "lamb-sausage",
+    "grilled-octopus-salad",
+    "endive",
+    "spiced-beet-salad"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Borderline — everyday Canadian word, but it IS a first-3 romance target in five dishes, so worth an audio clip for confidence. English-assimilated; turbo respell."
+  },
+  {
+   "term": "Aleppo",
+   "respell": "uh-LEP-oh",
+   "dishes": [
+    "hummus-chips",
+    "shrimp-crab",
+    "wood-roasted-half-duck"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Ingredient #5 on Hummus Chips (menu line says Marash instead), in Shrimp & Crab and Duck descriptions. Anglicized Syrian place name — turbo respell."
+  },
+  {
+   "term": "panko",
+   "respell": "PAHN-koh",
+   "dishes": [
+    "eggplant-fries"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "First-3 ingredient but borderline — widely known in Canada. Short Japanese word — turbo."
+  },
+  {
+   "term": "provolone",
+   "respell": "proh-voh-LOH-neh",
+   "dishes": [
+    "margherita",
+    "chicken-sausage",
+    "five-cheese",
+    "italian-sausage"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Borderline — sub-shop familiar; the deli anglicization 'proh-vuh-LOHN' is also fine at the table. Language hint: it."
+  },
+  {
+   "term": "ricotta",
+   "respell": "rih-KOH-tah",
+   "dishes": [
+    "ricotta-dumplings"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Dish name word but borderline — everyday Canadian. Language hint: it."
+  },
+  {
+   "term": "yuzu",
+   "respell": "YOO-zoo",
+   "dishes": [
+    "tuna-crudo"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (finishing zest on Tuna Crudo). Short Japanese word — turbo."
+  },
+  {
+   "term": "kefta",
+   "respell": "KEF-tah",
+   "dishes": [
+    "lamb-sausage"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only — 'Lamb Kefta' is how the kitchen names the spiced sausage, likely spoken when explaining the dish."
+  },
+  {
+   "term": "ras el hanout",
+   "respell": "RAHS el hah-NOOT",
+   "dishes": [
+    "spiced-beet-salad",
+    "grilled-lamb-saddle"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only but the Beet Salad description leads with it ('a North African spice mixture') — guests will ask. Arabic phrase — turbo respell."
+  },
+  {
+   "term": "verjus",
+   "respell": "vair-ZHOO",
+   "dishes": [
+    "endive"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (apple vinaigrette and compressed apples). Short odd French word — turbo per the short-word rule."
+  },
+  {
+   "term": "pain de mie",
+   "respell": "pan duh MEE",
+   "dishes": [
+    "mushrooms-on-toast"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only (the toast itself). Nasal vowel — language hint: fr."
+  },
+  {
+   "term": "porcini",
+   "respell": "por-CHEE-nee",
+   "dishes": [
+    "mushrooms-on-toast"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only. Language hint: it."
+  },
+  {
+   "term": "tamari",
+   "respell": "tuh-MAR-ee",
+   "dishes": [
+    "mushrooms-on-toast"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only; also the stated soy source in the allergen note — useful when explaining the soy flag. Japanese loanword — turbo."
+  },
+  {
+   "term": "Madeira",
+   "respell": "muh-DAIR-uh",
+   "dishes": [
+    "mushrooms-on-toast"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (deglazing wine). Precedent: existing barbeito-madeira clip uses recipe B 'mah-dair-ah'."
+  },
+  {
+   "term": "parfait",
+   "respell": "par-FAY",
+   "dishes": [
+    "mushrooms-on-toast"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Menu line (Mushroom Parfait) but borderline — Canadians know it from yogurt parfaits. Turbo respell keeps the anglicized reading."
+  },
+  {
+   "term": "sofrito",
+   "respell": "soh-FREE-toh",
+   "dishes": [
+    "italian-sausage",
+    "bigoli"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only (red pepper sofrito on both). Language hint: es."
+  },
+  {
+   "term": "gochugaru",
+   "respell": "goh-choo-GAH-roo",
+   "dishes": [
+    "smashed-cucumbers"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only — data glosses it '(dried Korean chili pepper)'. Korean loanword — turbo respell."
+  },
+  {
+   "term": "rayu",
+   "respell": "RAH-yoo",
+   "dishes": [
+    "smashed-cucumbers"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (almond rayu topping). Short Japanese word — turbo."
+  },
+  {
+   "term": "chiffonade",
+   "respell": "shif-oh-NAHD",
+   "dishes": [
+    "snap-peas"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (chiffonade parsley in the bacon gremolata). English-assimilated culinary French — turbo."
+  },
+  {
+   "term": "semolina",
+   "respell": "sem-oh-LEE-nah",
+   "dishes": [
+    "bigoli"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (what Bridgette's bigoli is made from — likely spoken when romancing the pasta). English-assimilated — turbo."
+  },
+  {
+   "term": "San Marzano",
+   "respell": "san mar-ZAH-noh",
+   "dishes": [
+    "bigoli"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only (the tomato). Language hint: it."
+  },
+  {
+   "term": "Grana Padano",
+   "respell": "GRAH-nah pah-DAH-noh",
+   "dishes": [
+    "bigoli"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only (finishing cheese). Language hint: it."
+  },
+  {
+   "term": "mascarpone",
+   "respell": "mas-kar-POH-neh",
+   "dishes": [
+    "maple-bbq-rainbow-trout"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only (in the creamed kale). Language hint: it. Classic stumble: 'mar-sca-pone' (swapped r)."
+  },
+  {
+   "term": "kabayaki",
+   "respell": "kah-bah-YAH-kee",
+   "dishes": [
+    "maple-bbq-rainbow-trout"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only — 'our version of Kabayaki (eel sauce)' is the dish's best story beat. Japanese loanword — turbo respell."
+  },
+  {
+   "term": "gastrique",
+   "respell": "gas-TREEK",
+   "dishes": [
+    "wood-roasted-half-duck"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only (rosemary gastrique glaze). Language hint: fr."
+  },
+  {
+   "term": "barigoule",
+   "respell": "bah-ree-GOOL",
+   "dishes": [
+    "wood-roasted-half-duck"
+   ],
+   "recipe": "real-name-multilingual",
+   "priority": "nice",
+   "note": "Description-only (turnips cooked barigoule style). Language hint: fr."
+  },
+  {
+   "term": "dukkah",
+   "respell": "DOO-kah",
+   "dishes": [
+    "grilled-lamb-saddle"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (spelled 'dukkha' in data) — house spice-seed crumble on the lamb. Arabic/Egyptian loanword — turbo."
+  },
+  {
+   "term": "tuile",
+   "respell": "TWEEL",
+   "dishes": [
+    "apple-tatin"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (honey tuille, sic). One-syllable French — turbo respell per short-word rule; stumble risk 'too-ill'."
+  },
+  {
+   "term": "banoffee",
+   "respell": "buh-NOF-ee",
+   "dishes": [
+    "the-banana-pie"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only but central to romancing the pie (banana + toffee). British coinage — turbo."
+  },
+  {
+   "term": "meringue",
+   "respell": "muh-RANG",
+   "dishes": [
+    "the-banana-pie"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Ingredient #2 (Italian Meringue) but borderline-everyday; included for the occasional 'mer-IN-gyoo' misread. Turbo respell."
+  },
+  {
+   "term": "Maldon",
+   "respell": "MAWL-dun",
+   "dishes": [
+    "burrata-cheese",
+    "italian-sausage"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (finishing salt). English place name — turbo."
+  },
+  {
+   "term": "Nostrala",
+   "respell": "noh-STRAH-lah",
+   "dishes": [
+    "bibb-lettuce"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only — local BC cheese on the Bibb Lettuce; guests will ask what it is. Brand-ish short word — turbo."
+  },
+  {
+   "term": "quinoa",
+   "respell": "KEEN-wah",
+   "dishes": [
+    "bibb-lettuce"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Description-only (puffed black quinoa) and widely known, but the 'kwin-OH-ah' misread persists — cheap insurance. Turbo."
+  },
+  {
+   "term": "Avonlea",
+   "respell": "AV-un-lee",
+   "dishes": [
+    "crispy-smashed-potatoes"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Menu line (Avonlea Cheddar, aged PEI cheddar) but plain Canadian English — low risk. Turbo."
+  },
+  {
+   "term": "Oka",
+   "respell": "OH-kah",
+   "dishes": [
+    "five-cheese"
+   ],
+   "recipe": "respell-turbo",
+   "priority": "nice",
+   "note": "Menu line on Five Cheese — Quebec cheese, familiar to most Canadians. Short word — turbo."
+  }
+ ],
+ "critique": [
+  {
+   "friction": "The mock test's miss list does not hand off. After missing, say, 6 dishes on /test, the only CTA is a generic link to /romance, which always starts a full 41-dish, ~20-minute session. Worse, the on-screen claim that romance 'leads with your shakiest dishes — exactly where the points went' is false for mock misses: the mock makes NO store writes by design, so a dish missed on the mock that was previously 'good' in the SRS is buried mid-deck. The tightest loop in the app (test → drill exactly what you missed → retest) is broken at its most important joint.",
+   "evidence": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\routes\\test\\+page.svelte line 153: `<a class=\"btn\" href=\"/romance\">drill the misses out loud</a>` (plain link, no ids), lines 5-8 comment 'NO store writes — a mock never touches the SRS', and line 160 rom-note claiming the romance ordering reflects 'exactly where the points went'. C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\routes\\romance\\+page.svelte line 43: `start(pool = DISHES)` — the subset capability already exists (runMisses at line 59 uses it) but is reachable only from romance's own summary, never from /test. summary.missed (mock-test.ts line 185) already carries the exact item ids and is simply dropped.",
+   "fix": "Carry the mock's `summary.missed` ids into /romance — e.g. write them to sessionStorage (or a `?ids=` param) when 'drill the misses out loud' is clicked, and have /romance's intro offer 'drill the 6 you missed' (calling the existing `start(DISHES.filter(...))`) alongside the full run. Zero session-engine changes; both sides already have the needed plumbing.",
+   "impact": "high",
+   "effort": "small"
+  },
+  {
+   "friction": "No category-scoped drilling anywhere. If he knows he's weak on the pastas, there is no way to drill just the 5 pastas: /romance fixes its pool to all 41 dishes, /allergens to all flagged dishes, /test to all 41. The only category-sized surface is re-running a path unit, which is the full pretest→teach→test-to-criterion learn session — the slowest possible format for material he's already met. A 3-day crammer's core move ('hammer my one weak category for 5 minutes') costs 20+ minutes of wading through 36 dishes he already knows.",
+   "evidence": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\routes\\romance\\+page.svelte line 26 (`DISHES = allStage1Items().filter(kind==='dish')`, always passed whole at line 156's start button) and the same pattern in allergens/+page.svelte line 26. Category data is already on every item (romanceFor(item).category, used for interleaving via romanceOrder in C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\lib\\session\\romance-order.ts) and rosters exist per unit in C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\lib\\journey\\stages.ts UNIT_FOOD_IDS.",
+   "fix": "Add a category chip row to the /romance and /allergens intro screens (same chips the Playbook already renders from data) that filters the pool before the existing `start(pool)` call. The session engines, ordering helper, and runMisses already accept arbitrary subsets — this is pure intro-screen UI.",
+   "impact": "high",
+   "effort": "small"
+  },
+  {
+   "friction": "Continue-tap tax on every MC card. After answering an MC, the card requires a second interaction (the Continue button) before the next question — even on a correct components/reverse answer where the only feedback is the two-word line 'nailed it.' On desktop Enter/Space works via the window keydown listener, but on a phone (where he'll actually cram) that is 2 taps × 41 questions on /test and on /allergens, every run, multiplied by however many retakes the weekend holds. That's hundreds of pure-overhead taps across the sprint.",
+   "evidence": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\lib\\components\\session\\FlashMc.svelte lines 109-119: the feedback block renders a dedicated Continue button as the only pointer path forward; lines 77-80 show Enter/Space continue exists for keyboards only. /test and /allergens render every question through this component.",
+   "fix": "After feedback renders, make the whole card (or the card's background) a tap target for oncontinue on touch/click — keep the Continue button for a11y and keep the allergen teach-back + confirm line fully visible before the tap. One component, no contract change.",
+   "impact": "medium",
+   "effort": "tiny"
+  },
+  {
+   "friction": "No zero-commitment flip-through mode for passive moments. Every quiz surface is a committed session: deliberate intro screen, honest grading that writes real SRS grades (romance/allergens), miss recycling, and a summary you must finish to exit cleanly. The Playbook is the only browse surface and it shows every answer up front — useless for self-testing. There is no 'flip through all 41 like flashcards' for a bus ride or a 5-minute break: peeking through /romance casually either pollutes the SRS with dishonest 'good's or punishes him with recycled misses when he just wanted exposure.",
+   "evidence": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\routes\\playbook\\+page.svelte lines 59-86: dish cards render name, description, components, and allergens simultaneously with no hide state. C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\routes\\romance\\+page.svelte lines 47-55: every romance grade is a real progress.recordReview, and misses recycle (session/romance.ts lines 71-78) — there is no no-write presentation mode anywhere.",
+   "fix": "Add a 'quiz me' toggle to /playbook that collapses each card to name+price+category with components/flags behind a per-card tap (pure UI state, zero store writes). That converts the existing lookup grid into a fast self-test flip deck with category chips and search already in place.",
+   "impact": "medium",
+   "effort": "small"
+  },
+  {
+   "friction": "The printable cram is a reference sheet, not a test-prep artifact. Name, components, and allergen abbreviations sit on the same line, so on paper he can only re-read — he cannot self-test, and re-reading is the weakest study mode for a Monday test. For an apron-pocket artifact 48 hours before a written test, the higher-value print is one he can quiz himself from.",
+   "evidence": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\routes\\playbook\\cram\\+page.svelte lines 48-63: each dish row interleaves `nm`, `price`, `comps`, and `allerg` in one paragraph; there is exactly one print layout (lines 125-188) and no answers-hidden variant.",
+   "fix": "Add a second print variant ('self-test sheet'): two-column rows with dish names down the left and components+flags right-aligned in a separate column, so folding the sheet vertically (or covering with a hand) hides every answer. Same data loop, a layout fork and a toggle button on the existing toolbar.",
+   "impact": "medium",
+   "effort": "small"
+  },
+  {
+   "friction": "The 'explain it' half of the bar is never tested, only displayed. The official description (the model romance sentence) appears solely as passive reveal text — RomanceCard's self-check asks only 'named it + 3 components?', the review free rung's answer is the ingredient list (description relegated to optional detail), and none of /test's four question types touches descriptions. He can clear every drill in the app without once retrieving 'wood-grilled / crispy / whipped...' language from memory, yet the test bar explicitly includes explaining the dish.",
+   "evidence": "C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\lib\\components\\session\\RomanceCard.svelte line 104: `named it + {targetCount} components?` — the description (m-line, lines 85-89) is shown but excluded from the pass bar. C:\\Users\\abeek\\OneDrive\\Documents\\Bridgette Barr\\app-v3\\src\\lib\\journey\\items.ts freeFor (lines 352-364): answer = ingredients joined, description only as `detail`. mock-test.ts MOCK_TYPE_ROTATION (lines 26-31) has no description-based type.",
+   "fix": "Cheapest meaningful version: mint a 'name the dish from its description' MC (description as prompt, dish names as choices — distractor logic can mirror reverseMcFor's same-category-first rule with name-leak word filtering) and add it to the mock's rotation wheel; assignMockTypes already handles per-type fallbacks. Alternatively, at minimum widen the romance self-check ask to 'named it + components + a line about it?'.",
+   "impact": "medium",
+   "effort": "medium"
+  }
+ ]
+}

@@ -2117,16 +2117,15 @@ export const data = {
       "group": "food",
       "category": "Small Plates",
       "price": "23",
-      "menu": "Red Pepper Jelly, Pine Nuts, Calabrian Chili",
-      "flavor": "creamy cheese, sweet pepper, nuts, chili",
+      "menu": "Poached Rhubarb, Strawberry Jam, Olive Oil",
+      "flavor": "creamy cheese, strawberry jam, tart rhubarb, charred sourdough",
       "wine": "Fattoria Moretto Semprebon",
       "cocktail": "Paradise City",
       "zero": "Sunrise Spritz",
-      "why": "Cream and sweet-pepper heat want fizz, fruit, or bright acidity; bubbles scrub the cream and fruit and sweetness tame the Calabrian chili.",
+      "why": "Cream with sweet jam and tart rhubarb wants fizz, fruit, or bright acidity; bubbles scrub the cream and the wine's fruit echoes the strawberry and rhubarb.",
       "flags": [
         "dairy",
-        "pine nuts",
-        "chili"
+        "gluten"
       ],
       "ingredients": [
         "Poached Rhubarb",
@@ -2143,8 +2142,8 @@ export const data = {
       "tags": [
         "food",
         "cheese",
-        "nuts",
-        "spice"
+        "strawberry",
+        "rhubarb"
       ]
     },
     {
@@ -2778,7 +2777,7 @@ export const data = {
         "chili"
       ],
       "ingredients": [
-        "Bigoli",
+        "Linguini",
         "Brown Butter",
         "Chili"
       ],
@@ -3245,6 +3244,31 @@ export const data = {
         "food",
         "dessert",
         "chocolate"
+      ]
+    },
+    {
+      "id": "sorbet",
+      "name": "Sorbet",
+      "group": "food",
+      "category": "Dessert",
+      "price": "ask",
+      "menu": "Off-menu — our dairy-free option; rotating Noto Gelato flavour",
+      "flavor": "rotating fruit sorbet, dairy-free",
+      "why": "The off-menu dairy-free safe call — no pairing taught; offer it when a guest needs a dairy-free dessert and ask the Chef what the rotating flavour is that week.",
+      "flags": [
+        "off-menu",
+        "dairy-free option"
+      ],
+      "ingredients": [
+        "Rotating Noto Gelato Sorbet"
+      ],
+      "description": "This sorbet is a rotating flavour from the famous Noto Gelato in Bridgeland. This dessert is not on our menu and is our dairy-free option for guests. Please ask the Chef what the rotating flavour is that week.",
+      "allergens": [],
+      "allergenNote": "Off-menu dairy-free option — ask the Chef for this week's rotating flavour and confirm that flavour's allergens with the kitchen",
+      "tags": [
+        "food",
+        "dessert",
+        "off-menu"
       ]
     },
     {

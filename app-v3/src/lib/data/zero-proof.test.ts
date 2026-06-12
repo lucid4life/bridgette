@@ -24,7 +24,9 @@ function tokens(zero: string): string[] {
 describe('foods[].zero is only ever genuinely non-alcoholic', () => {
   for (const f of data.foods.filter((x: any) => x.zero)) {
     it(`${f.id}: every zero-proof option is on the verified N/A list`, () => {
-      for (const t of tokens(f.zero)) {
+      // `zero` is optional since the off-menu sorbet record (no pairing taught);
+      // the filter above guarantees it here.
+      for (const t of tokens(f.zero!)) {
         expect(ALLOWED_ZERO.has(t), `"${t}" in ${f.id}.zero is not a verified non-alcoholic item`).toBe(true);
       }
     });
