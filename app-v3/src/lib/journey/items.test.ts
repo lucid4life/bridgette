@@ -14,6 +14,8 @@ import {
   hasAllergenMc,
   itemsForUnit,
   mcFor,
+  normKey,
+  normWords,
   reverseMcFor,
   romanceFor,
   teachFor
@@ -333,14 +335,19 @@ describe('hasAllergenMc / allergenMcFor: the frozen allergens card, reused', () 
 describe('reverseMcFor: which dish carries the component', () => {
   const dishes = PATH_FOOD_IDS.map((id) => food(id));
   const byName = new Map(dishes.map((f) => [f.name, f]));
-  // ingredient → how many path dishes carry it (case-insensitive)
+  // ingredient → how many path dishes carry it (normalized: lowercase words,
+  // trailing-'s' folded — 'Chive' and 'Chives' are ONE token)
   const freq = new Map<string, number>();
   for (const f of dishes)
     for (const ing of f.ingredients!) {
-      const k = ing.toLowerCase();
+      const k = normKey(ing);
       freq.set(k, (freq.get(k) ?? 0) + 1);
     }
   const GENERIC = new Set(['salt', 'sea salt', 'flaky salt', 'olive oil', 'extra virgin olive oil', 'evoo']);
+  const wordOverlap = (a: string, b: string) => {
+    const aw = new Set(normWords(a));
+    return normWords(b).some((w) => aw.has(w));
+  };
 
   it.each(PATH_FOOD_IDS)('%s yields a valid reverse MC', (foodId) => {
     const f = food(foodId);
@@ -350,32 +357,45 @@ describe('reverseMcFor: which dish carries the component', () => {
     expect(mc.choices).toHaveLength(4);
     expect(new Set(mc.choices).size).toBe(4);
     expect(mc.choices[mc.answerIndex]).toBe(f.name);
+    // no name leak: the component never shares a word with the answer dish's
+    // own name (the documented all-share fallback exists but is UNUSED on
+    // today's path data — this asserts exactly that)
+    expect(
+      wordOverlap(f.name, mc.component),
+      `${foodId}: component '${mc.component}' leaks a word of '${f.name}'`
+    ).toBe(false);
     // the component genuinely belongs to the answer dish…
-    const lc = mc.component.toLowerCase();
-    expect(f.ingredients!.some((i) => i.toLowerCase() === lc)).toBe(true);
-    // …and to NONE of the distractors
+    const key = normKey(mc.component);
+    expect(f.ingredients!.some((i) => normKey(i) === key)).toBe(true);
+    // …and to NONE of the distractors — by ingredient OR by name
     for (const choice of mc.choices) {
       if (choice === f.name) continue;
       const d = byName.get(choice)!;
       expect(d, `${foodId}: distractor '${choice}' is not a path dish`).toBeDefined();
       expect(
-        d.ingredients!.some((i) => i.toLowerCase() === lc),
+        d.ingredients!.some((i) => normKey(i) === key),
         `${foodId}: distractor '${choice}' also carries '${mc.component}'`
+      ).toBe(false);
+      expect(
+        wordOverlap(choice, mc.component),
+        `${foodId}: distractor '${choice}' is NAMED by a word of '${mc.component}'`
       ).toBe(false);
     }
   });
 
-  it('picks the most DISTINCTIVE component: rarest across the other 40 dishes, first-in-list on ties, generics skipped', () => {
+  it('picks the most DISTINCTIVE component: rarest across the other 40 dishes, first-in-list on ties, generics and name-leaks skipped', () => {
     for (const foodId of PATH_FOOD_IDS) {
       const f = food(foodId);
       const mc = reverseMcFor(dishItem(foodId));
-      const nonGeneric = f.ingredients!.filter((i) => !GENERIC.has(i.toLowerCase()));
-      expect(nonGeneric.length, foodId).toBeGreaterThan(0); // every path dish has a real component
+      const candidates = f.ingredients!.filter(
+        (i) => !GENERIC.has(i.toLowerCase()) && !wordOverlap(f.name, i)
+      );
+      expect(candidates.length, foodId).toBeGreaterThan(0); // fallback unused on real data
       expect(GENERIC.has(mc.component.toLowerCase()), foodId).toBe(false);
-      const min = Math.min(...nonGeneric.map((i) => freq.get(i.toLowerCase())!));
-      expect(freq.get(mc.component.toLowerCase()), foodId).toBe(min);
+      const min = Math.min(...candidates.map((i) => freq.get(normKey(i))!));
+      expect(freq.get(normKey(mc.component)), foodId).toBe(min);
       // deterministic tie-break: the FIRST list entry at that rarity wins
-      expect(mc.component).toBe(nonGeneric.find((i) => freq.get(i.toLowerCase()) === min));
+      expect(mc.component).toBe(candidates.find((i) => freq.get(normKey(i)) === min));
     }
   });
 
@@ -383,16 +403,31 @@ describe('reverseMcFor: which dish carries the component', () => {
     for (const foodId of PATH_FOOD_IDS) {
       const f = food(foodId);
       const mc = reverseMcFor(dishItem(foodId));
-      const lc = mc.component.toLowerCase();
+      const key = normKey(mc.component);
       const eligibleSameCat = dishes.filter(
         (d) =>
           d.id !== f.id &&
           d.category === f.category &&
-          !d.ingredients!.some((i) => i.toLowerCase() === lc)
+          !d.ingredients!.some((i) => normKey(i) === key) &&
+          !wordOverlap(d.name, mc.component)
       );
       const got = mc.choices.filter((c) => c !== f.name && byName.get(c)!.category === f.category);
       expect(got.length, foodId).toBe(Math.min(3, eligibleSameCat.length));
     }
+  });
+
+  // The two findings that motivated the name rules, pinned by name so a data
+  // edit that re-introduces either fails loudly.
+  it('Shrimp & Crab (component "Bigoli") never deals the dish Bigoli as a wrong choice', () => {
+    const mc = reverseMcFor(dishItem('shrimp-crab'));
+    expect(mc.component).toBe('Bigoli'); // the ingredient — still the rarest tell
+    expect(mc.choices).not.toContain('Bigoli'); // the dish — never a distractor
+  });
+
+  it('Hummus Chips never asks about its own name ("Hummus Chips" is its first ingredient)', () => {
+    const mc = reverseMcFor(dishItem('hummus-chips'));
+    expect(mc.component).not.toBe('Hummus Chips');
+    expect(wordOverlap(food('hummus-chips').name, mc.component)).toBe(false);
   });
 
   it('is deterministic per item (same choice order on every call)', () => {

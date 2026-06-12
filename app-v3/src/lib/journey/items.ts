@@ -235,8 +235,30 @@ const GENERIC_COMPONENTS = new Set([
   'evoo'
 ]);
 
+// ------------------------------------------------------- word normalization
+// Every string comparison reverse minting makes (rarity counting, ingredient
+// exclusion, name-leak checks) runs through ONE rule: the frozen engine's
+// wordSet split (lowercase, non-alphanumeric boundaries — training.js) plus a
+// simple plural fold, trailing 's' stripped per word — so 'Chive' and 'Chives'
+// are the same token everywhere.
+const foldPlural = (w: string): string =>
+  w.length > 1 && w.endsWith('s') ? w.slice(0, -1) : w;
+/** Lowercased, plural-folded words of a string (engine word rule + 's' strip). */
+export function normWords(s: string): string[] {
+  return s
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean)
+    .map(foldPlural);
+}
+/** Canonical comparison key for a whole ingredient token. */
+export function normKey(s: string): string {
+  return normWords(s).join(' ');
+}
+
 // The reverse-lookup universe: the 41 path dishes + how many of them carry
-// each ingredient token (case-insensitive). Derived once — path data is static.
+// each ingredient token (normalized — see normKey). Derived once — path data
+// is static.
 let reverseUniverse: { dishes: Food[]; freq: Map<string, number> } | null = null;
 function getReverseUniverse(): { dishes: Food[]; freq: Map<string, number> } {
   if (!reverseUniverse) {
@@ -246,7 +268,7 @@ function getReverseUniverse(): { dishes: Food[]; freq: Map<string, number> } {
     const freq = new Map<string, number>();
     for (const d of dishes)
       for (const ing of d.ingredients!) {
-        const k = ing.toLowerCase();
+        const k = normKey(ing);
         freq.set(k, (freq.get(k) ?? 0) + 1);
       }
     reverseUniverse = { dishes, freq };
@@ -257,9 +279,13 @@ function getReverseUniverse(): { dishes: Food[]; freq: Map<string, number> } {
 /** NEW minted runtime content (no frozen ids involved): "Which dish comes with
  * <component>?" — the component is the dish's most DISTINCTIVE official
  * ingredient (carried by the fewest path dishes; ties keep list order; generic
- * tokens like Salt/Olive Oil lose to any real component). Distractors are
- * same-category dishes where possible (look-alike discrimination), padded
- * cross-category — never a dish that also carries the component. */
+ * tokens like Salt/Olive Oil lose to any real component) that shares NO word
+ * with the dish's own name (the engine's genComponents rule — "Hummus Chips"
+ * is never the tell for the Hummus Chips). Distractors are same-category
+ * dishes where possible (look-alike discrimination), padded cross-category —
+ * never a dish that also carries the component, and never a dish whose NAME
+ * shares a word with it (the dish "Bigoli" can't be a wrong choice when the
+ * component is the ingredient "Bigoli"). */
 export function reverseMcFor(item: JourneyItem): ReverseMcContent {
   if (item.kind !== 'dish')
     throw new Error(`journey: reverseMcFor is dish-only — '${item.id}' has no plate to look up`);
@@ -267,14 +293,24 @@ export function reverseMcFor(item: JourneyItem): ReverseMcContent {
   const { dishes, freq } = getReverseUniverse();
 
   const nonGeneric = f.ingredients!.filter((i) => !GENERIC_COMPONENTS.has(i.toLowerCase()));
-  const pool = nonGeneric.length > 0 ? nonGeneric : f.ingredients!;
+  const base = nonGeneric.length > 0 ? nonGeneric : f.ingredients!;
+  // Name-leak exclusion BEFORE the rarity scan (mirrors training.js
+  // genComponents). Fallback — unused on today's path data — when EVERY
+  // ingredient shares a name word: keep the rarest anyway, never throw.
+  const nameWords = new Set(normWords(f.name));
+  const noLeak = base.filter((i) => !normWords(i).some((w) => nameWords.has(w)));
+  const pool = noLeak.length > 0 ? noLeak : base;
   let component = pool[0];
   for (const ing of pool) // strict < keeps the FIRST list entry on ties
-    if (freq.get(ing.toLowerCase())! < freq.get(component.toLowerCase())!) component = ing;
+    if (freq.get(normKey(ing))! < freq.get(normKey(component))!) component = ing;
 
-  const lc = component.toLowerCase();
+  const componentKey = normKey(component);
+  const componentWords = new Set(normWords(component));
   const eligible = dishes.filter(
-    (d) => d.id !== f.id && !d.ingredients!.some((i) => i.toLowerCase() === lc)
+    (d) =>
+      d.id !== f.id &&
+      !d.ingredients!.some((i) => normKey(i) === componentKey) &&
+      !normWords(d.name).some((w) => componentWords.has(w))
   );
   const sameCat = eligible.filter((d) => d.category === f.category);
   const crossCat = eligible.filter((d) => d.category !== f.category);
