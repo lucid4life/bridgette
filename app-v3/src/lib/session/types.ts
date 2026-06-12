@@ -36,14 +36,15 @@
 // completes, render your own summary screen from `summary()`.
 //
 // ## Step → render + resolve matrix
-// | step.type    | step.rung | render with    | resolve with                          |
-// |--------------|-----------|----------------|---------------------------------------|
-// | 'pretest-mc' | 'mc'      | mcFor(item)    | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'mc'      | mcFor(item)    | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'cued'    | cuedFor(item)  | UI reveal → selfGrade(gotIt)          |
-// | 'quiz'       | 'free'    | freeFor(item)  | UI reveal → selfGrade(gotIt)          |
-// | 'teach'      | —         | teachFor(item) | advance()                             |
-// | 'reteach'    | —         | teachFor(item) | advance()                             |
+// | step.type    | step.rung | render with      | resolve with                          |
+// |--------------|-----------|------------------|---------------------------------------|
+// | 'pretest-mc' | 'mc'      | mcFor(item)      | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc'      | mcFor(item)      | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'cued'    | cuedFor(item)    | UI reveal → selfGrade(gotIt)          |
+// | 'quiz'       | 'free'    | freeFor(item)    | UI reveal → selfGrade(gotIt)          |
+// | 'quiz'       | 'romance' | romanceFor(item) | RomanceCard reveal → selfGrade(gotIt) |
+// | 'teach'      | —         | teachFor(item)   | advance()                             |
+// | 'reteach'    | —         | teachFor(item)   | advance()                             |
 //
 // MC steps are button-driven: `answerMc(choiceIndex)` validates against
 // mcFor(item).answerIndex and returns { correct, answerIndex } so the UI can

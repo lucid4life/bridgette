@@ -12,7 +12,6 @@
   import { cuedFor, freeFor, teachFor } from '$lib/journey/items';
   import { createReviewSession, type ReviewSession, type ReviewSummary } from '$lib/session';
   import { progress } from '$lib/store/progress.svelte';
-  import { progressView } from '$lib/store/view';
 
   let session: ReviewSession | null = $state(null);
   let empty = $state(false);
@@ -23,7 +22,7 @@
   $effect(() => {
     if (!progress.ready || built) return;
     built = true;
-    const entries = toStage1Entries(progress.dueItems(), progressView(progress.state));
+    const entries = toStage1Entries(progress.dueItems(), progress.state);
     if (entries.length === 0) {
       empty = true;
       return;

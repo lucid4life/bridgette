@@ -323,14 +323,19 @@ describe('recordReview', () => {
     expect(s.items['b'].correct).toBe(1);
   });
 
-  it("auto-introduces an unseen item; its first 'again' is NOT a lapse", async () => {
+  it("auto-introduces an unseen item; its first 'again' is NOT a lapse; drill auto-introduce does not consume the lesson allowance", async () => {
     const s = await loadProgress(T);
     await recordReview(s, 'food:gnocchi', 'again', T);
     const r = s.items['food:gnocchi'];
     expect(r.introducedDay).toBe(TODAY);
     expect(r.lapses).toBe(0); // was not "already-introduced"
     expect(r.lastGrade).toBe('again');
-    expect(s.meta.dayLog[TODAY]).toEqual({ reviews: 1, newItems: 1 });
+    // newItems stays 0: the lessonsPerDay throttle paces the LESSON path only.
+    // A drill pass (e.g. Romance over 41 dishes) auto-introduces via reviews
+    // and must NOT eat the day's lesson allowance — the day still counts as
+    // studied through `reviews`.
+    expect(s.meta.dayLog[TODAY]).toEqual({ reviews: 1, newItems: 0 });
+    expect(s.meta.streak.current).toBe(1); // the day is still a study day
   });
 
   it('marks the day studied and accumulates dayLog across reviews', async () => {
@@ -399,14 +404,21 @@ describe('dueItems', () => {
 });
 
 describe('newToday', () => {
-  it('counts only items introduced on the local day of `now`', () => {
-    const s = withItems({
-      a: mkRec({}, { introducedDay: TODAY }),
-      b: mkRec({}, { introducedDay: TODAY }),
-      old: mkRec({}, { introducedDay: TODAY - 1 })
-    });
+  it("counts the day's LESSON introductions (dayLog.newItems) for the local day of `now`", () => {
+    const s = defaultState();
+    s.meta.dayLog[TODAY] = { reviews: 5, newItems: 2 };
+    s.meta.dayLog[TODAY - 1] = { reviews: 0, newItems: 1 };
     expect(newToday(s, T)).toBe(2);
     expect(newToday(s, new Date(T.getTime() - DAY))).toBe(1);
+    expect(newToday(s, new Date(T.getTime() + DAY))).toBe(0); // no entry → 0
+  });
+
+  it('lesson introductions count; drill auto-introductions (recordReview on unseen) do not', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'food:gnocchi', T); // the learn flow
+    await recordReview(s, 'food:halibut', 'good', T); // a romance-style drill grade
+    expect(s.items['food:halibut']).toBeDefined(); // auto-introduced all the same
+    expect(newToday(s, T)).toBe(1); // but only the lesson consumed the allowance
   });
 });
 

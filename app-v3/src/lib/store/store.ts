@@ -422,14 +422,16 @@ function introduceLocal(state: ProgressState, itemId: string, now: Date): ItemRe
     introducedDay: dayNumber(now)
   };
   state.items[itemId] = rec;
-  bumpDay(state, dayNumber(now), 'newItems');
   return rec;
 }
 
-/** Introduce a new item (no-op if already introduced). Marks the day studied. */
+/** Introduce a new item via the LESSON path (no-op if already introduced).
+ * Marks the day studied and consumes one of today's lessonsPerDay allowance —
+ * the only path that does (see newToday). */
 export async function introduceItem(state: ProgressState, itemId: string, now: Date): Promise<void> {
   if (state.items[itemId]) return; // idempotent
   introduceLocal(state, itemId, now);
+  bumpDay(state, dayNumber(now), 'newItems');
   tickStreak(state, now);
   await persist(state, itemId);
 }
@@ -438,6 +440,8 @@ export async function introduceItem(state: ProgressState, itemId: string, now: D
  * Record a graded review. 'again' on an already-introduced item counts a lapse;
  * any other grade counts correct. An unseen item is auto-introduced first (its
  * initial 'again' is NOT a lapse — it was never known). Marks the day studied.
+ * Auto-introduction does NOT consume the lessonsPerDay allowance: the throttle
+ * paces the LESSON path; drill surfaces (e.g. Romance) are review-shaped.
  */
 export async function recordReview(
   state: ProgressState,
@@ -481,10 +485,12 @@ export function dueItems(state: ProgressState, now: Date): string[] {
     .map(([id]) => id);
 }
 
-/** Items introduced on the local day of `now` (feeds the lessonsPerDay throttle). */
+/** LESSON introductions on the local day of `now` (feeds the lessonsPerDay
+ * throttle). Reads dayLog.newItems — bumped by introduceItem only, so drill
+ * auto-introductions (recordReview on an unseen item) never count against
+ * the day's lesson allowance. */
 export function newToday(state: ProgressState, now: Date): number {
-  const today = dayNumber(now);
-  return Object.values(state.items).filter((r) => r.introducedDay === today).length;
+  return state.meta.dayLog[dayNumber(now)]?.newItems ?? 0;
 }
 
 /** Rank histogram over introduced items. */

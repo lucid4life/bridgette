@@ -1,9 +1,13 @@
 // Task D — gating: sequential unit unlocks, 85% criterion, test-out, stage progress.
-// Pure over a minimal ProgressView — no store import.
+// Pure over a minimal ProgressView — no store import, EXCEPT the final
+// integration describe: the romance-pass regression lives in the store+view+
+// gating seam, so it must run against the real progressView.
 import { describe, expect, it } from 'vitest';
 import type { Rank } from '$lib/srs/scheduler';
+import { defaultState, recordReview } from '$lib/store/store';
+import { progressView } from '$lib/store/view';
 import type { ProgressView } from './types';
-import { itemsForUnit } from './items';
+import { allStage1Items, itemsForUnit } from './items';
 import { stageById } from './stages';
 import {
   CHECKPOINT_PASS_RATIO,
@@ -219,5 +223,26 @@ describe('stageProgress', () => {
 
   it('locked stages report empty progress (no NaN)', () => {
     expect(stageProgress('wine', view())).toEqual({ itemsAtCriterion: 0, totalItems: 0, ratio: 0 });
+  });
+});
+
+describe('romance-pass integration (real store + progressView): the criterion needs a recall', () => {
+  const T = new Date(2026, 5, 11, 15);
+  const FOOD_UNITS = LESSONS.filter((u) => u !== 'day-one'); // the 8 dish units
+  const dishes = () => allStage1Items().filter((i) => i.kind === 'dish');
+
+  it('an all-miss pass over all 41 dishes leaves every unit incomplete', async () => {
+    const state = defaultState();
+    for (const d of dishes()) await recordReview(state, d.id, 'again', T);
+    const v = progressView(state);
+    for (const u of [...LESSONS, 'checkpoint-food']) expect(unitComplete(u, v), u).toBe(false);
+  });
+
+  it("an all-'good' pass completes the 8 food units — he produced every dish", async () => {
+    const state = defaultState();
+    for (const d of dishes()) await recordReview(state, d.id, 'good', T);
+    const v = progressView(state);
+    for (const u of FOOD_UNITS) expect(unitComplete(u, v), u).toBe(true);
+    expect(unitComplete('day-one', v)).toBe(false); // service calls have no plate to romance
   });
 });

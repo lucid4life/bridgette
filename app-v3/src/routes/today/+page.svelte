@@ -145,7 +145,7 @@
       <div class="rom-text">
         <h2 class="kicker rom-kicker">for sunday</h2>
         <p class="jobtitle sm">romance the menu</p>
-        <p class="meta rom-meta">say every dish out loud — “this is our…” plus the three things that matter.</p>
+        <p class="meta rom-meta">say every dish out loud — “this is our…” plus the components that matter.</p>
       </div>
       <p class="cta rom-cta"><a class="btn" href="/romance">start the drill</a></p>
     </section>

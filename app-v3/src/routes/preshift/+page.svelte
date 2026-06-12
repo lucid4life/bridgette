@@ -11,7 +11,6 @@
   import { cuedFor, freeFor, teachFor } from '$lib/journey/items';
   import { createReviewSession, type ReviewSession, type ReviewSummary } from '$lib/session';
   import { progress } from '$lib/store/progress.svelte';
-  import { progressView } from '$lib/store/view';
 
   const SHAKY_COUNT = 12;
 
@@ -25,7 +24,7 @@
     if (!progress.ready || built) return;
     built = true;
     // lapse-ranked shakiest; ids outside Stage 1 are skipped (Phase 1)
-    const entries = toStage1Entries(progress.shakyItems(SHAKY_COUNT), progressView(progress.state));
+    const entries = toStage1Entries(progress.shakyItems(SHAKY_COUNT), progress.state);
     if (entries.length === 0) {
       empty = true;
       return;

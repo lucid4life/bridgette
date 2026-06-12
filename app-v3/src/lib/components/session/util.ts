@@ -2,8 +2,10 @@
 // from store ids (the store speaks item-id strings; the engine wants
 // JourneyItems), and display names for summaries (names, never ids).
 import { allStage1Items, teachFor } from '$lib/journey/items';
-import type { JourneyItem, ProgressView } from '$lib/journey/types';
+import type { JourneyItem } from '$lib/journey/types';
 import type { ReviewEntry } from '$lib/session';
+import { rankOf } from '$lib/srs/scheduler';
+import type { ProgressState } from '$lib/store/store';
 
 let byId: Map<string, JourneyItem> | null = null;
 
@@ -28,8 +30,13 @@ export function nameOf(itemId: string): string {
  * Store ids → review entries, caller order preserved. Ids outside Stage 1 are
  * skipped (Phase 1 only has Stage 1 content to render them with) — LOUDLY, so
  * future-stage items silently vanishing from /review shows up in dev.
+ *
+ * Rungs come from the RAW srs rank, NOT progressView.rankOf: the view's 'new'
+ * is path-gating semantics (zero lifetime correct recalls stays 'new'), but a
+ * due item that has only ever been missed must still be reviewable —
+ * createReviewSession throws on rank 'new'.
  */
-export function toStage1Entries(ids: string[], view: ProgressView): ReviewEntry[] {
+export function toStage1Entries(ids: string[], state: ProgressState): ReviewEntry[] {
   return ids.flatMap((id) => {
     const item = stage1ItemById(id);
     if (!item) {
@@ -37,6 +44,7 @@ export function toStage1Entries(ids: string[], view: ProgressView): ReviewEntry[
         console.warn(`session: dropping store id '${id}' — not a Stage-1 item (no content to render yet)`);
       return [];
     }
-    return [{ item, rank: view.rankOf(id) }];
+    const rec = state.items[id];
+    return [{ item, rank: rec ? rankOf(rec.srs) : 'new' }];
   });
 }

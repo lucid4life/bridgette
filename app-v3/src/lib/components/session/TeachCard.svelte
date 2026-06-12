@@ -23,6 +23,13 @@
   let imgLoaded = $state(false);
   const hasPhoto = $derived(teach.kind === 'dish' && PHOTO_IDS.has(teach.photoId) && !imgFailed);
 
+  // The say-it pass bar matches romanceFor's bold-first-3 rule: three
+  // components — fewer when the dish only has 1-2 (ingredients are display
+  // CHUNKS, so flatten before counting).
+  const sayCount = $derived(
+    teach.kind === 'dish' ? Math.min(3, teach.ingredients.flat().length) : 0
+  );
+
   // $state: the heading is bound inside an {#if} branch — the effect fires
   // once the branch mounts and hands it focus (a11y: land on the new card).
   let hEl = $state<HTMLElement | null>(null);
@@ -91,7 +98,7 @@
           {/each}
         </div>
         <!-- the service guide's romance formula, kept in view at every teach -->
-        <p class="t-sayit">say it: “This is our {teach.name}…” + 3 components</p>
+        <p class="t-sayit">say it: “This is our {teach.name}…” + {sayCount} component{sayCount === 1 ? '' : 's'}</p>
       </div>
 
       {#if teach.allergens.length > 0}

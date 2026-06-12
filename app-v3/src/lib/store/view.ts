@@ -10,7 +10,12 @@ export function progressView(state: ProgressState): ProgressView {
   return {
     rankOf(itemId: string): Rank {
       const rec = state.items[itemId];
-      return rec ? rankOf(rec.srs) : 'new'; // un-introduced items are 'new'
+      // For path gating, an item never once recalled correctly is still new:
+      // an all-'again' pass (reps > 0, so srs rank moves) must not count the
+      // item toward a unit's criterion. Gating-only semantics — rank pills,
+      // rankCounts, shakyItems and review-rung selection read the srs directly.
+      if (!rec || rec.correct === 0) return 'new';
+      return rankOf(rec.srs);
     },
     get unitDone() {
       return state.meta.unitDone;

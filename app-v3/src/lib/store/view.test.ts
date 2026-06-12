@@ -19,4 +19,23 @@ describe('progressView', () => {
     expect(view.rankOf('dish:tuna-crudo')).toBe('learning');
     expect(view.unitDone['snacks']).toBe('gate');
   });
+
+  it("rankOf stays 'new' for an item with zero lifetime correct recalls (all-'again')", async () => {
+    const state = defaultState();
+    const view = progressView(state);
+    // an all-miss romance pass: reps move the srs, but nothing was ever recalled
+    await recordReview(state, 'dish:tuna-crudo', 'again', T);
+    await recordReview(state, 'dish:tuna-crudo', 'again', new Date(T.getTime() + 60_000));
+    expect(state.items['dish:tuna-crudo'].srs.reps).toBeGreaterThan(0);
+    expect(view.rankOf('dish:tuna-crudo')).toBe('new'); // gating: never-recalled is still new
+  });
+
+  it("one correct recall flips an all-'again' item past 'new'", async () => {
+    const state = defaultState();
+    const view = progressView(state);
+    await recordReview(state, 'dish:tuna-crudo', 'again', T);
+    expect(view.rankOf('dish:tuna-crudo')).toBe('new');
+    await recordReview(state, 'dish:tuna-crudo', 'good', new Date(T.getTime() + 60_000));
+    expect(view.rankOf('dish:tuna-crudo')).toBe('learning');
+  });
 });

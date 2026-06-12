@@ -48,7 +48,9 @@
       // that hasn't been met on the path yet — which means this drill
       // deliberately BYPASSES the lessonsPerDay throttle. That is by design:
       // romancing every dish IS the shift-critical job task (Sunday's floor),
-      // so the drill must always be able to cover the whole menu.
+      // so the drill must always be able to cover the whole menu. The reverse
+      // holds too: auto-introductions never consume the lesson allowance —
+      // the throttle paces the lesson path only (see store.ts newToday).
       onResult: (id, grade) => void progress.recordReview(id, grade)
     });
   }
@@ -146,8 +148,8 @@
       <h1 class="i-title">romance the menu</h1>
       <p class="i-line">{DISH_COUNT} dishes · about 20 honest minutes</p>
       <ul class="i-rules">
-        <li>see the name — say the line out loud: “This is our…” plus the three things that matter</li>
-        <li>then check yourself against the pass bar: name + 3 components, spoken like you mean it</li>
+        <li>see the name — say the line out loud: “This is our…” plus the components that matter — three where the dish has them</li>
+        <li>then check yourself against the pass bar: name + the components on it, spoken like you mean it</li>
         <li>misses come back until you clear them — better here than at the table</li>
       </ul>
       <div class="i-actions">
