@@ -3,7 +3,8 @@
   // 🔒 lock). Matches the nav/.tile-ico convention: 24-grid, fill=none, stroke=currentColor,
   // aria-hidden (every caller carries its own visible text or aria-label).
   // 'check' + 'flag' added for the Path's unit nodes (complete tick, shift-check pennant).
-  type IconName = 'speaker' | 'slow' | 'lock' | 'check' | 'flag';
+  // 'freeze' added for Today's streak-freeze chip (the weekly snowflake).
+  type IconName = 'speaker' | 'slow' | 'lock' | 'check' | 'flag' | 'freeze';
   let { name, size = 18 }: { name: IconName; size?: number } = $props();
 
   const ICONS: Record<IconName, string[]> = {
@@ -11,7 +12,8 @@
     slow: ['M3.5 15a5.5 4 0 0 1 11 0', 'M3.5 15h11', 'M14.5 13.4c1-.2 1.7.2 2.8.2', 'M6 15.2v1.8', 'M9 16v2', 'M12.5 15.2v1.8', 'M7.5 11.6v3', 'M11 11.6v3'],
     lock: ['M6 11h12v9H6z', 'M9 11V8a3 3 0 0 1 6 0v3'],
     check: ['M5 12.5l4.5 4.5L19 7.5'],
-    flag: ['M6 21V4', 'M6 4.5h11.5l-3 4 3 4H6']
+    flag: ['M6 21V4', 'M6 4.5h11.5l-3 4 3 4H6'],
+    freeze: ['M12 3.5v17', 'M4.6 7.75l14.8 8.5', 'M19.4 7.75 4.6 16.25', 'M9.5 5.5 12 8l2.5-2.5', 'M9.5 18.5 12 16l2.5 2.5']
   };
 </script>
 
