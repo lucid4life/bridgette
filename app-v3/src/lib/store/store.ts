@@ -333,11 +333,14 @@ export async function loadProgress(now: Date = new Date()): Promise<ProgressStat
   // A silently-failed idb write leaves idb stale but readable; without the seq
   // check the trailing persist would clobber the newer mirror with that state.
   let state = idbState;
-  if (mirrored && (!idbState || seqOf(mirrored) > seqOf(idbState))) {
-    state = mirrored;
-    idbStale = true; // idb lost (or never had) this state — persist below heals it in full
-  }
+  if (mirrored && (!idbState || seqOf(mirrored) > seqOf(idbState))) state = mirrored;
   if (!state) state = defaultState();
+  // EVERY load that does not adopt idb's state as-is forces the next persist
+  // to writeAll-with-clear: a corrupt idb read (null) can still leave orphaned
+  // item rows behind, and an incremental putMeta would stamp them with a fresh
+  // writeSeq — resurrecting ghost items at the NEXT load. Covers the mirror-won
+  // branch, the corrupt-idb branch, and the fresh-default branch alike.
+  if (state !== idbState) idbStale = true;
   tickStreak(state, now); // a freeze may be spent (or a dead streak zeroed) at open
   await persist(state); // winner → mirror + idb: the losing side is healed here
   requestStoragePersist();

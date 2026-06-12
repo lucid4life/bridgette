@@ -226,6 +226,25 @@ describe('loadProgress', () => {
     expect(healed.items['food:halibut'].correct).toBe(1); // mirror healed forward
   });
 
+  it('corrupt idb with orphaned item rows + no mirror: ghosts never resurrect', async () => {
+    const s1 = await loadProgress(T);
+    await introduceItem(s1, 'food:ghost', T); // an item row lands in idb
+    _resetStore();
+
+    const db = await openDB(DB_NAME, 1);
+    await db.delete('meta', 'meta'); // corrupt: rows exist, meta gone → read() is null
+    db.close();
+    localStorage.removeItem(MIRROR_KEY); // and no mirror to recover from
+
+    const s2 = await loadProgress(T); // falls to the fresh default
+    expect(s2.items).toEqual({});
+    await introduceItem(s2, 'food:real', T); // first mutation after the bad load
+
+    _resetStore();
+    const s3 = await loadProgress(T); // load 2: the orphaned row must NOT win
+    expect(Object.keys(s3.items)).toEqual(['food:real']);
+  });
+
   it('a failed idb heal never leaves idb partial: the next successful write is the full state', async () => {
     localStorage.setItem(MIRROR_KEY, JSON.stringify(sampleState())); // mirror-only state
 

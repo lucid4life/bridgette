@@ -115,6 +115,21 @@ describe('unitStatus: checkpoint', () => {
     const v = view({}, Object.fromEntries([...LESSONS, 'checkpoint-food'].map((u) => [u, 'gate' as const])));
     expect(unitStatus('checkpoint-food', v)).toBe('complete');
   });
+
+  it('NEVER completes via the ratio — only a sat shift check (unitDone) counts', () => {
+    // every lesson at criterion AND all 57 ranks >= learning: the checkpoint's
+    // item set is mathematically at 100%, but the shift check was never taken
+    const ranks: Record<string, Rank> = {};
+    for (const u of LESSONS) for (const item of itemsForUnit(u)) ranks[item.id] = 'learning';
+    const v = view(ranks);
+    for (const u of LESSONS) expect(unitComplete(u, v), u).toBe(true);
+    expect(unitComplete('checkpoint-food', v)).toBe(false);
+    expect(unitStatus('checkpoint-food', v)).toBe('available'); // offered, not complete
+    // the recorded pass is the ONLY way through
+    const sat = view(ranks, { 'checkpoint-food': 'gate' });
+    expect(unitComplete('checkpoint-food', sat)).toBe(true);
+    expect(unitStatus('checkpoint-food', sat)).toBe('complete');
+  });
 });
 
 describe('testOutAvailable', () => {

@@ -9,6 +9,9 @@
     hint,
     answer,
     detail,
+    allergens,
+    allergenNote,
+    confirmLine,
     kicker,
     note,
     ongrade
@@ -17,6 +20,11 @@
     hint?: string;
     answer: string;
     detail?: string;
+    /** allergen chips shown with the revealed answer (dish items) */
+    allergens?: string[];
+    allergenNote?: string;
+    /** safety framing — non-negotiable wherever allergens show */
+    confirmLine?: string;
     kicker?: string;
     /** small honesty line under the grade buttons (surface-specific copy) */
     note?: string;
@@ -77,6 +85,16 @@
     <div class="rv" tabindex="-1" bind:this={rvEl}>
       <p class="ans">{answer}</p>
       {#if detail}<p class="detail">{detail}</p>{/if}
+      {#if allergens && allergens.length > 0}
+        <div class="allerg">
+          <div class="al-chips">
+            {#each allergens as a (a)}<span class="pill alt">{a}</span>{/each}
+          </div>
+          {#if allergenNote}<p class="al-note">{allergenNote}</p>{/if}
+          <!-- safety framing: always visible wherever allergens show -->
+          {#if confirmLine}<p class="al-confirm">{confirmLine}</p>{/if}
+        </div>
+      {/if}
       <div class="gradebar">
         <button type="button" class="btn" onclick={() => ongrade(true)}>Got it</button>
         <button type="button" class="btn ghost" onclick={() => ongrade(false)}>Missed it</button>
@@ -158,6 +176,30 @@
     margin: 0;
     font-size: 13.5px;
     line-height: 1.5;
+    color: var(--text-muted);
+  }
+  /* compact allergen framing under the answer (chips are the global .pill.alt) */
+  .allerg {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+  }
+  .al-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .al-note {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--accent-text);
+  }
+  .al-confirm {
+    margin: 0;
+    font-size: 12px;
+    font-style: italic;
     color: var(--text-muted);
   }
   .note-line {

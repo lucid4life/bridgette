@@ -2,8 +2,8 @@
   // Task H — /checkpoint/[stageId]: "Shift check: Food" — the stage gate AND
   // the test-out, taken cold. Deliberate entry (intro screen + start button);
   // the engine emits NO store events during the run — pass/fail effects are
-  // applied HERE from summary(): test-out completes every unfinished Stage-1
-  // unit; if all 9 lessons were already done, the checkpoint records as a gate.
+  // applied HERE from summary(): the checkpoint itself records as a 'gate'
+  // pass; any still-unfinished lesson units record as 'test-out'.
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import Icon from '$lib/components/Icon.svelte';
@@ -75,20 +75,16 @@
     bump();
   }
 
-  /** Pass → test-out every not-yet-complete Stage-1 unit; if the 9 lessons
-   * were already complete this WAS the gate — record the checkpoint as such. */
+  /** Pass → the checkpoint records as 'gate' ALWAYS (it was just SAT — it is
+   * the one unit that can never be tested out of, it IS the test); any lesson
+   * units still incomplete were skipped over, so they record as 'test-out'. */
   function applyOutcome(s: CheckpointSummary): void {
     if (!s.passed) return;
     const view = progressView(progress.state);
     const stage = stageById(STAGE_ID);
-    const lessonsDone = stage.units
-      .filter((u) => u.kind === 'lesson')
-      .every((u) => unitComplete(u.id, view));
-    if (lessonsDone) {
-      void progress.completeUnit(CHECKPOINT_UNIT_ID, 'gate');
-      return;
-    }
+    void progress.completeUnit(CHECKPOINT_UNIT_ID, 'gate');
     for (const u of stage.units) {
+      if (u.id === CHECKPOINT_UNIT_ID) continue;
       if (!unitComplete(u.id, view)) void progress.completeUnit(u.id, 'test-out');
     }
   }
@@ -157,10 +153,10 @@
     {#key prog.position}
       {#if step.type === 'quiz' && step.rung === 'cued'}
         {@const c = cuedFor(step.item)}
-        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} kicker="shift check — service call" ongrade={grade} note="grade it like a chef is listening" />
+        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="shift check — service call" ongrade={grade} note="grade it like a chef is listening" />
       {:else if step.type === 'quiz' && step.rung === 'free'}
         {@const f = freeFor(step.item)}
-        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} kicker="shift check — dish, cold" ongrade={grade} note="grade it like a chef is listening" />
+        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shift check — dish, cold" ongrade={grade} note="grade it like a chef is listening" />
       {:else if step.type === 'quiz' || step.type === 'pretest-mc'}
         <!-- the engine never serves MC here; rendered for step-matrix totality -->
         <FlashMc mc={mcFor(step.item)} onanswer={answer} oncontinue={continueStep} />

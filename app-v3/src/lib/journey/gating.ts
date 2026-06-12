@@ -25,6 +25,10 @@ function criterionRatio(view: ProgressView, itemIds: string[]): number {
 
 export function unitComplete(unitId: string, view: ProgressView): boolean {
   if (view.unitDone[unitId]) return true; // recorded gate pass or test-out wins
+  // A checkpoint completes ONLY by being sat (a unitDone record): its items are
+  // the lessons' items, so the ratio criterion would mark the shift check done
+  // the moment the lessons are — without it ever being taken.
+  if (unitById(unitId).unit.kind === 'checkpoint') return false;
   const ids = itemsForUnit(unitId).map((i) => i.id);
   return criterionRatio(view, ids) >= UNIT_PASS_RATIO;
 }
@@ -47,6 +51,9 @@ function unitAvailable(unitId: string, view: ProgressView): boolean {
 export function unitStatus(unitId: string, view: ProgressView): UnitStatus {
   if (unitComplete(unitId, view)) return 'complete';
   if (!unitAvailable(unitId, view)) return 'locked';
+  // A checkpoint has no partial state — its items belong to the lessons, so
+  // "some at criterion" says nothing about the shift check itself.
+  if (unitById(unitId).unit.kind === 'checkpoint') return 'available';
   const started = itemsForUnit(unitId).some((i) => atCriterion(view, i.id));
   return started ? 'started' : 'available';
 }

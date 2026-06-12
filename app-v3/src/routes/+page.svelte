@@ -45,6 +45,14 @@
   const due = $derived(progress.ready ? progress.dueItems().length : 0);
   const sp = $derived(stageProgress(stage1.id, view));
   const stageTestOut = $derived(testOutAvailable(stage1.id, view));
+
+  // lessonsPerDay throttle (NEW items only): when the continue-target would
+  // mint past today's allowance, hint here — /unit's interstitial guards.
+  const nextThrottled = $derived.by(() => {
+    if (!progress.ready || !next || next.unit.kind === 'checkpoint') return false;
+    const wouldMintNew = itemsForUnit(next.unit.id).some((i) => !progress.state.items[i.id]);
+    return wouldMintNew && progress.newToday() >= progress.settings.lessonsPerDay;
+  });
 </script>
 
 <svelte:head><title>The Path · Bridgette Trainer</title></svelte:head>
@@ -78,6 +86,9 @@
             <path d="M4 12h15M13 6l6 6-6 6" />
           </svg>
         </a>
+        {#if nextThrottled}
+          <p class="throttle-hint">new items are done for today — this starts tomorrow's lesson</p>
+        {/if}
       {:else}
         <a class="continue" href="/review">
           <span class="c-text">
@@ -195,6 +206,14 @@
     height: 34px;
     flex: none;
     transition: transform 0.18s ease;
+  }
+
+  .throttle-hint {
+    margin: 8px 0 0;
+    max-width: 580px;
+    font-size: 12.5px;
+    font-style: italic;
+    color: var(--text-muted);
   }
 
   .due {

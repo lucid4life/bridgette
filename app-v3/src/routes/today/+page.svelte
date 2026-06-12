@@ -73,9 +73,22 @@
       <p class="meta">the whole stage is at criterion. keep it warm in reviews.</p>
       <p class="cta"><a class="btn ghost" href="/">see the path</a></p>
     {:else if throttled}
-      <h2 class={primary ? 'kicker' : 'card-h'}>lessons</h2>
-      <p class="meta">today's new items are done — reviews only.</p>
-      <p class="allowance">{lessonsPerDay} new items/day · 0 left today</p>
+      {#if primary}
+        <!-- queue clear AND allowance spent: an earned rest, never a dead end -->
+        <h2 class="kicker">done for today</h2>
+        <p class="jobtitle">the day's work is in</p>
+        <p class="meta">new items done, nothing due — that's the system working. tomorrow's lesson is waiting on the path.</p>
+        <p class="allowance">{lessonsPerDay} new items/day · 0 left today</p>
+        <p class="cta done-ctas">
+          {#if shaky > 0}<a class="btn ghost" href="/preshift">warm up the shaky calls</a>{/if}
+          <a class="btn ghost" href="/playbook">read the playbook</a>
+          <a class="btn ghost" href="/">see the path</a>
+        </p>
+      {:else}
+        <h2 class="card-h">lessons</h2>
+        <p class="meta">today's new items are done — reviews only.</p>
+        <p class="allowance">{lessonsPerDay} new items/day · 0 left today</p>
+      {/if}
     {:else}
       <h2 class={primary ? 'kicker' : 'card-h'}>
         {primary ? `next lesson · ${next.status === 'started' ? 'continue' : 'start'}` : 'lessons'}
@@ -219,6 +232,11 @@
   }
   .job .cta {
     margin-top: 18px;
+  }
+  .done-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   /* ---- streak card ---- */

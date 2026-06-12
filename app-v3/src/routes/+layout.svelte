@@ -24,11 +24,31 @@
   import '@fontsource/hanken-grotesk/latin-ext-500.css';
   import '@fontsource/hanken-grotesk/latin-700.css';
   import '@fontsource/hanken-grotesk/latin-ext-700.css';
+  import { onMount } from 'svelte';
   import { page } from '$app/state';
   import PwaToast from '$lib/components/PwaToast.svelte';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+  import { progress } from '$lib/store/progress.svelte';
 
   let { children } = $props();
+
+  // Keep the resident PWA's clock honest: a phone left open overnight must not
+  // show yesterday's due counts / lesson allowance / freeze state. wake() ticks
+  // the streak + bumps the store's reactive clock so time-reading $deriveds
+  // re-run — on re-focus, on becoming visible, and every 60s while visible.
+  onMount(() => {
+    const wake = () => {
+      if (document.visibilityState === 'visible') progress.wake();
+    };
+    document.addEventListener('visibilitychange', wake);
+    window.addEventListener('focus', wake);
+    const timer = setInterval(wake, 60_000);
+    return () => {
+      document.removeEventListener('visibilitychange', wake);
+      window.removeEventListener('focus', wake);
+      clearInterval(timer);
+    };
+  });
 
   // Task F — FOUR destinations, the SAME four everywhere: desktop sidebar,
   // tablet rail, mobile tab bar (app.css handles the collapse at 1000/680px).

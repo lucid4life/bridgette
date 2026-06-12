@@ -54,12 +54,21 @@ export interface McContent {
   choices: string[];
   answerIndex: number;
 }
-export interface CuedContent {
+/** Allergen framing carried by every dish REVEAL surface (spec: allergen chips
+ * + the data.confirm.allergens line wherever a dish answer shows). Service
+ * items carry none — the fields stay absent. */
+export interface AllergenFraming {
+  allergens?: string[];
+  allergenNote?: string;
+  /** safety framing is non-negotiable on any surface that shows allergens */
+  confirmLine?: string;
+}
+export interface CuedContent extends AllergenFraming {
   prompt: string;
   hint: string;
   answer: string;
 }
-export interface FreeContent {
+export interface FreeContent extends AllergenFraming {
   prompt: string;
   answer: string;
   detail?: string;
@@ -157,6 +166,16 @@ export function mcFor(item: JourneyItem): McContent {
   return toMc(item.id, card.prompt, card.choices!, card.answer);
 }
 
+/** The dish allergen framing — same sourcing as teachFor. */
+function allergenFraming(f: Food): Required<Pick<AllergenFraming, 'allergens' | 'confirmLine'>> &
+  AllergenFraming {
+  return {
+    allergens: f.allergens ?? [],
+    ...(f.allergenNote ? { allergenNote: f.allergenNote } : {}),
+    confirmLine: data.confirm.allergens
+  };
+}
+
 export function cuedFor(item: JourneyItem): CuedContent {
   if (item.kind === 'service') {
     const s = serviceFor(item);
@@ -168,7 +187,8 @@ export function cuedFor(item: JourneyItem): CuedContent {
   return {
     prompt: `What's in the ${f.name}?`,
     hint: `${ingredients.length} components — ${letters}`,
-    answer: ingredients.join(', ')
+    answer: ingredients.join(', '),
+    ...allergenFraming(f)
   };
 }
 
@@ -181,7 +201,8 @@ export function freeFor(item: JourneyItem): FreeContent {
   return {
     prompt: `Describe the ${f.name} to a guest — name + key components.`,
     answer: f.ingredients!.join(', '),
-    ...(f.description ? { detail: f.description } : {})
+    ...(f.description ? { detail: f.description } : {}),
+    ...allergenFraming(f)
   };
 }
 

@@ -120,10 +120,20 @@ describe('cuedFor', () => {
     }
   });
 
-  it('service: authored prompt/hint/answer pass through', () => {
+  it('service: authored prompt/hint/answer pass through — NO allergen framing', () => {
     const s = SERVICE_ITEMS[0];
     const item = itemsForUnit('day-one')[0];
     expect(cuedFor(item)).toEqual({ prompt: s.prompt, hint: s.hint, answer: s.answer });
+  });
+
+  it('dish: carries allergen framing (chips + the non-negotiable confirm line)', () => {
+    for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
+      const cued = cuedFor(dishItem(foodId));
+      const f = food(foodId);
+      expect(cued.allergens, foodId).toEqual(f.allergens ?? []);
+      expect(cued.allergenNote, foodId).toBe(f.allergenNote);
+      expect(cued.confirmLine, foodId).toBe(data.confirm.allergens);
+    }
   });
 });
 
@@ -137,13 +147,25 @@ describe('freeFor', () => {
     expect(free.detail).toBe(f.description);
   });
 
-  it('service: authored prompt/answer, no detail', () => {
+  it('service: authored prompt/answer, no detail, NO allergen framing', () => {
     const s = SERVICE_ITEMS[3];
     const item = itemsForUnit('day-one')[3];
     const free = freeFor(item);
     expect(free.prompt).toBe(s.prompt);
     expect(free.answer).toBe(s.answer);
     expect(free.detail).toBeUndefined();
+    expect(free.allergens).toBeUndefined();
+    expect(free.confirmLine).toBeUndefined();
+  });
+
+  it('dish: carries allergen framing (chips + the non-negotiable confirm line)', () => {
+    for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
+      const free = freeFor(dishItem(foodId));
+      const f = food(foodId);
+      expect(free.allergens, foodId).toEqual(f.allergens ?? []);
+      expect(free.allergenNote, foodId).toBe(f.allergenNote);
+      expect(free.confirmLine, foodId).toBe(data.confirm.allergens);
+    }
   });
 });
 
