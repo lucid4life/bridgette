@@ -1,0 +1,78 @@
+{
+  "generated": "2026-06-11",
+  "notes": "9 confidently matched images (4 food, 5 cocktail). Sources: bridgettebar.com/gallery-calgary Instagram-feed embed (alt text carries full IG captions; sitemap.xml itself has only interior/logo shots, menu pages are text-only) and @thebridgettebar public profile via web_profile_info API (12 most recent posts; GraphQL pagination returned 400, so deeper history unavailable unauthenticated). Unmatched-by-name shots (interiors, generic cocktails, Shrimp & Calamari, First Wives Club, Sure Thing Mom - not in catalog) were dropped per matching policy.",
+  "images": [
+    {
+      "id": "bread-butter",
+      "kind": "food",
+      "file": "bread-butter.webp",
+      "source": "site",
+      "sourceUrl": "https://www.bridgettebar.com/gallery-calgary",
+      "matchedBy": "gallery embed alt/caption: \"Bread & Butter / Smoked Tallow, Charred Onion\" (post instagram.com/p/DB1a84POR3v)"
+    },
+    {
+      "id": "the-banana-pie",
+      "kind": "food",
+      "file": "the-banana-pie.webp",
+      "source": "site",
+      "sourceUrl": "https://www.bridgettebar.com/gallery-calgary",
+      "matchedBy": "gallery embed alt/caption: \"A piece of banana pie makes the day a whole lot better\" (post instagram.com/p/DCrmcQ7zBjw)"
+    },
+    {
+      "id": "french-export",
+      "kind": "cocktail",
+      "file": "french-export.webp",
+      "source": "site",
+      "sourceUrl": "https://www.bridgettebar.com/gallery-calgary",
+      "matchedBy": "gallery embed alt/caption: \"French Export / vanilla vodka. calvados. jasmine. lemon. pernod\" (post instagram.com/p/DB9mZAWzO1R)"
+    },
+    {
+      "id": "spicy-sandia",
+      "kind": "cocktail",
+      "file": "spicy-sandia.webp",
+      "source": "instagram",
+      "sourceUrl": "https://www.instagram.com/p/DZDTxmdD5WY/",
+      "matchedBy": "caption: \"Cocktail of the Month: Spicy Sandia\""
+    },
+    {
+      "id": "eat-apres-love",
+      "kind": "cocktail",
+      "file": "eat-apres-love.webp",
+      "source": "instagram",
+      "sourceUrl": "https://www.instagram.com/p/DZV52IXDrE4/",
+      "matchedBy": "caption: \"Eat, Apres, Love / rose gin. strawberry cordial. sparkling rose\" (video cover frame)"
+    },
+    {
+      "id": "endive",
+      "kind": "food",
+      "file": "endive.webp",
+      "source": "instagram",
+      "sourceUrl": "https://www.instagram.com/p/DZLYhv4IMHv/",
+      "matchedBy": "caption: \"Endive / Apple Vinaigrette, Fontina, Pecan\""
+    },
+    {
+      "id": "tuna-crudo",
+      "kind": "food",
+      "file": "tuna-crudo.webp",
+      "source": "instagram",
+      "sourceUrl": "https://www.instagram.com/p/DYVcUvxjjBx/",
+      "matchedBy": "caption: \"Tuna Crudo / Smoked Tonnato, Puttanesca Vinaigrette, Fried Caper, Mint\""
+    },
+    {
+      "id": "heartbreak-mountain",
+      "kind": "cocktail",
+      "file": "heartbreak-mountain.webp",
+      "source": "instagram",
+      "sourceUrl": "https://www.instagram.com/p/DYqC-IADRKv/",
+      "matchedBy": "caption: \"Heartbreak Mountain / Gin. Earl Grey Tea. Lemon. Lavender. Milk Washed\""
+    },
+    {
+      "id": "rolling-canoe",
+      "kind": "cocktail",
+      "file": "rolling-canoe.webp",
+      "source": "instagram",
+      "sourceUrl": "https://www.instagram.com/p/DYAXoGcEd5b/",
+      "matchedBy": "caption: \"Rolling Canoe / rye. ruby port. ginger. lemon\""
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4319;
+// NOT 4319 (v2's e2e port): reuseExistingServer would happily reuse a running
+// v2 preview and test the wrong app. 4321 is the dev-preview server; stay clear.
+const PORT = 4323;
 
 // E2E gates (spec §16) run against the PRODUCTION build served by `vite preview`,
 // so the service worker + precache are real (needed for the offline test).

@@ -1,0 +1,39 @@
+import { test, expect } from '@playwright/test';
+
+// Smoke: the Phase-1 happy path end to end — the Path renders, Day one starts,
+// a pretest MC answers + advances, and the Playbook lookup actually filters.
+
+test('path → start Day one → answer a pretest MC → continue advances', async ({ page }) => {
+  await page.goto('/');
+
+  // Stage 1 renders all ten stations (9 lessons + the shift check).
+  await expect(page.locator('ol.path-list li.node')).toHaveCount(10);
+
+  // The one big continue card points at Day one on a fresh profile.
+  const start = page.locator('a.continue');
+  await expect(start).toContainText(/start/i);
+  await expect(start).toContainText('Day one');
+  await start.click();
+
+  await expect(page).toHaveURL(/\/unit\/day-one$/);
+  const card = page.locator('article.fmc');
+  await expect(card).toBeVisible();
+  // Svelte collapses the whitespace around the inner " of " span — match loosely.
+  await expect(page.locator('.s-count')).toContainText(/^1\s*of/);
+
+  // Answer (any choice — pretest misses are the point) → feedback renders on-card.
+  await card.locator('.choices .choice').first().click();
+  await expect(page.locator('.fmc .fb')).toBeVisible();
+
+  // Continue advances to the next step.
+  await page.locator('.fmc .fb .btn').click();
+  await expect(page.locator('.s-count')).toContainText(/^2\s*of/);
+});
+
+test('playbook search narrows to the one octopus dish', async ({ page }) => {
+  await page.goto('/playbook');
+  await page.getByRole('searchbox').fill('octopus');
+  await expect(page.locator('article.dish')).toHaveCount(1);
+  await expect(page.locator('article.dish .nm')).toHaveText('Grilled Octopus Salad');
+  await expect(page.locator('.count')).toContainText('1 of');
+});
