@@ -94,6 +94,37 @@ function stageItemIds(stage: Stage): string[] {
   return [...seen];
 }
 
+export interface UnitProgress {
+  /** Items at the criterion (rank >= 'learning'). */
+  studied: number;
+  total: number;
+  ratio: number;
+}
+
+/** Per-unit criterion progress — the ONE place the "studied" count is derived
+ * (the Path's node meters consume this instead of re-deriving rankOf !== 'new'). */
+export function unitProgress(unitId: string, view: ProgressView): UnitProgress {
+  const ids = itemsForUnit(unitId).map((i) => i.id);
+  const studied = ids.filter((id) => atCriterion(view, id)).length;
+  return { studied, total: ids.length, ratio: ids.length === 0 ? 0 : studied / ids.length };
+}
+
+/** The continue-target: first 'started' unit of the stage, else the first
+ * 'available' one, else null (stage complete). Today + the Path share this. */
+export function nextUnit(stageId: string, view: ProgressView): Unit | null {
+  const units = stageById(stageId).units;
+  const statuses = units.map((u) => unitStatus(u.id, view));
+  const started = statuses.indexOf('started');
+  if (started !== -1) return units[started];
+  const available = statuses.indexOf('available');
+  return available !== -1 ? units[available] : null;
+}
+
+/** Where a unit is taken: checkpoints have their own surface. */
+export function unitHref(stage: Stage, unit: Unit): string {
+  return unit.kind === 'checkpoint' ? `/checkpoint/${stage.id}` : `/unit/${unit.id}`;
+}
+
 export interface StageProgress {
   itemsAtCriterion: number;
   totalItems: number;

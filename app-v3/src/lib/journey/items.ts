@@ -5,6 +5,7 @@
 import { data, type Food } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import type { Card } from '$lib/data';
+import { mulberry32, shuffled } from '$lib/rng';
 import { CHECKPOINT_UNIT_ID, DAY_ONE_UNIT_ID, UNIT_FOOD_IDS, stageById, unitById } from './stages';
 import { SERVICE_ITEMS, type ServiceItem } from './service-items';
 import type { JourneyItem } from './types';
@@ -31,21 +32,35 @@ const dishItem = (unitId: string, foodId: string): JourneyItem => ({
   foodId
 });
 
-export function itemsForUnit(unitId: string): JourneyItem[] {
+// Items are STATIC after module init — memoized so the gating layer (which
+// calls itemsForUnit under every status/progress read) never re-allocates.
+const unitItemsCache = new Map<string, readonly JourneyItem[]>();
+
+export function itemsForUnit(unitId: string): readonly JourneyItem[] {
+  const cached = unitItemsCache.get(unitId);
+  if (cached) return cached;
   unitById(unitId); // throws on unknown units
-  if (unitId === DAY_ONE_UNIT_ID)
-    return SERVICE_ITEMS.map((s) => ({ id: s.id, kind: 'service', unitId }));
-  if (unitId === CHECKPOINT_UNIT_ID) return allStage1Items();
-  const foodIds = UNIT_FOOD_IDS[unitId];
-  if (!foodIds) throw new Error(`journey: unit '${unitId}' has no dish roster`);
-  return foodIds.map((foodId) => dishItem(unitId, foodId));
+  let built: readonly JourneyItem[];
+  if (unitId === DAY_ONE_UNIT_ID) {
+    built = SERVICE_ITEMS.map((s) => ({ id: s.id, kind: 'service', unitId }));
+  } else if (unitId === CHECKPOINT_UNIT_ID) {
+    built = allStage1Items();
+  } else {
+    const foodIds = UNIT_FOOD_IDS[unitId];
+    if (!foodIds) throw new Error(`journey: unit '${unitId}' has no dish roster`);
+    built = foodIds.map((foodId) => dishItem(unitId, foodId));
+  }
+  unitItemsCache.set(unitId, built);
+  return built;
 }
 
+let stage1Items: readonly JourneyItem[] | null = null;
+
 /** All 57 Stage-1 items (16 service + 41 dish), home unitIds preserved. */
-export function allStage1Items(): JourneyItem[] {
-  return stageById('food-runner')
+export function allStage1Items(): readonly JourneyItem[] {
+  return (stage1Items ??= stageById('food-runner')
     .units.filter((u) => u.kind === 'lesson')
-    .flatMap((u) => itemsForUnit(u.id));
+    .flatMap((u) => itemsForUnit(u.id)));
 }
 
 // --------------------------------------------------------------- accessors
@@ -120,23 +135,6 @@ function hashId(id: string): number {
   return h >>> 0;
 }
 
-function seededShuffle<T>(arr: readonly T[], seed: number): T[] {
-  // mulberry32 PRNG + Fisher-Yates
-  const out = arr.slice();
-  let s = seed;
-  const rng = () => {
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
 // The frozen v2 components deck, generated once and indexed by foodId. Reused
 // as MC material only — the engine card ids never become journey item ids.
 let componentsCards: Map<string, Card> | null = null;
@@ -151,10 +149,10 @@ function componentsCardFor(foodId: string): Card {
 }
 
 function toMc(itemId: string, prompt: string, choices: readonly string[], answer: string): McContent {
-  const shuffled = seededShuffle(choices, hashId(itemId));
-  const answerIndex = shuffled.indexOf(answer);
+  const order = shuffled(choices, mulberry32(hashId(itemId)));
+  const answerIndex = order.indexOf(answer);
   if (answerIndex === -1) throw new Error(`journey: answer missing from choices for '${itemId}'`);
-  return { prompt, choices: shuffled, answerIndex };
+  return { prompt, choices: order, answerIndex };
 }
 
 export function mcFor(item: JourneyItem): McContent {

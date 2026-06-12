@@ -8,6 +8,7 @@ import {
   completeUnit,
   defaultState,
   dueItems,
+  freezeAvailable,
   introduceItem,
   loadProgress,
   newToday,
@@ -76,6 +77,11 @@ export const progress = {
   },
 
   // --- derived selectors ($derived-friendly: plain synchronous reads) -------
+  /** This week's free streak freeze is still unspent. */
+  freezeAvailable: (now: Date = new Date()) => {
+    void clock;
+    return freezeAvailable(state, now);
+  },
   dueItems: (now: Date = new Date()) => {
     void clock;
     return dueItems(state, now);

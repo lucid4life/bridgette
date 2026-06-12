@@ -19,7 +19,7 @@ const rungFor = (item: JourneyItem): 'cued' | 'free' =>
   item.kind === 'service' ? 'cued' : 'free';
 
 export function createCheckpointSession(
-  items: JourneyItem[],
+  items: readonly JourneyItem[],
   deps: CheckpointDeps = {}
 ): CheckpointSession {
   if (items.length === 0)

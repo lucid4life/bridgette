@@ -9,7 +9,6 @@
   import { STAGES, unitById } from '$lib/journey/stages';
   import type { Rank } from '$lib/srs/scheduler';
   import { progress } from '$lib/store/progress.svelte';
-  import { dayNumber, weekStartOf } from '$lib/store/store';
   import { progressView } from '$lib/store/view';
 
   const stage1 = STAGES[0];
@@ -49,7 +48,7 @@
   });
 
   const streak = $derived(progress.streak);
-  const freezeFree = $derived(streak.freezeUsedWeekOf !== weekStartOf(dayNumber(new Date())));
+  const freezeFree = $derived(progress.freezeAvailable());
   const studyDays = $derived(Object.keys(progress.state.meta.dayLog).length);
 </script>
 

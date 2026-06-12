@@ -26,11 +26,17 @@ export function nameOf(itemId: string): string {
 
 /**
  * Store ids → review entries, caller order preserved. Ids outside Stage 1 are
- * skipped (Phase 1 only has Stage 1 content to render them with).
+ * skipped (Phase 1 only has Stage 1 content to render them with) — LOUDLY, so
+ * future-stage items silently vanishing from /review shows up in dev.
  */
 export function toStage1Entries(ids: string[], view: ProgressView): ReviewEntry[] {
   return ids.flatMap((id) => {
     const item = stage1ItemById(id);
-    return item ? [{ item, rank: view.rankOf(id) }] : [];
+    if (!item) {
+      if (import.meta.env.DEV)
+        console.warn(`session: dropping store id '${id}' — not a Stage-1 item (no content to render yet)`);
+      return [];
+    }
+    return [{ item, rank: view.rankOf(id) }];
   });
 }

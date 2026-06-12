@@ -25,7 +25,7 @@ interface QuizEntry {
   rung: Rung;
 }
 
-export function createLearnSession(items: JourneyItem[], deps: LearnDeps): LearnSession {
+export function createLearnSession(items: readonly JourneyItem[], deps: LearnDeps): LearnSession {
   const rng = deps.rng ?? Math.random;
   const pretest = items.slice(); // unit order
   const teach = items.slice(); // unit order

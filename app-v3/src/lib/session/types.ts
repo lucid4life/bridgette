@@ -53,7 +53,7 @@
 // summary()/score()/passed() before completion): these are programmer
 // errors, never user-reachable states.
 import type { JourneyItem } from '../journey/types';
-import type { Grade, Rank } from '../srs/scheduler';
+import type { Rank } from '../srs/scheduler';
 
 /** Prompt-fading ladder rungs, in climbing order. */
 export type Rung = 'mc' | 'cued' | 'free';
@@ -65,8 +65,6 @@ export type Step =
   | { type: 'teach'; item: JourneyItem }
   | { type: 'reteach'; item: JourneyItem };
 
-export type StepType = Step['type'];
-
 /** Returned by answerMc: outcome + the right index for the reveal UI. */
 export interface McAnswer {
   correct: boolean;
@@ -76,10 +74,10 @@ export interface McAnswer {
 /** Uniform random in [0, 1) — Math.random-compatible; tests inject seeded. */
 export type Rng = () => number;
 
-/** Grades sessions can emit ('easy' is reserved for later phases). */
-export type SessionGrade = Exclude<Grade, 'easy'>;
-
-/** The methods every session shares (see the matrix above for when to call). */
+/** The methods every session shares (see the matrix above for when to call).
+ * Grades stay per-session inline unions on the deps (learn: 'good'|'hard',
+ * review: 'good'|'again') — deliberately narrower than the scheduler's Grade;
+ * 'easy' is reserved for later phases. */
 export interface SessionCore {
   current(): Step | null;
   answerMc(choiceIndex: number): McAnswer;

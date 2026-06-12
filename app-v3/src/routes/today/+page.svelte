@@ -6,10 +6,9 @@
   // are. Three blocks, no feed: hero (primary + streak) · the other job · the
   // 2:45pm pre-shift door.
   import Icon from '$lib/components/Icon.svelte';
-  import { stageStatus, unitStatus } from '$lib/journey/gating';
+  import { nextUnit, stageStatus, unitHref, unitStatus } from '$lib/journey/gating';
   import { STAGES } from '$lib/journey/stages';
   import { progress } from '$lib/store/progress.svelte';
-  import { dayNumber, weekStartOf } from '$lib/store/store';
   import { progressView } from '$lib/store/view';
 
   const stage1 = STAGES[0];
@@ -23,21 +22,18 @@
   const lessonsPerDay = $derived(progress.settings.lessonsPerDay);
   const lessonsLeft = $derived(Math.max(0, lessonsPerDay - (progress.ready ? progress.newToday() : 0)));
 
-  // next stop on the path: first started unit, else first available (same rule
-  // as the Path home — the checkpoint is a unit too, with its own href)
+  // next stop on the path: the SAME shared selector the Path home consumes
   const next = $derived.by(() => {
-    const rows = stage1.units.map((unit) => ({ unit, status: unitStatus(unit.id, view) }));
-    return rows.find((r) => r.status === 'started') ?? rows.find((r) => r.status === 'available') ?? null;
+    const unit = nextUnit(stage1.id, view);
+    return unit ? { unit, status: unitStatus(unit.id, view) } : null;
   });
   const stageDone = $derived(stageStatus(stage1.id, view) === 'complete');
-  const nextHref = $derived(
-    next ? (next.unit.kind === 'checkpoint' ? `/checkpoint/${stage1.id}` : `/unit/${next.unit.id}`) : '/'
-  );
+  const nextHref = $derived(next ? unitHref(stage1, next.unit) : '/');
   // the shift check re-tests known items — it mints nothing, so the throttle never blocks it
   const throttled = $derived(lessonsLeft === 0 && next?.unit.kind !== 'checkpoint');
 
   const streak = $derived(progress.streak);
-  const freezeFree = $derived(streak.freezeUsedWeekOf !== weekStartOf(dayNumber(new Date())));
+  const freezeFree = $derived(progress.freezeAvailable());
 </script>
 
 <svelte:head><title>Today · Bridgette Trainer</title></svelte:head>

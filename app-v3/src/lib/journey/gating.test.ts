@@ -4,13 +4,17 @@ import { describe, expect, it } from 'vitest';
 import type { Rank } from '$lib/srs/scheduler';
 import type { ProgressView } from './types';
 import { itemsForUnit } from './items';
+import { stageById } from './stages';
 import {
   CHECKPOINT_PASS_RATIO,
   UNIT_PASS_RATIO,
+  nextUnit,
   stageProgress,
   stageStatus,
   testOutAvailable,
   unitComplete,
+  unitHref,
+  unitProgress,
   unitStatus
 } from './gating';
 
@@ -161,6 +165,38 @@ describe('stageStatus', () => {
   it('started once any item moves past new; complete when every unit is', () => {
     expect(stageStatus('food-runner', view(ranked('day-one', 1)))).toBe('started');
     expect(stageStatus('food-runner', doneUnits(...LESSONS, 'checkpoint-food'))).toBe('complete');
+  });
+});
+
+describe('unitProgress', () => {
+  it('counts items at criterion over the unit total', () => {
+    expect(unitProgress('snacks', view())).toEqual({ studied: 0, total: 4, ratio: 0 });
+    const p = unitProgress('day-one', view(ranked('day-one', 4)));
+    expect(p).toEqual({ studied: 4, total: 16, ratio: 4 / 16 });
+  });
+});
+
+describe('nextUnit + unitHref (the shared continue-target)', () => {
+  const stage = stageById('food-runner');
+
+  it('fresh path: the first unit', () => {
+    expect(nextUnit('food-runner', view())?.id).toBe('day-one');
+  });
+
+  it('a started unit wins over a merely-available one', () => {
+    // day-one complete (snacks available), snacks started
+    const v = view(ranked('snacks', 1), { 'day-one': 'gate' });
+    expect(nextUnit('food-runner', v)?.id).toBe('snacks');
+  });
+
+  it('all lessons done → the checkpoint; everything done → null', () => {
+    expect(nextUnit('food-runner', doneUnits(...LESSONS))?.id).toBe('checkpoint-food');
+    expect(nextUnit('food-runner', doneUnits(...LESSONS, 'checkpoint-food'))).toBeNull();
+  });
+
+  it('unitHref: /unit for lessons, /checkpoint/<stageId> for the shift check', () => {
+    expect(unitHref(stage, stage.units[0])).toBe('/unit/day-one');
+    expect(unitHref(stage, stage.units[stage.units.length - 1])).toBe('/checkpoint/food-runner');
   });
 });
 

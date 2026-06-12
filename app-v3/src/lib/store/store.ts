@@ -399,6 +399,11 @@ export function tickStreak(state: ProgressState, now: Date): void {
   }
 }
 
+/** True while this week's FREE streak freeze is unspent (weeks start Monday). */
+export function freezeAvailable(state: ProgressState, now: Date): boolean {
+  return state.meta.streak.freezeUsedWeekOf !== weekStartOf(dayNumber(now));
+}
+
 // ---------------------------------------------------------------------------
 // Mutations — mutate `state` in place, then persist (idb + mirror)
 // ---------------------------------------------------------------------------

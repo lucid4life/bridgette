@@ -5,7 +5,14 @@
   // page only reads the runes store through the ProgressView adapter.
   import StagePreview from '$lib/components/path/StagePreview.svelte';
   import UnitNode from '$lib/components/path/UnitNode.svelte';
-  import { stageProgress, testOutAvailable, unitStatus } from '$lib/journey/gating';
+  import {
+    nextUnit,
+    stageProgress,
+    testOutAvailable,
+    unitHref,
+    unitProgress,
+    unitStatus
+  } from '$lib/journey/gating';
   import { itemsForUnit } from '$lib/journey/items';
   import { STAGES } from '$lib/journey/stages';
   import { progress } from '$lib/store/progress.svelte';
@@ -20,28 +27,29 @@
     let lessonN = 0;
     return stage1.units.map((unit) => {
       const items = itemsForUnit(unit.id);
-      const studied = items.filter((it) => view.rankOf(it.id) !== 'new').length;
+      const { studied, total } = unitProgress(unit.id, view);
       const isCheckpoint = unit.kind === 'checkpoint';
       return {
         unit,
         status: unitStatus(unit.id, view),
         number: isCheckpoint ? null : ++lessonN,
-        total: items.length,
+        total,
         studied,
         meta: isCheckpoint
-          ? `${items.length} items · the whole stage, cold`
+          ? `${total} items · the whole stage, cold`
           : items[0]?.kind === 'service'
-            ? `${items.length} service calls`
-            : `${items.length} dishes`,
-        href: isCheckpoint ? `/checkpoint/${stage1.id}` : `/unit/${unit.id}`
+            ? `${total} service calls`
+            : `${total} dishes`,
+        href: unitHref(stage1, unit)
       };
     });
   });
 
-  // The ONE BIG CONTINUE: first started unit, else first available one.
-  const next = $derived(
-    rows.find((r) => r.status === 'started') ?? rows.find((r) => r.status === 'available') ?? null
-  );
+  // The ONE BIG CONTINUE — the shared selector picks it (same rule as Today).
+  const next = $derived.by(() => {
+    const unit = nextUnit(stage1.id, view);
+    return unit ? (rows.find((r) => r.unit.id === unit.id) ?? null) : null;
+  });
   const due = $derived(progress.ready ? progress.dueItems().length : 0);
   const sp = $derived(stageProgress(stage1.id, view));
   const stageTestOut = $derived(testOutAvailable(stage1.id, view));
