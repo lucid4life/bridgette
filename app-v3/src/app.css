@@ -413,7 +413,7 @@ table.matrix { width: 100%; border-collapse: collapse; background: var(--surface
   .sidebar { display: none; }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface-bar); z-index: 5; }
   .topbar .brand { font-size: 22px; padding: 0; }
-  .topbar .brand::before { content: "Bridgette Training"; }
+  .topbar .brand::before { content: "Bridgette Trainer"; }
   .topbar .brand small { display: none; }
   .screen-wrap { padding: 20px 16px 96px; }
   .cols-3, .cols-2, .hero { grid-template-columns: 1fr; }
