@@ -139,6 +139,17 @@
       </section>
     </div>
 
+    <!-- this week's job task: the romance drill sits ABOVE the pre-shift door
+         (prominent), without touching the reviews-first hero selection -->
+    <section class="card romance">
+      <div class="rom-text">
+        <h2 class="kicker rom-kicker">for sunday</h2>
+        <p class="jobtitle sm">romance the menu</p>
+        <p class="meta rom-meta">say every dish out loud — “this is our…” plus the three things that matter.</p>
+      </div>
+      <p class="cta rom-cta"><a class="btn" href="/romance">start the drill</a></p>
+    </section>
+
     <div class="grid cols-2 below">
       {#if due > 0}{@render lessonsCard(false)}{:else}{@render reviewsCard(false)}{/if}
 
@@ -264,6 +275,27 @@
     color: var(--text-muted);
     background: var(--surface-card-faint);
     border-color: var(--line);
+  }
+
+  /* ---- the romance drill door (marigold spine — Sunday's job task) ---- */
+  .romance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 16px;
+    border-left: 4px solid var(--highlight-line);
+  }
+  .rom-kicker {
+    color: var(--highlight);
+  }
+  .rom-text .rom-meta {
+    margin: 4px 0 0;
+    max-width: 52ch;
+  }
+  .romance .rom-cta {
+    margin: 0;
   }
 
   /* ---- the secondary row ---- */

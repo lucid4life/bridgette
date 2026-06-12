@@ -90,6 +90,8 @@
             </ul>
           {/each}
         </div>
+        <!-- the service guide's romance formula, kept in view at every teach -->
+        <p class="t-sayit">say it: “This is our {teach.name}…” + 3 components</p>
       </div>
 
       {#if teach.allergens.length > 0}
@@ -289,6 +291,12 @@
   .t-chunk li {
     font-size: 13.5px;
     line-height: 1.35;
+  }
+  .t-sayit {
+    margin: 11px 0 0;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--text-muted);
   }
   .t-chips {
     display: flex;

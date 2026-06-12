@@ -86,6 +86,7 @@
       <h3>nothing shaky yet</h3>
       <p class="meta">walk the path first — once an item wobbles in a quiz or review, it shows up here.</p>
       <div class="clear-actions">
+        <a class="btn ghost" href="/romance">romance the menu instead</a>
         <a class="btn ghost" href="/">back to the path</a>
       </div>
     </div>
@@ -104,6 +105,7 @@
       misses={missList}
     >
       <a class="btn" href="/today">back to today</a>
+      <a class="btn ghost" href="/romance">romance the menu</a>
     </SessionSummary>
   {:else if step && prog}
     <SessionHeader

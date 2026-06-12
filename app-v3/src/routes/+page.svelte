@@ -115,6 +115,11 @@
           <a class="due-link" href="/review">{due} {due === 1 ? 'review' : 'reviews'} waiting →</a>
         </p>
       {/if}
+
+      <!-- the quiet door to the say-it-aloud drill — Sunday's job task -->
+      <p class="romance">
+        <a class="romance-link" href="/romance">shift sunday? romance the whole menu →</a>
+      </p>
     </header>
 
     <section class="stage" aria-labelledby="stage1-title">
@@ -236,6 +241,24 @@
     color: var(--accent-text);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  /* quiet secondary link under the continue card */
+  .romance {
+    margin: 2px 0 0;
+  }
+  .romance-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .romance-link:hover {
+    color: var(--accent-text);
   }
 
   .stage {

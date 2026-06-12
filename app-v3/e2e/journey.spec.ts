@@ -30,6 +30,22 @@ test('path → start Day one → answer a pretest MC → continue advances', asy
   await expect(page.locator('.s-count')).toContainText(/^2\s*of/);
 });
 
+test('romance drill: intro → start → reveal → got it advances to 2 of 41', async ({ page }) => {
+  await page.goto('/romance');
+
+  // Deliberate entry: the intro card, no session chrome yet.
+  await expect(page.locator('.s-count')).toHaveCount(0);
+  await page.getByRole('button', { name: 'start the drill' }).click();
+
+  // The drill face: 1 of 41, dish name big, reveal → pass bar → self-grade.
+  await expect(page.locator('.s-count')).toContainText(/^1\s*of\s*41/);
+  await expect(page.locator('.rom .r-name')).toBeVisible();
+  await page.locator('.rom .act .btn').click();
+  await expect(page.locator('.rom .targets li').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Got it' }).click();
+  await expect(page.locator('.s-count')).toContainText(/^2\s*of\s*41/);
+});
+
 test('playbook search narrows to the one octopus dish', async ({ page }) => {
   await page.goto('/playbook');
   await page.getByRole('searchbox').fill('octopus');

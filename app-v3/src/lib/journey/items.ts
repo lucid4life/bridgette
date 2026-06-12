@@ -204,6 +204,40 @@ export function freeFor(item: JourneyItem): FreeContent {
   };
 }
 
+/** The Romance drill's reveal surface — everything the runner needs to check
+ * a spoken "This is our X…" line against the official truth. */
+export interface RomanceContent extends AllergenFraming {
+  name: string;
+  category: string;
+  price: string;
+  /** The pass bar: the official FIRST-3 ingredients (the Playbook's bold-first-3
+   * rule) — fewer when the dish only has 1-2 official components. */
+  romanceTargets: string[];
+  /** The official description — it already reads as the romance sentence. */
+  modelLine: string;
+  /** Full official ingredients, syllabus order. */
+  ingredients: string[];
+}
+
+export function romanceFor(item: JourneyItem): RomanceContent {
+  if (item.kind !== 'dish')
+    throw new Error(`journey: romanceFor is dish-only — '${item.id}' has no plate to romance`);
+  const f = foodFor(item);
+  // Same hard-fail philosophy as the module-init guard: never hand the drill
+  // an empty model line silently (every official path dish has a description).
+  if (!f.description)
+    throw new Error(`journey: food '${f.id}' has no official description for the romance line`);
+  return {
+    name: f.name,
+    category: f.category,
+    price: f.price,
+    romanceTargets: f.ingredients!.slice(0, 3),
+    modelLine: f.description,
+    ingredients: f.ingredients!.slice(),
+    ...allergenFraming(f)
+  };
+}
+
 /** Group into <=4 chunks; order preserved; sizes differ by at most 1. */
 function chunkEvenly(items: readonly string[], maxChunks = 4): string[][] {
   if (items.length <= maxChunks) return items.map((i) => [i]);

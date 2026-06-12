@@ -10,7 +10,8 @@ const ROUTES = [
   '/progress',
   '/review',
   '/preshift',
-  '/checkpoint/food-runner' // intro state — the session never starts
+  '/checkpoint/food-runner', // intro state — the session never starts
+  '/romance' // intro state — the drill never starts
 ];
 const THEMES = ['light', 'dark'] as const;
 
@@ -129,6 +130,16 @@ for (const theme of THEMES) {
       await page.locator('.frv .act .btn').click();
       await expect(page.locator('.frv .rv')).toBeVisible();
       await scan(page); // the revealed answer + grade bar
+    });
+
+    test('axe: romance drill face + revealed state', async ({ page }) => {
+      await page.goto('/romance');
+      await page.getByRole('button', { name: 'start the drill' }).click();
+      await expect(page.locator('article.rom')).toBeVisible();
+      await scan(page); // the question face (name + prompt)
+      await page.locator('.rom .act .btn').click();
+      await expect(page.locator('.rom .rv')).toBeVisible();
+      await scan(page); // the pass bar + model line + grade bar
     });
   });
 }

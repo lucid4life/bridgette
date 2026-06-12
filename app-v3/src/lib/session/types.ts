@@ -21,6 +21,12 @@
 //   no teach, no recycling, NO events (CheckpointDeps has no hooks — the
 //   CALLER applies test-out effects from summary()). passed() = score >=
 //   CHECKPOINT_PASS_RATIO (0.85, same constant as journey/gating).
+// - createRomanceSession(items, deps) — the "Romance the menu" drill
+//   (./romance.ts): review-session mechanics at ONE forced rung 'romance'
+//   (dish items only; caller order preserved). First attempt decides the
+//   grade exactly like reviews: correct → onResult('good'); miss →
+//   onResult('again') immediately + reteach next + retry at 'romance' ~3
+//   steps later; a retry clears silently.
 //
 // ## Driving a session (the UI loop)
 //   while (!session.isComplete()) { render(session.current()!); …resolve… }
@@ -55,8 +61,10 @@
 import type { JourneyItem } from '../journey/types';
 import type { Rank } from '../srs/scheduler';
 
-/** Prompt-fading ladder rungs, in climbing order. */
-export type Rung = 'mc' | 'cued' | 'free';
+/** Prompt-fading ladder rungs in climbing order — plus 'romance', the
+ * say-it-aloud presentation rung used ONLY by the Romance drill (it never
+ * appears on the learn ladder or in reviews/checkpoints). */
+export type Rung = 'mc' | 'cued' | 'free' | 'romance';
 
 /** One screen of a session. Discriminate on `type` (then `rung` for quiz). */
 export type Step =
@@ -166,6 +174,21 @@ export interface ReviewSession extends SessionCore {
   progress(): ReviewProgress;
   /** Complete sessions only — throws otherwise. */
   summary(): ReviewSummary;
+}
+
+// --------------------------------------------------------------- romance
+// The Romance drill reuses the review session's event/progress/summary
+// semantics wholesale (one grade per item, miss events, clearing order) —
+// aliases, not copies, so the two surfaces can never drift apart.
+export type RomanceDeps = ReviewDeps;
+export type RomanceProgress = ReviewProgress;
+export type RomanceItemResult = ReviewItemResult;
+export type RomanceSummary = ReviewSummary;
+
+export interface RomanceSession extends SessionCore {
+  progress(): RomanceProgress;
+  /** Complete sessions only — throws otherwise. */
+  summary(): RomanceSummary;
 }
 
 // ------------------------------------------------------------ checkpoint

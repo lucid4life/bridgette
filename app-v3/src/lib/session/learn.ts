@@ -16,13 +16,16 @@ import type {
   Step
 } from './types';
 
+/** The learn ladder's rungs ('romance' belongs to the Romance drill only). */
+type LadderRung = Extract<Rung, 'mc' | 'cued' | 'free'>;
+
 /** Minimum quiz steps left for an entry sitting on a given rung. */
-const RUNGS_LEFT: Record<Rung, number> = { mc: 3, cued: 2, free: 1 };
-const NEXT_RUNG: Record<'mc' | 'cued', Rung> = { mc: 'cued', cued: 'free' };
+const RUNGS_LEFT: Record<LadderRung, number> = { mc: 3, cued: 2, free: 1 };
+const NEXT_RUNG: Record<'mc' | 'cued', LadderRung> = { mc: 'cued', cued: 'free' };
 
 interface QuizEntry {
   item: JourneyItem;
-  rung: Rung;
+  rung: LadderRung;
 }
 
 export function createLearnSession(items: readonly JourneyItem[], deps: LearnDeps): LearnSession {

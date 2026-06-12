@@ -6,7 +6,7 @@ import { data, type Card } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import { CHECKPOINT_UNIT_ID, UNIT_FOOD_IDS, stageById } from './stages';
 import { SERVICE_ITEMS } from './service-items';
-import { allStage1Items, cuedFor, freeFor, itemsForUnit, mcFor, teachFor } from './items';
+import { allStage1Items, cuedFor, freeFor, itemsForUnit, mcFor, romanceFor, teachFor } from './items';
 import type { JourneyItem } from './types';
 
 const food = (id: string) => data.foods.find((f) => f.id === id)!;
@@ -210,5 +210,48 @@ describe('teachFor', () => {
     expect(teach.name).toBe(s.title);
     expect(teach.body).toBe(s.answer);
     expect(teach.why).toBe(s.why);
+  });
+});
+
+describe('romanceFor', () => {
+  it('dish: official name/category/price, first-3 targets, description model line, full ingredients', () => {
+    const f = food('tuna-crudo');
+    const r = romanceFor(dishItem('tuna-crudo'));
+    expect(r.name).toBe(f.name);
+    expect(r.category).toBe(f.category);
+    expect(r.price).toBe(f.price);
+    expect(r.romanceTargets).toEqual(f.ingredients!.slice(0, 3)); // the Playbook bold-first-3 rule
+    expect(r.modelLine).toBe(f.description);
+    expect(r.ingredients).toEqual(f.ingredients);
+  });
+
+  it('every path dish romances: ≤3 targets (all of them on short dishes), a non-empty model line', () => {
+    for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
+      const f = food(foodId);
+      const r = romanceFor(dishItem(foodId));
+      expect(r.romanceTargets, foodId).toEqual(f.ingredients!.slice(0, 3));
+      expect(r.romanceTargets.length, foodId).toBe(Math.min(3, f.ingredients!.length));
+      expect(r.modelLine.length, foodId).toBeGreaterThan(0);
+    }
+  });
+
+  it('a 2-component dish (Cashews) targets both components', () => {
+    const r = romanceFor(dishItem('cashews'));
+    expect(r.romanceTargets).toEqual(food('cashews').ingredients);
+    expect(r.romanceTargets.length).toBe(2);
+  });
+
+  it('dish: carries allergen framing (chips + the non-negotiable confirm line)', () => {
+    for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
+      const r = romanceFor(dishItem(foodId));
+      const f = food(foodId);
+      expect(r.allergens, foodId).toEqual(f.allergens ?? []);
+      expect(r.allergenNote, foodId).toBe(f.allergenNote);
+      expect(r.confirmLine, foodId).toBe(data.confirm.allergens);
+    }
+  });
+
+  it('throws on service items — there is no plate to romance', () => {
+    expect(() => romanceFor(itemsForUnit('day-one')[0])).toThrow(/dish/);
   });
 });

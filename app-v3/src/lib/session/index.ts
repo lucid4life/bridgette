@@ -5,6 +5,8 @@ export * from './types';
 export { createLearnSession } from './learn';
 export { createReviewSession } from './review';
 export { createCheckpointSession } from './checkpoint';
+export { createRomanceSession } from './romance';
+export { romanceOrder } from './romance-order';
 export { RECYCLE_GAP } from './shared';
 // Same 0.85 bar the path gating uses — re-exported so the runner UI needs
 // only one import.
