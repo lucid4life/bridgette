@@ -46,6 +46,41 @@ test('romance drill: intro → start → reveal → got it advances to 2 of 41',
   await expect(page.locator('.s-count')).toContainText(/^2\s*of\s*41/);
 });
 
+test('food test: intro → start → answer the first MC → feedback shows', async ({ page }) => {
+  await page.goto('/test');
+
+  // Deliberate entry: the intro card, no session chrome yet.
+  await expect(page.locator('.s-count')).toHaveCount(0);
+  await page.getByRole('button', { name: 'start the test' }).click();
+  await expect(page.locator('.s-count')).toContainText(/^1\s*of\s*41/);
+
+  // The type wheel deals at most one romance face before an MC — clear it.
+  await expect(page.locator('article.fmc, article.rom').first()).toBeVisible();
+  for (let i = 0; i < 2; i++) {
+    if (await page.locator('article.fmc').isVisible()) break;
+    await page.locator('.rom .act .btn').click(); // Check yourself
+    await page.getByRole('button', { name: 'Got it' }).click();
+  }
+  await expect(page.locator('article.fmc')).toBeVisible();
+  await page.locator('.fmc .choices .choice').first().click();
+  await expect(page.locator('.fmc .fb')).toBeVisible();
+});
+
+test('allergen sweep: start → answer → feedback carries the confirm line', async ({ page }) => {
+  await page.goto('/allergens');
+
+  await expect(page.locator('.s-count')).toHaveCount(0);
+  await page.getByRole('button', { name: 'start the sweep' }).click();
+
+  await expect(page.locator('.s-count')).toContainText(/^1\s*of\s*41/);
+  await expect(page.locator('article.fmc')).toBeVisible();
+  await page.locator('.fmc .choices .choice').first().click();
+  await expect(page.locator('.fmc .fb')).toBeVisible();
+  // the teach-back + the non-negotiable safety framing, visible on every answer
+  await expect(page.locator('.fmc .fb-why')).toContainText(/^Allergen flags:/);
+  await expect(page.locator('.fmc .fb-confirm')).toContainText('Never guess');
+});
+
 test('playbook search narrows to the one octopus dish', async ({ page }) => {
   await page.goto('/playbook');
   await page.getByRole('searchbox').fill('octopus');

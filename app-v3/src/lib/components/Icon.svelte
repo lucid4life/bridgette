@@ -4,7 +4,8 @@
   // aria-hidden (every caller carries its own visible text or aria-label).
   // 'check' + 'flag' added for the Path's unit nodes (complete tick, shift-check pennant).
   // 'freeze' added for Today's streak-freeze chip (the weekly snowflake).
-  type IconName = 'speaker' | 'slow' | 'lock' | 'check' | 'flag' | 'freeze';
+  // 'shield' (the allergen sweep) + 'exam' (the mock food test) for Test Prep.
+  type IconName = 'speaker' | 'slow' | 'lock' | 'check' | 'flag' | 'freeze' | 'shield' | 'exam';
   let { name, size = 18 }: { name: IconName; size?: number } = $props();
 
   const ICONS: Record<IconName, string[]> = {
@@ -13,7 +14,9 @@
     lock: ['M6 11h12v9H6z', 'M9 11V8a3 3 0 0 1 6 0v3'],
     check: ['M5 12.5l4.5 4.5L19 7.5'],
     flag: ['M6 21V4', 'M6 4.5h11.5l-3 4 3 4H6'],
-    freeze: ['M12 3.5v17', 'M4.6 7.75l14.8 8.5', 'M19.4 7.75 4.6 16.25', 'M9.5 5.5 12 8l2.5-2.5', 'M9.5 18.5 12 16l2.5 2.5']
+    freeze: ['M12 3.5v17', 'M4.6 7.75l14.8 8.5', 'M19.4 7.75 4.6 16.25', 'M9.5 5.5 12 8l2.5-2.5', 'M9.5 18.5 12 16l2.5 2.5'],
+    shield: ['M12 3.5l7 2.6v5c0 4.6-2.9 7.5-7 9.4-4.1-1.9-7-4.8-7-9.4v-5z', 'M9.2 11.8l2.1 2.1 3.7-3.9'],
+    exam: ['M6.5 3.5h8l3 3v14h-11z', 'M14 3.5V7h3.5', 'M9.3 11h5.5', 'M9.3 14.5h5.5']
   };
 </script>
 

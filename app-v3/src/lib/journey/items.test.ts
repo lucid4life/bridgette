@@ -6,7 +6,18 @@ import { data, type Card } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import { CHECKPOINT_UNIT_ID, UNIT_FOOD_IDS, stageById } from './stages';
 import { SERVICE_ITEMS } from './service-items';
-import { allStage1Items, cuedFor, freeFor, itemsForUnit, mcFor, romanceFor, teachFor } from './items';
+import {
+  allStage1Items,
+  allergenMcFor,
+  cuedFor,
+  freeFor,
+  hasAllergenMc,
+  itemsForUnit,
+  mcFor,
+  reverseMcFor,
+  romanceFor,
+  teachFor
+} from './items';
 import type { JourneyItem } from './types';
 
 const food = (id: string) => data.foods.find((f) => f.id === id)!;
@@ -253,5 +264,144 @@ describe('romanceFor', () => {
 
   it('throws on service items — there is no plate to romance', () => {
     expect(() => romanceFor(itemsForUnit('day-one')[0])).toThrow(/dish/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Test-Prep accessors (allergen MC reuses the frozen v2 allergens card;
+// reverse MC is NEW minted runtime content — no frozen ids involved).
+// ---------------------------------------------------------------------------
+
+const PATH_FOOD_IDS = Object.values(UNIT_FOOD_IDS).flat();
+// The frozen v2 sentence every food allergens card's why ends with (training.js
+// KITCHEN_CONFIRM) — asserted here so a deck-shape drift fails loudly.
+const ENGINE_KITCHEN_CONFIRM =
+  'Always confirm allergens with the kitchen before promising a guest.';
+
+describe('hasAllergenMc / allergenMcFor: the frozen allergens card, reused', () => {
+  const deck = (generateDeck('allergens', data) as Card[]).filter((c) => c.sourceKind === 'food');
+
+  it('the engine deck shape holds: 41 food cards, every why ends with the kitchen confirm', () => {
+    expect(deck.length).toBe(41);
+    for (const c of deck) {
+      expect(c.why!, c.id).toMatch(/^Allergen flags: /);
+      expect(c.why!.endsWith(ENGINE_KITCHEN_CONFIRM), c.id).toBe(true);
+    }
+  });
+
+  it('every path dish has an allergens card today (the only flagless food is off-path)', () => {
+    for (const foodId of PATH_FOOD_IDS) {
+      expect(hasAllergenMc(dishItem(foodId)), foodId).toBe(true);
+    }
+  });
+
+  it('hasAllergenMc is false for service items; allergenMcFor throws on them', () => {
+    const svc = itemsForUnit('day-one')[0];
+    expect(hasAllergenMc(svc)).toBe(false);
+    expect(() => allergenMcFor(svc)).toThrow(/dish/);
+  });
+
+  it.each(PATH_FOOD_IDS)('%s reuses the engine card content', (foodId) => {
+    const card = deck.find((c) => c.sourceId === foodId)!;
+    const mc = allergenMcFor(dishItem(foodId));
+    expect(mc.prompt).toBe(card.prompt);
+    expect([...mc.choices].sort()).toEqual([...card.choices!].sort());
+    expect(mc.choices[mc.answerIndex]).toBe(card.answer);
+    // why = the card's flags + note VERBATIM; only the frozen v2 confirm tail is
+    // lifted off (replaced by the app-wide confirmLine) — reconstruction proves
+    // no content was lost or rewritten.
+    expect(`${mc.why} ${ENGINE_KITCHEN_CONFIRM}`).toBe(card.why);
+    expect(mc.why).toMatch(/^Allergen flags: /);
+    for (const flag of food(foodId).allergens!) expect(mc.why, foodId).toContain(flag);
+    // safety framing is non-negotiable — the ONE standard line, same as every
+    // other allergen surface in v3
+    expect(mc.confirmLine).toBe(data.confirm.allergens);
+  });
+
+  it('is deterministic per item (same choice order on every call)', () => {
+    const a = allergenMcFor(dishItem('french-fries'));
+    const b = allergenMcFor(dishItem('french-fries'));
+    expect(a).toEqual(b);
+  });
+
+  it('answer position varies across items (no always-first tell)', () => {
+    const positions = new Set(PATH_FOOD_IDS.map((id) => allergenMcFor(dishItem(id)).answerIndex));
+    expect(positions.size).toBeGreaterThan(1);
+  });
+});
+
+describe('reverseMcFor: which dish carries the component', () => {
+  const dishes = PATH_FOOD_IDS.map((id) => food(id));
+  const byName = new Map(dishes.map((f) => [f.name, f]));
+  // ingredient → how many path dishes carry it (case-insensitive)
+  const freq = new Map<string, number>();
+  for (const f of dishes)
+    for (const ing of f.ingredients!) {
+      const k = ing.toLowerCase();
+      freq.set(k, (freq.get(k) ?? 0) + 1);
+    }
+  const GENERIC = new Set(['salt', 'sea salt', 'flaky salt', 'olive oil', 'extra virgin olive oil', 'evoo']);
+
+  it.each(PATH_FOOD_IDS)('%s yields a valid reverse MC', (foodId) => {
+    const f = food(foodId);
+    const mc = reverseMcFor(dishItem(foodId));
+    // the prompt asks for the component; the answer is the dish name
+    expect(mc.prompt).toBe(`Which dish comes with ${mc.component}?`);
+    expect(mc.choices).toHaveLength(4);
+    expect(new Set(mc.choices).size).toBe(4);
+    expect(mc.choices[mc.answerIndex]).toBe(f.name);
+    // the component genuinely belongs to the answer dish…
+    const lc = mc.component.toLowerCase();
+    expect(f.ingredients!.some((i) => i.toLowerCase() === lc)).toBe(true);
+    // …and to NONE of the distractors
+    for (const choice of mc.choices) {
+      if (choice === f.name) continue;
+      const d = byName.get(choice)!;
+      expect(d, `${foodId}: distractor '${choice}' is not a path dish`).toBeDefined();
+      expect(
+        d.ingredients!.some((i) => i.toLowerCase() === lc),
+        `${foodId}: distractor '${choice}' also carries '${mc.component}'`
+      ).toBe(false);
+    }
+  });
+
+  it('picks the most DISTINCTIVE component: rarest across the other 40 dishes, first-in-list on ties, generics skipped', () => {
+    for (const foodId of PATH_FOOD_IDS) {
+      const f = food(foodId);
+      const mc = reverseMcFor(dishItem(foodId));
+      const nonGeneric = f.ingredients!.filter((i) => !GENERIC.has(i.toLowerCase()));
+      expect(nonGeneric.length, foodId).toBeGreaterThan(0); // every path dish has a real component
+      expect(GENERIC.has(mc.component.toLowerCase()), foodId).toBe(false);
+      const min = Math.min(...nonGeneric.map((i) => freq.get(i.toLowerCase())!));
+      expect(freq.get(mc.component.toLowerCase()), foodId).toBe(min);
+      // deterministic tie-break: the FIRST list entry at that rarity wins
+      expect(mc.component).toBe(nonGeneric.find((i) => freq.get(i.toLowerCase()) === min));
+    }
+  });
+
+  it('prefers same-category distractors (look-alike discrimination), padded cross-category', () => {
+    for (const foodId of PATH_FOOD_IDS) {
+      const f = food(foodId);
+      const mc = reverseMcFor(dishItem(foodId));
+      const lc = mc.component.toLowerCase();
+      const eligibleSameCat = dishes.filter(
+        (d) =>
+          d.id !== f.id &&
+          d.category === f.category &&
+          !d.ingredients!.some((i) => i.toLowerCase() === lc)
+      );
+      const got = mc.choices.filter((c) => c !== f.name && byName.get(c)!.category === f.category);
+      expect(got.length, foodId).toBe(Math.min(3, eligibleSameCat.length));
+    }
+  });
+
+  it('is deterministic per item (same choice order on every call)', () => {
+    const a = reverseMcFor(dishItem('rigatoni'));
+    const b = reverseMcFor(dishItem('rigatoni'));
+    expect(a).toEqual(b);
+  });
+
+  it('throws on service items', () => {
+    expect(() => reverseMcFor(itemsForUnit('day-one')[0])).toThrow(/dish/);
   });
 });

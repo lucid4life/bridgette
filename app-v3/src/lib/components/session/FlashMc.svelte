@@ -12,12 +12,22 @@
     mc,
     warm = false,
     kicker,
+    why,
+    confirmLine,
+    missText,
     onanswer,
     oncontinue
   }: {
     mc: McContent;
     warm?: boolean;
     kicker?: string;
+    /** teach-back shown WITH the feedback (the allergen card's flags + note) */
+    why?: string;
+    /** safety framing — non-negotiable wherever allergens show */
+    confirmLine?: string;
+    /** override the default miss line (which promises the item "comes back
+     * around" — wrong on one-pass surfaces like the mock test) */
+    missText?: string;
     onanswer: (choiceIndex: number) => McAnswer;
     oncontinue: () => void;
   } = $props();
@@ -48,7 +58,7 @@
           : 'nailed it.'
         : warm
           ? "good miss — that's the point of a warm-up. the right call is marked."
-          : "not quite — the right call is marked. it'll come back around."
+          : (missText ?? "not quite — the right call is marked. it'll come back around.")
   );
 
   function onKey(e: KeyboardEvent): void {
@@ -101,6 +111,9 @@
       <p class="fb-line" class:good={result.correct} class:warm={!result.correct && warm} class:miss={!result.correct && !warm}>
         {feedback}
       </p>
+      {#if why}<p class="fb-why">{why}</p>{/if}
+      <!-- safety framing: always visible wherever allergen content shows -->
+      {#if confirmLine}<p class="fb-confirm">{confirmLine}</p>{/if}
       <button type="button" class="btn" onclick={oncontinue}>Continue</button>
     </div>
   {/if}
@@ -111,7 +124,9 @@
       ? (result.correct ? 'Correct. ' : 'Not quite. ') +
         'The answer is ' +
         mc.choices[result.answerIndex] +
-        '.'
+        '.' +
+        (why ? ` ${why}` : '') +
+        (confirmLine ? ` ${confirmLine}` : '')
       : ''}
   </p>
 </article>
@@ -230,5 +245,19 @@
   }
   .fb-line.miss {
     color: var(--accent-text);
+  }
+  /* the allergen teach-back: flags + note, then the standing safety line */
+  .fb-why {
+    margin: 0;
+    max-width: 44ch;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+  .fb-confirm {
+    margin: 0;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--text-muted);
   }
 </style>

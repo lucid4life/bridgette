@@ -164,6 +164,129 @@ export function mcFor(item: JourneyItem): McContent {
   return toMc(item.id, card.prompt, card.choices!, card.answer);
 }
 
+// ----------------------------------------------------- Test-Prep accessors
+// The frozen v2 allergens deck (food rows only — the same deck also mints
+// cocktail cards), indexed by foodId. Reused as MC material only, like the
+// components deck above.
+let allergensCards: Map<string, Card> | null = null;
+function allergenCardFor(foodId: string): Card | undefined {
+  if (!allergensCards) {
+    const deck = generateDeck('allergens', data) as Card[];
+    allergensCards = new Map(
+      deck.filter((c) => c.sourceKind === 'food').map((c) => [c.sourceId!, c])
+    );
+  }
+  return allergensCards.get(foodId);
+}
+
+// The standing v2 compliance sentence every food allergens card's why ends
+// with (training.js KITCHEN_CONFIRM, frozen byte-for-byte). v3 shows ONE
+// standard safety line everywhere (data.confirm.allergens), so allergenMcFor
+// lifts this tail off the why and carries the app-wide confirmLine instead —
+// the flags + note content is reused verbatim.
+const ENGINE_KITCHEN_CONFIRM =
+  'Always confirm allergens with the kitchen before promising a guest.';
+
+export interface AllergenMcContent extends McContent {
+  /** The card's flags + note (its frozen v2 confirm tail replaced by confirmLine). */
+  why: string;
+  /** safety framing is non-negotiable on any surface that shows allergens */
+  confirmLine: string;
+}
+
+/** True when the dish has a frozen allergens card to quiz from (a dish with no
+ * flags mints none — callers skip those; today every path dish has one). */
+export function hasAllergenMc(item: JourneyItem): boolean {
+  return item.kind === 'dish' && !!allergenCardFor(foodFor(item).id);
+}
+
+export function allergenMcFor(item: JourneyItem): AllergenMcContent {
+  if (item.kind !== 'dish')
+    throw new Error(`journey: allergenMcFor is dish-only — '${item.id}' carries no flags`);
+  const f = foodFor(item);
+  const card = allergenCardFor(f.id);
+  if (!card)
+    throw new Error(
+      `journey: '${item.id}' has no allergens engine card (no flags) — check hasAllergenMc first`
+    );
+  if (!card.why || !card.why.endsWith(ENGINE_KITCHEN_CONFIRM))
+    throw new Error(`journey: allergens card '${card.id}' lost its confirm tail — deck shape drifted`);
+  const why = card.why.slice(0, card.why.length - ENGINE_KITCHEN_CONFIRM.length).trim();
+  return {
+    ...toMc(`${item.id}:allergen`, card.prompt, card.choices!, card.answer),
+    why,
+    confirmLine: data.confirm.allergens
+  };
+}
+
+export interface ReverseMcContent extends McContent {
+  /** The dish's most distinctive official component — the prompt's subject. */
+  component: string;
+}
+
+/** Generic pantry tokens never asked about when the dish has a rarer, more
+ * tellable component (they'd make "which dish?" unanswerable anyway). */
+const GENERIC_COMPONENTS = new Set([
+  'salt',
+  'sea salt',
+  'flaky salt',
+  'olive oil',
+  'extra virgin olive oil',
+  'evoo'
+]);
+
+// The reverse-lookup universe: the 41 path dishes + how many of them carry
+// each ingredient token (case-insensitive). Derived once — path data is static.
+let reverseUniverse: { dishes: Food[]; freq: Map<string, number> } | null = null;
+function getReverseUniverse(): { dishes: Food[]; freq: Map<string, number> } {
+  if (!reverseUniverse) {
+    const dishes = Object.values(UNIT_FOOD_IDS)
+      .flat()
+      .map((id) => foodById.get(id)!);
+    const freq = new Map<string, number>();
+    for (const d of dishes)
+      for (const ing of d.ingredients!) {
+        const k = ing.toLowerCase();
+        freq.set(k, (freq.get(k) ?? 0) + 1);
+      }
+    reverseUniverse = { dishes, freq };
+  }
+  return reverseUniverse;
+}
+
+/** NEW minted runtime content (no frozen ids involved): "Which dish comes with
+ * <component>?" — the component is the dish's most DISTINCTIVE official
+ * ingredient (carried by the fewest path dishes; ties keep list order; generic
+ * tokens like Salt/Olive Oil lose to any real component). Distractors are
+ * same-category dishes where possible (look-alike discrimination), padded
+ * cross-category — never a dish that also carries the component. */
+export function reverseMcFor(item: JourneyItem): ReverseMcContent {
+  if (item.kind !== 'dish')
+    throw new Error(`journey: reverseMcFor is dish-only — '${item.id}' has no plate to look up`);
+  const f = foodFor(item);
+  const { dishes, freq } = getReverseUniverse();
+
+  const nonGeneric = f.ingredients!.filter((i) => !GENERIC_COMPONENTS.has(i.toLowerCase()));
+  const pool = nonGeneric.length > 0 ? nonGeneric : f.ingredients!;
+  let component = pool[0];
+  for (const ing of pool) // strict < keeps the FIRST list entry on ties
+    if (freq.get(ing.toLowerCase())! < freq.get(component.toLowerCase())!) component = ing;
+
+  const lc = component.toLowerCase();
+  const eligible = dishes.filter(
+    (d) => d.id !== f.id && !d.ingredients!.some((i) => i.toLowerCase() === lc)
+  );
+  const sameCat = eligible.filter((d) => d.category === f.category);
+  const crossCat = eligible.filter((d) => d.category !== f.category);
+  const distractors = [...sameCat.slice(0, 3), ...crossCat].slice(0, 3).map((d) => d.name);
+  if (distractors.length < 3)
+    throw new Error(`journey: not enough reverse-MC distractors for '${item.id}'`); // unreachable on path data
+  return {
+    ...toMc(`${item.id}:reverse`, `Which dish comes with ${component}?`, [f.name, ...distractors], f.name),
+    component
+  };
+}
+
 /** The dish allergen framing — same sourcing as teachFor. */
 function allergenFraming(f: Food): Required<Pick<AllergenFraming, 'allergens' | 'confirmLine'>> &
   AllergenFraming {

@@ -139,15 +139,19 @@
       </section>
     </div>
 
-    <!-- this week's job task: the romance drill sits ABOVE the pre-shift door
-         (prominent), without touching the reviews-first hero selection -->
-    <section class="card romance">
-      <div class="rom-text">
-        <h2 class="kicker rom-kicker">for sunday</h2>
-        <p class="jobtitle sm">romance the menu</p>
-        <p class="meta rom-meta">say every dish out loud — “this is our…” plus the components that matter.</p>
+    <!-- this week's job tasks: shift Sunday, food test Monday night. One tight
+         card ABOVE the pre-shift door, without touching the reviews-first hero -->
+    <section class="card week">
+      <div class="wk-text">
+        <h2 class="kicker wk-kicker">this week</h2>
+        <p class="jobtitle sm">shift sunday · test monday night</p>
+        <p class="meta wk-meta">say it out loud, sweep the flags, then sit the mock — that's the whole prep.</p>
       </div>
-      <p class="cta rom-cta"><a class="btn" href="/romance">start the drill</a></p>
+      <nav class="wk-links" aria-label="Test prep">
+        <a class="btn ghost" href="/romance">romance the menu</a>
+        <a class="btn ghost" href="/allergens">the allergen sweep</a>
+        <a class="btn" href="/test">take the food test</a>
+      </nav>
     </section>
 
     <div class="grid cols-2 below">
@@ -277,25 +281,28 @@
     border-color: var(--line);
   }
 
-  /* ---- the romance drill door (marigold spine — Sunday's job task) ---- */
-  .romance {
+  /* ---- the week's prep door (marigold spine — Sunday's shift, Monday's test) ---- */
+  .week {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 10px 18px;
+    gap: 12px 18px;
     margin-top: 16px;
     border-left: 4px solid var(--highlight-line);
   }
-  .rom-kicker {
+  .wk-kicker {
     color: var(--highlight);
   }
-  .rom-text .rom-meta {
+  .wk-text .wk-meta {
     margin: 4px 0 0;
     max-width: 52ch;
   }
-  .romance .rom-cta {
-    margin: 0;
+  .wk-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
   }
 
   /* ---- the secondary row ---- */

@@ -14,6 +14,7 @@
     missesTitle = 'worth a second look',
     misses = [],
     note,
+    extra,
     children
   }: {
     eyebrow: string;
@@ -25,6 +26,9 @@
     missesTitle?: string;
     misses?: { label: string; href?: string }[];
     note?: string;
+    /** surface-specific breakdowns rendered between the note and the misses
+     * (markup is authored — and styled — by the caller) */
+    extra?: Snippet;
     children?: Snippet;
   } = $props();
 
@@ -67,6 +71,8 @@
     {/if}
 
     {#if note}<p class="sum-note">{note}</p>{/if}
+
+    {#if extra}{@render extra()}{/if}
 
     {#if misses.length > 0}
       <div class="sum-misses">

@@ -11,7 +11,9 @@ const ROUTES = [
   '/review',
   '/preshift',
   '/checkpoint/food-runner', // intro state — the session never starts
-  '/romance' // intro state — the drill never starts
+  '/romance', // intro state — the drill never starts
+  '/test', // intro state — the mock never starts
+  '/allergens' // intro state — the sweep never starts
 ];
 const THEMES = ['light', 'dark'] as const;
 
@@ -140,6 +142,24 @@ for (const theme of THEMES) {
       await page.locator('.rom .act .btn').click();
       await expect(page.locator('.rom .rv')).toBeVisible();
       await scan(page); // the pass bar + model line + grade bar
+    });
+
+    test('axe: food test in-question state', async ({ page }) => {
+      await page.goto('/test');
+      await page.getByRole('button', { name: 'start the test' }).click();
+      // the first face is dealt per run: an MC variant OR the romance card
+      await expect(page.locator('article.fmc, article.rom').first()).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: allergen sweep question + feedback (why + confirm line) states', async ({ page }) => {
+      await page.goto('/allergens');
+      await page.getByRole('button', { name: 'start the sweep' }).click();
+      await expect(page.locator('article.fmc')).toBeVisible();
+      await scan(page); // the question face
+      await page.locator('.fmc .choices .choice').first().click();
+      await expect(page.locator('.fmc .fb')).toBeVisible();
+      await scan(page); // feedback with the flags teach-back + confirm line
     });
   });
 }

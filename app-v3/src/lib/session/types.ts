@@ -27,6 +27,21 @@
 //   grade exactly like reviews: correct → onResult('good'); miss →
 //   onResult('again') immediately + reteach next + retry at 'romance' ~3
 //   steps later; a retry clears silently.
+// - createMockTestSession(items, deps?) — "The food test" (./mock-test.ts):
+//   checkpoint semantics (one rng-shuffled graded pass, NO SRS events,
+//   score()/passed() at 0.85) over DISH items only, but each dish is asked as
+//   ONE of four question types assigned round-robin from a per-run rotation:
+//   components-mc (mcFor) / allergen-mc (allergenMcFor; a flagless dish falls
+//   back to components-mc) / reverse-mc (reverseMcFor) / romance (romanceFor,
+//   self-graded). summary() adds byType + byCategory breakdowns and the miss
+//   list — the CALLER renders results; nothing is recorded.
+// - createAllergenSession(items, deps) — "The allergen sweep" (./allergen.ts):
+//   romance-session mechanics (single forced rung, first-attempt grade, miss →
+//   'again' + reteach next + recycle ~3, always finishable) where the one rung
+//   is the allergen MC ('mc' + variant 'allergen'), answered via answerMc +
+//   advance() — NOT selfGrade. Correct on the first attempt → 'good'; the
+//   grades feed the SAME dish:<foodId> items. Callers exclude flagless dishes
+//   (construction throws on them).
 //
 // ## Driving a session (the UI loop)
 //   while (!session.isComplete()) { render(session.current()!); …resolve… }
@@ -36,15 +51,22 @@
 // completes, render your own summary screen from `summary()`.
 //
 // ## Step → render + resolve matrix
-// | step.type    | step.rung | render with      | resolve with                          |
-// |--------------|-----------|------------------|---------------------------------------|
-// | 'pretest-mc' | 'mc'      | mcFor(item)      | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'mc'      | mcFor(item)      | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'cued'    | cuedFor(item)    | UI reveal → selfGrade(gotIt)          |
-// | 'quiz'       | 'free'    | freeFor(item)    | UI reveal → selfGrade(gotIt)          |
-// | 'quiz'       | 'romance' | romanceFor(item) | RomanceCard reveal → selfGrade(gotIt) |
-// | 'teach'      | —         | teachFor(item)   | advance()                             |
-// | 'reteach'    | —         | teachFor(item)   | advance()                             |
+// | step.type    | step.rung (variant)  | render with         | resolve with                          |
+// |--------------|----------------------|---------------------|---------------------------------------|
+// | 'pretest-mc' | 'mc'                 | mcFor(item)         | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc'                 | mcFor(item)         | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc' ('components')  | mcFor(item)         | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc' ('allergen')    | allergenMcFor(item) | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc' ('reverse')     | reverseMcFor(item)  | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'cued'               | cuedFor(item)       | UI reveal → selfGrade(gotIt)          |
+// | 'quiz'       | 'free'               | freeFor(item)       | UI reveal → selfGrade(gotIt)          |
+// | 'quiz'       | 'romance'            | romanceFor(item)    | RomanceCard reveal → selfGrade(gotIt) |
+// | 'teach'      | —                    | teachFor(item)      | advance()                             |
+// | 'reteach'    | —                    | teachFor(item)      | advance()                             |
+//
+// `variant` appears ONLY on the Test-Prep sessions' MC steps (mock test +
+// allergen sweep) — it picks the content accessor; the resolve contract is
+// identical to every other MC step. The original sessions never set it.
 //
 // MC steps are button-driven: `answerMc(choiceIndex)` validates against
 // mcFor(item).answerIndex and returns { correct, answerIndex } so the UI can
@@ -67,10 +89,15 @@ import type { Rank } from '../srs/scheduler';
  * appears on the learn ladder or in reviews/checkpoints). */
 export type Rung = 'mc' | 'cued' | 'free' | 'romance';
 
+/** MC content flavor on the Test-Prep sessions' quiz steps — picks the
+ * accessor (mcFor / allergenMcFor / reverseMcFor). Absent on every step the
+ * original sessions emit. */
+export type McVariant = 'components' | 'allergen' | 'reverse';
+
 /** One screen of a session. Discriminate on `type` (then `rung` for quiz). */
 export type Step =
   | { type: 'pretest-mc'; item: JourneyItem; rung: 'mc' }
-  | { type: 'quiz'; item: JourneyItem; rung: Rung }
+  | { type: 'quiz'; item: JourneyItem; rung: Rung; variant?: McVariant }
   | { type: 'teach'; item: JourneyItem }
   | { type: 'reteach'; item: JourneyItem };
 
@@ -190,6 +217,70 @@ export interface RomanceSession extends SessionCore {
   progress(): RomanceProgress;
   /** Complete sessions only — throws otherwise. */
   summary(): RomanceSummary;
+}
+
+// -------------------------------------------------------------- allergen
+// The allergen sweep reuses the review/romance event/progress/summary
+// semantics wholesale (one grade per item, miss events, clearing order) —
+// aliases, not copies, so the surfaces can never drift apart.
+export type AllergenDeps = ReviewDeps;
+export type AllergenProgress = ReviewProgress;
+export type AllergenItemResult = ReviewItemResult;
+export type AllergenSummary = ReviewSummary;
+
+export interface AllergenSession extends SessionCore {
+  progress(): AllergenProgress;
+  /** Complete sessions only — throws otherwise. */
+  summary(): AllergenSummary;
+}
+
+// ------------------------------------------------------------- mock test
+/** The four ways the mock food test can ask a dish. */
+export type MockQuestionType = 'components-mc' | 'allergen-mc' | 'reverse-mc' | 'romance';
+
+export interface MockTestDeps {
+  /** Shuffles the single pass + spins the question-type wheel's starting
+   * offset. Default Math.random. NO event hooks: a mock test never touches
+   * the SRS — the caller renders results from summary() and records nothing. */
+  rng?: Rng;
+}
+
+export interface MockTestItemResult {
+  itemId: string;
+  qtype: MockQuestionType;
+  /** The dish's menu category (drives the byCategory breakdown). */
+  category: string;
+  correct: boolean;
+}
+
+export interface MockBreakdown {
+  asked: number;
+  correct: number;
+}
+
+export interface MockTestSummary {
+  /** In asked (shuffled) order. */
+  perItem: MockTestItemResult[];
+  correct: number;
+  total: number;
+  score: number;
+  passed: boolean;
+  /** All four types always present (zero-filled when unasked). */
+  byType: Record<MockQuestionType, MockBreakdown>;
+  /** Categories in the CALLER's item order (path order = menu order). */
+  byCategory: { category: string; asked: number; correct: number }[];
+  /** Missed itemIds, in asked order. */
+  missed: string[];
+}
+
+export interface MockTestSession extends SessionCore {
+  progress(): CheckpointProgress;
+  /** correct / total. Complete sessions only — throws otherwise. */
+  score(): number;
+  /** score() >= CHECKPOINT_PASS_RATIO — the same 0.85 bar as the shift check. */
+  passed(): boolean;
+  /** Complete sessions only — throws otherwise. */
+  summary(): MockTestSummary;
 }
 
 // ------------------------------------------------------------ checkpoint
