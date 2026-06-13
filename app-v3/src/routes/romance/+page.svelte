@@ -189,8 +189,10 @@
         <button type="button" class="btn" onclick={() => start(pool)}>
           {selectedCat ? `drill the ${selectedCat === 'Main' ? 'mains' : selectedCat.toLowerCase()}` : 'start the drill'}
         </button>
+        <a class="btn ghost" href="/romance/exam">take the scored exam</a>
         <a class="btn ghost" href="/today">not yet — back to today</a>
       </div>
+      <p class="i-exam">tested Monday? the <a href="/romance/exam">romance exam</a> scores you to the real bar — name + three components, every dish.</p>
     </section>
   {/if}
 </div>
@@ -287,6 +289,19 @@
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 22px;
+  }
+  .i-exam {
+    margin: 14px auto 0;
+    max-width: 40ch;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .i-exam a {
+    color: var(--accent-text);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
   .sk {
     background: var(--surface-card);

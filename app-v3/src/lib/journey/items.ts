@@ -37,6 +37,11 @@ for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
   if (!food) throw new Error(`journey: foodId '${foodId}' missing from data.foods`);
   if (!food.ingredients || food.ingredients.length === 0)
     throw new Error(`journey: food '${foodId}' has no official ingredients`);
+  // romanceFor (the /romance drill, /test, and the Romance Exam) reads the
+  // official description as the model line — fail loud at init, not at the
+  // first card, if a path dish ever ships without one.
+  if (!food.description)
+    throw new Error(`journey: food '${foodId}' has no official description`);
 }
 
 // Same hard-fail philosophy for Stage 3: every cocktail on a build module must

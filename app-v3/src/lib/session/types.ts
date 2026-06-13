@@ -307,6 +307,78 @@ export interface MockTestSession extends SessionCore {
   summary(): MockTestSummary;
 }
 
+// ----------------------------------------------------------- romance exam
+// "The Romance Exam" (./romance-exam.ts): the scored simulator of Monday's MENU
+// test. Checkpoint semantics (one rng-shuffled pass, NO recycling, NO SRS events,
+// pass at 0.85) over DISH items only, every dish asked the SAME way ("romance
+// it"), but resolved by a STRUCTURED self-check — `grade(outcome)`, NOT the
+// boolean selfGrade — against the real bar: the name + min(3, components). The
+// CALLER renders the readiness % from summary(); nothing is recorded.
+export interface RomanceExamDeps {
+  /** Shuffles the single pass. Default Math.random. NO event hooks — the exam
+   * reads readiness, it never touches the SRS. */
+  rng?: Rng;
+}
+
+/** The runner's honest self-report for one dish: did you say the name, and how
+ * many official components did you actually deliver. */
+export interface RomanceExamOutcome {
+  named: boolean;
+  /** Count of official components the runner confirms they said (clamped >= 0). */
+  componentsHit: number;
+}
+
+export interface RomanceExamItemResult {
+  itemId: string;
+  /** The dish's menu category (drives the byCategory breakdown). */
+  category: string;
+  named: boolean;
+  componentsHit: number;
+  /** The pass bar for this dish: min(3, official component count). */
+  required: number;
+  /** named && componentsHit >= required. */
+  passed: boolean;
+}
+
+export interface RomanceExamCategoryBreakdown {
+  category: string;
+  asked: number;
+  clean: number;
+}
+
+export interface RomanceExamSummary {
+  /** In asked (shuffled) order. */
+  perItem: RomanceExamItemResult[];
+  /** Dishes romanced clean (named + the components on the bar). */
+  clean: number;
+  total: number;
+  /** clean / total — the readiness %. */
+  score: number;
+  /** score() >= CHECKPOINT_PASS_RATIO — the same 0.85 bar as the shift check. */
+  passed: boolean;
+  /** Categories in the CALLER's item order (path order = menu order). */
+  byCategory: RomanceExamCategoryBreakdown[];
+  /** The shaky dishes (not clean), in asked order — feeds the one-tap re-drill. */
+  missed: string[];
+}
+
+/** Unlike the other sessions, the exam resolves each dish with a structured
+ * `grade(outcome)` (not the boolean selfGrade) — so it does NOT extend
+ * SessionCore. There are no MC steps and no teach steps: every step is a
+ * 'romance' quiz the caller renders with romanceFor(item). */
+export interface RomanceExamSession {
+  current(): Step | null;
+  grade(outcome: RomanceExamOutcome): void;
+  isComplete(): boolean;
+  progress(): CheckpointProgress;
+  /** clean / total. Complete sessions only — throws otherwise. */
+  score(): number;
+  /** score() >= CHECKPOINT_PASS_RATIO. Complete sessions only. */
+  passed(): boolean;
+  /** Complete sessions only — throws otherwise. */
+  summary(): RomanceExamSummary;
+}
+
 // ------------------------------------------------------------ checkpoint
 export interface CheckpointDeps {
   /** Shuffles the single pass. Default Math.random. NO event hooks: a

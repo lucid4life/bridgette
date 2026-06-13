@@ -47,6 +47,56 @@ test('romance drill: intro → start → reveal → got it advances to 2 of 41',
   await expect(page.locator('.s-count')).toContainText(/^2\s*of\s*41/);
 });
 
+test('romance exam: intro → start → structured self-check → lock in advances to 2 of 41', async ({ page }) => {
+  await page.goto('/romance/exam');
+  await expect(page.locator('.s-count')).toHaveCount(0); // deliberate intro
+  await page.getByRole('button', { name: 'start the exam' }).click();
+
+  await expect(page.locator('.s-count')).toContainText(/^1\s*of\s*41/);
+  await expect(page.locator('.rom-exam .r-name')).toBeVisible();
+
+  // Reveal → the STRUCTURED check (not a gestalt got-it): name toggle + chips.
+  await page.locator('.rom-exam .act .btn').click();
+  await expect(page.locator('.rom-exam .name-tog')).toBeVisible();
+  const chips = page.locator('.rom-exam .chips .tog.chip');
+  await expect(chips.first()).toBeVisible();
+
+  // Mark the name + every component said, then lock it in.
+  await page.locator('.rom-exam .name-tog').click();
+  const n = await chips.count();
+  for (let c = 0; c < n; c++) await chips.nth(c).click();
+  await page.getByRole('button', { name: 'lock it in' }).click();
+  await expect(page.locator('.s-count')).toContainText(/^2\s*of\s*41/);
+});
+
+test('romance exam: a missed dish surfaces in the shaky list with a one-tap re-drill link', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/romance/exam');
+  await page.getByRole('button', { name: 'start the exam' }).click();
+
+  // Drive the whole pass: fail the FIRST dish (reveal + lock in, nothing tapped),
+  // romance every other dish clean.
+  for (let i = 0; i < 60; i++) {
+    const card = page.locator('article.rom-exam');
+    if ((await card.count()) === 0) break; // summary reached
+    await card.locator('.act .btn').click();
+    await card.locator('.check').waitFor();
+    if (i !== 0) {
+      await card.locator('.name-tog').click();
+      const chips = card.locator('.chips .tog.chip');
+      const cn = await chips.count();
+      for (let c = 0; c < cn; c++) await chips.nth(c).click();
+    }
+    await card.locator('.gradebar .btn').click();
+  }
+
+  // The readiness summary lists the one shaky dish and the re-drill points at it.
+  await expect(page.locator('.sum-card .ring')).toBeVisible();
+  const drill = page.locator('.sum-actions a.btn').first();
+  await expect(drill).toHaveAttribute('href', /^\/romance\?drill=.+/);
+  await expect(page.locator('.sum-misses li')).toHaveCount(1);
+});
+
 test('food test: intro → start → answer the first MC → feedback shows', async ({ page }) => {
   await page.goto('/test');
 

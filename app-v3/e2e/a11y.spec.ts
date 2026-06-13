@@ -12,6 +12,7 @@ const ROUTES = [
   '/preshift',
   '/checkpoint/food-runner', // intro state — the session never starts
   '/romance', // intro state — the drill never starts
+  '/romance/exam', // intro state — the scored exam never starts
   '/test', // intro state — the mock never starts
   '/allergens', // intro state — the sweep never starts
   '/burst' // intro state (no introduced items yet — the "nothing to burst" copy)
@@ -139,6 +140,28 @@ async function driveTo(page: Page, target: Face): Promise<void> {
   throw new Error(`never reached the ${target} face`);
 }
 
+/** Drive the Romance Exam to its summary. `pass(i)` decides whether dish i is
+ * romanced clean (name + every component) or skipped (a miss). The {#key}'d
+ * card re-mounts unrevealed each grade, so we re-locate it every iteration. */
+async function driveExam(page: Page, pass: (i: number) => boolean): Promise<void> {
+  await page.goto('/romance/exam');
+  await page.getByRole('button', { name: 'start the exam' }).click();
+  for (let i = 0; i < 60; i++) {
+    const card = page.locator('article.rom-exam');
+    if ((await card.count()) === 0) return; // summary reached
+    await card.locator('.act .btn').click(); // Check yourself
+    await card.locator('.check').waitFor();
+    if (pass(i)) {
+      await card.locator('.name-tog').click();
+      const chips = card.locator('.chips .tog.chip');
+      const n = await chips.count();
+      for (let c = 0; c < n; c++) await chips.nth(c).click(); // every component
+    }
+    await card.locator('.gradebar .btn').click(); // lock it in
+  }
+  throw new Error('romance exam never completed');
+}
+
 // Every scan runs in BOTH themes: bb_theme is set before any script runs, so the
 // FOUC guard applies the theme exactly as it would for a returning user.
 for (const theme of THEMES) {
@@ -192,6 +215,24 @@ for (const theme of THEMES) {
       await page.locator('.rom .act .btn').click();
       await expect(page.locator('.rom .rv')).toBeVisible();
       await scan(page); // the pass bar + model line + grade bar
+    });
+
+    test('axe: romance exam — question face + the structured self-check', async ({ page }) => {
+      await page.goto('/romance/exam');
+      await page.getByRole('button', { name: 'start the exam' }).click();
+      await expect(page.locator('article.rom-exam')).toBeVisible();
+      await scan(page); // the question face (name + the "romance it" prompt)
+      await page.locator('.rom-exam .act .btn').click(); // Check yourself
+      await expect(page.locator('.rom-exam .check')).toBeVisible();
+      await scan(page); // the model line + name toggle + component chips + verdict + lock-in
+    });
+
+    test('axe: romance exam — readiness summary after a full pass', async ({ page }) => {
+      test.setTimeout(120_000); // a full 41-dish pass
+      await driveExam(page, () => true); // every dish clean
+      await expect(page.locator('.sum-card .ring')).toBeVisible();
+      await expect(page.getByText('monday-ready')).toBeVisible();
+      await scan(page); // the readiness ring + stats + byCategory breakdown
     });
 
     test('axe: food test in-question state', async ({ page }) => {

@@ -15,6 +15,7 @@ export {
   MOCK_TYPE_ROTATION
 } from './mock-test';
 export type { MockTypePredicates } from './mock-test';
+export { createRomanceExamSession, requiredComponents } from './romance-exam';
 export { createAllergenSession } from './allergen';
 export { createJudgmentSession } from './judgment';
 export type { JudgmentQuestion, JudgmentSession, JudgmentSummary } from './judgment';
