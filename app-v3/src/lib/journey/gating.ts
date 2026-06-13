@@ -2,7 +2,7 @@
 // checkpoint availability, test-out, and stage progress. Pure functions over a
 // minimal ProgressView — the store is never imported here.
 import { itemsForUnit } from './items';
-import { CHECKPOINT_UNIT_ID, STAGES, stageById, unitById } from './stages';
+import { STAGES, stageById, unitById } from './stages';
 import type { ProgressView, Stage, Unit } from './types';
 
 /** A unit completes when >= this share of its items reach rank >= 'learning'. */
@@ -37,11 +37,27 @@ function lessonUnits(stage: Stage): Unit[] {
   return stage.units.filter((u) => u.kind === 'lesson');
 }
 
+/** A stage is complete when it has units and every one is complete. */
+export function stageComplete(stageId: string, view: ProgressView): boolean {
+  const stage = stageById(stageId);
+  return stage.units.length > 0 && stage.units.every((u) => unitComplete(u.id, view));
+}
+
+/** Stages unlock sequentially: the first stage is always open; a later stage
+ * opens when the one before it is complete. `locked: true` (stages with no
+ * content yet) wins outright. */
+export function stageUnlocked(stageId: string, view: ProgressView): boolean {
+  const idx = STAGES.findIndex((s) => s.id === stageId);
+  if (idx === -1 || STAGES[idx].locked) return false;
+  if (idx === 0) return true;
+  return stageComplete(STAGES[idx - 1].id, view);
+}
+
 /** Sequential availability: first unit always; later units when the previous
  * one is complete; the checkpoint only when ALL lesson units are complete. */
 function unitAvailable(unitId: string, view: ProgressView): boolean {
   const { unit, stage, index } = unitById(unitId);
-  if (stage.locked) return false;
+  if (!stageUnlocked(stage.id, view)) return false;
   if (unit.kind === 'checkpoint')
     return lessonUnits(stage).every((u) => unitComplete(u.id, view));
   if (index === 0) return true;
@@ -67,19 +83,18 @@ export function unitStatus(unitId: string, view: ProgressView): UnitStatus {
 export function testOutAvailable(unitOrStageId: string, view: ProgressView): boolean {
   const stage = STAGES.find((s) => s.id === unitOrStageId);
   if (stage) {
-    if (stage.locked) return false;
+    if (!stageUnlocked(stage.id, view)) return false;
     return !stage.units.every((u) => unitComplete(u.id, view));
   }
   const { stage: home } = unitById(unitOrStageId);
-  if (home.locked) return false;
+  if (!stageUnlocked(home.id, view)) return false;
   return !unitComplete(unitOrStageId, view);
 }
 
 export function stageStatus(stageId: string, view: ProgressView): StageStatus {
   const stage = stageById(stageId);
-  if (stage.locked) return 'locked'; // Phase 1: `locked: true` wins outright
-  if (stage.units.length > 0 && stage.units.every((u) => unitComplete(u.id, view)))
-    return 'complete';
+  if (!stageUnlocked(stageId, view)) return 'locked';
+  if (stageComplete(stageId, view)) return 'complete';
   const started = stageItemIds(stage).some((id) => atCriterion(view, id));
   return started ? 'started' : 'available';
 }
@@ -88,7 +103,7 @@ export function stageStatus(stageId: string, view: ProgressView): StageStatus {
 function stageItemIds(stage: Stage): string[] {
   const seen = new Set<string>();
   for (const unit of stage.units) {
-    if (unit.id === CHECKPOINT_UNIT_ID) continue;
+    if (unit.kind === 'checkpoint') continue;
     for (const item of itemsForUnit(unit.id)) seen.add(item.id);
   }
   return [...seen];

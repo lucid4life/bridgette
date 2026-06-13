@@ -93,8 +93,8 @@ describe('dish roster (UNIT_FOOD_IDS)', () => {
   });
 });
 
-describe('stages 2-5 (Phase 1: declared but locked)', () => {
-  it('declares allergen-guardian, behind-the-bar, wine, pairings — locked, no units', () => {
+describe('stages 2-5', () => {
+  it('declares allergen-guardian (Stage 2, built), then behind-the-bar/wine/pairings (locked)', () => {
     expect(STAGES.map((s) => s.id)).toEqual([
       'food-runner',
       'allergen-guardian',
@@ -102,13 +102,28 @@ describe('stages 2-5 (Phase 1: declared but locked)', () => {
       'wine',
       'pairings'
     ]);
-    const locked = STAGES.slice(1);
-    expect(locked.map((s) => s.title)).toEqual(['Allergen Guardian', 'Behind the Bar', 'Wine', 'Pairings']);
-    expect(locked.map((s) => s.track)).toEqual(['allergens', 'bar', 'wine', 'pairings']);
-    for (const s of locked) {
+    const later = STAGES.slice(1);
+    expect(later.map((s) => s.title)).toEqual(['Allergen Guardian', 'Behind the Bar', 'Wine', 'Pairings']);
+    expect(later.map((s) => s.track)).toEqual(['allergens', 'bar', 'wine', 'pairings']);
+    for (const s of later) expect(s.blurb.length, s.id).toBeGreaterThan(0);
+
+    // Stage 2 is built: not statically locked (gating unlocks it sequentially),
+    // 4 allergen-family lesson units + a checkpoint.
+    const stage2 = STAGES[1];
+    expect(stage2.locked).not.toBe(true);
+    expect(stage2.units.map((u) => u.id)).toEqual([
+      'allergens-seafood',
+      'allergens-nuts',
+      'allergens-diet',
+      'allergens-common',
+      'checkpoint-allergens'
+    ]);
+    expect(stage2.units.filter((u) => u.kind === 'checkpoint')).toHaveLength(1);
+
+    // Stages 3-5 stay declared-but-locked (no content yet).
+    for (const s of STAGES.slice(2)) {
       expect(s.locked, s.id).toBe(true);
       expect(s.units, s.id).toEqual([]);
-      expect(s.blurb.length, s.id).toBeGreaterThan(0);
     }
   });
 });

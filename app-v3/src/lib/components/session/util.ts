@@ -1,7 +1,8 @@
-// Task H — tiny helpers shared by the session routes: resolve Stage-1 items
-// from store ids (the store speaks item-id strings; the engine wants
-// JourneyItems), and display names for summaries (names, never ids).
-import { allStage1Items, teachFor } from '$lib/journey/items';
+// Task H — tiny helpers shared by the session routes: resolve path items from
+// store ids (the store speaks item-id strings; the engine wants JourneyItems),
+// and display names for summaries (names, never ids). Resolves across ALL
+// stages with content (Stage 1 dishes/service + Stage 2 allergen items).
+import { allItems, teachFor } from '$lib/journey/items';
 import type { JourneyItem } from '$lib/journey/types';
 import type { ReviewEntry } from '$lib/session';
 import { rankOf } from '$lib/srs/scheduler';
@@ -9,9 +10,9 @@ import type { ProgressState } from '$lib/store/store';
 
 let byId: Map<string, JourneyItem> | null = null;
 
-/** Stage-1 item lookup (lazy; item derivation is pure + stable). */
+/** Path item lookup (lazy; item derivation is pure + stable). */
 export function stage1ItemById(id: string): JourneyItem | undefined {
-  byId ??= new Map(allStage1Items().map((i) => [i.id, i]));
+  byId ??= new Map(allItems().map((i) => [i.id, i]));
   return byId.get(id);
 }
 

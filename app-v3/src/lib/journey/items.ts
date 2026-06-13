@@ -6,7 +6,14 @@ import { data, type Food } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import type { Card } from '$lib/data';
 import { mulberry32, shuffled } from '$lib/rng';
-import { CHECKPOINT_UNIT_ID, DAY_ONE_UNIT_ID, UNIT_FOOD_IDS, stageById, unitById } from './stages';
+import {
+  DAY_ONE_UNIT_ID,
+  STAGES,
+  UNIT_ALLERGEN_IDS,
+  UNIT_FOOD_IDS,
+  stageById,
+  unitById
+} from './stages';
 import { SERVICE_ITEMS, type ServiceItem } from './service-items';
 import type { JourneyItem } from './types';
 
@@ -32,26 +39,49 @@ const dishItem = (unitId: string, foodId: string): JourneyItem => ({
   foodId
 });
 
+const allergenItem = (unitId: string, foodId: string): JourneyItem => ({
+  id: `allergen:${foodId}`,
+  kind: 'allergen',
+  unitId,
+  foodId
+});
+
 // Items are STATIC after module init — memoized so the gating layer (which
 // calls itemsForUnit under every status/progress read) never re-allocates.
 const unitItemsCache = new Map<string, readonly JourneyItem[]>();
 
+/** Items of a unit, dispatched by unit kind + roster (stage-generic):
+ *  - checkpoint → the union of its stage's lesson units' items
+ *  - day-one → the authored service calls
+ *  - a dish-roster unit → dish:<foodId> items
+ *  - an allergen-roster unit → allergen:<foodId> items */
 export function itemsForUnit(unitId: string): readonly JourneyItem[] {
   const cached = unitItemsCache.get(unitId);
   if (cached) return cached;
-  unitById(unitId); // throws on unknown units
+  const { unit, stage } = unitById(unitId); // throws on unknown units
   let built: readonly JourneyItem[];
-  if (unitId === DAY_ONE_UNIT_ID) {
+  if (unit.kind === 'checkpoint') {
+    built = stage.units.filter((u) => u.kind === 'lesson').flatMap((u) => itemsForUnit(u.id));
+  } else if (unitId === DAY_ONE_UNIT_ID) {
     built = SERVICE_ITEMS.map((s) => ({ id: s.id, kind: 'service', unitId }));
-  } else if (unitId === CHECKPOINT_UNIT_ID) {
-    built = allStage1Items();
+  } else if (UNIT_FOOD_IDS[unitId]) {
+    built = UNIT_FOOD_IDS[unitId].map((foodId) => dishItem(unitId, foodId));
+  } else if (UNIT_ALLERGEN_IDS[unitId]) {
+    built = UNIT_ALLERGEN_IDS[unitId].map((foodId) => allergenItem(unitId, foodId));
   } else {
-    const foodIds = UNIT_FOOD_IDS[unitId];
-    if (!foodIds) throw new Error(`journey: unit '${unitId}' has no dish roster`);
-    built = foodIds.map((foodId) => dishItem(unitId, foodId));
+    throw new Error(`journey: unit '${unitId}' has no item roster`);
   }
   unitItemsCache.set(unitId, built);
   return built;
+}
+
+let allItemsCache: readonly JourneyItem[] | null = null;
+/** Every lesson item across all stages that have content — the resolution
+ * universe for /review, /preshift, /progress (which speak store ids). */
+export function allItems(): readonly JourneyItem[] {
+  return (allItemsCache ??= STAGES.flatMap((s) =>
+    s.units.filter((u) => u.kind === 'lesson').flatMap((u) => itemsForUnit(u.id))
+  ));
 }
 
 /** Menu categories present among the path dishes, in path (menu) order — for
@@ -185,6 +215,9 @@ export function mcFor(item: JourneyItem): McContent {
     const s = serviceFor(item);
     return toMc(item.id, s.prompt, s.choices, s.answer);
   }
+  // Allergen items (Stage 2) grade on the flag MC; the learn session reads this
+  // for correctness, so the dispatch has to be here, not just in the route.
+  if (item.kind === 'allergen') return allergenMcFor(item);
   const card = componentsCardFor(foodFor(item).id);
   return toMc(item.id, card.prompt, card.choices!, card.answer);
 }
@@ -219,15 +252,21 @@ export interface AllergenMcContent extends McContent {
   confirmLine: string;
 }
 
+/** Allergen MC works for both dish items (Stage 1 mock test) and allergen
+ * items (Stage 2 path) — both carry a foodId; the question is the same flag MC. */
+function isFoodItem(item: JourneyItem): boolean {
+  return item.kind === 'dish' || item.kind === 'allergen';
+}
+
 /** True when the dish has a frozen allergens card to quiz from (a dish with no
  * flags mints none — callers skip those; today every path dish has one). */
 export function hasAllergenMc(item: JourneyItem): boolean {
-  return item.kind === 'dish' && !!allergenCardFor(foodFor(item).id);
+  return isFoodItem(item) && !!item.foodId && !!allergenCardFor(item.foodId);
 }
 
 export function allergenMcFor(item: JourneyItem): AllergenMcContent {
-  if (item.kind !== 'dish')
-    throw new Error(`journey: allergenMcFor is dish-only — '${item.id}' carries no flags`);
+  if (!isFoodItem(item))
+    throw new Error(`journey: allergenMcFor needs a dish/allergen item — '${item.id}' carries no flags`);
   const f = foodFor(item);
   const card = allergenCardFor(f.id);
   if (!card)
@@ -685,6 +724,17 @@ export function cuedFor(item: JourneyItem): CuedContent {
     return { prompt: s.prompt, hint: s.hint, answer: s.answer };
   }
   const f = foodFor(item);
+  // Allergen items (Stage 2): cued FLAG recall, not component recall.
+  if (item.kind === 'allergen') {
+    const flags = f.allergens ?? [];
+    const letters = flags.map((a) => a[0].toUpperCase()).join(' · ');
+    return {
+      prompt: `Which allergens does the ${f.name} carry?`,
+      hint: `${flags.length} flag${flags.length === 1 ? '' : 's'} — ${letters}`,
+      answer: flags.join(', '),
+      ...allergenFraming(f)
+    };
+  }
   const ingredients = f.ingredients!;
   const letters = ingredients.map((i) => i[0].toUpperCase()).join(' · ');
   return {
@@ -701,6 +751,16 @@ export function freeFor(item: JourneyItem): FreeContent {
     return { prompt: s.prompt, answer: s.answer };
   }
   const f = foodFor(item);
+  // Allergen items (Stage 2): free FLAG recall — name every flag, cold.
+  if (item.kind === 'allergen') {
+    const flags = f.allergens ?? [];
+    return {
+      prompt: `Name every allergen flag on the ${f.name}.`,
+      answer: flags.join(', '),
+      ...(f.allergenNote ? { detail: f.allergenNote } : {}),
+      ...allergenFraming(f)
+    };
+  }
   return {
     prompt: `Describe the ${f.name} to a guest — name + key components.`,
     answer: f.ingredients!.join(', '),

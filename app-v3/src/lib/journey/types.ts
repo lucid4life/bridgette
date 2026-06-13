@@ -4,13 +4,16 @@
 // engine card ids are reused only as content material, never as item ids.
 import type { Rank } from '../srs/scheduler';
 
-export type ItemKind = 'dish' | 'service';
+// 'dish:<id>' (component knowledge) · 'service:<slug>' (day-one calls) ·
+// 'allergen:<foodId>' (Stage 2 — that dish's allergen flags, tracked apart from
+// its components so Stage 1 progress never auto-completes Stage 2).
+export type ItemKind = 'dish' | 'service' | 'allergen';
 
 export interface JourneyItem {
-  id: string; // 'dish:tuna-crudo' | 'service:seat-1-left'
+  id: string; // 'dish:tuna-crudo' | 'service:seat-1-left' | 'allergen:tuna-crudo'
   kind: ItemKind;
   unitId: string; // home lesson unit (checkpoint items keep their home unit)
-  foodId?: string; // dish items only: key into data.foods
+  foodId?: string; // dish + allergen items: key into data.foods
 }
 
 export interface Unit {
