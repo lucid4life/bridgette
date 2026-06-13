@@ -8,6 +8,7 @@
   import {
     nextUnit,
     stageProgress,
+    stageStatus,
     testOutAvailable,
     unitHref,
     unitProgress,
@@ -15,52 +16,63 @@
   } from '$lib/journey/gating';
   import { itemsForUnit } from '$lib/journey/items';
   import { STAGES } from '$lib/journey/stages';
+  import type { Stage } from '$lib/journey/types';
   import { progress } from '$lib/store/progress.svelte';
   import { progressView } from '$lib/store/view';
 
-  const stage1 = STAGES[0];
-  const lockedStages = STAGES.filter((s) => s.locked);
-
   const view = $derived(progressView(progress.state));
+  const ORDINAL = ['one', 'two', 'three', 'four', 'five'];
 
-  const rows = $derived.by(() => {
+  function buildRows(stage: Stage, v: ReturnType<typeof progressView>) {
     let lessonN = 0;
-    return stage1.units.map((unit) => {
+    return stage.units.map((unit) => {
       const items = itemsForUnit(unit.id);
-      const { studied, total } = unitProgress(unit.id, view);
+      const { studied, total } = unitProgress(unit.id, v);
       const isCheckpoint = unit.kind === 'checkpoint';
+      const kind = items[0]?.kind;
       return {
         unit,
-        status: unitStatus(unit.id, view),
+        status: unitStatus(unit.id, v),
         number: isCheckpoint ? null : ++lessonN,
         total,
         studied,
         meta: isCheckpoint
           ? `${total} items · the whole stage, cold`
-          : items[0]?.kind === 'service'
+          : kind === 'service'
             ? `${total} service calls`
-            : `${total} dishes`,
-        href: unitHref(stage1, unit)
+            : kind === 'allergen'
+              ? `${total} dishes · flags`
+              : `${total} dishes`,
+        href: unitHref(stage, unit)
       };
     });
-  });
+  }
 
-  // The ONE BIG CONTINUE — the shared selector picks it (same rule as Today).
+  // Every unlocked stage gets its own spine; the rest preview below.
+  const stageBlocks = $derived.by(() =>
+    STAGES.filter((s) => stageStatus(s.id, view) !== 'locked').map((stage, i) => ({
+      stage,
+      ordinal: i,
+      rows: buildRows(stage, view),
+      sp: stageProgress(stage.id, view),
+      testOut: testOutAvailable(stage.id, view)
+    }))
+  );
+  const lockedStages = $derived(STAGES.filter((s) => stageStatus(s.id, view) === 'locked'));
+
+  // The ONE BIG CONTINUE — first unfinished unit walking stages in order
+  // (cross-stage: when Food Runner is done it points into Allergen Guardian).
   const next = $derived.by(() => {
-    const unit = nextUnit(stage1.id, view);
-    return unit ? (rows.find((r) => r.unit.id === unit.id) ?? null) : null;
+    for (const block of stageBlocks) {
+      const unit = nextUnit(block.stage.id, view);
+      if (unit) {
+        const row = block.rows.find((r) => r.unit.id === unit.id);
+        if (row) return row;
+      }
+    }
+    return null;
   });
   const due = $derived(progress.ready ? progress.dueItems().length : 0);
-  const sp = $derived(stageProgress(stage1.id, view));
-  const stageTestOut = $derived(testOutAvailable(stage1.id, view));
-
-  // lessonsPerDay throttle (NEW items only): when the continue-target would
-  // mint past today's allowance, hint here — /unit's interstitial guards.
-  const nextThrottled = $derived.by(() => {
-    if (!progress.ready || !next || next.unit.kind === 'checkpoint') return false;
-    const wouldMintNew = itemsForUnit(next.unit.id).some((i) => !progress.state.items[i.id]);
-    return wouldMintNew && progress.newToday() >= progress.settings.lessonsPerDay;
-  });
 </script>
 
 <svelte:head><title>The Path · Bridgette Trainer</title></svelte:head>
@@ -79,9 +91,9 @@
 {:else}
   <div class="screen">
     <header class="hero-strip">
-      <p class="h-eyebrow">your two-week path</p>
+      <p class="h-eyebrow">your learning path</p>
       <h1>The Path</h1>
-      <p class="sub">Learn it in stops, prove it at the shift check, keep it warm in reviews.</p>
+      <p class="sub">Work through it module by module, prove it at the shift check, keep it warm in reviews.</p>
 
       {#if next}
         <a class="continue" href={next.href}>
@@ -94,9 +106,6 @@
             <path d="M4 12h15M13 6l6 6-6 6" />
           </svg>
         </a>
-        {#if nextThrottled}
-          <p class="throttle-hint">new items are done for today — this starts tomorrow's lesson</p>
-        {/if}
       {:else}
         <a class="continue" href="/review">
           <span class="c-text">
@@ -122,45 +131,49 @@
       </p>
     </header>
 
-    <section class="stage" aria-labelledby="stage1-title">
-      <header class="stage-head">
-        <p class="h-eyebrow">stage one · the food track</p>
-        <h2 id="stage1-title">{stage1.title}</h2>
-        <p class="sub">{stage1.blurb}</p>
-        <div class="meter">
-          <span class="meter-bar" aria-hidden="true">
-            <span class="meter-fill" style:width="{Math.round(sp.ratio * 100)}%"></span>
-          </span>
-          <span class="meter-text">{sp.itemsAtCriterion}/{sp.totalItems} at criterion</span>
+    {#each stageBlocks as block (block.stage.id)}
+      <section class="stage" aria-labelledby="{block.stage.id}-title">
+        <header class="stage-head">
+          <p class="h-eyebrow">stage {ORDINAL[block.ordinal]} · the {block.stage.track} track</p>
+          <h2 id="{block.stage.id}-title">{block.stage.title}</h2>
+          <p class="sub">{block.stage.blurb}</p>
+          <div class="meter">
+            <span class="meter-bar" aria-hidden="true">
+              <span class="meter-fill" style:width="{Math.round(block.sp.ratio * 100)}%"></span>
+            </span>
+            <span class="meter-text">{block.sp.itemsAtCriterion}/{block.sp.totalItems} at criterion</span>
+          </div>
+        </header>
+
+        <ol class="path-list">
+          {#each block.rows as row (row.unit.id)}
+            <UnitNode
+              unit={row.unit}
+              status={row.status}
+              number={row.number}
+              total={row.total}
+              studied={row.studied}
+              meta={row.meta}
+              href={row.href}
+              current={next?.unit.id === row.unit.id}
+              doneVia={view.unitDone[row.unit.id]}
+              testOut={row.unit.kind === 'checkpoint' && block.testOut}
+            />
+          {/each}
+        </ol>
+      </section>
+    {/each}
+
+    {#if lockedStages.length > 0}
+      <section class="future" aria-labelledby="future-title">
+        <h2 class="h-eyebrow" id="future-title">still to unlock</h2>
+        <div class="grid cols-2">
+          {#each lockedStages as stage (stage.id)}
+            <StagePreview {stage} n={STAGES.indexOf(stage) + 1} />
+          {/each}
         </div>
-      </header>
-
-      <ol class="path-list">
-        {#each rows as row (row.unit.id)}
-          <UnitNode
-            unit={row.unit}
-            status={row.status}
-            number={row.number}
-            total={row.total}
-            studied={row.studied}
-            meta={row.meta}
-            href={row.href}
-            current={next?.unit.id === row.unit.id}
-            doneVia={view.unitDone[row.unit.id]}
-            testOut={row.unit.kind === 'checkpoint' && stageTestOut}
-          />
-        {/each}
-      </ol>
-    </section>
-
-    <section class="future" aria-labelledby="future-title">
-      <h2 class="h-eyebrow" id="future-title">after the shift check</h2>
-      <div class="grid cols-2">
-        {#each lockedStages as stage, i (stage.id)}
-          <StagePreview {stage} n={i + 2} />
-        {/each}
-      </div>
-    </section>
+      </section>
+    {/if}
   </div>
 {/if}
 
@@ -219,14 +232,6 @@
     height: 34px;
     flex: none;
     transition: transform 0.18s ease;
-  }
-
-  .throttle-hint {
-    margin: 8px 0 0;
-    max-width: 580px;
-    font-size: 12.5px;
-    font-style: italic;
-    color: var(--text-muted);
   }
 
   .due {

@@ -1,4 +1,4 @@
-// Task D — gating rules: sequential unit unlocks, the 85% rank criterion,
+// Task D — gating rules: open self-paced modules, the 85% rank criterion,
 // checkpoint availability, test-out, and stage progress. Pure functions over a
 // minimal ProgressView — the store is never imported here.
 import { itemsForUnit } from './items';
@@ -53,15 +53,16 @@ export function stageUnlocked(stageId: string, view: ProgressView): boolean {
   return stageComplete(STAGES[idx - 1].id, view);
 }
 
-/** Sequential availability: first unit always; later units when the previous
- * one is complete; the checkpoint only when ALL lesson units are complete. */
+/** Module availability: every lesson module of an unlocked stage is open, in
+ * any order — self-paced, no finish-the-previous gate and no per-day throttle.
+ * The checkpoint is the one hold-back: it opens only when ALL lesson units are
+ * complete (test-out still offers it cold any time). */
 function unitAvailable(unitId: string, view: ProgressView): boolean {
-  const { unit, stage, index } = unitById(unitId);
+  const { unit, stage } = unitById(unitId);
   if (!stageUnlocked(stage.id, view)) return false;
   if (unit.kind === 'checkpoint')
     return lessonUnits(stage).every((u) => unitComplete(u.id, view));
-  if (index === 0) return true;
-  return unitComplete(stage.units[index - 1].id, view);
+  return true;
 }
 
 export function unitStatus(unitId: string, view: ProgressView): UnitStatus {

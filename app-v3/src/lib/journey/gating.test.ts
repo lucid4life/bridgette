@@ -81,35 +81,33 @@ describe('unitComplete', () => {
   });
 });
 
-describe('unitStatus: sequential path', () => {
-  it('fresh path: first unit available, the rest locked', () => {
+describe('unitStatus: self-paced modules', () => {
+  it('fresh path: EVERY lesson module is available, only the checkpoint is locked', () => {
     const v = view();
-    expect(unitStatus('day-one', v)).toBe('available');
-    for (const u of LESSONS.slice(1)) expect(unitStatus(u, v), u).toBe('locked');
+    for (const u of LESSONS) expect(unitStatus(u, v), u).toBe('available');
     expect(unitStatus('checkpoint-food', v)).toBe('locked');
   });
 
-  it('locked -> available -> started -> complete', () => {
-    expect(unitStatus('snacks', view())).toBe('locked');
-    const open = doneUnits('day-one');
-    expect(unitStatus('snacks', open)).toBe('available');
-    const started = view(ranked('snacks', 1), { 'day-one': 'gate' });
+  it('a module goes available -> started -> complete (no finish-the-previous gate)', () => {
+    expect(unitStatus('snacks', view())).toBe('available'); // open from the start
+    const started = view(ranked('snacks', 1));
     expect(unitStatus('snacks', started)).toBe('started');
-    const done = view(ranked('snacks', 4), { 'day-one': 'gate' });
+    const done = view(ranked('snacks', 4));
     expect(unitStatus('snacks', done)).toBe('complete');
   });
 
-  it('completing unit N opens unit N+1', () => {
-    const v = doneUnits('day-one', 'snacks');
-    expect(unitStatus('snacks-2', v)).toBe('available');
-    expect(unitStatus('small-plates', v)).toBe('locked');
+  it('modules are independent — completing one leaves the others untouched', () => {
+    const v = doneUnits('small-plates');
+    expect(unitStatus('small-plates', v)).toBe('complete');
+    expect(unitStatus('snacks', v)).toBe('available'); // not gated behind anything
+    expect(unitStatus('mains', v)).toBe('available');
   });
 
-  it('a test-out mid-path completes that unit and opens the next', () => {
+  it('a test-out completes that module; the rest stay open', () => {
     const v = view({}, { 'small-plates': 'test-out' });
     expect(unitStatus('small-plates', v)).toBe('complete');
     expect(unitStatus('vegetables', v)).toBe('available');
-    expect(unitStatus('snacks', v)).toBe('locked'); // earlier units untouched
+    expect(unitStatus('snacks', v)).toBe('available');
   });
 });
 

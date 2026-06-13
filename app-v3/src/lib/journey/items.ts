@@ -100,13 +100,19 @@ export function pathCategories(): string[] {
   return pathCats;
 }
 
-/** Filter dish items to a single menu category (null/undefined → unchanged). */
+/** The dish category of a dish- or allergen-kind item (both carry a foodId). */
+export function categoryOf(item: JourneyItem): string {
+  return item.foodId ? (foodById.get(item.foodId)?.category ?? '') : '';
+}
+
+/** Filter food-backed items (dish or allergen) to a single menu category
+ * (null/undefined → unchanged). */
 export function filterByCategory(
   items: readonly JourneyItem[],
   category: string | null
 ): readonly JourneyItem[] {
   if (!category) return items;
-  return items.filter((i) => i.kind === 'dish' && foodFor(i).category === category);
+  return items.filter((i) => !!i.foodId && categoryOf(i) === category);
 }
 
 let stage1Items: readonly JourneyItem[] | null = null;

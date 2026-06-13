@@ -64,13 +64,15 @@
 
   {#if status === 'locked'}
     <div class="body">
+      {#if number !== null}<span class="modlabel">Module {number}</span>{/if}
       <span class="title">{unit.title}</span>
       <span class="blurb">{unit.blurb}</span>
       <span class="row"><span class="meta">{meta}</span></span>
-      <span class="visually-hidden">Locked — finish the unit before it to unlock.</span>
+      <span class="visually-hidden">Locked — finish every module to open the shift check.</span>
     </div>
   {:else}
     <a class="body" {href} aria-current={current ? 'step' : undefined}>
+      {#if number !== null}<span class="modlabel">Module {number}</span>{/if}
       <span class="title">{unit.title}</span>
       <span class="blurb">{unit.blurb}</span>
       <span class="row">
@@ -227,6 +229,19 @@
     font-weight: 500;
   }
 
+  .modlabel {
+    display: block;
+    margin-bottom: 1px;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+  .node.locked .modlabel {
+    color: var(--text-muted);
+  }
   .title {
     display: block;
     font-family: var(--font-display);

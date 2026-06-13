@@ -13,13 +13,13 @@
   import TeachCard from '$lib/components/session/TeachCard.svelte';
   import { nameOf } from '$lib/components/session/util';
   import {
-    allStage1Items,
+    allItems,
     allergenMcFor,
+    categoryOf,
     filterByCategory,
     hasAllergenMc,
     judgmentQuestions,
     pathCategories,
-    romanceFor,
     teachFor
   } from '$lib/journey/items';
   import type { JourneyItem } from '$lib/journey/types';
@@ -34,10 +34,10 @@
   } from '$lib/session';
   import { progress } from '$lib/store/progress.svelte';
 
-  // Every flagged dish on the path (today: all 41 — the one flagless food is
-  // off-path; the filter keeps a future menu change from crashing the drill).
-  const FLAGGED: readonly JourneyItem[] = allStage1Items().filter(
-    (i) => i.kind === 'dish' && hasAllergenMc(i)
+  // Every flagged dish's ALLERGEN item (Stage 2): drilling the sweep advances
+  // the same allergen:<foodId> items the Allergen Guardian path tracks.
+  const FLAGGED: readonly JourneyItem[] = allItems().filter(
+    (i) => i.kind === 'allergen' && hasAllergenMc(i)
   );
   const FLAGGED_COUNT = FLAGGED.length;
   const CATEGORIES = pathCategories();
@@ -88,7 +88,7 @@
       pool,
       progress.shakyItems(),
       (id) => !!progress.state.items[id],
-      (item) => romanceFor(item).category
+      (item) => categoryOf(item)
     );
   }
 

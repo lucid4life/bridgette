@@ -34,7 +34,7 @@ describe('stage 1: food-runner', () => {
   it('locks the unit titles', () => {
     const titles = Object.fromEntries(stage.units.map((u) => [u.id, u.title]));
     expect(titles).toEqual({
-      'day-one': 'Day one',
+      'day-one': 'Seats & service',
       snacks: 'Snacks',
       'snacks-2': 'Snacks II',
       'small-plates': 'Small plates',

@@ -1,36 +1,37 @@
 <script lang="ts">
   // Task I — /today: the daily cockpit. ONE primary action chosen by state
-  // (WaniKani's two-button law: reviews are an obligation, lessons a choice):
-  // reviews lead whenever anything is due; with a clear queue the next lesson
-  // steps up. Lessons are throttled to lessonsPerDay NEW items; reviews never
-  // are. Three blocks, no feed: hero (primary + streak) · the other job · the
-  // 2:45pm pre-shift door.
+  // (WaniKani's two-button law: reviews are an obligation, modules a choice):
+  // reviews lead whenever anything is due; with a clear queue the next module
+  // steps up. Modules are self-paced — no per-day cap; reviews are never capped
+  // either. Three blocks, no feed: hero (primary + streak) · the other job ·
+  // the 2:45pm pre-shift door.
   import Icon from '$lib/components/Icon.svelte';
   import { nextUnit, stageStatus, unitHref, unitStatus } from '$lib/journey/gating';
   import { STAGES } from '$lib/journey/stages';
   import { progress } from '$lib/store/progress.svelte';
   import { progressView } from '$lib/store/view';
 
-  const stage1 = STAGES[0];
   const view = $derived(progressView(progress.state));
 
   const due = $derived(progress.ready ? progress.dueItems().length : 0);
   const shaky = $derived(progress.ready ? progress.shakyItems(12).length : 0);
   const anyItems = $derived(Object.keys(progress.state.items).length > 0);
 
-  // the lesson throttle — NEW items only; reviews are never capped
-  const lessonsPerDay = $derived(progress.settings.lessonsPerDay);
-  const lessonsLeft = $derived(Math.max(0, lessonsPerDay - (progress.ready ? progress.newToday() : 0)));
-
-  // next stop on the path: the SAME shared selector the Path home consumes
+  // next stop on the path: walk unlocked stages in order (same rule + cross-
+  // stage reach as the Path home), carrying the unit's home stage for the href.
   const next = $derived.by(() => {
-    const unit = nextUnit(stage1.id, view);
-    return unit ? { unit, status: unitStatus(unit.id, view) } : null;
+    for (const stage of STAGES) {
+      if (stageStatus(stage.id, view) === 'locked') continue;
+      const unit = nextUnit(stage.id, view);
+      if (unit) return { unit, stage, status: unitStatus(unit.id, view) };
+    }
+    return null;
   });
-  const stageDone = $derived(stageStatus(stage1.id, view) === 'complete');
-  const nextHref = $derived(next ? unitHref(stage1, next.unit) : '/');
-  // the shift check re-tests known items — it mints nothing, so the throttle never blocks it
-  const throttled = $derived(lessonsLeft === 0 && next?.unit.kind !== 'checkpoint');
+  // "everything built so far is done" — every non-locked stage complete.
+  const stageDone = $derived(
+    STAGES.every((s) => stageStatus(s.id, view) === 'locked' || stageStatus(s.id, view) === 'complete')
+  );
+  const nextHref = $derived(next ? unitHref(next.stage, next.unit) : '/');
 
   const streak = $derived(progress.streak);
   const freezeFree = $derived(progress.freezeAvailable());
@@ -62,40 +63,23 @@
 {/snippet}
 
 {#snippet lessonsCard(primary: boolean)}
-  <section class="card" class:job={primary} class:quiet={!primary && (stageDone || throttled)}>
+  <section class="card" class:job={primary} class:quiet={!primary && stageDone}>
     {#if stageDone || !next}
-      <h2 class={primary ? 'kicker' : 'card-h'}>lessons</h2>
+      <h2 class={primary ? 'kicker' : 'card-h'}>modules</h2>
       <p class="jobtitle" class:sm={!primary}>food runner — locked in</p>
       <p class="meta">the whole stage is at criterion. keep it warm in reviews.</p>
       <p class="cta"><a class="btn ghost" href="/">see the path</a></p>
-    {:else if throttled}
-      {#if primary}
-        <!-- queue clear AND allowance spent: an earned rest, never a dead end -->
-        <h2 class="kicker">done for today</h2>
-        <p class="jobtitle">the day's work is in</p>
-        <p class="meta">new items done, nothing due — that's the system working. tomorrow's lesson is waiting on the path.</p>
-        <p class="allowance">{lessonsPerDay} new items/day · 0 left today</p>
-        <p class="cta done-ctas">
-          {#if shaky > 0}<a class="btn ghost" href="/preshift">warm up the shaky calls</a>{/if}
-          <a class="btn ghost" href="/playbook">read the playbook</a>
-          <a class="btn ghost" href="/">see the path</a>
-        </p>
-      {:else}
-        <h2 class="card-h">lessons</h2>
-        <p class="meta">today's new items are done — reviews only.</p>
-        <p class="allowance">{lessonsPerDay} new items/day · 0 left today</p>
-      {/if}
     {:else}
       <h2 class={primary ? 'kicker' : 'card-h'}>
-        {primary ? `next lesson · ${next.status === 'started' ? 'continue' : 'start'}` : 'lessons'}
+        {primary ? `next module · ${next.status === 'started' ? 'continue' : 'start'}` : 'modules'}
       </h2>
       <p class="jobtitle" class:sm={!primary}>{next.unit.title}</p>
       <p class="meta blurb">{next.unit.blurb}</p>
-      <p class="allowance">
+      <p class="meta hint">
         {#if next.unit.kind === 'checkpoint'}
           no new items — the whole stage, cold
         {:else}
-          {lessonsPerDay} new items/day · {lessonsLeft} left today
+          self-paced — take as many modules as you like
         {/if}
       </p>
       <p class="cta">
@@ -229,7 +213,7 @@
   .blurb {
     max-width: 52ch;
   }
-  .allowance {
+  .hint {
     margin: 10px 0 0;
     font-family: var(--font-display);
     font-size: 12px;
@@ -243,11 +227,6 @@
   }
   .job .cta {
     margin-top: 18px;
-  }
-  .done-ctas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
   }
 
   /* ---- streak card ---- */

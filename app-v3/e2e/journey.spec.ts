@@ -3,16 +3,17 @@ import { test, expect } from '@playwright/test';
 // Smoke: the Phase-1 happy path end to end — the Path renders, Day one starts,
 // a pretest MC answers + advances, and the Playbook lookup actually filters.
 
-test('path → start Day one → answer a pretest MC → continue advances', async ({ page }) => {
+test('path → start the first module → answer a pretest MC → continue advances', async ({ page }) => {
   await page.goto('/');
 
-  // Stage 1 renders all ten stations (9 lessons + the shift check).
+  // Fresh profile: only Stage 1 renders a spine (Stage 2+ are locked previews) —
+  // its ten stations (9 lessons + the shift check).
   await expect(page.locator('ol.path-list li.node')).toHaveCount(10);
 
-  // The one big continue card points at Day one on a fresh profile.
+  // The one big continue card points at the first module (Seats & service).
   const start = page.locator('a.continue');
   await expect(start).toContainText(/start/i);
-  await expect(start).toContainText('Day one');
+  await expect(start).toContainText('Seats & service');
   await start.click();
 
   await expect(page).toHaveURL(/\/unit\/day-one$/);

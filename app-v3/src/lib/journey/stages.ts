@@ -96,7 +96,7 @@ const lesson = (id: string, title: string, blurb: string): Unit => ({
 const FOOD_RUNNER_UNITS: Unit[] = [
   lesson(
     DAY_ONE_UNIT_ID,
-    'Day one',
+    'Seats & service',
     'seat numbers, the table map, and how a plate finds the right guest'
   ),
   lesson('snacks', 'Snacks', 'the first things on the table — fries, hummus, garlic bread, cashews'),
@@ -114,7 +114,7 @@ const FOOD_RUNNER_UNITS: Unit[] = [
   {
     id: CHECKPOINT_UNIT_ID,
     title: 'Shift check: Food',
-    blurb: 'the whole food menu plus day-one service, cold — like a real shift',
+    blurb: 'the whole food menu plus the floor basics, cold — like a real shift',
     kind: 'checkpoint'
   }
 ];

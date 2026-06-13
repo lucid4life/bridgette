@@ -14,9 +14,9 @@
   import SessionSummary from '$lib/components/session/SessionSummary.svelte';
   import TeachCard from '$lib/components/session/TeachCard.svelte';
   import { stage1ItemById } from '$lib/components/session/util';
-  import { CHECKPOINT_PASS_RATIO, unitComplete } from '$lib/journey/gating';
-  import { allStage1Items, cuedFor, freeFor, mcFor, teachFor } from '$lib/journey/items';
-  import { CHECKPOINT_UNIT_ID, stageById } from '$lib/journey/stages';
+  import { CHECKPOINT_PASS_RATIO, stageStatus, unitComplete } from '$lib/journey/gating';
+  import { cuedFor, freeFor, itemsForUnit, mcFor, teachFor } from '$lib/journey/items';
+  import { STAGES } from '$lib/journey/stages';
   import {
     createCheckpointSession,
     type CheckpointSession,
@@ -25,15 +25,19 @@
   import { progress } from '$lib/store/progress.svelte';
   import { progressView } from '$lib/store/view';
 
-  const STAGE_ID = 'food-runner';
   const stageId = $derived(page.params.stageId ?? '');
-
-  // Only the food-runner checkpoint exists in Phase 1.
+  const stage = $derived(STAGES.find((s) => s.id === stageId));
+  const checkpointUnit = $derived(stage?.units.find((u) => u.kind === 'checkpoint'));
+  // A checkpoint is reachable only for a real stage that HAS one and is
+  // unlocked (its gate / test-out is offered once the stage is open).
   $effect(() => {
-    if (stageId !== STAGE_ID) void goto('/');
+    if (!progress.ready) return;
+    const locked = !stage || stageStatus(stageId, progressView(progress.state)) === 'locked';
+    if (locked || !checkpointUnit) void goto('/');
   });
 
-  const itemCount = allStage1Items().length;
+  const items = $derived(checkpointUnit ? itemsForUnit(checkpointUnit.id) : []);
+  const itemCount = $derived(items.length);
   const passPct = Math.round(CHECKPOINT_PASS_RATIO * 100);
 
   let session: CheckpointSession | null = $state(null);
@@ -41,9 +45,10 @@
   let summary = $state<CheckpointSummary | null>(null);
 
   function start(): void {
+    if (items.length === 0) return;
     summary = null;
     nonce = 0;
-    session = createCheckpointSession(allStage1Items());
+    session = createCheckpointSession(items);
   }
 
   const step = $derived.by(() => {
@@ -79,19 +84,18 @@
    * the one unit that can never be tested out of, it IS the test); any lesson
    * units still incomplete were skipped over, so they record as 'test-out'. */
   function applyOutcome(s: CheckpointSummary): void {
-    if (!s.passed) return;
+    if (!s.passed || !stage || !checkpointUnit) return;
     const view = progressView(progress.state);
-    const stage = stageById(STAGE_ID);
-    void progress.completeUnit(CHECKPOINT_UNIT_ID, 'gate');
+    void progress.completeUnit(checkpointUnit.id, 'gate');
     for (const u of stage.units) {
-      if (u.id === CHECKPOINT_UNIT_ID) continue;
+      if (u.id === checkpointUnit.id) continue;
       if (!unitComplete(u.id, view)) void progress.completeUnit(u.id, 'test-out');
     }
   }
 
   /** Misses grouped by home unit — "revisit: Pasta (2 misses)" → /unit/pasta. */
   const missRows = $derived.by(() => {
-    if (!summary) return [];
+    if (!summary || !stage) return [];
     const counts = new Map<string, number>();
     for (const r of summary.perItem) {
       if (r.correct) continue;
@@ -99,8 +103,8 @@
       if (!item) continue;
       counts.set(item.unitId, (counts.get(item.unitId) ?? 0) + 1);
     }
-    return stageById(STAGE_ID)
-      .units.filter((u) => counts.has(u.id))
+    return stage.units
+      .filter((u) => counts.has(u.id))
       .map((u) => {
         const n = counts.get(u.id) ?? 0;
         return {
@@ -110,9 +114,10 @@
       });
   });
   const scorePct = $derived(summary ? Math.round(summary.score * 100) : 0);
+  const checkTitle = $derived(checkpointUnit?.title ?? 'Shift check');
 </script>
 
-<svelte:head><title>Shift check: Food · Bridgette Trainer</title></svelte:head>
+<svelte:head><title>{checkTitle} · Bridgette Trainer</title></svelte:head>
 
 <div class="screen">
   {#if !progress.ready}
@@ -123,7 +128,7 @@
   {:else if summary}
     <SessionSummary
       eyebrow={summary.passed ? 'shift check passed' : 'not this time — and that’s fine'}
-      title={summary.passed ? 'food runner — locked in' : 'keep walking the path'}
+      title={summary.passed ? `${stage?.title ?? 'stage'} — locked in` : 'keep walking the path'}
       ringPct={scorePct}
       ringText={`${scorePct}%`}
       stats={[
@@ -145,7 +150,7 @@
     </SessionSummary>
   {:else if step && prog}
     <SessionHeader
-      title="Shift check: Food"
+      title={checkTitle}
       phase="cold — self-graded"
       position={prog.position}
       total={prog.total}
@@ -170,10 +175,10 @@
     <section class="intro on-cream">
       <span class="i-flag" aria-hidden="true"><Icon name="flag" size={22} /></span>
       <p class="i-eyebrow">stage gate · take it cold</p>
-      <h1 class="i-title">shift check: food</h1>
+      <h1 class="i-title">{checkTitle}</h1>
       <p class="i-line">{itemCount} items, cold. pass at {passPct}%.</p>
       <ul class="i-rules">
-        <li>every dish and every day-one call, shuffled — no hints held back, no reteaching</li>
+        <li>everything in the stage, shuffled — no hints held back, no reteaching</li>
         <li>self-graded: say it out loud, reveal, be honest</li>
         <li>nothing touches your reviews during the run — pass, and the whole stage is marked done behind you</li>
       </ul>
