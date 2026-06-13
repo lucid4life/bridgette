@@ -6,8 +6,17 @@ export { createLearnSession } from './learn';
 export { createReviewSession } from './review';
 export { createCheckpointSession } from './checkpoint';
 export { createRomanceSession } from './romance';
-export { createMockTestSession, assignMockTypes, MOCK_TYPE_ROTATION } from './mock-test';
+export {
+  createMockTestSession,
+  assignMockTypes,
+  mockMcContentFor,
+  mockQtypeOf,
+  MOCK_TYPE_ROTATION
+} from './mock-test';
+export type { MockTypePredicates } from './mock-test';
 export { createAllergenSession } from './allergen';
+export { createJudgmentSession } from './judgment';
+export type { JudgmentQuestion, JudgmentSession, JudgmentSummary } from './judgment';
 export { romanceOrder } from './romance-order';
 export { RECYCLE_GAP } from './shared';
 // Same 0.85 bar the path gating uses — re-exported so the runner UI needs

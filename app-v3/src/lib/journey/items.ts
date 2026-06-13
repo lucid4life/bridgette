@@ -323,6 +323,247 @@ export function reverseMcFor(item: JourneyItem): ReverseMcContent {
   };
 }
 
+// ------------------------------------------------- Test-bar quiz expansion
+// (research 2026-06-13: gaps 1/2/4/6 + critique 6 — the question directions
+// the documented two-week bar names but nothing drilled.)
+import { GLOSSARY, type GlossaryRow } from './glossary';
+import { MODS_FOILS, MODS_ROWS, modsRowsFor, type ModsRow } from './allergen-mods';
+
+/** Reveal framing every safety-adjacent minted question carries. */
+export interface WhyMcContent extends McContent {
+  why: string;
+  confirmLine: string;
+}
+
+/** The safe-call universe: the 41 path dishes PLUS the off-menu Sorbet — the
+ * official dairy-free dessert answer (research gap 3). */
+let safeUniverse: Food[] | null = null;
+function getSafeUniverse(): Food[] {
+  if (!safeUniverse) {
+    const pathIds = Object.values(UNIT_FOOD_IDS).flat();
+    safeUniverse = [...pathIds.map((id) => foodById.get(id)!)];
+    const sorbet = foodById.get('sorbet');
+    if (sorbet) safeUniverse.push(sorbet);
+  }
+  return safeUniverse;
+}
+
+/** Dishes that must NEVER be dealt as the 'safe' answer for an allergen the
+ * official notes reveal as present-but-unlisted (research gap 1): the ricotta
+ * dumpling dough carries eggs off the Allergies line; the duck's turnip relish
+ * carries miso (soy) off the line. */
+export const SAFE_CALL_EXCLUSIONS: Record<string, readonly string[]> = {
+  eggs: ['ricotta-dumplings'],
+  soy: ['wood-roasted-half-duck']
+};
+
+const flagsOf = (f: Food): string[] => f.allergens ?? [];
+const carries = (f: Food, allergen: string): boolean => flagsOf(f).includes(allergen);
+const safeFor = (f: Food, allergen: string): boolean =>
+  !carries(f, allergen) && !(SAFE_CALL_EXCLUSIONS[allergen] ?? []).includes(f.id);
+
+/** The allergy INVERSION, anchored on a dish (mock-test wheel slot): the asked
+ * dish's first flag becomes the guest's allergy, the dish itself is one of the
+ * three carrying distractors ("the plate in front of you is NOT the safe
+ * call"), and the answer is a dish genuinely safe for that flag — same-category
+ * first, so "can't have dairy, wants dessert" finds the Sorbet. */
+function mintSafeCall(anchor: Food, allergen: string): WhyMcContent & { allergen: string } {
+  const universe = getSafeUniverse();
+  const carriers = universe.filter((d) => d.id !== anchor.id && carries(d, allergen));
+  const safes = universe.filter((d) => safeFor(d, allergen));
+  if (safes.length === 0 || carriers.length < 2)
+    throw new Error(`journey: allergen '${allergen}' cannot mint a safe-call question`);
+  // Answer: same-category safe dish first (deterministic — list order), else
+  // a stable hash pick across the safe pool.
+  const sameCat = safes.filter((d) => d.category === anchor.category);
+  const pool = sameCat.length > 0 ? sameCat : safes;
+  const answer = pool[hashId(`${anchor.id}:safe:${allergen}`) % pool.length];
+  const sameCatCarriers = carriers.filter((d) => d.category === anchor.category);
+  const crossCarriers = carriers.filter((d) => d.category !== anchor.category);
+  const others = [...sameCatCarriers, ...crossCarriers].slice(0, 2).map((d) => d.name);
+  return {
+    ...toMc(
+      `dish:${anchor.id}:safecall:${allergen}`,
+      `A guest can't have ${allergen} — which of these can you recommend?`,
+      [answer.name, anchor.name, ...others],
+      answer.name
+    ),
+    allergen,
+    why: `${answer.name} carries no ${allergen} flag — the other three all do.`,
+    confirmLine: data.confirm.allergens
+  };
+}
+
+export function safeCallMcForDish(item: JourneyItem): WhyMcContent & { allergen: string } {
+  if (item.kind !== 'dish')
+    throw new Error(`journey: safeCallMcFor is dish-only — '${item.id}' has no flags`);
+  const f = foodFor(item);
+  const allergen = flagsOf(f)[0];
+  if (!allergen)
+    throw new Error(`journey: '${item.id}' has no flags to invert — check hasAllergenMc first`);
+  return mintSafeCall(f, allergen);
+}
+
+/** The allergen vocabulary across the path (+ sorbet), for NOT-a-flag foils. */
+let allergenVocab: string[] | null = null;
+function getAllergenVocab(): string[] {
+  if (!allergenVocab) {
+    const seen = new Set<string>();
+    for (const d of getSafeUniverse()) for (const a of flagsOf(d)) seen.add(a);
+    allergenVocab = [...seen].sort();
+  }
+  return allergenVocab;
+}
+
+/** Full flag-SET certification (research gap 4): the classic card's answer is
+ * always the FIRST flag, so a dish's other flags go untested — this variant
+ * asks which of four tokens is NOT on the dish. Dishes need >=3 flags. */
+export function hasNotFlagMc(item: JourneyItem): boolean {
+  return item.kind === 'dish' && flagsOf(foodFor(item)).length >= 3;
+}
+export function notFlagMcFor(item: JourneyItem): WhyMcContent {
+  if (!hasNotFlagMc(item))
+    throw new Error(`journey: notFlagMcFor needs a dish with >=3 flags — '${item.id}'`);
+  const f = foodFor(item);
+  const flags = flagsOf(f);
+  const nonFlags = getAllergenVocab().filter((a) => !flags.includes(a));
+  const answer = nonFlags[hashId(`${item.id}:notflag`) % nonFlags.length];
+  const reals = flags.slice(0, 3);
+  return {
+    ...toMc(
+      `${item.id}:notflag`,
+      `Which of these is NOT a flag on the ${f.name}?`,
+      [answer, ...reals],
+      answer
+    ),
+    why: `The ${f.name} carries: ${flags.join(', ')}. ${answer} is not on its line.`,
+    confirmLine: data.confirm.allergens
+  };
+}
+
+/** "Explain it" inverted (critique 6): the official description as the prompt,
+ * the dish's own name words stripped so the answer isn't given away. */
+export function descriptionMcFor(item: JourneyItem): McContent {
+  if (item.kind !== 'dish')
+    throw new Error(`journey: descriptionMcFor is dish-only — '${item.id}'`);
+  const f = foodFor(item);
+  if (!f.description) throw new Error(`journey: '${f.id}' has no official description`);
+  // Truncate at a sentence boundary near 220 chars; strip the dish's own name
+  // words (case-insensitive, word-level) so the excerpt can't name its answer.
+  let excerpt = f.description;
+  if (excerpt.length > 220) {
+    const cut = excerpt.slice(0, 220);
+    excerpt = cut.slice(0, Math.max(cut.lastIndexOf('. '), 120) + 1);
+  }
+  // Cloze the dish's own name words to a blank ("___") — prose substitution
+  // ("this dish") garbles runs like "this duck dish" into "this this dish
+  // dish"; a blank reads naturally and runs collapse to one.
+  const nameWords = new Set(normWords(f.name));
+  excerpt = excerpt
+    .split(/\b/)
+    .map((w) => (nameWords.has(normWords(w)[0] ?? '') ? '___' : w))
+    .join('')
+    .replace(/___(\s*[-&]?\s*___)+/g, '___');
+  const { dishes } = getReverseUniverse();
+  const eligible = dishes.filter((d) => d.id !== f.id);
+  const sameCat = eligible.filter((d) => d.category === f.category);
+  const crossCat = eligible.filter((d) => d.category !== f.category);
+  const distractors = [...sameCat.slice(0, 3), ...crossCat].slice(0, 3).map((d) => d.name);
+  return toMc(
+    `${item.id}:description`,
+    `"${excerpt}" — which dish is this?`,
+    [f.name, ...distractors],
+    f.name
+  );
+}
+
+/** "A guest asks: what's <term>?" — definitions the official descriptions give
+ * (journey/glossary.ts). Distractors are other glossary definitions. */
+export function glossaryMcFor(rowOrTerm: GlossaryRow | string): WhyMcContent & { term: string } {
+  const glossRow =
+    typeof rowOrTerm === 'string' ? GLOSSARY.find((g) => g.term === rowOrTerm) : rowOrTerm;
+  if (!glossRow) throw new Error(`journey: no glossary row for '${String(rowOrTerm)}'`);
+  const foils = shuffled(
+    GLOSSARY.filter((g) => g.term !== glossRow.term),
+    mulberry32(hashId(`gloss:${glossRow.term}`))
+  )
+    .slice(0, 3)
+    .map((g) => g.definition);
+  return {
+    ...toMc(
+      `gloss:${glossRow.term}`,
+      `A guest asks: what's ${glossRow.term}?`,
+      [glossRow.definition, ...foils],
+      glossRow.definition
+    ),
+    term: glossRow.term,
+    why: `It's in: ${glossRow.dishes.map((id) => foodById.get(id)?.name ?? id).join(', ')}.`,
+    confirmLine: data.confirm.allergens
+  };
+}
+
+/** "Guest wants the <dish> but can't have <allergen> — what's the call?" —
+ * authored 1:1 from the official allergenNote (journey/allergen-mods.ts). */
+export function hasModsMc(item: JourneyItem): boolean {
+  return item.kind === 'dish' && modsRowsFor(foodFor(item).id).length > 0;
+}
+export function modsMcFor(itemOrRow: JourneyItem | ModsRow): WhyMcContent & { allergen: string } {
+  const modsRow: ModsRow | undefined =
+    'foodId' in itemOrRow && 'call' in itemOrRow
+      ? (itemOrRow as ModsRow)
+      : (() => {
+          const item = itemOrRow as JourneyItem;
+          const rows = modsRowsFor(foodFor(item).id);
+          if (rows.length === 0)
+            throw new Error(`journey: '${item.id}' has no authored mods row — check hasModsMc`);
+          return rows[hashId(`${item.id}:mods`) % rows.length];
+        })();
+  if (!modsRow) throw new Error('journey: modsMcFor needs a mods row');
+  const f = foodById.get(modsRow.foodId);
+  if (!f) throw new Error(`journey: mods row foodId '${modsRow.foodId}' missing`);
+  const foils = (Object.keys(MODS_FOILS) as (keyof typeof MODS_FOILS)[])
+    .filter((call) => call !== modsRow.call)
+    .map((call) => MODS_FOILS[call])
+    .slice(0, 3);
+  return {
+    ...toMc(
+      `mods:${modsRow.foodId}:${modsRow.allergen}`,
+      `A guest wants the ${f.name} but can't have ${modsRow.allergen} — what's the call?`,
+      [modsRow.answer, ...foils],
+      modsRow.answer
+    ),
+    allergen: modsRow.allergen,
+    why: `Official note: ${modsRow.note}`,
+    confirmLine: data.confirm.allergens
+  };
+}
+
+/** Every question the score-only "judgment round" deals (allergens round 2):
+ * one safe-call per path-relevant allergen + every authored mods row + every
+ * glossary term. Pre-minted, deterministic. */
+export function judgmentQuestions(): (WhyMcContent & { id: string })[] {
+  const out: (WhyMcContent & { id: string })[] = [];
+  // Safe calls per allergen: anchored on the first path dish carrying the
+  // flag so the question set is stable.
+  const seen = new Set<string>();
+  for (const item of allStage1Items()) {
+    if (item.kind !== 'dish') continue;
+    for (const allergen of flagsOf(foodFor(item))) {
+      if (seen.has(allergen)) continue;
+      seen.add(allergen);
+      const universe = getSafeUniverse();
+      const anchor = universe.find((d) => carries(d, allergen))!;
+      const safes = universe.filter((d) => safeFor(d, allergen));
+      const carriers = universe.filter((d) => d.id !== anchor.id && carries(d, allergen));
+      if (safes.length === 0 || carriers.length < 2) continue;
+      out.push({ ...mintSafeCall(anchor, allergen), id: `judg:safe:${allergen}` });
+    }
+  }
+  for (const modsRow of MODS_ROWS) out.push({ ...modsMcFor(modsRow), id: `judg:mods:${modsRow.foodId}:${modsRow.allergen}` });
+  for (const g of GLOSSARY) out.push({ ...glossaryMcFor(g), id: `judg:gloss:${g.term}` });
+  return out;
+}
+
 /** The dish allergen framing — same sourcing as teachFor. */
 function allergenFraming(f: Food): Required<Pick<AllergenFraming, 'allergens' | 'confirmLine'>> &
   AllergenFraming {

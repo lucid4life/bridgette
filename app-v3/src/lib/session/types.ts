@@ -92,7 +92,7 @@ export type Rung = 'mc' | 'cued' | 'free' | 'romance';
 /** MC content flavor on the Test-Prep sessions' quiz steps — picks the
  * accessor (mcFor / allergenMcFor / reverseMcFor). Absent on every step the
  * original sessions emit. */
-export type McVariant = 'components' | 'allergen' | 'reverse';
+export type McVariant = 'components' | 'allergen' | 'reverse' | 'safe-call' | 'description' | 'mods';
 
 /** One screen of a session. Discriminate on `type` (then `rung` for quiz). */
 export type Step =
@@ -236,7 +236,14 @@ export interface AllergenSession extends SessionCore {
 
 // ------------------------------------------------------------- mock test
 /** The four ways the mock food test can ask a dish. */
-export type MockQuestionType = 'components-mc' | 'allergen-mc' | 'reverse-mc' | 'romance';
+export type MockQuestionType =
+  | 'components-mc'
+  | 'allergen-mc'
+  | 'reverse-mc'
+  | 'romance'
+  | 'safe-call'
+  | 'description-mc'
+  | 'mods-mc';
 
 export interface MockTestDeps {
   /** Shuffles the single pass + spins the question-type wheel's starting

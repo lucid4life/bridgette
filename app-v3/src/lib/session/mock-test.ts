@@ -5,7 +5,19 @@
 // four question types assigned round-robin from a per-run rotation, so a
 // retake re-deals both the order AND which face each dish shows.
 import { CHECKPOINT_PASS_RATIO } from '../journey/gating';
-import { allergenMcFor, hasAllergenMc, mcFor, reverseMcFor, teachFor } from '../journey/items';
+import {
+  allergenMcFor,
+  descriptionMcFor,
+  hasAllergenMc,
+  hasModsMc,
+  hasNotFlagMc,
+  mcFor,
+  modsMcFor,
+  notFlagMcFor,
+  reverseMcFor,
+  safeCallMcForDish,
+  teachFor
+} from '../journey/items';
 import type { McContent } from '../journey/items';
 import type { JourneyItem } from '../journey/types';
 import { shuffled } from './shared';
@@ -22,41 +34,90 @@ import type {
   Step
 } from './types';
 
-/** The question-type wheel, in dealing order. */
+/** The question-type wheel, in dealing order (test-bar expansion 2026-06-13:
+ * safe-call = the allergy inversion, description-mc = "explain it" inverted,
+ * mods-mc = the can-it-come-off judgment call). */
 export const MOCK_TYPE_ROTATION: readonly MockQuestionType[] = [
   'components-mc',
   'allergen-mc',
+  'safe-call',
   'reverse-mc',
-  'romance'
+  'romance',
+  'description-mc',
+  'mods-mc'
 ];
 
 const VARIANT: Record<Exclude<MockQuestionType, 'romance'>, McVariant> = {
   'components-mc': 'components',
   'allergen-mc': 'allergen',
-  'reverse-mc': 'reverse'
+  'reverse-mc': 'reverse',
+  'safe-call': 'safe-call',
+  'description-mc': 'description',
+  'mods-mc': 'mods'
 };
 
-/** Pure type assignment: round-robin from `offset`; an allergen-mc slot whose
- * dish has no allergens card (no flags) falls back to components-mc — the
- * wheel itself keeps turning. Exported for tests (the fallback is dormant on
- * today's path data: every path dish carries flags). */
+export interface MockTypePredicates {
+  hasAllergen: (item: JourneyItem) => boolean;
+  hasMods: (item: JourneyItem) => boolean;
+}
+
+/** Pure type assignment: round-robin from `offset`; slots a dish can't serve
+ * fall back to components-mc — the wheel itself keeps turning. (allergen-mc +
+ * safe-call need flags; mods-mc needs an authored mods row.) Exported for
+ * tests; the flag fallbacks are dormant on today's path data. */
 export function assignMockTypes(
   items: readonly JourneyItem[],
   offset: number,
-  hasAllergen: (item: JourneyItem) => boolean
+  preds: MockTypePredicates
 ): MockQuestionType[] {
   return items.map((item, i) => {
     const qtype = MOCK_TYPE_ROTATION[(offset + i) % MOCK_TYPE_ROTATION.length];
-    return qtype === 'allergen-mc' && !hasAllergen(item) ? 'components-mc' : qtype;
+    if ((qtype === 'allergen-mc' || qtype === 'safe-call') && !preds.hasAllergen(item))
+      return 'components-mc';
+    if (qtype === 'mods-mc' && !preds.hasMods(item)) return 'components-mc';
+    return qtype;
   });
 }
 
-const mcContentFor = (item: JourneyItem, qtype: MockQuestionType): McContent => {
+// Deterministic coin for the allergen slot's classic-vs-NOT-a-flag alternation
+// (research gap 4: the classic card only ever asks the FIRST flag).
+function idHash(id: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
+/** THE content resolution for a mock-test MC slot — exported as the single
+ * source of truth so the /test route and the tests render/answer exactly what
+ * the session grades (the allergen slot alternates classic vs NOT-a-flag by
+ * item-id parity, so a duplicate would silently drift). */
+export const mockMcContentFor = (item: JourneyItem, qtype: MockQuestionType): McContent => {
   if (qtype === 'components-mc') return mcFor(item);
-  if (qtype === 'allergen-mc') return allergenMcFor(item);
+  if (qtype === 'allergen-mc')
+    // Alternate by item-id parity: even → classic first-flag pick, odd → the
+    // NOT-a-flag full-set check (when the dish has >=3 flags to support it).
+    return idHash(item.id) % 2 === 1 && hasNotFlagMc(item) ? notFlagMcFor(item) : allergenMcFor(item);
+  if (qtype === 'safe-call') return safeCallMcForDish(item);
   if (qtype === 'reverse-mc') return reverseMcFor(item);
+  if (qtype === 'description-mc') return descriptionMcFor(item);
+  if (qtype === 'mods-mc') return modsMcFor(item);
   throw new Error('session: romance steps have no MC content'); // unreachable via answerMc guard
 };
+const mcContentFor = mockMcContentFor;
+
+/** Step → wheel type (the VARIANT map inverted) — for the /test renderer. */
+export function mockQtypeOf(step: Step): MockQuestionType {
+  if (step.type !== 'quiz') throw new Error(`session: not a mock-test step — ${step.type}`);
+  if (step.rung === 'romance') return 'romance';
+  const entry = (Object.entries(VARIANT) as [Exclude<MockQuestionType, 'romance'>, McVariant][]).find(
+    ([, v]) => v === step.variant
+  );
+  if (!entry) throw new Error(`session: unknown mock variant '${step.variant}'`);
+  return entry[0];
+}
 
 export function createMockTestSession(
   items: readonly JourneyItem[],
@@ -80,7 +141,7 @@ export function createMockTestSession(
   // deterministic per run for an injected rng, fresh deal per retake otherwise.
   const offset = Math.floor(rng() * MOCK_TYPE_ROTATION.length);
   const order = shuffled(items, rng);
-  const qtypes = assignMockTypes(order, offset, hasAllergenMc);
+  const qtypes = assignMockTypes(order, offset, { hasAllergen: hasAllergenMc, hasMods: hasModsMc });
   const queue = order.map((item, i) => ({ item, qtype: qtypes[i] }));
 
   const total = items.length;

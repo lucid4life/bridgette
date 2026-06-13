@@ -4,6 +4,7 @@
   // search box, one chip row, all 42 dishes client-side, zero navigation depth.
   import { data } from '$lib/data/index';
   import type { Food } from '$lib/data/types';
+  import { HOUSE_NOTES } from '$lib/journey/house-items';
 
   // Category chips come from the data in menu order (Snacks → Matinee / Late
   // Night); the long pseudo-category renders short on the chip and the pill.
@@ -87,10 +88,26 @@
   {:else}
     <p class="empty">no dish matches — <a href="/playbook/cram">check the cram sheet</a>.</p>
   {/if}
+
+  <!-- House notes — the kitchen-concept facts the syllabus opens with (the
+       "tell me about the restaurant" answers). Read-only reference. -->
+  <section class="house on-cream" aria-labelledby="house-h">
+    <h2 id="house-h" class="h-eyebrow">house notes</h2>
+    <div class="grid cols-2">
+      {#each HOUSE_NOTES as n (n.title)}
+        <article class="card light hn">
+          <h3>{n.title}</h3>
+          <p class="meta">{n.body}</p>
+        </article>
+      {/each}
+    </div>
+  </section>
 </section>
 
 <style>
   .pb-head { position: relative; margin-bottom: 4px; }
+  .house { margin-top: 34px; }
+  .house .hn h3 { text-transform: lowercase; }
   /* the quiet-but-findable escape hatch to the printable sheet */
   .cram-link {
     display: inline-block; margin: -12px 0 18px; font-size: 14px; font-weight: 700;

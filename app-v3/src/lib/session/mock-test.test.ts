@@ -3,23 +3,21 @@
 // question types assigned round-robin from a per-run rotation. summary() adds
 // byType + byCategory breakdowns and the miss list.
 import { describe, expect, it } from 'vitest';
-import {
-  allergenMcFor,
-  mcFor,
-  reverseMcFor,
-  teachFor,
-  type McContent
-} from '$lib/journey/items';
+import { hasModsMc, teachFor } from '$lib/journey/items';
 import { allStage1Items, itemsForUnit } from '$lib/journey/items';
 import type { JourneyItem } from '$lib/journey/types';
 import {
   MOCK_TYPE_ROTATION,
   assignMockTypes,
   createMockTestSession,
+  mockMcContentFor,
+  mockQtypeOf,
   type MockQuestionType,
   type MockTestSession,
   type Step
 } from './index';
+
+const PREDS = { hasAllergen: () => true, hasMods: () => true };
 
 // mulberry32 — deterministic rng for tests
 function rng(seed: number): () => number {
@@ -34,19 +32,9 @@ function rng(seed: number): () => number {
 
 const DISHES = allStage1Items().filter((i) => i.kind === 'dish');
 
-function qtypeOf(step: Step): MockQuestionType {
-  if (step.type !== 'quiz') throw new Error(`test: expected a quiz step, got ${step.type}`);
-  if (step.rung === 'romance') return 'romance';
-  if (step.rung !== 'mc' || !step.variant) throw new Error('test: MC step without a variant');
-  return `${step.variant === 'components' ? 'components' : step.variant}-mc` as MockQuestionType;
-}
-
-function mcContentFor(item: JourneyItem, qtype: MockQuestionType): McContent {
-  if (qtype === 'components-mc') return mcFor(item);
-  if (qtype === 'allergen-mc') return allergenMcFor(item);
-  if (qtype === 'reverse-mc') return reverseMcFor(item);
-  throw new Error('test: romance has no MC content');
-}
+// The session's own exported resolution — tests answer EXACTLY what it grades.
+const qtypeOf = (step: Step): MockQuestionType => mockQtypeOf(step);
+const mcContentFor = mockMcContentFor;
 
 /** Drive the whole pass: answer/grade per `policy`, return asked steps. */
 function run(
@@ -97,17 +85,29 @@ describe('mock test: one shuffled pass with a round-robin type wheel', () => {
     expect(c).not.toEqual(a);
   });
 
-  it('types cycle the rotation in asked order (no path dish lacks an allergens card)', () => {
+  it('types cycle the rotation in asked order, with the documented fallbacks', () => {
     const asked = run(createMockTestSession(DISHES, { rng: rng(3) }), () => true);
-    const start = MOCK_TYPE_ROTATION.indexOf(asked[0].qtype);
-    expect(start).toBeGreaterThanOrEqual(0);
-    for (let i = 0; i < asked.length; i++)
-      expect(asked[i].qtype).toBe(MOCK_TYPE_ROTATION[(start + i) % MOCK_TYPE_ROTATION.length]);
-    // with 41 dishes every type appears 10 or 11 times
-    for (const t of MOCK_TYPE_ROTATION) {
-      const n = asked.filter((x) => x.qtype === t).length;
-      expect([10, 11]).toContain(n);
+    // Reconstruct the wheel: the first non-fallback-prone slot anchors the offset.
+    const byId = new Map(DISHES.map((i) => [i.id, i]));
+    let start = -1;
+    for (const cand of MOCK_TYPE_ROTATION.keys()) {
+      const ok = asked.every(({ itemId, qtype }, i) => {
+        const wheel = MOCK_TYPE_ROTATION[(cand + i) % MOCK_TYPE_ROTATION.length];
+        const expected =
+          wheel === 'mods-mc' && !hasModsMc(byId.get(itemId)!) ? 'components-mc' : wheel;
+        return qtype === expected;
+      });
+      if (ok) {
+        start = cand;
+        break;
+      }
     }
+    expect(start).toBeGreaterThanOrEqual(0); // exactly one offset explains the run
+    // every distinct wheel type is genuinely asked across 41 dishes
+    const seen = new Set(asked.map((x) => x.qtype));
+    for (const t of ['components-mc', 'allergen-mc', 'safe-call', 'reverse-mc', 'romance', 'description-mc'])
+      expect(seen.has(t as MockQuestionType), t).toBe(true);
+    expect(seen.has('mods-mc')).toBe(true); // ~half the menu has authored rows
   });
 
   it('the wheel offset is per-run: some seed pair starts on different types', () => {
@@ -124,21 +124,26 @@ describe('mock test: type assignment (pure helper)', () => {
   const four = DISHES.slice(0, 4);
 
   it('round-robins the rotation from the given offset', () => {
-    const types = assignMockTypes(four, 2, () => true);
+    const types = assignMockTypes(four, 2, PREDS);
     expect(types).toEqual([
       MOCK_TYPE_ROTATION[2],
       MOCK_TYPE_ROTATION[3],
-      MOCK_TYPE_ROTATION[0],
-      MOCK_TYPE_ROTATION[1]
+      MOCK_TYPE_ROTATION[4],
+      MOCK_TYPE_ROTATION[5]
     ]);
   });
 
-  it('a dish with no allergens card falls back to components-mc (the wheel keeps turning)', () => {
-    // offset 1 → allergen-mc lands on index 0 and 4
-    const six = DISHES.slice(0, 6);
-    const types = assignMockTypes(six, 1, (item) => item.id !== six[0].id);
-    expect(types[0]).toBe('components-mc'); // replaced — no flags to quiz
-    expect(types.slice(1)).toEqual(['reverse-mc', 'romance', 'components-mc', 'allergen-mc', 'reverse-mc']);
+  it('flagless and row-less dishes fall back to components-mc (the wheel keeps turning)', () => {
+    // offset 1 → allergen-mc lands on index 0; safe-call on index 1; mods-mc on index 5
+    const seven = DISHES.slice(0, 7);
+    const noFlagFirst = { ...PREDS, hasAllergen: (item: JourneyItem) => item.id !== seven[0].id };
+    const a = assignMockTypes(seven, 1, noFlagFirst);
+    expect(a[0]).toBe('components-mc'); // allergen slot, no flags
+    expect(a[1]).toBe('safe-call'); // flags fine on the rest
+    const noMods = { ...PREDS, hasMods: () => false };
+    const b = assignMockTypes(seven, 1, noMods);
+    expect(b[5]).toBe('components-mc'); // mods slot, no authored row
+    expect(b[0]).toBe('allergen-mc');
   });
 });
 
@@ -163,7 +168,7 @@ describe('mock test: answering contract per step type', () => {
   it('each MC variant validates against ITS accessor (a components answer can be an allergen miss)', () => {
     const s = createMockTestSession(DISHES, { rng: rng(3) });
     const seen = new Set<MockQuestionType>();
-    while (!s.isComplete() && seen.size < 4) {
+    while (!s.isComplete() && seen.size < 7) {
       const step = s.current()!;
       const qtype = qtypeOf(step);
       seen.add(qtype);
@@ -175,7 +180,7 @@ describe('mock test: answering contract per step type', () => {
       expect(s.answerMc(mc.answerIndex).correct, qtype).toBe(true);
       s.advance();
     }
-    expect(seen.size).toBe(4); // all four types reachable + answerable
+    expect(seen.size).toBeGreaterThanOrEqual(6); // every wheel type reachable + answerable (mods may fall back per dish)
   });
 
   it('romance steps: selfGrade resolves; answerMc/advance throw on them', () => {

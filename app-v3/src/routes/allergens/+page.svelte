@@ -11,13 +11,23 @@
   import SessionSummary from '$lib/components/session/SessionSummary.svelte';
   import TeachCard from '$lib/components/session/TeachCard.svelte';
   import { nameOf } from '$lib/components/session/util';
-  import { allStage1Items, allergenMcFor, hasAllergenMc, romanceFor, teachFor } from '$lib/journey/items';
+  import {
+    allStage1Items,
+    allergenMcFor,
+    hasAllergenMc,
+    judgmentQuestions,
+    romanceFor,
+    teachFor
+  } from '$lib/journey/items';
   import type { JourneyItem } from '$lib/journey/types';
   import {
     createAllergenSession,
+    createJudgmentSession,
     romanceOrder,
     type AllergenSession,
-    type AllergenSummary
+    type AllergenSummary,
+    type JudgmentSession,
+    type JudgmentSummary
   } from '$lib/session';
   import { progress } from '$lib/store/progress.svelte';
 
@@ -32,6 +42,40 @@
   let nonce = $state(0);
   let summary = $state<AllergenSummary | null>(null);
 
+  // Round 2 — "the judgment round": safe calls for allergic guests + the
+  // can-it-come-off mods calls + the guest-asks glossary. These questions span
+  // dishes, so the round is SCORE-ONLY (no single home item to grade) — like
+  // the mock test, it never touches the SRS.
+  let judgment: JudgmentSession | null = $state(null);
+  let jSummary = $state<JudgmentSummary | null>(null);
+
+  function startJudgment(): void {
+    summary = null;
+    session = null;
+    jSummary = null;
+    nonce = 0;
+    judgment = createJudgmentSession(judgmentQuestions());
+  }
+  const jStep = $derived.by(() => {
+    void nonce;
+    return judgment ? judgment.current() : null;
+  });
+  const jProg = $derived.by(() => {
+    void nonce;
+    return judgment ? judgment.progress() : null;
+  });
+  function jAnswer(i: number) {
+    return judgment!.answerMc(i);
+  }
+  function jContinue(): void {
+    judgment?.advance();
+    nonce += 1;
+    if (judgment && judgment.isComplete() && !jSummary) {
+      jSummary = judgment.summary();
+      judgment = null;
+    }
+  }
+
   /** Asking order from the CURRENT store state — shakiest first, categories
    * interleaved (the same policy the romance drill uses). */
   function order(pool: readonly JourneyItem[]): JourneyItem[] {
@@ -45,6 +89,8 @@
 
   function start(pool: readonly JourneyItem[] = FLAGGED): void {
     summary = null;
+    judgment = null;
+    jSummary = null;
     nonce = 0;
     session = createAllergenSession(order(pool), {
       // Real grades into the real SRS — same auto-introduce rationale as the
@@ -99,6 +145,46 @@
       <div class="sk head-sk"></div>
       <div class="sk card-sk"></div>
     </div>
+  {:else if jSummary}
+    <SessionSummary
+      eyebrow="the judgment round"
+      title={`safe calls: ${jSummary.correct}/${jSummary.total}`}
+      ringPct={Math.round(jSummary.score * 100)}
+      ringText={`${Math.round(jSummary.score * 100)}%`}
+      stats={[
+        { label: 'correct', value: `${jSummary.correct}/${jSummary.total}` },
+        { label: 'misses', value: jSummary.total - jSummary.correct }
+      ]}
+      note={jSummary.correct === jSummary.total
+        ? 'every judgment call clean — safe recommendations, mods, and the fancy words all hold.'
+        : 'each miss showed you the official call — run the round again and it sticks. score-only: nothing here touches your reviews.'}
+    >
+      <button type="button" class="btn" onclick={startJudgment}>run it again</button>
+      <a class="btn ghost" href="/test">take the food test</a>
+      <a class="btn ghost" href="/today">back to today</a>
+    </SessionSummary>
+  {:else if jStep && jProg}
+    <SessionHeader
+      title="The judgment round"
+      sub="safe calls · can-it-come-off · the fancy words"
+      phase="make the call"
+      position={jProg.position}
+      total={jProg.total}
+      exitHref="/allergens"
+      exitLabel="sweep"
+    />
+    {#key jProg.position}
+      <FlashMc
+        mc={jStep}
+        why={jStep.why}
+        confirmLine={jStep.confirmLine}
+        missText="not quite — the official call is marked. score-only round, nothing hits your reviews."
+        kicker="the judgment round"
+        onanswer={jAnswer}
+        oncontinue={jContinue}
+      />
+    {/key}
+    <KeyHints />
   {:else if summary}
     <SessionSummary
       eyebrow="sweep done"
@@ -115,10 +201,10 @@
     >
       {#if missList.length > 0}
         <button type="button" class="btn" onclick={runMisses}>run the misses again</button>
-        <a class="btn ghost" href="/test">take the food test</a>
+        <button type="button" class="btn ghost" onclick={startJudgment}>round 2: the judgment round</button>
       {:else}
-        <a class="btn" href="/test">take the food test</a>
-        <a class="btn ghost" href="/today">back to today</a>
+        <button type="button" class="btn" onclick={startJudgment}>round 2: the judgment round</button>
+        <a class="btn ghost" href="/test">take the food test</a>
       {/if}
     </SessionSummary>
   {:else if step && prog}
@@ -151,9 +237,11 @@
         <li>every dish's flags — the part of the test you can't bluff</li>
         <li>four choices, button-graded; the feedback teaches back the official flags every time</li>
         <li>misses get the menu card again and come back until they're clean</li>
+        <li>then round 2, the judgment round: safe calls for allergic guests, what can come off, and the fancy words</li>
       </ul>
       <div class="i-actions">
         <button type="button" class="btn" onclick={() => start()}>start the sweep</button>
+        <button type="button" class="btn ghost" onclick={startJudgment}>skip to the judgment round</button>
         <a class="btn ghost" href="/today">not yet — back to today</a>
       </div>
     </section>

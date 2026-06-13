@@ -13,11 +13,13 @@
   import SessionHeader from '$lib/components/session/SessionHeader.svelte';
   import SessionSummary from '$lib/components/session/SessionSummary.svelte';
   import { nameOf } from '$lib/components/session/util';
-  import { allStage1Items, allergenMcFor, mcFor, reverseMcFor, romanceFor } from '$lib/journey/items';
+  import { allStage1Items, romanceFor } from '$lib/journey/items';
   import type { JourneyItem } from '$lib/journey/types';
   import {
     CHECKPOINT_PASS_RATIO,
     createMockTestSession,
+    mockMcContentFor,
+    mockQtypeOf,
     type MockQuestionType,
     type MockTestSession,
     type MockTestSummary
@@ -32,13 +34,19 @@
   const TYPE_LABELS: Record<MockQuestionType, string> = {
     'components-mc': "what's on it",
     'allergen-mc': 'the flags',
+    'safe-call': 'the safe call',
     'reverse-mc': 'which dish',
-    romance: 'say it aloud'
+    romance: 'say it aloud',
+    'description-mc': 'explain it',
+    'mods-mc': 'can it come off'
   };
   const TYPE_KICKERS: Record<Exclude<MockQuestionType, 'romance'>, string> = {
     'components-mc': "the food test — what's on it",
     'allergen-mc': 'the food test — the flags',
-    'reverse-mc': 'the food test — which dish'
+    'safe-call': 'the food test — the safe call',
+    'reverse-mc': 'the food test — which dish',
+    'description-mc': 'the food test — explain it',
+    'mods-mc': 'the food test — can it come off'
   };
   // one pass, no recycling — never promise a missed question "comes back around"
   const MISS_TEXT = 'not quite — the right call is marked. it counts, like the real thing.';
@@ -177,13 +185,20 @@
           kicker="the food test — say it aloud"
           ongrade={grade}
         />
-      {:else if step.type === 'quiz' && step.variant === 'allergen'}
-        {@const mc = allergenMcFor(step.item)}
-        <FlashMc {mc} why={mc.why} confirmLine={mc.confirmLine} missText={MISS_TEXT} kicker={TYPE_KICKERS['allergen-mc']} onanswer={answer} oncontinue={continueStep} />
-      {:else if step.type === 'quiz' && step.variant === 'reverse'}
-        <FlashMc mc={reverseMcFor(step.item)} missText={MISS_TEXT} kicker={TYPE_KICKERS['reverse-mc']} onanswer={answer} oncontinue={continueStep} />
-      {:else}
-        <FlashMc mc={mcFor(step.item)} missText={MISS_TEXT} kicker={TYPE_KICKERS['components-mc']} onanswer={answer} oncontinue={continueStep} />
+      {:else if step.type === 'quiz'}
+        <!-- mockMcContentFor IS what the session grades — render the same truth
+             (the allergen slot alternates classic vs NOT-a-flag by item parity). -->
+        {@const qtype = mockQtypeOf(step) as Exclude<MockQuestionType, 'romance'>}
+        {@const mc = mockMcContentFor(step.item, qtype)}
+        <FlashMc
+          {mc}
+          why={'why' in mc ? (mc.why as string) : undefined}
+          confirmLine={'confirmLine' in mc ? (mc.confirmLine as string) : undefined}
+          missText={MISS_TEXT}
+          kicker={TYPE_KICKERS[qtype]}
+          onanswer={answer}
+          oncontinue={continueStep}
+        />
       {/if}
     {/key}
     <KeyHints />
@@ -195,7 +210,7 @@
       <h1 class="i-title">the food test</h1>
       <p class="i-line">{DISH_COUNT} dishes · scored like the real thing</p>
       <ul class="i-rules">
-        <li>mixed questions — components, allergens, which-dish, and say-it-aloud: every dish gets one, dealt fresh each run</li>
+        <li>mixed questions — components, flags, safe calls for allergic guests, which-dish, explain-it, can-it-come-off, and say-it-aloud: every dish gets one, dealt fresh each run</li>
         <li>pass at {passPct}% — the same bar as the shift check</li>
         <li>nothing touches your reviews — a mock costs nothing, retake it as often as you like</li>
       </ul>
