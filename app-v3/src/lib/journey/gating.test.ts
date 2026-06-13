@@ -210,10 +210,43 @@ describe('Stage 3 (behind-the-bar) gating', () => {
     expect(testOutAvailable('behind-the-bar', doneUnits(...STAGE12_DONE))).toBe(true);
   });
 
-  it('completing the whole bar stage marks it complete; wine stays locked (no content yet)', () => {
+  it('completing the whole bar stage marks it complete; wine then unlocks', () => {
     const barDone = doneUnits(...STAGE12_DONE, ...BAR_LESSONS, 'checkpoint-bar');
     expect(stageStatus('behind-the-bar', barDone)).toBe('complete');
-    expect(stageStatus('wine', barDone)).toBe('locked');
+    expect(stageStatus('wine', barDone)).toBe('available');
+  });
+});
+
+// Stage 4 unlocks sequentially behind Stage 3, then runs self-paced.
+const WINE_LESSONS = ['wine-bubbles', 'wine-bright', 'wine-round', 'wine-light', 'wine-structured'];
+const STAGE123_DONE = [
+  ...STAGE12_DONE,
+  ...BAR_LESSONS,
+  'checkpoint-bar'
+];
+
+describe('Stage 4 (wine) gating', () => {
+  it('stays locked until behind-the-bar is complete, then unlocks', () => {
+    expect(stageStatus('wine', view())).toBe('locked');
+    expect(stageStatus('wine', doneUnits(...STAGE12_DONE))).toBe('locked'); // bar not done
+    expect(stageStatus('wine', doneUnits(...STAGE123_DONE))).toBe('available');
+  });
+
+  it('once unlocked, every wine module is available; the checkpoint is locked', () => {
+    const v = doneUnits(...STAGE123_DONE);
+    for (const u of WINE_LESSONS) expect(unitStatus(u, v), u).toBe('available');
+    expect(unitStatus('checkpoint-wine', v)).toBe('locked');
+  });
+
+  it('the wine checkpoint opens only when all 5 wine modules are complete', () => {
+    expect(unitStatus('checkpoint-wine', doneUnits(...STAGE123_DONE, ...WINE_LESSONS.slice(0, 4)))).toBe('locked');
+    expect(unitStatus('checkpoint-wine', doneUnits(...STAGE123_DONE, ...WINE_LESSONS))).toBe('available');
+  });
+
+  it('completing the whole wine stage marks it complete; pairings stays locked (no content yet)', () => {
+    const wineDone = doneUnits(...STAGE123_DONE, ...WINE_LESSONS, 'checkpoint-wine');
+    expect(stageStatus('wine', wineDone)).toBe('complete');
+    expect(stageStatus('pairings', wineDone)).toBe('locked');
   });
 });
 
@@ -267,7 +300,7 @@ describe('stageProgress', () => {
   });
 
   it('locked stages report empty progress (no NaN)', () => {
-    expect(stageProgress('wine', view())).toEqual({ itemsAtCriterion: 0, totalItems: 0, ratio: 0 });
+    expect(stageProgress('pairings', view())).toEqual({ itemsAtCriterion: 0, totalItems: 0, ratio: 0 });
   });
 });
 

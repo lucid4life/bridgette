@@ -2,7 +2,7 @@
 // Spec: docs/handoffs/2026-06-11-v3-phase1-spec.md (unit ids/titles locked).
 import { describe, expect, it } from 'vitest';
 import { data } from '$lib/data';
-import { CHECKPOINT_UNIT_ID, STAGES, UNIT_BUILD_IDS, UNIT_FOOD_IDS, stageById, unitById } from './stages';
+import { CHECKPOINT_UNIT_ID, STAGES, UNIT_BUILD_IDS, UNIT_FOOD_IDS, UNIT_WINE_IDS, stageById, unitById } from './stages';
 
 const LESSON_ORDER = [
   'day-one',
@@ -94,7 +94,7 @@ describe('dish roster (UNIT_FOOD_IDS)', () => {
 });
 
 describe('stages 2-5', () => {
-  it('declares allergen-guardian + behind-the-bar (built), then wine/pairings (locked)', () => {
+  it('declares allergen-guardian + behind-the-bar + wine (built), then pairings (locked)', () => {
     expect(STAGES.map((s) => s.id)).toEqual([
       'food-runner',
       'allergen-guardian',
@@ -134,10 +134,58 @@ describe('stages 2-5', () => {
     expect(stage3.units.filter((u) => u.kind === 'checkpoint')).toHaveLength(1);
     expect(stage3.units.every((u) => !u.blurb.includes('\n'))).toBe(true);
 
-    // Stages 4-5 stay declared-but-locked (no content yet).
-    for (const s of STAGES.slice(3)) {
+    // Stage 4 is built: 5 family modules + a checkpoint.
+    const stage4 = STAGES[3];
+    expect(stage4.locked).not.toBe(true);
+    expect(stage4.units.map((u) => u.id)).toEqual([
+      'wine-bubbles',
+      'wine-bright',
+      'wine-round',
+      'wine-light',
+      'wine-structured',
+      'checkpoint-wine'
+    ]);
+    expect(stage4.units.filter((u) => u.kind === 'checkpoint')).toHaveLength(1);
+
+    // Stage 5 (pairings) stays declared-but-locked (no content yet).
+    for (const s of STAGES.slice(4)) {
       expect(s.locked, s.id).toBe(true);
       expect(s.units, s.id).toEqual([]);
+    }
+  });
+});
+
+describe('wine roster (UNIT_WINE_IDS)', () => {
+  it('covers all 17 by-the-glass pours exactly once across the 5 family modules', () => {
+    const all = Object.values(UNIT_WINE_IDS).flat();
+    expect(all.length).toBe(17);
+    expect(new Set(all).size).toBe(17);
+  });
+
+  it('covers EXACTLY data.wines (every glass pour placed, none dropped)', () => {
+    const wines = data.wines.map((w) => w.id).sort();
+    const rostered = Object.values(UNIT_WINE_IDS).flat().sort();
+    expect(rostered).toEqual(wines);
+  });
+
+  it('the checkpoint mints no wine rows', () => {
+    expect(UNIT_WINE_IDS['checkpoint-wine']).toBeUndefined();
+  });
+
+  it('every listed wineId exists in data.wines and is in its declared family', () => {
+    const FAMILY_OF_UNIT: Record<string, string> = {
+      'wine-bubbles': 'Bubbles & Rosé',
+      'wine-bright': 'Bright & Crisp Whites',
+      'wine-round': 'Round Whites',
+      'wine-light': 'Light Reds',
+      'wine-structured': 'Structured Reds'
+    };
+    for (const [unit, ids] of Object.entries(UNIT_WINE_IDS)) {
+      for (const id of ids) {
+        const w = data.wines.find((x) => x.id === id);
+        expect(w, id).toBeDefined();
+        expect(w!.family, id).toBe(FAMILY_OF_UNIT[unit]);
+      }
     }
   });
 });

@@ -8,6 +8,17 @@
   import { termsFor } from '$lib/journey/pronunciation';
   import { PHOTO_IDS } from './photos';
   import TermSay from './TermSay.svelte';
+  import WineSay from './WineSay.svelte';
+
+  // structure level → filled meter segments (the WSET low/medium/high scale)
+  const LMH: Record<string, number> = { low: 1, medium: 2, high: 3 };
+  // wine price "15 | 24 | 75" → "5oz $15 · 8oz $24 · bottle $75" (raw if not 3-part)
+  function winePrice(p: string): string {
+    const parts = p.split('|').map((s) => s.trim());
+    return parts.length === 3
+      ? `5oz $${parts[0]} · 8oz $${parts[1]} · bottle $${parts[2]}`
+      : `$${p}`;
+  }
 
   let {
     teach,
@@ -168,6 +179,53 @@
       {:else}
         <p class="t-confirm t-confirm-solo">{teach.confirmLine}</p>
       {/if}
+
+      <div class="t-actions">
+        <button type="button" class="btn" onclick={oncontinue}>{continueLabel}</button>
+      </div>
+    </div>
+  {:else if teach.kind === 'wine'}
+    <div class="t-body">
+      <header class="t-head">
+        <h3 class="t-name" tabindex="-1" bind:this={hEl}>{teach.name}</h3>
+      </header>
+      <p class="t-priceladder">{winePrice(teach.price)}</p>
+      <p class="t-cat">
+        <span class="pill">{teach.family}</span>
+        <span class="pill alt">{teach.climate} climate</span>
+      </p>
+      <div class="t-winesay"><WineSay name={teach.name} respell={teach.respell} audioId={teach.audioId} say={teach.say} /></div>
+
+      <div class="t-sec">
+        <p class="t-label">identity</p>
+        <dl class="t-facts">
+          <div><dt>grape</dt><dd>{teach.grape}</dd></div>
+          <div><dt>region</dt><dd>{teach.region}</dd></div>
+        </dl>
+      </div>
+
+      <div class="t-sec">
+        <p class="t-label">structure</p>
+        <div class="t-meters">
+          {#each [['acidity', teach.structure.acidity], ['body', teach.structure.body], ['tannin', teach.structure.tannin]] as [label, level] (label)}
+            <div class="t-meter">
+              <span class="m-label">{label}</span>
+              <span class="m-bar" role="img" aria-label="{label}: {level}">
+                {#each [1, 2, 3] as seg (seg)}<span class="m-seg" class:on={seg <= LMH[level]}></span>{/each}
+              </span>
+              <span class="m-val">{level}</span>
+            </div>
+          {/each}
+        </div>
+        <p class="t-sweet">sweetness: <b>{teach.structure.sweetness}</b></p>
+      </div>
+
+      <div class="t-sec">
+        <p class="t-label">the ten-second story</p>
+        <p class="t-rule t-say">{teach.tenSecond}</p>
+        {#if teach.mnemonic}<p class="t-anote">{teach.mnemonic}</p>{/if}
+        {#if teach.pair.length > 0}<p class="t-pairs">pours with: {teach.pair.join(', ')}</p>{/if}
+      </div>
 
       <div class="t-actions">
         <button type="button" class="btn" onclick={oncontinue}>{continueLabel}</button>
@@ -427,6 +485,87 @@
     margin-top: 16px;
     padding-top: 14px;
     border-top: 1px solid color-mix(in srgb, var(--highlight-line) 45%, transparent);
+  }
+
+  /* ---- wine variant ---- */
+  .t-priceladder {
+    margin: 2px 0 0;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+  }
+  .t-winesay {
+    margin-top: 12px;
+  }
+  .t-facts {
+    margin: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .t-facts div {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .t-facts dt {
+    flex: 0 0 64px;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-label);
+  }
+  .t-facts dd {
+    margin: 0;
+    font-size: 14px;
+  }
+  .t-meters {
+    display: grid;
+    gap: 7px;
+  }
+  .t-meter {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .m-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-label);
+  }
+  .m-bar {
+    display: inline-flex;
+    gap: 4px;
+  }
+  .m-seg {
+    flex: 1;
+    height: 8px;
+    border-radius: 3px;
+    background: var(--surface-track);
+  }
+  .m-seg.on {
+    background: var(--info); /* the wine track's teal identity */
+  }
+  .m-val {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    min-width: 6ch;
+    text-align: right;
+  }
+  .t-sweet {
+    margin: 9px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .t-sweet b {
+    color: var(--text-body);
   }
 
   /* ---- service variant ---- */

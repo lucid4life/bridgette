@@ -10,6 +10,7 @@ export const CHECKPOINT_UNIT_ID = 'checkpoint-food';
 export const ALLERGEN_CHECKPOINT_UNIT_ID = 'checkpoint-allergens';
 export const BAR_ARC_UNIT_ID = 'bar-arc';
 export const BAR_CHECKPOINT_UNIT_ID = 'checkpoint-bar';
+export const WINE_CHECKPOINT_UNIT_ID = 'checkpoint-wine';
 
 /** Dish rosters per lesson unit (day-one and the checkpoint mint no dish rows). */
 export const UNIT_FOOD_IDS: Record<string, readonly string[]> = {
@@ -123,6 +124,33 @@ export const UNIT_BUILD_IDS: Record<string, readonly string[]> = (() => {
   return out;
 })();
 
+// ---- Stage 4 (Wine) by-family rosters ----
+// The 5 wine families ARE the 5 modules (non-overlapping by definition); each
+// by-the-glass pour lands in its family's module, in data order.
+const WINE_MODULE_OF_FAMILY: Record<string, string> = {
+  'Bubbles & Rosé': 'wine-bubbles',
+  'Bright & Crisp Whites': 'wine-bright',
+  'Round Whites': 'wine-round',
+  'Light Reds': 'wine-light',
+  'Structured Reds': 'wine-structured'
+};
+
+/** wineId rosters per Stage-4 family module, computed once from data.wines. */
+export const UNIT_WINE_IDS: Record<string, readonly string[]> = (() => {
+  const out: Record<string, string[]> = {
+    'wine-bubbles': [], 'wine-bright': [], 'wine-round': [], 'wine-light': [], 'wine-structured': []
+  };
+  for (const w of data.wines) {
+    const unit = WINE_MODULE_OF_FAMILY[w.family];
+    // Never silently drop a glass pour: a wine in an unmapped family is a content
+    // error (a family was renamed/added) — fail loud, like the bar rosters.
+    if (!unit)
+      throw new Error(`stages: wine '${w.id}' has family '${w.family}' that maps to no wine module`);
+    out[unit].push(w.id);
+  }
+  return out;
+})();
+
 const lesson = (id: string, title: string, blurb: string): Unit => ({
   id,
   title,
@@ -206,8 +234,19 @@ export const STAGES: Stage[] = [
     title: 'Wine',
     track: 'wine',
     blurb: 'the by-the-glass pours — grape, place, and a ten-second story for each',
-    units: [],
-    locked: true
+    units: [
+      lesson('wine-bubbles', 'Bubbles & rosé', 'the sparkling and rosé openers — crisp, salty, made for the start of a meal'),
+      lesson('wine-bright', 'Bright & crisp whites', 'the high-acid whites — your pick for green, tangy, spicy and seafood plates'),
+      lesson('wine-round', 'Round whites', 'the softer, fuller whites — pear and lemon with no sharp edges'),
+      lesson('wine-light', 'Light reds', 'the soft, lighter reds — cherry and earth, friendly even with fish'),
+      lesson('wine-structured', 'Structured reds', 'the grippy, full reds — the steak-and-lamb pours, grape, place and structure'),
+      {
+        id: WINE_CHECKPOINT_UNIT_ID,
+        title: 'Shift check: Wine',
+        blurb: 'every pour — grape, place and the ten-second pitch, cold',
+        kind: 'checkpoint'
+      }
+    ]
   },
   {
     id: 'pairings',

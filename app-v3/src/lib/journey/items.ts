@@ -2,7 +2,7 @@
 // Items are DERIVED from the path data (stages.ts) + authored service items;
 // dish content comes ONLY from official data.foods fields, and the MC rung
 // reuses the frozen v2 engine card (components:<foodId>:pick) as material.
-import { data, type Food, type Cocktail } from '$lib/data';
+import { data, type Food, type Cocktail, type Wine } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import type { Card } from '$lib/data';
 import { mulberry32, shuffled } from '$lib/rng';
@@ -13,6 +13,7 @@ import {
   UNIT_ALLERGEN_IDS,
   UNIT_BUILD_IDS,
   UNIT_FOOD_IDS,
+  UNIT_WINE_IDS,
   stageById,
   unitById
 } from './stages';
@@ -25,6 +26,7 @@ import type { JourneyItem } from './types';
 // in data.foods WITH its official ingredients. Throws at module init.
 const foodById = new Map<string, Food>(data.foods.map((f) => [f.id, f]));
 const cocktailById = new Map<string, Cocktail>(data.cocktails.map((c) => [c.id, c]));
+const wineById = new Map<string, Wine>(data.wines.map((w) => [w.id, w]));
 
 for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
   const food = foodById.get(foodId);
@@ -42,6 +44,19 @@ for (const cocktailId of Object.values(UNIT_BUILD_IDS).flat()) {
   if (!c) throw new Error(`journey: cocktailId '${cocktailId}' missing from data.cocktails`);
   if (!c.build || c.build.length === 0)
     throw new Error(`journey: cocktail '${cocktailId}' has no official build`);
+}
+
+// Stage 4: every wine on a family module must exist in data.wines with the
+// fields its teach/recall needs (grape, region, the ten-second story).
+for (const wineId of Object.values(UNIT_WINE_IDS).flat()) {
+  const w = wineById.get(wineId);
+  if (!w) throw new Error(`journey: wineId '${wineId}' missing from data.wines`);
+  if (!w.grape || !w.region || !w.tenSecond)
+    throw new Error(`journey: wine '${wineId}' is missing grape/region/tenSecond`);
+  // The teach card decodes price as a 3-part "5oz | 8oz | bottle" ladder — a
+  // malformed price would render a garbled string, so fail loud at init instead.
+  if (w.price.split('|').length !== 3)
+    throw new Error(`journey: wine '${wineId}' price '${w.price}' is not a 3-part 5oz|8oz|bottle ladder`);
 }
 
 // Day-one + the bar arc-of-service module are the two authored-content units;
@@ -73,6 +88,13 @@ const buildItem = (unitId: string, cocktailId: string): JourneyItem => ({
   cocktailId
 });
 
+const wineItem = (unitId: string, wineId: string): JourneyItem => ({
+  id: `wine:${wineId}`,
+  kind: 'wine',
+  unitId,
+  wineId
+});
+
 // Items are STATIC after module init — memoized so the gating layer (which
 // calls itemsForUnit under every status/progress read) never re-allocates.
 const unitItemsCache = new Map<string, readonly JourneyItem[]>();
@@ -99,6 +121,8 @@ export function itemsForUnit(unitId: string): readonly JourneyItem[] {
     built = UNIT_ALLERGEN_IDS[unitId].map((foodId) => allergenItem(unitId, foodId));
   } else if (UNIT_BUILD_IDS[unitId]) {
     built = UNIT_BUILD_IDS[unitId].map((cocktailId) => buildItem(unitId, cocktailId));
+  } else if (UNIT_WINE_IDS[unitId]) {
+    built = UNIT_WINE_IDS[unitId].map((wineId) => wineItem(unitId, wineId));
   } else {
     throw new Error(`journey: unit '${unitId}' has no item roster`);
   }
@@ -136,6 +160,7 @@ export function pathCategories(): string[] {
 export function categoryOf(item: JourneyItem): string {
   if (item.foodId) return foodById.get(item.foodId)?.category ?? '';
   if (item.cocktailId) return cocktailById.get(item.cocktailId)?.category ?? '';
+  if (item.wineId) return wineById.get(item.wineId)?.family ?? '';
   return '';
 }
 
@@ -224,7 +249,31 @@ export interface BuildTeach {
   /** safety framing is non-negotiable on any surface that shows allergens */
   confirmLine: string;
 }
-export type TeachContent = DishTeach | ServiceTeach | BuildTeach;
+/** Stage 4 — the by-the-glass pour teach surface: identity (grape/place),
+ * structure, pronunciation, the ten-second story, and what it pours with. */
+export interface WineTeach {
+  kind: 'wine';
+  name: string;
+  price: string;
+  grape: string;
+  region: string;
+  country: string;
+  family: string;
+  climate: string;
+  structure: { acidity: string; body: string; tannin: string; sweetness: string };
+  /** pronunciation respelling shown on the speak chip */
+  respell: string;
+  /** the spoken form fed to the Web-Speech fallback */
+  say: string;
+  /** wineId — the /audio/<wineId>.mp3 clip key */
+  audioId: string;
+  tenSecond: string;
+  profile: string;
+  /** dishes this pour sings with (wine.pair) */
+  pair: string[];
+  mnemonic?: string;
+}
+export type TeachContent = DishTeach | ServiceTeach | BuildTeach | WineTeach;
 
 function foodFor(item: JourneyItem): Food {
   const food = item.foodId ? foodById.get(item.foodId) : undefined;
@@ -242,6 +291,12 @@ function cocktailFor(item: JourneyItem): Cocktail {
   const c = item.cocktailId ? cocktailById.get(item.cocktailId) : undefined;
   if (!c) throw new Error(`journey: item '${item.id}' has no cocktail record`);
   return c;
+}
+
+function wineFor(item: JourneyItem): Wine {
+  const w = item.wineId ? wineById.get(item.wineId) : undefined;
+  if (!w) throw new Error(`journey: item '${item.id}' has no wine record`);
+  return w;
 }
 
 /** The standing bar-confirm safety line — drinks are confirmed with the BAR, not
@@ -295,6 +350,42 @@ export function hasBuildDeck(item: JourneyItem): boolean {
   return item.kind === 'build' && !!item.cocktailId && !!buildsCardFor(item.cocktailId);
 }
 
+// The frozen v2 wine-identity deck (Stage 4), the name→identity direction
+// (wine-identity:<wineId>:grape — "X: what grape and region?"), indexed by
+// wineId. Reused as MC material only, like the components/builds decks.
+let wineIdentityCards: Map<string, Card> | null = null;
+function wineIdentityCardFor(wineId: string): Card | undefined {
+  if (!wineIdentityCards) {
+    const deck = generateDeck('wine-identity', data) as Card[];
+    wineIdentityCards = new Map(
+      deck.filter((c) => c.id.endsWith(':grape')).map((c) => [c.sourceId!, c])
+    );
+  }
+  return wineIdentityCards.get(wineId);
+}
+
+export interface WineMcContent extends McContent {
+  /** the ten-second story, taught on the reveal */
+  why: string;
+}
+
+/** The wine identity MC (Stage 4 path recognition rung): given the pour's name,
+ * name the grape + region (the frozen wine-identity card); the reveal teaches the
+ * ten-second story. The path's mc→cued→free ladder grades on this MC at the mc
+ * rung; the checkpoint serves the free rung (cold grape+region+pitch recall). */
+export function wineMcFor(item: JourneyItem): WineMcContent {
+  if (item.kind !== 'wine')
+    throw new Error(`journey: wineMcFor needs a wine item — '${item.id}' is not a by-the-glass pour`);
+  const w = wineFor(item);
+  const card = wineIdentityCardFor(w.id);
+  if (!card)
+    throw new Error(`journey: '${item.id}' has no wine-identity engine card`);
+  return {
+    ...toMc(`${item.id}:wine`, card.prompt, card.choices!, card.answer),
+    why: w.tenSecond || w.profile || ''
+  };
+}
+
 function toMc(itemId: string, prompt: string, choices: readonly string[], answer: string): McContent {
   const order = shuffled(choices, mulberry32(hashId(itemId)));
   const answerIndex = order.indexOf(answer);
@@ -312,6 +403,8 @@ export function mcFor(item: JourneyItem): McContent {
   if (item.kind === 'allergen') return allergenMcFor(item);
   // Build items (Stage 3) grade on the builds MC — same dispatch-in-mcFor rule.
   if (item.kind === 'build') return buildMcFor(item);
+  // Wine items (Stage 4) grade on the identity MC.
+  if (item.kind === 'wine') return wineMcFor(item);
   const card = componentsCardFor(foodFor(item).id);
   return toMc(item.id, card.prompt, card.choices!, card.answer);
 }
@@ -873,6 +966,20 @@ export function cuedFor(item: JourneyItem): CuedContent {
       ...barFraming(c)
     };
   }
+  // Wine items (Stage 4): cued IDENTITY recall — grape, place, the one-line read.
+  if (item.kind === 'wine') {
+    const w = wineFor(item);
+    const region = w.region.split(',')[0];
+    // Enumerate every grape's initial (blends store composites like
+    // "Chardonnay & Pinot Noir") — one letter of the whole string would tell on
+    // only the first grape. Mirrors the dish/build first-letter hint.
+    const grapeInitials = w.grape.split(/[^\p{L}]+/u).filter(Boolean).map((g) => g[0].toUpperCase()).join('·');
+    return {
+      prompt: `The ${w.name}: grape, place, and the one-line read.`,
+      hint: `${grapeInitials} from ${region} · ${w.family.toLowerCase()}`,
+      answer: `${w.grape} — ${w.region}. ${w.tenSecond}`
+    };
+  }
   const f = foodFor(item);
   // Allergen items (Stage 2): cued FLAG recall, not component recall.
   if (item.kind === 'allergen') {
@@ -908,6 +1015,18 @@ export function freeFor(item: JourneyItem): FreeContent {
       answer: c.build!.join(', '),
       ...(c.description ? { detail: c.description } : {}),
       ...barFraming(c)
+    };
+  }
+  // Wine items (Stage 4): free recall — the FULL identity cold (grape, region,
+  // AND the ten-second pitch). Same target as the cued rung but with no hint, so
+  // the cold rung is never easier than the cued one — and the wine checkpoint
+  // (which serves the free rung) gates on the stage's headline skill: identity.
+  if (item.kind === 'wine') {
+    const w = wineFor(item);
+    return {
+      prompt: `Cold — the ${w.name}: grape, region, and the ten-second pitch.`,
+      answer: `${w.grape} — ${w.region}. ${w.tenSecond}`,
+      ...(w.say ? { detail: w.say } : {})
     };
   }
   const f = foodFor(item);
@@ -999,6 +1118,33 @@ export function teachFor(item: JourneyItem): TeachContent {
       allergens: c.allergens ?? [],
       ...(c.allergenNote ? { allergenNote: c.allergenNote } : {}),
       confirmLine: BAR_CONFIRM
+    };
+  }
+  // Wine items (Stage 4): the by-the-glass pour teach surface.
+  if (item.kind === 'wine') {
+    const w = wineFor(item);
+    return {
+      kind: 'wine',
+      name: w.name,
+      price: w.price,
+      grape: w.grape,
+      region: w.region,
+      country: w.country,
+      family: w.family,
+      climate: w.climate,
+      structure: {
+        acidity: w.structure.acidity,
+        body: w.structure.body,
+        tannin: w.structure.tannin,
+        sweetness: w.structure.sweetness
+      },
+      respell: w.pronunciation.respell,
+      say: w.pronunciation.say,
+      audioId: w.id,
+      tenSecond: w.tenSecond,
+      profile: w.profile,
+      pair: w.pair ?? [],
+      ...(w.mnemonic ? { mnemonic: w.mnemonic } : {})
     };
   }
   const f = foodFor(item);

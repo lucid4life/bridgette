@@ -44,7 +44,9 @@
               ? `${total} dishes · flags`
               : kind === 'build'
                 ? `${total} ${total === 1 ? 'cocktail' : 'cocktails'} · builds`
-                : `${total} dishes`,
+                : kind === 'wine'
+                  ? `${total} ${total === 1 ? 'pour' : 'pours'}`
+                  : `${total} dishes`,
         href: unitHref(stage, unit)
       };
     });

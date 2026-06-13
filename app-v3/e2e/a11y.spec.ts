@@ -24,17 +24,22 @@ const STAGE12_UNITS = [
   'dessert', 'checkpoint-food', 'allergens-seafood', 'allergens-nuts', 'allergens-diet',
   'allergens-common', 'checkpoint-allergens'
 ];
-const SEED_STAGE12 = JSON.stringify({
-  schema: 1,
-  items: {},
-  meta: {
-    streak: { current: 0, lastDay: null, freezeUsedWeekOf: null },
-    settings: { lessonsPerDay: 8 },
-    unitDone: Object.fromEntries(STAGE12_UNITS.map((u) => [u, 'gate'])),
-    dayLog: {},
-    writeSeq: 9999
-  }
-});
+const BAR_UNITS = ['bar-arc', 'bar-bright', 'bar-floral', 'bar-spirit', 'bar-zero', 'checkpoint-bar'];
+function seedMirror(units: string[]): string {
+  return JSON.stringify({
+    schema: 1,
+    items: {},
+    meta: {
+      streak: { current: 0, lastDay: null, freezeUsedWeekOf: null },
+      settings: { lessonsPerDay: 8 },
+      unitDone: Object.fromEntries(units.map((u) => [u, 'gate'])),
+      dayLog: {},
+      writeSeq: 9999
+    }
+  });
+}
+const SEED_STAGE12 = seedMirror(STAGE12_UNITS);
+const SEED_STAGE123 = seedMirror([...STAGE12_UNITS, ...BAR_UNITS]); // unlocks Wine (Stage 4)
 
 // Axe must measure the SETTLED state — the card-in entrance fade transiently
 // lowers opacity, which axe samples as a false-positive contrast hit.
@@ -219,6 +224,48 @@ for (const theme of THEMES) {
     test('axe: bar checkpoint intro (seeded past Stage 2)', async ({ page }) => {
       await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE12);
       await page.goto('/checkpoint/behind-the-bar');
+      await expect(page.getByRole('button', { name: /start the shift check/i })).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: wine unit pretest MC (seeded past Stage 3)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE123);
+      await page.goto('/unit/wine-bubbles');
+      await expect(page.locator('.fmc .choices .choice').first()).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: wine teach card (identity + structure meters + pronunciation)', async ({ page }) => {
+      test.setTimeout(90_000); // drives the wine-bubbles pretest first
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE123);
+      await page.goto('/unit/wine-bubbles');
+      const known = new Map<string, string>();
+      for (let guard = 0; guard < 40; guard++) {
+        if (await page.locator('article.tcard').count()) break;
+        const mc = page.locator('article.fmc');
+        if (await mc.count()) {
+          const prompt = (await page.locator('.fmc .q').innerText()).trim();
+          const choices = page.locator('.fmc .choices .choice');
+          let pick = 0;
+          const want = known.get(prompt);
+          if (want) {
+            const n = await choices.count();
+            for (let i = 0; i < n; i++) {
+              if ((await choices.nth(i).locator('.t').innerText()).trim() === want) { pick = i; break; }
+            }
+          }
+          await choices.nth(pick).click();
+          known.set(prompt, (await page.locator('.fmc .choice.right .t').innerText()).trim());
+          await page.locator('.fmc .fb .btn').click();
+        }
+      }
+      await expect(page.locator('.tcard .t-meters')).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: wine checkpoint intro (seeded past Stage 3)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE123);
+      await page.goto('/checkpoint/wine');
       await expect(page.getByRole('button', { name: /start the shift check/i })).toBeVisible();
       await scan(page);
     });
