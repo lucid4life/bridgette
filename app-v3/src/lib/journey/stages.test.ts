@@ -2,7 +2,7 @@
 // Spec: docs/handoffs/2026-06-11-v3-phase1-spec.md (unit ids/titles locked).
 import { describe, expect, it } from 'vitest';
 import { data } from '$lib/data';
-import { CHECKPOINT_UNIT_ID, STAGES, UNIT_BUILD_IDS, UNIT_FOOD_IDS, UNIT_WINE_IDS, stageById, unitById } from './stages';
+import { CHECKPOINT_UNIT_ID, STAGES, UNIT_BUILD_IDS, UNIT_FOOD_IDS, UNIT_PAIRING_IDS, UNIT_WINE_IDS, stageById, unitById } from './stages';
 
 const LESSON_ORDER = [
   'day-one',
@@ -94,7 +94,7 @@ describe('dish roster (UNIT_FOOD_IDS)', () => {
 });
 
 describe('stages 2-5', () => {
-  it('declares allergen-guardian + behind-the-bar + wine (built), then pairings (locked)', () => {
+  it('declares all five stages built — the full journey, none statically locked', () => {
     expect(STAGES.map((s) => s.id)).toEqual([
       'food-runner',
       'allergen-guardian',
@@ -147,10 +147,56 @@ describe('stages 2-5', () => {
     ]);
     expect(stage4.units.filter((u) => u.kind === 'checkpoint')).toHaveLength(1);
 
-    // Stage 5 (pairings) stays declared-but-locked (no content yet).
-    for (const s of STAGES.slice(4)) {
-      expect(s.locked, s.id).toBe(true);
-      expect(s.units, s.id).toEqual([]);
+    // Stage 5 is built: 4 interleaved pairing modules + a checkpoint.
+    const stage5 = STAGES[4];
+    expect(stage5.locked).not.toBe(true);
+    expect(stage5.units.map((u) => u.id)).toEqual([
+      'pair-snacks',
+      'pair-veg-pizza',
+      'pair-pasta-mains',
+      'pair-dessert',
+      'checkpoint-pairings'
+    ]);
+    expect(stage5.units.filter((u) => u.kind === 'checkpoint')).toHaveLength(1);
+
+    // Every stage now has content — no stage is statically locked anymore.
+    for (const s of STAGES) expect(s.locked, s.id).not.toBe(true);
+  });
+});
+
+describe('pairing roster (UNIT_PAIRING_IDS)', () => {
+  it('covers all 41 path dishes exactly once across the 4 pairing modules', () => {
+    const all = Object.values(UNIT_PAIRING_IDS).flat();
+    expect(all.length).toBe(41);
+    expect(new Set(all).size).toBe(41);
+  });
+
+  it('matches the dish roster exactly (every path dish becomes a pairing)', () => {
+    const dishes = Object.values(UNIT_FOOD_IDS).flat().sort();
+    const pairings = Object.values(UNIT_PAIRING_IDS).flat().sort();
+    expect(pairings).toEqual(dishes);
+  });
+
+  it('the checkpoint mints no pairing rows', () => {
+    expect(UNIT_PAIRING_IDS['checkpoint-pairings']).toBeUndefined();
+  });
+
+  it('every listed dish carries a pour, a lever AND a why (the reveal’s payload)', () => {
+    for (const foodId of Object.values(UNIT_PAIRING_IDS).flat()) {
+      const f = data.foods.find((x) => x.id === foodId);
+      expect(f, foodId).toBeDefined();
+      expect(f!.wine, foodId).toBeTruthy(); // the pairing MC source
+      expect(f!.lever, foodId).toBeTruthy(); // the lever the reveal teaches
+      expect(f!.why, foodId).toBeTruthy(); // the structural why — never a hollow card
+    }
+  });
+
+  it('modules mix levers (interleaved, not grouped by lever) for discrimination', () => {
+    const byId = new Map(data.foods.map((f) => [f.id, f]));
+    for (const [unit, ids] of Object.entries(UNIT_PAIRING_IDS)) {
+      const levers = new Set(ids.map((id) => byId.get(id)?.lever).filter(Boolean));
+      // the snacks/veg-pizza/pasta-mains modules each span multiple levers
+      if (unit !== 'pair-dessert') expect(levers.size, unit).toBeGreaterThan(1);
     }
   });
 });

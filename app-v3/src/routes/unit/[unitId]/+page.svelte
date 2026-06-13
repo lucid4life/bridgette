@@ -13,7 +13,7 @@
   import TeachCard from '$lib/components/session/TeachCard.svelte';
   import { nameOf } from '$lib/components/session/util';
   import { unitComplete, unitStatus } from '$lib/journey/gating';
-  import { allergenMcFor, buildMcFor, cuedFor, freeFor, itemsForUnit, mcFor, teachFor, wineMcFor } from '$lib/journey/items';
+  import { allergenMcFor, buildMcFor, cuedFor, freeFor, itemsForUnit, mcFor, pairingMcFor, teachFor, wineMcFor } from '$lib/journey/items';
   import { unitById } from '$lib/journey/stages';
   import { createLearnSession, type LearnSession, type LearnSummary } from '$lib/session';
   import { progress } from '$lib/store/progress.svelte';
@@ -146,6 +146,9 @@
         {:else if step.item.kind === 'wine'}
           {@const mc = wineMcFor(step.item)}
           <FlashMc {mc} warm why={mc.why} kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
+        {:else if step.item.kind === 'pairing'}
+          {@const mc = pairingMcFor(step.item)}
+          <FlashMc {mc} warm why={mc.why} kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
         {:else}
           <FlashMc mc={mcFor(step.item)} warm kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
         {/if}
@@ -159,6 +162,9 @@
         {:else if step.item.kind === 'wine'}
           {@const mc = wineMcFor(step.item)}
           <FlashMc {mc} why={mc.why} kicker="prove it — grape & place" onanswer={answer} oncontinue={continueStep} />
+        {:else if step.item.kind === 'pairing'}
+          {@const mc = pairingMcFor(step.item)}
+          <FlashMc {mc} why={mc.why} kicker="prove it — the pour & why" onanswer={answer} oncontinue={continueStep} />
         {:else}
           <FlashMc mc={mcFor(step.item)} kicker="prove it — round one" onanswer={answer} oncontinue={continueStep} />
         {/if}

@@ -231,6 +231,33 @@
         <button type="button" class="btn" onclick={oncontinue}>{continueLabel}</button>
       </div>
     </div>
+  {:else if teach.kind === 'pairing'}
+    <div class="t-body">
+      <header class="t-head">
+        <h3 class="t-name" tabindex="-1" bind:this={hEl}>{teach.name}</h3>
+      </header>
+      <p class="t-cat"><span class="pill">{teach.category}</span></p>
+
+      <div class="t-sec">
+        <p class="t-label">the pour</p>
+        <p class="t-rule">{teach.wine}</p>
+        {#if teach.leverLabel}
+          <p class="t-why"><b>{teach.leverLabel}.</b> {teach.leverScript}</p>
+        {/if}
+        {#if teach.why}<p class="t-pairs">{teach.why}</p>{/if}
+      </div>
+
+      {#if teach.cocktail}
+        <div class="t-sec">
+          <p class="t-label">not drinking wine?</p>
+          <p class="t-pairs">{teach.cocktail}{teach.zero ? ` · zero-proof: ${teach.zero}` : ''}</p>
+        </div>
+      {/if}
+
+      <div class="t-actions">
+        <button type="button" class="btn" onclick={oncontinue}>{continueLabel}</button>
+      </div>
+    </div>
   {:else}
     <div class="t-body t-service">
       <p class="t-kicker">service call</p>

@@ -4,6 +4,7 @@
 // reuses the frozen v2 engine card (components:<foodId>:pick) as material.
 import { data, type Food, type Cocktail, type Wine } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
+import { LEVERS } from '$lib/engine/pairing.js';
 import type { Card } from '$lib/data';
 import { mulberry32, shuffled } from '$lib/rng';
 import {
@@ -13,6 +14,7 @@ import {
   UNIT_ALLERGEN_IDS,
   UNIT_BUILD_IDS,
   UNIT_FOOD_IDS,
+  UNIT_PAIRING_IDS,
   UNIT_WINE_IDS,
   stageById,
   unitById
@@ -27,6 +29,8 @@ import type { JourneyItem } from './types';
 const foodById = new Map<string, Food>(data.foods.map((f) => [f.id, f]));
 const cocktailById = new Map<string, Cocktail>(data.cocktails.map((c) => [c.id, c]));
 const wineById = new Map<string, Wine>(data.wines.map((w) => [w.id, w]));
+// LEVERS is a frozen .js literal; typed as a lookup table for the pairing accessors.
+const LEVER_TABLE = LEVERS as Record<string, { id: string; label: string; script: string }>;
 
 for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
   const food = foodById.get(foodId);
@@ -57,6 +61,19 @@ for (const wineId of Object.values(UNIT_WINE_IDS).flat()) {
   // malformed price would render a garbled string, so fail loud at init instead.
   if (w.price.split('|').length !== 3)
     throw new Error(`journey: wine '${wineId}' price '${w.price}' is not a 3-part 5oz|8oz|bottle ladder`);
+}
+
+// Stage 5: every dish on a pairing module must carry its official pour, a valid
+// WSET lever, and a structural why — the MC reuses the pour; cued/free/teach
+// teach the lever + the why. Requiring all three keeps a future leverless/whyless
+// dish from silently shipping a hollow "the pour, and nothing about why" card.
+for (const foodId of Object.values(UNIT_PAIRING_IDS).flat()) {
+  const f = foodById.get(foodId);
+  if (!f) throw new Error(`journey: pairing foodId '${foodId}' missing from data.foods`);
+  if (!f.wine) throw new Error(`journey: pairing dish '${foodId}' has no official wine pour`);
+  if (!f.lever || !LEVER_TABLE[f.lever])
+    throw new Error(`journey: pairing dish '${foodId}' has no valid WSET lever ('${f.lever}')`);
+  if (!f.why) throw new Error(`journey: pairing dish '${foodId}' has no structural why`);
 }
 
 // Day-one + the bar arc-of-service module are the two authored-content units;
@@ -95,6 +112,15 @@ const wineItem = (unitId: string, wineId: string): JourneyItem => ({
   wineId
 });
 
+// Pairing items are DISH-anchored (the call is "what pours with this dish") — they
+// reuse foodId, namespaced apart from dish:/allergen: by the pairing: prefix.
+const pairingItem = (unitId: string, foodId: string): JourneyItem => ({
+  id: `pairing:${foodId}`,
+  kind: 'pairing',
+  unitId,
+  foodId
+});
+
 // Items are STATIC after module init — memoized so the gating layer (which
 // calls itemsForUnit under every status/progress read) never re-allocates.
 const unitItemsCache = new Map<string, readonly JourneyItem[]>();
@@ -123,6 +149,8 @@ export function itemsForUnit(unitId: string): readonly JourneyItem[] {
     built = UNIT_BUILD_IDS[unitId].map((cocktailId) => buildItem(unitId, cocktailId));
   } else if (UNIT_WINE_IDS[unitId]) {
     built = UNIT_WINE_IDS[unitId].map((wineId) => wineItem(unitId, wineId));
+  } else if (UNIT_PAIRING_IDS[unitId]) {
+    built = UNIT_PAIRING_IDS[unitId].map((foodId) => pairingItem(unitId, foodId));
   } else {
     throw new Error(`journey: unit '${unitId}' has no item roster`);
   }
@@ -273,7 +301,24 @@ export interface WineTeach {
   pair: string[];
   mnemonic?: string;
 }
-export type TeachContent = DishTeach | ServiceTeach | BuildTeach | WineTeach;
+/** Stage 5 — the pairing teach surface: the dish → its pour + the WSET lever
+ * that makes it work + the why, plus the non-drinker cocktail call. */
+export interface PairingTeach {
+  kind: 'pairing';
+  name: string;
+  category: string;
+  /** the by-the-glass pour for this dish */
+  wine: string;
+  /** the lever's floor-ready label + script (when the dish carries a lever) */
+  leverLabel?: string;
+  leverScript?: string;
+  /** the dish's own structural reason */
+  why: string;
+  /** the non-drinker call */
+  cocktail?: string;
+  zero?: string;
+}
+export type TeachContent = DishTeach | ServiceTeach | BuildTeach | WineTeach | PairingTeach;
 
 function foodFor(item: JourneyItem): Food {
   const food = item.foodId ? foodById.get(item.foodId) : undefined;
@@ -364,6 +409,44 @@ function wineIdentityCardFor(wineId: string): Card | undefined {
   return wineIdentityCards.get(wineId);
 }
 
+// The frozen v2 pairing deck (Stage 5 — dish→best by-the-glass pour), indexed by
+// foodId. Reused as MC material only, like the components/builds/wine-identity decks.
+let pairingCards: Map<string, Card> | null = null;
+function pairingCardFor(foodId: string): Card | undefined {
+  if (!pairingCards) {
+    const deck = generateDeck('pairing', data) as Card[];
+    pairingCards = new Map(deck.filter((c) => c.sourceKind === 'food').map((c) => [c.sourceId!, c]));
+  }
+  return pairingCards.get(foodId);
+}
+
+/** The lever's floor-ready label + script for a dish (when it carries one). */
+function leverOf(f: Food): { label: string; script: string } | undefined {
+  return f.lever ? LEVER_TABLE[f.lever] : undefined;
+}
+
+export interface PairingMcContent extends McContent {
+  /** the lever + the dish's why, taught on the reveal */
+  why: string;
+}
+
+/** The pairing MC (Stage 5 path + pairings checkpoint). Recognition rung: given
+ * the dish, name the best by-the-glass pour (the frozen pairing card); the reveal
+ * teaches the lever that makes it work + the dish's structural why. */
+export function pairingMcFor(item: JourneyItem): PairingMcContent {
+  if (item.kind !== 'pairing')
+    throw new Error(`journey: pairingMcFor needs a pairing item — '${item.id}' is not a dish pairing`);
+  const f = foodFor(item);
+  const card = pairingCardFor(f.id);
+  if (!card) throw new Error(`journey: '${item.id}' has no pairing engine card (dish has no pour)`);
+  const lever = leverOf(f);
+  const why = lever ? `${lever.label} — ${lever.script}${f.why ? ` ${f.why}` : ''}` : (f.why ?? '');
+  return {
+    ...toMc(`${item.id}:pairing`, card.prompt, card.choices!, card.answer),
+    why
+  };
+}
+
 export interface WineMcContent extends McContent {
   /** the ten-second story, taught on the reveal */
   why: string;
@@ -405,6 +488,8 @@ export function mcFor(item: JourneyItem): McContent {
   if (item.kind === 'build') return buildMcFor(item);
   // Wine items (Stage 4) grade on the identity MC.
   if (item.kind === 'wine') return wineMcFor(item);
+  // Pairing items (Stage 5) grade on the dish→pour MC.
+  if (item.kind === 'pairing') return pairingMcFor(item);
   const card = componentsCardFor(foodFor(item).id);
   return toMc(item.id, card.prompt, card.choices!, card.answer);
 }
@@ -981,6 +1066,16 @@ export function cuedFor(item: JourneyItem): CuedContent {
     };
   }
   const f = foodFor(item);
+  // Pairing items (Stage 5): cued POUR recall — the pour + the lever that works.
+  if (item.kind === 'pairing') {
+    const lever = leverOf(f);
+    const pourInitial = (f.wine ?? '').split(/\s+/)[0]?.[0] ?? '';
+    return {
+      prompt: `A guest orders the ${f.name}. What's the by-the-glass pour, and which lever makes it work?`,
+      hint: `the pour starts "${pourInitial}…" · then name the lever`,
+      answer: lever ? `${f.wine} — ${lever.label}. ${lever.script}` : `${f.wine}. ${f.why ?? ''}`
+    };
+  }
   // Allergen items (Stage 2): cued FLAG recall, not component recall.
   if (item.kind === 'allergen') {
     const flags = f.allergens ?? [];
@@ -1030,6 +1125,17 @@ export function freeFor(item: JourneyItem): FreeContent {
     };
   }
   const f = foodFor(item);
+  // Pairing items (Stage 5): free POUR recall — call it cold + say why; the
+  // detail carries the non-drinker cocktail call.
+  if (item.kind === 'pairing') {
+    return {
+      prompt: `The ${f.name} just landed — call the pour and say why, out loud.`,
+      answer: `${f.wine}. ${f.why ?? leverOf(f)?.script ?? ''}`,
+      ...(f.cocktail
+        ? { detail: `Not drinking? ${f.cocktail}.${f.zero ? ` Zero-proof: ${f.zero}.` : ''}` }
+        : {})
+    };
+  }
   // Allergen items (Stage 2): free FLAG recall — name every flag, cold.
   if (item.kind === 'allergen') {
     const flags = f.allergens ?? [];
@@ -1148,6 +1254,20 @@ export function teachFor(item: JourneyItem): TeachContent {
     };
   }
   const f = foodFor(item);
+  // Pairing items (Stage 5): the dish→pour teach surface.
+  if (item.kind === 'pairing') {
+    const lever = leverOf(f);
+    return {
+      kind: 'pairing',
+      name: f.name,
+      category: f.category,
+      wine: f.wine ?? '',
+      ...(lever ? { leverLabel: lever.label, leverScript: lever.script } : {}),
+      why: f.why ?? '',
+      ...(f.cocktail ? { cocktail: f.cocktail } : {}),
+      ...(f.zero ? { zero: f.zero } : {})
+    };
+  }
   return {
     kind: 'dish',
     name: f.name,

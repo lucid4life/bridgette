@@ -25,6 +25,7 @@ const STAGE12_UNITS = [
   'allergens-common', 'checkpoint-allergens'
 ];
 const BAR_UNITS = ['bar-arc', 'bar-bright', 'bar-floral', 'bar-spirit', 'bar-zero', 'checkpoint-bar'];
+const WINE_UNITS = ['wine-bubbles', 'wine-bright', 'wine-round', 'wine-light', 'wine-structured', 'checkpoint-wine'];
 function seedMirror(units: string[]): string {
   return JSON.stringify({
     schema: 1,
@@ -40,6 +41,7 @@ function seedMirror(units: string[]): string {
 }
 const SEED_STAGE12 = seedMirror(STAGE12_UNITS);
 const SEED_STAGE123 = seedMirror([...STAGE12_UNITS, ...BAR_UNITS]); // unlocks Wine (Stage 4)
+const SEED_STAGE1234 = seedMirror([...STAGE12_UNITS, ...BAR_UNITS, ...WINE_UNITS]); // unlocks Pairings (Stage 5)
 
 // Axe must measure the SETTLED state — the card-in entrance fade transiently
 // lowers opacity, which axe samples as a false-positive contrast hit.
@@ -304,6 +306,48 @@ for (const theme of THEMES) {
       await page.goto('/prep'); // no seed → Wine stage locked
       await expect(page).toHaveURL(/\/$/); // bounced to the path home
       await expect(page.locator('.pick')).toHaveCount(0);
+    });
+
+    test('axe: pairing unit pretest MC (seeded past Stage 4)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE1234);
+      await page.goto('/unit/pair-snacks');
+      await expect(page.locator('.fmc .choices .choice').first()).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: pairing teach card (dish → pour + lever)', async ({ page }) => {
+      test.setTimeout(120_000); // drives the pair-snacks pretest first
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE1234);
+      await page.goto('/unit/pair-snacks');
+      const known = new Map<string, string>();
+      for (let guard = 0; guard < 80; guard++) {
+        if (await page.locator('article.tcard').count()) break;
+        const mc = page.locator('article.fmc');
+        if (await mc.count()) {
+          const prompt = (await page.locator('.fmc .q').innerText()).trim();
+          const choices = page.locator('.fmc .choices .choice');
+          let pick = 0;
+          const want = known.get(prompt);
+          if (want) {
+            const n = await choices.count();
+            for (let i = 0; i < n; i++) {
+              if ((await choices.nth(i).locator('.t').innerText()).trim() === want) { pick = i; break; }
+            }
+          }
+          await choices.nth(pick).click();
+          known.set(prompt, (await page.locator('.fmc .choice.right .t').innerText()).trim());
+          await page.locator('.fmc .fb .btn').click();
+        }
+      }
+      await expect(page.locator('.tcard')).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: pairings checkpoint intro (seeded past Stage 4)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE1234);
+      await page.goto('/checkpoint/pairings');
+      await expect(page.getByRole('button', { name: /start the shift check/i })).toBeVisible();
+      await scan(page);
     });
   });
 }

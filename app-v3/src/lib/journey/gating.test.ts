@@ -243,10 +243,39 @@ describe('Stage 4 (wine) gating', () => {
     expect(unitStatus('checkpoint-wine', doneUnits(...STAGE123_DONE, ...WINE_LESSONS))).toBe('available');
   });
 
-  it('completing the whole wine stage marks it complete; pairings stays locked (no content yet)', () => {
+  it('completing the whole wine stage marks it complete; pairings then unlocks', () => {
     const wineDone = doneUnits(...STAGE123_DONE, ...WINE_LESSONS, 'checkpoint-wine');
     expect(stageStatus('wine', wineDone)).toBe('complete');
-    expect(stageStatus('pairings', wineDone)).toBe('locked');
+    expect(stageStatus('pairings', wineDone)).toBe('available');
+  });
+});
+
+// Stage 5 unlocks sequentially behind Stage 4 — the last stage on the path.
+const PAIRING_LESSONS = ['pair-snacks', 'pair-veg-pizza', 'pair-pasta-mains', 'pair-dessert'];
+const STAGE1234_DONE = [...STAGE123_DONE, ...WINE_LESSONS, 'checkpoint-wine'];
+
+describe('Stage 5 (pairings) gating', () => {
+  it('stays locked until wine is complete, then unlocks', () => {
+    expect(stageStatus('pairings', view())).toBe('locked');
+    expect(stageStatus('pairings', doneUnits(...STAGE123_DONE))).toBe('locked'); // wine not done
+    expect(stageStatus('pairings', doneUnits(...STAGE1234_DONE))).toBe('available');
+  });
+
+  it('once unlocked, every pairing module is available; the checkpoint is locked', () => {
+    const v = doneUnits(...STAGE1234_DONE);
+    for (const u of PAIRING_LESSONS) expect(unitStatus(u, v), u).toBe('available');
+    expect(unitStatus('checkpoint-pairings', v)).toBe('locked');
+  });
+
+  it('the pairings checkpoint opens only when all 4 pairing modules are complete', () => {
+    expect(unitStatus('checkpoint-pairings', doneUnits(...STAGE1234_DONE, ...PAIRING_LESSONS.slice(0, 3)))).toBe('locked');
+    expect(unitStatus('checkpoint-pairings', doneUnits(...STAGE1234_DONE, ...PAIRING_LESSONS))).toBe('available');
+  });
+
+  it('completing pairings marks the whole journey complete (no locked stages remain)', () => {
+    const allDone = doneUnits(...STAGE1234_DONE, ...PAIRING_LESSONS, 'checkpoint-pairings');
+    expect(stageStatus('pairings', allDone)).toBe('complete');
+    expect(stageStatus('food-runner', allDone)).toBe('complete');
   });
 });
 
@@ -299,8 +328,12 @@ describe('stageProgress', () => {
     expect(p.ratio).toBeCloseTo(18 / 57);
   });
 
-  it('locked stages report empty progress (no NaN)', () => {
-    expect(stageProgress('pairings', view())).toEqual({ itemsAtCriterion: 0, totalItems: 0, ratio: 0 });
+  it('a fresh stage reports zero progress with a finite ratio (no NaN)', () => {
+    const p = stageProgress('pairings', view());
+    expect(p.itemsAtCriterion).toBe(0);
+    expect(p.totalItems).toBe(41); // the 41 path dishes, re-anchored as pairings
+    expect(p.ratio).toBe(0);
+    expect(Number.isNaN(p.ratio)).toBe(false);
   });
 });
 

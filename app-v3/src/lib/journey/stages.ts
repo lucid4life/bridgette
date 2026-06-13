@@ -11,6 +11,7 @@ export const ALLERGEN_CHECKPOINT_UNIT_ID = 'checkpoint-allergens';
 export const BAR_ARC_UNIT_ID = 'bar-arc';
 export const BAR_CHECKPOINT_UNIT_ID = 'checkpoint-bar';
 export const WINE_CHECKPOINT_UNIT_ID = 'checkpoint-wine';
+export const PAIRINGS_CHECKPOINT_UNIT_ID = 'checkpoint-pairings';
 
 /** Dish rosters per lesson unit (day-one and the checkpoint mint no dish rows). */
 export const UNIT_FOOD_IDS: Record<string, readonly string[]> = {
@@ -151,6 +152,35 @@ export const UNIT_WINE_IDS: Record<string, readonly string[]> = (() => {
   return out;
 })();
 
+// ---- Stage 5 (Pairings) rosters ----
+// The same 41 path dishes, re-anchored as dish→pour pairings. Grouped into four
+// menu-spanning modules (NOT by lever) so each module mixes levers — this stage
+// is about DISCRIMINATING the right pour across the menu, so the modules stay
+// interleaved. Computed from UNIT_FOOD_IDS so the dish set never drifts.
+const PAIRING_MODULE_OF_FOOD_UNIT: Record<string, string> = {
+  snacks: 'pair-snacks',
+  'snacks-2': 'pair-snacks',
+  'small-plates': 'pair-snacks',
+  vegetables: 'pair-veg-pizza',
+  pizza: 'pair-veg-pizza',
+  pasta: 'pair-pasta-mains',
+  mains: 'pair-pasta-mains',
+  dessert: 'pair-dessert'
+};
+
+/** foodId rosters per Stage-5 pairing module, computed from the dish units. */
+export const UNIT_PAIRING_IDS: Record<string, readonly string[]> = (() => {
+  const out: Record<string, string[]> = {
+    'pair-snacks': [], 'pair-veg-pizza': [], 'pair-pasta-mains': [], 'pair-dessert': []
+  };
+  for (const [foodUnit, foodIds] of Object.entries(UNIT_FOOD_IDS)) {
+    const unit = PAIRING_MODULE_OF_FOOD_UNIT[foodUnit];
+    if (!unit) throw new Error(`stages: dish unit '${foodUnit}' maps to no pairing module`);
+    for (const id of foodIds) out[unit].push(id);
+  }
+  return out;
+})();
+
 const lesson = (id: string, title: string, blurb: string): Unit => ({
   id,
   title,
@@ -253,8 +283,18 @@ export const STAGES: Stage[] = [
     title: 'Pairings',
     track: 'pairings',
     blurb: 'match the dish to the pour — and say why like you mean it',
-    units: [],
-    locked: true
+    units: [
+      lesson('pair-snacks', 'Snacks & small plates', 'the openers — what pours with fries, oysters, crudo and the share plates, and why'),
+      lesson('pair-veg-pizza', 'Vegetables & pizza', 'the green and the cheesy — acid, salt and intensity calls across the veg and pies'),
+      lesson('pair-pasta-mains', 'Pasta & mains', 'the big plates — tannin for the red meat, fresh for the spice, and the why for each'),
+      lesson('pair-dessert', 'Dessert', 'the one rule that flips: the pour has to be sweeter than the plate'),
+      {
+        id: PAIRINGS_CHECKPOINT_UNIT_ID,
+        title: 'Shift check: Pairings',
+        blurb: 'pour the room — the call and the why for every dish, cold',
+        kind: 'checkpoint'
+      }
+    ]
   }
 ];
 
