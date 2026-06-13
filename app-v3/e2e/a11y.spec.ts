@@ -415,6 +415,28 @@ for (const theme of THEMES) {
       await scan(page);
     });
 
+    test('axe: today with a cram countdown + a shaky-dish plan (seeded)', async ({ page }) => {
+      // a future test date + one shaky (lapsed) dish → the countdown + the
+      // "N dishes still shaky" re-drill link both render.
+      const rec = {
+        srs: { due: 0, stability: 2, difficulty: 5, elapsed_days: 0, scheduled_days: 1, learning_steps: 0, reps: 1, lapses: 2, state: 1, last_review: 0 },
+        lapses: 2, correct: 1, lastGrade: 'again', introducedDay: 0
+      };
+      const seed = JSON.stringify({
+        schema: 1,
+        items: { 'dish:french-fries': rec, 'dish:garlic-bread': rec },
+        meta: {
+          streak: { current: 0, lastDay: null, freezeUsedWeekOf: null },
+          settings: { lessonsPerDay: 8 }, unitDone: {}, dayLog: {}, examTarget: 99999, writeSeq: 9999
+        }
+      });
+      await page.addInitScript((s) => localStorage.setItem('bb3_progress_v1', s), seed);
+      await page.goto('/today');
+      await expect(page.locator('.cram-count')).toBeVisible();
+      await expect(page.locator('.cram-shaky')).toBeVisible();
+      await scan(page); // the countdown + the shaky re-drill link
+    });
+
     test('axe: 60-second burst — intro (seeded introduced items) + playing card', async ({ page }) => {
       await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_BURST);
       await page.goto('/burst');

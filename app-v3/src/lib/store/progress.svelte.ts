@@ -15,6 +15,7 @@ import {
   persistMeta,
   rankCounts,
   recordReview,
+  setExamTarget,
   shakyItems,
   tickStreak,
   type ProgressState,
@@ -55,12 +56,19 @@ export const progress = {
   get unitDone() {
     return state.meta.unitDone;
   },
+  /** §0c cram-to-a-date: the dayNumber of the set test, or undefined. Touches
+   * `clock` so the countdown re-derives when the day rolls over. */
+  get examTarget(): number | undefined {
+    void clock;
+    return state.meta.examTarget;
+  },
 
   // --- mutations (each persists through store.ts) ---------------------------
   introduceItem: (itemId: string, now: Date = new Date()) => introduceItem(state, itemId, now),
   recordReview: (itemId: string, grade: Grade, now: Date = new Date()) =>
     recordReview(state, itemId, grade, now),
   completeUnit: (unitId: string, via: UnitDoneVia) => completeUnit(state, unitId, via),
+  setExamTarget: (day: number | null) => setExamTarget(state, day),
   /** Re-evaluate the streak (e.g. on app foreground after midnight) and persist. */
   tickStreak(now: Date = new Date()): Promise<void> {
     tickStreak(state, now);

@@ -12,6 +12,7 @@ import {
   _resetStore,
   completeUnit,
   dayNumber,
+  daysUntil,
   defaultState,
   dueItems,
   introduceItem,
@@ -19,6 +20,7 @@ import {
   newToday,
   rankCounts,
   recordReview,
+  setExamTarget,
   shakyItems,
   type ItemRecord,
   type ProgressState
@@ -457,5 +459,40 @@ describe('shakyItems', () => {
     });
     expect(shakyItems(s)).toEqual(['worst', 'ancient', 'recent']);
     expect(shakyItems(s, 2)).toEqual(['worst', 'ancient']);
+  });
+});
+
+describe('cram target (§0c) — additive, persisted, survives reload', () => {
+  it('setExamTarget stores the day and a reload reads it back', async () => {
+    const s = await loadProgress(T);
+    expect(s.meta.examTarget).toBeUndefined();
+    await setExamTarget(s, TODAY + 3);
+    expect(s.meta.examTarget).toBe(TODAY + 3);
+    _resetStore();
+    const reloaded = await loadProgress(T);
+    expect(reloaded.meta.examTarget).toBe(TODAY + 3);
+  });
+
+  it('setExamTarget(null) clears it, and the cleared state survives reload', async () => {
+    const s = await loadProgress(T);
+    await setExamTarget(s, TODAY + 5);
+    await setExamTarget(s, null);
+    expect(s.meta.examTarget).toBeUndefined();
+    _resetStore();
+    const reloaded = await loadProgress(T);
+    expect(reloaded.meta.examTarget).toBeUndefined();
+  });
+
+  it('daysUntil counts whole local days (today = 0, future positive, past negative)', () => {
+    expect(daysUntil(TODAY, T)).toBe(0);
+    expect(daysUntil(TODAY + 3, T)).toBe(3);
+    expect(daysUntil(TODAY - 2, T)).toBe(-2);
+  });
+
+  it('the mirror carries examTarget (the iOS recovery path keeps the date)', async () => {
+    const s = await loadProgress(T);
+    await setExamTarget(s, TODAY + 1);
+    const mirror = JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState;
+    expect(mirror.meta.examTarget).toBe(TODAY + 1);
   });
 });

@@ -140,3 +140,21 @@ test('playbook search narrows to the one octopus dish', async ({ page }) => {
   await expect(page.locator('article.dish .nm')).toHaveText('Grilled Octopus Salad');
   await expect(page.locator('.count')).toContainText('1 of');
 });
+
+test('cram-to-a-date: set a test date → countdown shows → clear removes it', async ({ page }) => {
+  await page.goto('/today');
+  // fresh profile: the date-set affordance shows, no countdown yet
+  const dateInput = page.locator('.cram-set input[type="date"]');
+  await expect(dateInput).toBeVisible();
+  await expect(page.locator('.cram')).toHaveCount(0);
+
+  // set a date three days out → the countdown appears
+  const d = new Date();
+  d.setDate(d.getDate() + 3);
+  await dateInput.fill(d.toISOString().slice(0, 10));
+  await expect(page.locator('.cram-count')).toContainText(/menu test/i);
+
+  // clear → back to the date-set affordance
+  await page.getByRole('button', { name: 'clear date' }).click();
+  await expect(page.locator('.cram-set input[type="date"]')).toBeVisible();
+});

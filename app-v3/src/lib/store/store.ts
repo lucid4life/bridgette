@@ -50,6 +50,10 @@ export interface ProgressMeta {
   settings: { lessonsPerDay: number };
   unitDone: Record<string, UnitDoneVia>;
   dayLog: Record<number, DayEntry>;
+  /** §0c cram-to-a-date: the dayNumber of an upcoming test (e.g. the Monday menu
+   * test). Drives the countdown + the focused shakiest-first plan. Optional +
+   * additive — absent on every snapshot before it existed. */
+  examTarget?: number;
   /** Monotonic persist counter — at load the side (idb/mirror) with the higher
    * seq wins. Optional: a snapshot from before the counter existed counts as 0. */
   writeSeq?: number;
@@ -93,6 +97,11 @@ export function dayNumber(date: Date): number {
 /** dayNumber of the Monday on/before `day` (epoch day 0 = a Thursday). */
 export function weekStartOf(day: number): number {
   return day - ((((day + 3) % 7) + 7) % 7);
+}
+
+/** Whole days from `now`'s local day to a target dayNumber (0 = today, negative = past). */
+export function daysUntil(targetDay: number, now: Date): number {
+  return targetDay - dayNumber(now);
 }
 
 // ---------------------------------------------------------------------------
@@ -461,6 +470,14 @@ export async function recordReview(
   bumpDay(state, dayNumber(now), 'reviews');
   tickStreak(state, now);
   await persist(state, itemId);
+}
+
+/** §0c: set the cram target date (a dayNumber), or clear it with null. Additive
+ * on meta; persists meta + mirror. */
+export async function setExamTarget(state: ProgressState, day: number | null): Promise<void> {
+  if (day === null) delete state.meta.examTarget;
+  else state.meta.examTarget = day;
+  await persist(state);
 }
 
 /** Mark a unit complete (via its gate session or a test-out). */

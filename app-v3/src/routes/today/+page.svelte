@@ -9,13 +9,47 @@
   import { nextUnit, stageStatus, unitHref, unitStatus } from '$lib/journey/gating';
   import { STAGES } from '$lib/journey/stages';
   import { progress } from '$lib/store/progress.svelte';
+  import { dayNumber, daysUntil } from '$lib/store/store';
   import { progressView } from '$lib/store/view';
 
   const view = $derived(progressView(progress.state));
 
   const due = $derived(progress.ready ? progress.dueItems().length : 0);
-  const shaky = $derived(progress.ready ? progress.shakyItems(12).length : 0);
+  // One shaky sort per tick, shared by the pre-shift count + the cram plan.
+  const allShaky = $derived(progress.ready ? progress.shakyItems() : []);
+  const shaky = $derived(Math.min(12, allShaky.length));
   const anyItems = $derived(Object.keys(progress.state.items).length > 0);
+
+  // §0c cram-to-a-date: set a test date → a countdown + a shakiest-first plan.
+  const shakyDishIds = $derived(allShaky.filter((id) => id.startsWith('dish:')));
+  const examTarget = $derived(progress.examTarget);
+  const daysToTest = $derived(examTarget != null ? daysUntil(examTarget, new Date()) : null);
+  const cramLabel = $derived.by(() => {
+    const d = daysToTest;
+    if (d == null) return '';
+    if (d > 1) return `${d} days to the menu test`;
+    if (d === 1) return 'menu test tomorrow';
+    if (d === 0) return 'menu test today';
+    return `menu test was ${-d} ${-d === 1 ? 'day' : 'days'} ago`;
+  });
+  const shakyDrillHref = $derived(
+    shakyDishIds.length > 0 ? `/romance?drill=${shakyDishIds.map((id) => id.slice(5)).join(',')}` : '/romance'
+  );
+  // Announced via a persistent live region so screen-reader users hear the
+  // countdown when they set/clear the date (it changes outside their focus).
+  const cramAnnounce = $derived(
+    daysToTest == null
+      ? ''
+      : `${cramLabel}${shakyDishIds.length > 0 ? `, ${shakyDishIds.length} ${shakyDishIds.length === 1 ? 'dish' : 'dishes'} still shaky` : ''}`
+  );
+  function onSetTestDate(e: Event): void {
+    const v = (e.currentTarget as HTMLInputElement).value;
+    if (!v) return;
+    const [y, mo, da] = v.split('-').map(Number);
+    // dayNumber is THE calendar-day formula (date-only, DST-immune) — reuse it,
+    // never re-inline, so the set day and the countdown can't drift apart.
+    void progress.setExamTarget(dayNumber(new Date(y, mo - 1, da)));
+  }
 
   // next stop on the path: walk unlocked stages in order (same rule + cross-
   // stage reach as the Path home), carrying the unit's home stage for the href.
@@ -136,6 +170,23 @@
         <h2 class="kicker wk-kicker">this week</h2>
         <p class="jobtitle sm">shift sunday · test monday night</p>
         <p class="meta wk-meta">say it out loud, sweep the flags, then sit the mock — that's the whole prep.</p>
+        {#if daysToTest != null}
+          <p class="cram">
+            <span class="cram-count" class:soon={daysToTest >= 0 && daysToTest <= 1} class:past={daysToTest < 0}>{cramLabel}</span>
+            {#if shakyDishIds.length > 0}
+              <span class="cram-sep" aria-hidden="true">·</span><a class="cram-shaky" href={shakyDrillHref}>{shakyDishIds.length} {shakyDishIds.length === 1 ? 'dish' : 'dishes'} still shaky</a>
+            {:else if anyItems}
+              <span class="cram-sep" aria-hidden="true">·</span><a class="cram-shaky" href="/romance/exam">check your readiness</a>
+            {/if}
+            <button type="button" class="cram-clear" onclick={() => void progress.setExamTarget(null)}>clear date</button>
+          </p>
+        {:else}
+          <p class="cram-set">
+            <label>tested soon? <input type="date" onchange={onSetTestDate} aria-label="Set your test date for a countdown" /></label>
+          </p>
+        {/if}
+        <!-- persistent live region: announces the countdown when set/cleared -->
+        <p class="visually-hidden" aria-live="polite" aria-atomic="true">{cramAnnounce}</p>
       </div>
       <nav class="wk-links" aria-label="Test prep">
         <a class="btn ghost" href="/romance">romance the menu</a>
@@ -286,6 +337,70 @@
   .wk-text .wk-meta {
     margin: 4px 0 0;
     max-width: 52ch;
+  }
+  /* cram-to-a-date countdown */
+  .cram {
+    margin: 10px 0 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .cram-count {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--highlight); /* marigold — same as .wk-kicker, AA on this card both themes */
+  }
+  .cram-count.soon {
+    color: var(--accent-text); /* ember action ink — the urgent days */
+  }
+  .cram-count.past {
+    color: var(--text-muted);
+  }
+  .cram-sep {
+    color: var(--text-muted);
+  }
+  .cram-shaky {
+    color: var(--accent-text);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cram-clear {
+    margin-left: auto;
+    background: none;
+    border: none;
+    padding: 2px 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .cram-clear:hover {
+    color: var(--text-body);
+  }
+  .cram-set {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .cram-set label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cram-set input {
+    font: inherit;
+    padding: 4px 8px;
+    border-radius: var(--radius-chip, 8px);
+    border: 1px solid var(--line);
+    background: var(--surface-card-faint, var(--surface-card));
+    color: var(--text-body);
   }
   .wk-links {
     display: flex;
