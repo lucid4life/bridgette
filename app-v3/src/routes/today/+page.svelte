@@ -36,6 +36,8 @@
   const lastComplete = $derived([...STAGES].reverse().find((s) => stageStatus(s.id, view) === 'complete'));
   // Behind-the-Bar drill surfaces once that stage is reachable (Stages 1+2 done).
   const barReachable = $derived(stageStatus('behind-the-bar', view) !== 'locked');
+  // Prep-my-bottle surfaces once the Wine stage is reachable (Stages 1-3 done).
+  const wineReachable = $derived(stageStatus('wine', view) !== 'locked');
 
   const streak = $derived(progress.streak);
   const freezeFree = $derived(progress.freezeAvailable());
@@ -139,6 +141,7 @@
         <a class="btn ghost" href="/romance">romance the menu</a>
         <a class="btn ghost" href="/allergens">the allergen sweep</a>
         {#if barReachable}<a class="btn ghost" href="/build">build the bar</a>{/if}
+        {#if wineReachable}<a class="btn ghost" href="/prep">prep my bottle</a>{/if}
         <a class="btn" href="/test">take the food test</a>
       </nav>
     </section>

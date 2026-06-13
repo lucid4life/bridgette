@@ -269,5 +269,41 @@ for (const theme of THEMES) {
       await expect(page.getByRole('button', { name: /start the shift check/i })).toBeVisible();
       await scan(page);
     });
+
+    test('axe: prep-my-bottle picker (seeded past Stage 3)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE123);
+      await page.goto('/prep');
+      await expect(page.locator('.pick').first()).toBeVisible(); // full menu fetched
+      await scan(page);
+    });
+
+    test('axe: prep-my-bottle deep-dive + presentation script', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE123);
+      await page.goto('/prep');
+      await page.locator('.pick').first().click();
+      await expect(page.locator('.deep .d-meters')).toBeVisible();
+      await scan(page); // the deep-dive
+      await page.getByRole('button', { name: 'build my script' }).click();
+      await expect(page.locator('.s-beats li').first()).toBeVisible();
+      await scan(page); // the 60-second teleprompter
+    });
+
+    test('axe: prep-my-bottle self-check question + answer', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE123);
+      await page.goto('/prep');
+      await page.locator('.pick').first().click();
+      await page.getByRole('button', { name: 'test myself' }).click();
+      await expect(page.locator('.c-q')).toBeVisible();
+      await scan(page); // the question face
+      await page.getByRole('button', { name: 'show answer' }).click();
+      await expect(page.locator('.c-a')).toBeVisible();
+      await scan(page); // revealed answer + self-rate
+    });
+
+    test('prep is gated: a locked user (no progress) is redirected, never sees pours', async ({ page }) => {
+      await page.goto('/prep'); // no seed → Wine stage locked
+      await expect(page).toHaveURL(/\/$/); // bounced to the path home
+      await expect(page.locator('.pick')).toHaveCount(0);
+    });
   });
 }
