@@ -5,7 +5,9 @@
   // ingredient chunks, allergen chips + the NON-NEGOTIABLE confirm line.
   // Service: the rule + its source. Resolves with oncontinue (advance()).
   import type { TeachContent } from '$lib/journey/items';
+  import { termsFor } from '$lib/journey/pronunciation';
   import { PHOTO_IDS } from './photos';
+  import TermSay from './TermSay.svelte';
 
   let {
     teach,
@@ -99,6 +101,14 @@
         </div>
         <!-- the service guide's romance formula, kept in view at every teach -->
         <p class="t-sayit">say it: “This is our {teach.name}…” + {sayCount} component{sayCount === 1 ? '' : 's'}</p>
+        {#if termsFor(teach.photoId).length > 0}
+          <div class="t-terms">
+            <p class="t-label">say it right</p>
+            <div class="t-chips">
+              {#each termsFor(teach.photoId) as t (t.slug)}<TermSay term={t} />{/each}
+            </div>
+          </div>
+        {/if}
       </div>
 
       {#if teach.allergens.length > 0}
@@ -299,6 +309,7 @@
     font-size: 13.5px;
     line-height: 1.35;
   }
+  .t-terms { margin-top: 10px; }
   .t-sayit {
     margin: 11px 0 0;
     font-size: 12px;

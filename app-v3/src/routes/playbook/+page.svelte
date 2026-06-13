@@ -5,6 +5,8 @@
   import { data } from '$lib/data/index';
   import type { Food } from '$lib/data/types';
   import { HOUSE_NOTES } from '$lib/journey/house-items';
+  import { PRON_TERMS } from '$lib/journey/pronunciation';
+  import TermSay from '$lib/components/session/TermSay.svelte';
 
   // Category chips come from the data in menu order (Snacks → Matinee / Late
   // Night); the long pseudo-category renders short on the chip and the pill.
@@ -89,6 +91,16 @@
     <p class="empty">no dish matches — <a href="/playbook/cram">check the cram sheet</a>.</p>
   {/if}
 
+  <!-- Say it right — the menu's fancy words: tap to hear (the wine-list voice). -->
+  <section class="house on-cream" aria-labelledby="pron-h">
+    <h2 id="pron-h" class="h-eyebrow">say it right</h2>
+    <div class="card light pron-card">
+      <div class="pron-chips">
+        {#each PRON_TERMS as t (t.slug)}<TermSay term={t} />{/each}
+      </div>
+    </div>
+  </section>
+
   <!-- House notes — the kitchen-concept facts the syllabus opens with (the
        "tell me about the restaurant" answers). Read-only reference. -->
   <section class="house on-cream" aria-labelledby="house-h">
@@ -108,6 +120,7 @@
   .pb-head { position: relative; margin-bottom: 4px; }
   .house { margin-top: 34px; }
   .house .hn h3 { text-transform: lowercase; }
+  .pron-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   /* the quiet-but-findable escape hatch to the printable sheet */
   .cram-link {
     display: inline-block; margin: -12px 0 18px; font-size: 14px; font-weight: 700;
