@@ -280,6 +280,22 @@ a { color: inherit; }
   }
 }
 
+/* Phase-5 polish: the cross-fade between screens (driven by onNavigate +
+   document.startViewTransition in +layout). A touch slower than the default for
+   a calmer, brand-true feel. The JS guard already skips reduced-motion; this
+   neutralizes the pseudo-element animations too, belt-and-suspenders. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.32s;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* ---- app shell ---- */
 .app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; min-height: 100dvh; }
 .sidebar {

@@ -25,12 +25,28 @@
   import '@fontsource/hanken-grotesk/latin-700.css';
   import '@fontsource/hanken-grotesk/latin-ext-700.css';
   import { onMount } from 'svelte';
+  import { onNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import PwaToast from '$lib/components/PwaToast.svelte';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import { progress } from '$lib/store/progress.svelte';
 
   let { children } = $props();
+
+  // Phase-5 polish: a soft cross-fade between screens (Path → session and back).
+  // Progressive — only browsers with the View Transition API (Safari 18+, Chrome);
+  // everyone else navigates instantly. Reduced-motion users opt out entirely (the
+  // global reduced-motion CSS would zero it anyway, but skipping the work is cleaner).
+  onNavigate((navigation) => {
+    if (typeof document === 'undefined' || !document.startViewTransition) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    return new Promise((resolve) => {
+      document.startViewTransition(async () => {
+        resolve();
+        await navigation.complete;
+      });
+    });
+  });
 
   // Keep the resident PWA's clock honest: a phone left open overnight must not
   // show yesterday's due counts / lesson allowance / freeze state. wake() ticks

@@ -13,7 +13,8 @@ const ROUTES = [
   '/checkpoint/food-runner', // intro state — the session never starts
   '/romance', // intro state — the drill never starts
   '/test', // intro state — the mock never starts
-  '/allergens' // intro state — the sweep never starts
+  '/allergens', // intro state — the sweep never starts
+  '/burst' // intro state (no introduced items yet — the "nothing to burst" copy)
 ];
 const THEMES = ['light', 'dark'] as const;
 
@@ -42,6 +43,29 @@ function seedMirror(units: string[]): string {
 const SEED_STAGE12 = seedMirror(STAGE12_UNITS);
 const SEED_STAGE123 = seedMirror([...STAGE12_UNITS, ...BAR_UNITS]); // unlocks Wine (Stage 4)
 const SEED_STAGE1234 = seedMirror([...STAGE12_UNITS, ...BAR_UNITS, ...WINE_UNITS]); // unlocks Pairings (Stage 5)
+
+// Burst game: a mirror with a handful of INTRODUCED items (a store record exists)
+// of mixed kinds, so /burst has a deck to play.
+const SEED_BURST = (() => {
+  const rec = {
+    srs: { due: 0, stability: 2, difficulty: 5, elapsed_days: 0, scheduled_days: 1, learning_steps: 0, reps: 1, lapses: 0, state: 1, last_review: 0 },
+    lapses: 0, correct: 1, lastGrade: 'good', introducedDay: 0
+  };
+  const ids = ['dish:french-fries', 'dish:garlic-bread', 'dish:tuna-crudo', 'allergen:tuna-crudo'];
+  const items: Record<string, typeof rec> = {};
+  for (const id of ids) items[id] = rec;
+  return JSON.stringify({
+    schema: 1,
+    items,
+    meta: {
+      streak: { current: 0, lastDay: null, freezeUsedWeekOf: null },
+      settings: { lessonsPerDay: 8 },
+      unitDone: Object.fromEntries(STAGE12_UNITS.map((u) => [u, 'gate'])),
+      dayLog: {},
+      writeSeq: 9999
+    }
+  });
+})();
 
 // Axe must measure the SETTLED state — the card-in entrance fade transiently
 // lowers opacity, which axe samples as a false-positive contrast hit.
@@ -348,6 +372,16 @@ for (const theme of THEMES) {
       await page.goto('/checkpoint/pairings');
       await expect(page.getByRole('button', { name: /start the shift check/i })).toBeVisible();
       await scan(page);
+    });
+
+    test('axe: 60-second burst — intro (seeded introduced items) + playing card', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_BURST);
+      await page.goto('/burst');
+      await expect(page.getByRole('button', { name: 'start the burst' })).toBeVisible();
+      await scan(page); // the populated intro
+      await page.getByRole('button', { name: 'start the burst' }).click();
+      await expect(page.locator('.bcard .b-choice').first()).toBeVisible();
+      await scan(page); // the rapid-fire MC card + HUD
     });
   });
 }

@@ -142,6 +142,7 @@
         <a class="btn ghost" href="/allergens">the allergen sweep</a>
         {#if barReachable}<a class="btn ghost" href="/build">build the bar</a>{/if}
         {#if wineReachable}<a class="btn ghost" href="/prep">prep my bottle</a>{/if}
+        <a class="btn ghost" href="/burst">60-second burst</a>
         <a class="btn" href="/test">take the food test</a>
       </nav>
     </section>

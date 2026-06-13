@@ -36,6 +36,51 @@ Phase-2-shaped — defer until the multi-stage work starts.
   session through teach/reveal steps with near-identical helpers; merge into a
   shared e2e fixture.
 
+## 2026-06-13 — Stages 3-5 closeout (which of the above shipped vs still deferred)
+
+The whole v3 journey is now built (Food → Allergens → Bar → Wine → Pairings +
+prep-my-bottle + the 60-second burst + View Transitions). Status of the deferred
+list above:
+
+**CLOSED (done by the Stages 3-5 multi-stage work):**
+- **itemsForUnit kind-branch generalization** — done. `itemsForUnit` now dispatches
+  by roster map (`UNIT_FOOD/ALLERGEN/BUILD/WINE/PAIRING_IDS`) + authored-array
+  units (`day-one`, `bar-arc`), and `mcFor/cuedFor/freeFor/teachFor` branch by
+  kind for build/wine/pairing.
+- **Checkpoint route parameterization** — done (foundation): `/checkpoint/[stageId]`
+  is stage-generic and serves all five checkpoints.
+- **Multi-stage Path rendering + cross-stage nextUnit** — done (foundation): the
+  Path spine renders every unlocked stage and the continue hops stage boundaries.
+
+**STILL DEFERRED (optional refactors — none blocking; scope grew with the new
+routes, re-logged):**
+- **Session-runner runes scaffold extraction** — the `session/nonce/step/prog/bump`
+  scaffold is now in ~8 routes (unit/review/preshift/checkpoint + the romance/
+  build/burst drills + prep). A shared rune factory would pay off now.
+- **Review/preshift route merge** — unchanged; still one parameterized surface.
+- **localStorage mirror write coalescing** — NOW THE TOP PERF ITEM. `allItems()`
+  spans ~180 path items (57 food + ~41 allergen + 25 bar + 17 wine + 41 pairing)
+  and `writeMirror` still serializes the FULL state on every `recordReview`. At
+  this scale (and with the burst/drills driving rapid reviews) debounce/coalesce
+  the mirror write (idb is already async; the mirror is the sync hot path).
+- **Skeleton CSS dedup** — the `.sk` + `sk-pulse` block is now copy-pasted in ~11
+  files (+ romance/build/prep/burst). Hoist to app.css.
+- **catLabel/price format helper** — `winePrice` (TeachCard) and `glassPrice`
+  (prep.ts) now duplicate the 5oz|8oz|bottle decode; one shared formatter.
+- **e2e teach+reveal drive merge** — the a11y spec now has three near-identical
+  drive-to-teach loops (day-one / wine-bubbles / pair-snacks). Merge into one
+  parameterized fixture.
+
+**New, accepted-for-now (do NOT re-flag without cause):**
+- **Per-kind if-chains** in `mcFor/cuedFor/freeFor/teachFor`, the `/unit` MC
+  branch, the Path meta-label, and `TeachCard` now span 6 kinds. A kind→{noun,
+  accessor} table would flatten them, but the chains are readable and the kind
+  set is now closed (no Stage 6 planned) — leave unless a 6th kind lands.
+- **foodId reuse across dish/allergen/pairing** — a path dish now mints up to 3
+  items (`dish:`/`allergen:`/`pairing:`), so it can appear thrice in the burst/
+  review/shaky lists. Intended (three distinct skills); disambiguated by the unit
+  title in the Progress shaky list and by the distinct prompt in review cards.
+
 ## Accepted by design (do NOT re-flag)
 
 - **Clean-run rank jump learning → locked-in** — ts-fsrs default weights let a
