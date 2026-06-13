@@ -433,6 +433,25 @@ for (const theme of THEMES) {
       await scan(page); // revealed answer + the optional "I wasn't sure" tap + grade bar
     });
 
+    test('axe: progress with a seeded activity heat-strip (§1c history)', async ({ page }) => {
+      // a fortnight of mixed activity so the heat-strip renders filled cells + today marker
+      const today = Math.floor(Date.UTC(2026, 5, 13) / 86_400_000);
+      const dayLog: Record<number, { reviews: number; newItems: number }> = {};
+      const totals = [0, 3, 0, 8, 12, 0, 2, 15, 6, 0, 1, 9, 4, 7];
+      for (let i = 0; i < 14; i++) {
+        const t = totals[i];
+        if (t > 0) dayLog[today - 13 + i] = { reviews: Math.max(0, t - 1), newItems: 1 };
+      }
+      const seed = JSON.stringify({
+        schema: 1, items: {},
+        meta: { streak: { current: 5, lastDay: today, freezeUsedWeekOf: null }, settings: { lessonsPerDay: 8 }, unitDone: {}, dayLog, writeSeq: 9999 }
+      });
+      await page.addInitScript((s) => localStorage.setItem('bb3_progress_v1', s), seed);
+      await page.goto('/progress');
+      await expect(page.locator('.heat .heat-cell').first()).toBeVisible();
+      await scan(page); // the habit card + the activity heat-strip
+    });
+
     test('axe: today with a cram countdown + a shaky-dish plan (seeded)', async ({ page }) => {
       // a future test date + one shaky (lapsed) dish → the countdown + the
       // "N dishes still shaky" re-drill link both render.

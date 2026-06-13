@@ -20,6 +20,7 @@ import {
   loadProgress,
   newToday,
   rankCounts,
+  recentActivity,
   recordReview,
   setExamTarget,
   shakyItems,
@@ -543,5 +544,31 @@ describe('sure/shaky confidence (§0c) + hypercorrection', () => {
       await recordReview(s, id, 'again', T, 'sure');
     }
     expect(confidentMisses(s, 2)).toHaveLength(2);
+  });
+});
+
+describe('recentActivity (§1c history)', () => {
+  it('returns `days` chronological entries ending today, zero-filled', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:a', T); // newItems +1 + reviews? introduce bumps newItems
+    await recordReview(s, 'dish:a', 'good', T); // reviews +1 today
+    const week = recentActivity(s, 7, T);
+    expect(week).toHaveLength(7);
+    expect(week[week.length - 1].day).toBe(TODAY); // today is last
+    expect(week[0].day).toBe(TODAY - 6); // oldest is days-1 back
+    const todayEntry = week[week.length - 1];
+    expect(todayEntry.reviews).toBe(1);
+    expect(todayEntry.newItems).toBe(1);
+    // a day with no activity reports zeros
+    expect(week[0]).toEqual({ day: TODAY - 6, reviews: 0, newItems: 0 });
+  });
+
+  it('reads activity recorded on earlier days at the right slot', async () => {
+    const s = await loadProgress(T);
+    const threeAgo = new Date(T.getTime() - 3 * DAY);
+    await recordReview(s, 'dish:b', 'good', threeAgo);
+    const week = recentActivity(s, 7, T);
+    const slot = week.find((d) => d.day === TODAY - 3)!;
+    expect(slot.reviews).toBe(1);
   });
 });

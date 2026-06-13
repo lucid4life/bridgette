@@ -186,3 +186,18 @@ test('sure/shaky: flagging "I wasn’t sure" records shaky confidence on the dai
     )
     .toContain('shaky');
 });
+
+test('path resume: lands on the current node when it is deep in the spine (seeded stages 1+2)', async ({ page }) => {
+  // stages 1+2 complete → the current node (bar-arc) sits far down the 5-stage spine
+  const units = ['day-one','snacks','snacks-2','small-plates','vegetables','pizza','pasta','mains','dessert','checkpoint-food','allergens-seafood','allergens-nuts','allergens-diet','allergens-common','checkpoint-allergens'];
+  const seed = JSON.stringify({
+    schema: 1, items: {},
+    meta: { streak: { current: 0, lastDay: null, freezeUsedWeekOf: null }, settings: { lessonsPerDay: 8 }, unitDone: Object.fromEntries(units.map((u) => [u, 'gate'])), dayLog: {}, writeSeq: 9999 }
+  });
+  await page.addInitScript((s) => localStorage.setItem('bb3_progress_v1', s), seed);
+  await page.goto('/');
+  const current = page.locator('.path-list .node.current');
+  await expect(current).toBeVisible();
+  // without the land-on-current scroll this node is ~3000px below the fold
+  await expect(current).toBeInViewport();
+});

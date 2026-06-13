@@ -528,6 +528,25 @@ export function rankCounts(state: ProgressState): Record<Rank, number> {
   return counts;
 }
 
+export interface ActivityDay {
+  day: number; // dayNumber
+  reviews: number;
+  newItems: number;
+}
+
+/** §1c history: the last `days` days of activity, chronological (oldest → today
+ * last), each day filled from dayLog (zeros when nothing was studied). The honest
+ * record behind the "study days" count — feeds the activity heat-strip. */
+export function recentActivity(state: ProgressState, days: number, now: Date): ActivityDay[] {
+  const today = dayNumber(now);
+  const out: ActivityDay[] = [];
+  for (let d = today - days + 1; d <= today; d++) {
+    const e = state.meta.dayLog[d];
+    out.push({ day: d, reviews: e?.reviews ?? 0, newItems: e?.newItems ?? 0 });
+  }
+  return out;
+}
+
 /** Confident misses — items whose most recent review was a miss made while the
  * runner felt SURE (the hypercorrection set: a confident error needs the most
  * re-teaching). Most-overdue first, then id. Top `n` if given. */

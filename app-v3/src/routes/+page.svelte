@@ -3,6 +3,7 @@
   // "Food Runner" open with its ten stations on a marigold spine, stages 2–5
   // as locked previews. All gating decisions live in $lib/journey/gating; this
   // page only reads the runes store through the ProgressView adapter.
+  import { tick } from 'svelte';
   import StagePreview from '$lib/components/path/StagePreview.svelte';
   import UnitNode from '$lib/components/path/UnitNode.svelte';
   import {
@@ -79,6 +80,40 @@
     return null;
   });
   const due = $derived(progress.ready ? progress.dueItems().length : 0);
+
+  // §1b resume: land on the current node, not the top of a five-stage spine.
+  // Once the path has rendered, centre the breathing "you are here" node if it's
+  // off-screen — once per mount, reduced-motion-respecting. A fresh user's current
+  // node is the first station (already in view), so nobody gets a jarring jump.
+  // tick() waits for the {:else} spine to paint after progress.ready flips, so the
+  // .node.current element exists before we measure + scroll.
+  let landedFor: string | null = null; // the current-node id we last centred on
+  function landOnCurrent(): void {
+    const el = document.querySelector('.path-list .node.current');
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight || 0;
+    // Instant (not smooth): load-time positioning — a smooth animation races the
+    // font/layout reflow and overshoots. Only intervene when the node is FULLY
+    // out of view (a fresh user's first node is near the top — no jarring jump).
+    if (r.top >= vh || r.bottom <= 0) el.scrollIntoView({ block: 'center', behavior: 'auto' });
+  }
+  $effect(() => {
+    // Centre each NEW current node once (keyed by id, so a cross-stage advance
+    // null→next still lands; same node never re-scrolls).
+    if (!progress.ready || !next || landedFor === next.unit.id) return;
+    landedFor = next.unit.id;
+    // tick() = the spine has painted; then wait for fonts to settle (Oswald/Hanken
+    // reflow shifts every card) — but never hang on it, so a stalled font load
+    // can't suppress the scroll.
+    void tick().then(() => {
+      const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
+      const settled = fonts?.ready
+        ? Promise.race([fonts.ready, new Promise((r) => setTimeout(r, 1200))])
+        : Promise.resolve();
+      void settled.then(() => requestAnimationFrame(landOnCurrent));
+    });
+  });
 </script>
 
 <svelte:head><title>The Path · Bridgette Trainer</title></svelte:head>

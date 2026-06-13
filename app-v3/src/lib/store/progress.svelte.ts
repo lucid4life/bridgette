@@ -15,6 +15,7 @@ import {
   newToday,
   persistMeta,
   rankCounts,
+  recentActivity,
   recordReview,
   setExamTarget,
   shakyItems,
@@ -106,5 +107,10 @@ export const progress = {
     return shakyItems(state, n);
   },
   /** Confident misses (hypercorrection targets) — surfaced first in the warm-up. */
-  confidentMisses: (n?: number) => confidentMisses(state, n)
+  confidentMisses: (n?: number) => confidentMisses(state, n),
+  /** §1c: the last `days` days of activity for the history heat-strip. */
+  recentActivity: (days: number, now: Date = new Date()) => {
+    void clock;
+    return recentActivity(state, days, now);
+  }
 };

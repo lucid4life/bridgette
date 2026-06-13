@@ -64,6 +64,32 @@
   const streak = $derived(progress.streak);
   const freezeFree = $derived(progress.freezeAvailable());
   const studyDays = $derived(Object.keys(progress.state.meta.dayLog).length);
+
+  // §1c history: the last two weeks of activity as a heat-strip — the honest
+  // record behind "study days", oldest → today.
+  const HEAT_DAYS = 14;
+  const activity = $derived(progress.ready ? progress.recentActivity(HEAT_DAYS) : []);
+  const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function dayLabel(day: number): string {
+    // store.dayNumber encodes the LOCAL calendar day as a UTC-midnight instant;
+    // reading it back with getUTC* recovers the exact Y/M/D it was built from
+    // (the inverse of dayNumber — local-in, UTC-out — so this is TZ-stable).
+    const d = new Date(day * 86_400_000);
+    return `${WD[d.getUTCDay()]} ${MO[d.getUTCMonth()]} ${d.getUTCDate()}`;
+  }
+  /** 0 (none) → 3 (heavy): the square's fill level by the day's total activity. */
+  function heatLevel(reviews: number, newItems: number): number {
+    const t = reviews + newItems;
+    return t === 0 ? 0 : t < 5 ? 1 : t < 13 ? 2 : 3;
+  }
+  function heatLabel(a: { day: number; reviews: number; newItems: number }): string {
+    if (a.reviews + a.newItems === 0) return `${dayLabel(a.day)} — no study`;
+    const parts = [];
+    if (a.reviews) parts.push(`${a.reviews} ${a.reviews === 1 ? 'review' : 'reviews'}`);
+    if (a.newItems) parts.push(`${a.newItems} new`);
+    return `${dayLabel(a.day)} — ${parts.join(', ')}`;
+  }
 </script>
 
 <svelte:head><title>Progress · Bridgette Trainer</title></svelte:head>
@@ -167,6 +193,22 @@
         <div><b>{streak.current}</b><span class="stat-l">day streak</span></div>
         <div><b>{studyDays}</b><span class="stat-l">study {studyDays === 1 ? 'day' : 'days'}</span></div>
       </div>
+
+      <!-- §1c: the last two weeks, oldest → today -->
+      <div class="heat-wrap">
+        <p class="heat-cap">last two weeks</p>
+        <ul class="heat" aria-label="Activity over the last two weeks">
+          {#each activity as a, i (a.day)}
+            <li
+              class="heat-cell heat-{heatLevel(a.reviews, a.newItems)}"
+              class:today={i === activity.length - 1}
+              aria-label={heatLabel(a)}
+              title={heatLabel(a)}
+            ></li>
+          {/each}
+        </ul>
+      </div>
+
       <p class="freeze" class:spent={!freezeFree}>
         <Icon name="freeze" size={13} />
         {freezeFree ? '1 freeze left this week' : 'freeze used this week'}
@@ -433,6 +475,50 @@
     text-transform: uppercase;
     color: var(--text-muted);
   }
+  /* ---- §1c activity heat-strip ---- */
+  .heat-wrap {
+    margin-top: 16px;
+  }
+  .heat-cap {
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-label);
+  }
+  .heat {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .heat-cell {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    /* the empty (no-activity) state still reads as a cell — a perceptible
+       boundary so the two-week grid is visible even on quiet days */
+    background: var(--surface-track);
+    border: 1px solid color-mix(in srgb, var(--text-label) 42%, transparent);
+  }
+  .heat-1 {
+    background: color-mix(in srgb, var(--highlight-line) 35%, var(--surface-track));
+  }
+  .heat-2 {
+    background: color-mix(in srgb, var(--highlight-line) 65%, var(--surface-track));
+  }
+  .heat-3 {
+    background: var(--highlight-line);
+  }
+  .heat-cell.today {
+    border-color: var(--accent-text);
+    box-shadow: 0 0 0 1px var(--accent-text);
+  }
+
   .freeze {
     display: inline-flex;
     align-items: center;
