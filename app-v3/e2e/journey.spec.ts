@@ -214,3 +214,24 @@ test('backup: the "your data" card offers export/import and rejects a bad file s
   await expect(card.locator('.data-err')).toBeVisible();
   await expect(page).toHaveURL(/\/progress$/);
 });
+
+test('pour drill: gated until Stage 5, then intro → start → reveal → got it advances', async ({ page }) => {
+  // locked (fresh profile) → bounced off /pour
+  await page.goto('/pour');
+  await expect(page).toHaveURL(/\/$/);
+
+  // seeded past Stage 4 → the drill is reachable
+  const units = ['day-one','snacks','snacks-2','small-plates','vegetables','pizza','pasta','mains','dessert','checkpoint-food','allergens-seafood','allergens-nuts','allergens-diet','allergens-common','checkpoint-allergens','bar-arc','bar-bright','bar-floral','bar-spirit','bar-zero','checkpoint-bar','wine-bubbles','wine-bright','wine-round','wine-light','wine-structured','checkpoint-wine'];
+  const seed = JSON.stringify({ schema: 1, items: {}, meta: { streak: { current: 0, lastDay: null, freezeUsedWeekOf: null }, settings: { lessonsPerDay: 8 }, unitDone: Object.fromEntries(units.map((u) => [u, 'gate'])), dayLog: {}, writeSeq: 9999 } });
+  await page.addInitScript((s) => localStorage.setItem('bb3_progress_v1', s), seed);
+  await page.goto('/pour');
+
+  await expect(page.locator('.s-count')).toHaveCount(0); // deliberate intro
+  await page.getByRole('button', { name: 'start the drill' }).click();
+  await expect(page.locator('.s-count')).toContainText(/^1\s*of/);
+  await expect(page.locator('article.frv')).toBeVisible();
+  await page.locator('.frv .act .btn').click(); // reveal the pour
+  await expect(page.locator('.frv .rv')).toBeVisible();
+  await page.getByRole('button', { name: 'Got it' }).click();
+  await expect(page.locator('.s-count')).toContainText(/^2\s*of/);
+});

@@ -7,6 +7,7 @@ export { createReviewSession } from './review';
 export { createCheckpointSession } from './checkpoint';
 export { createRomanceSession } from './romance';
 export { createBuildSession } from './build';
+export { createPairingDrillSession } from './pairing-drill';
 export {
   createMockTestSession,
   assignMockTypes,

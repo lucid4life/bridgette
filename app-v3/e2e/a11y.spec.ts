@@ -415,6 +415,19 @@ for (const theme of THEMES) {
       await scan(page);
     });
 
+    test('axe: pour-the-room drill intro + revealed pairing (seeded past Stage 4)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE1234);
+      await page.goto('/pour');
+      await expect(page.getByRole('button', { name: 'start the drill' })).toBeVisible();
+      await scan(page); // the deliberate intro (coral room)
+      await page.getByRole('button', { name: 'start the drill' }).click();
+      await expect(page.locator('article.frv')).toBeVisible();
+      await scan(page); // the call-the-pour question face
+      await page.locator('.frv .act .btn').click();
+      await expect(page.locator('.frv .rv')).toBeVisible();
+      await scan(page); // the revealed pour + why + grade bar
+    });
+
     test('axe: the Path with all five tracks coloured (§2, seeded stages 1-4 done)', async ({ page }) => {
       await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE1234);
       await page.goto('/');

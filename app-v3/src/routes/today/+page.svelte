@@ -72,6 +72,8 @@
   const barReachable = $derived(stageStatus('behind-the-bar', view) !== 'locked');
   // Prep-my-bottle surfaces once the Wine stage is reachable (Stages 1-3 done).
   const wineReachable = $derived(stageStatus('wine', view) !== 'locked');
+  // Pour-the-room surfaces once the Pairings stage is reachable (Stages 1-4 done).
+  const pairingsReachable = $derived(stageStatus('pairings', view) !== 'locked');
 
   const streak = $derived(progress.streak);
   const freezeFree = $derived(progress.freezeAvailable());
@@ -193,6 +195,7 @@
         <a class="btn ghost" href="/allergens">the allergen sweep</a>
         {#if barReachable}<a class="btn ghost" href="/build">build the bar</a>{/if}
         {#if wineReachable}<a class="btn ghost" href="/prep">prep my bottle</a>{/if}
+        {#if pairingsReachable}<a class="btn ghost" href="/pour">pour the room</a>{/if}
         <a class="btn ghost" href="/burst">60-second burst</a>
         <a class="btn ghost" href="/test">the food test</a>
         <a class="btn" href="/romance/exam">the romance exam</a>

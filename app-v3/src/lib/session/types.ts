@@ -88,7 +88,7 @@ import type { Rank } from '../srs/scheduler';
  * say-it-aloud dish drill) and 'build' (the make-the-drink bar drill), the two
  * presentation rungs used ONLY by their standalone drills (neither appears on
  * the learn ladder or in reviews/checkpoints). */
-export type Rung = 'mc' | 'cued' | 'free' | 'romance' | 'build';
+export type Rung = 'mc' | 'cued' | 'free' | 'romance' | 'build' | 'pour';
 
 /** MC content flavor on the Test-Prep sessions' quiz steps — picks the
  * accessor (mcFor / allergenMcFor / reverseMcFor). Absent on every step the
@@ -234,6 +234,22 @@ export interface BuildSession extends SessionCore {
   progress(): BuildProgress;
   /** Complete sessions only — throws otherwise. */
   summary(): BuildSummary;
+}
+
+// ------------------------------------------------------------------ pour
+// "Pour the room" — the call-the-pairing say-it drill (Stage 5). Same review/
+// romance/build event/progress/summary semantics (one grade per item, miss
+// events, clearing order), one forced rung 'pour' over pairing:<foodId> items —
+// aliases, not copies, so the surfaces can never drift apart.
+export type PourDeps = ReviewDeps;
+export type PourProgress = ReviewProgress;
+export type PourItemResult = ReviewItemResult;
+export type PourSummary = ReviewSummary;
+
+export interface PourSession extends SessionCore {
+  progress(): PourProgress;
+  /** Complete sessions only — throws otherwise. */
+  summary(): PourSummary;
 }
 
 // -------------------------------------------------------------- allergen
