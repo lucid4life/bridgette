@@ -100,7 +100,9 @@
     position: relative;
     /* ok-green that holds on BOTH canvases: pulled toward the theme's strong ink */
     --ok-ink: color-mix(in srgb, var(--ok) 55%, var(--text-strong));
-    --spine: color-mix(in srgb, var(--highlight-line) 60%, transparent);
+    /* §2: the spine takes the stage's track hue (inherited via [data-track] on
+       the stage section); falls back to the marigold default off the Path. */
+    --spine: color-mix(in srgb, var(--track-line, var(--highlight-line)) 60%, transparent);
   }
   /* the marigold spine: down from my marker centre to my bottom edge…
      (the 18px between stations is the .path-list flex gap, set by the page) */
@@ -145,7 +147,7 @@
     font-weight: 600;
   }
   .node.available .marker {
-    border-color: var(--accent-bright);
+    border-color: var(--track-line, var(--accent-bright)); /* §2: per-track ring */
     color: var(--accent-text);
   }
   .node.started .marker {
@@ -157,7 +159,7 @@
     border-radius: 14px; /* the shift check is a station of a different shape */
   }
   .node.checkpoint:not(.locked) .marker {
-    border-color: var(--highlight-line);
+    border-color: var(--track-line, var(--highlight-line)); /* §2: per-track flag ring */
     color: var(--highlight);
   }
   .node.complete .marker {

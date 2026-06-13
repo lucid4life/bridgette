@@ -7,7 +7,7 @@
   let { stage, n }: { stage: Stage; n: number } = $props();
 </script>
 
-<article class="preview">
+<article class="preview" data-track={stage.track}>
   <header class="p-head">
     <span class="p-n">stage {n} · {stage.track}</span>
     <span class="p-lock"><Icon name="lock" size={15} /><span class="visually-hidden">locked — opens after the stage before it</span></span>
@@ -19,6 +19,8 @@
 <style>
   .preview {
     border: 1px dashed var(--line);
+    /* §2: a faint track-coloured edge hints the track even while locked/muted */
+    border-left: 3px solid color-mix(in srgb, var(--track-line, var(--line)) 45%, transparent);
     border-radius: var(--radius-card);
     padding: 16px 18px;
     background: var(--surface-card-faint);

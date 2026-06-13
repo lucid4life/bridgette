@@ -415,6 +415,14 @@ for (const theme of THEMES) {
       await scan(page);
     });
 
+    test('axe: the Path with all five tracks coloured (§2, seeded stages 1-4 done)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE1234);
+      await page.goto('/');
+      // every track spine renders: food=orange, allergens/wine=teal, bar=marigold, pairings=coral
+      await expect(page.locator('section.stage[data-track="wine"]')).toBeVisible();
+      await scan(page);
+    });
+
     test('axe: daily review reveal with the sure/shaky confidence tap (seeded due items)', async ({ page }) => {
       const rec = {
         srs: { due: 0, stability: 5, difficulty: 5, elapsed_days: 1, scheduled_days: 1, learning_steps: 0, reps: 2, lapses: 0, state: 2, last_review: 0 },

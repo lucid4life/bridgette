@@ -240,6 +240,20 @@ html[data-theme='dark'] {
   --focus-ring: var(--bb-marigold);
 }
 
+/* ---- 3c. per-track Path identity (§2): each stage's spine/markers/meter take
+   its track's brand hue, so scrolling the five-stage Path reads as five distinct
+   tracks. DECORATIVE only (lines, marker rings, meter fills) — never text — so no
+   hue needs an AA-on-cream -deep variant here; the eyebrow keeps its text tokens.
+   Consumers read var(--track-line, var(--highlight-line)) so anything outside a
+   [data-track] scope (or a future track) falls back to the marigold default.
+   Hues: food=orange, allergens+wine=teal (separated by bar), bar=marigold,
+   pairings=coral (the brand print accent — its own hue, no new token). ---- */
+[data-track='food'] { --track-line: var(--bb-orange); }
+[data-track='allergens'] { --track-line: var(--bb-teal); }
+[data-track='bar'] { --track-line: var(--bb-marigold); }
+[data-track='wine'] { --track-line: var(--bb-teal); }
+[data-track='pairings'] { --track-line: var(--bb-coral); }
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {

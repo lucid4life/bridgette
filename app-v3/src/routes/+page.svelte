@@ -173,7 +173,7 @@
     </header>
 
     {#each stageBlocks as block (block.stage.id)}
-      <section class="stage" aria-labelledby="{block.stage.id}-title">
+      <section class="stage" data-track={block.stage.track} aria-labelledby="{block.stage.id}-title">
         <header class="stage-head">
           <p class="h-eyebrow">stage {ORDINAL[block.ordinal]} · the {block.stage.track} track</p>
           <h2 id="{block.stage.id}-title">{block.stage.title}</h2>
@@ -330,7 +330,7 @@
     display: block;
     height: 100%;
     border-radius: inherit;
-    background: var(--highlight-line);
+    background: var(--track-line, var(--highlight-line)); /* §2: per-track meter */
     transition: width 0.5s ease;
   }
   .meter-text {
