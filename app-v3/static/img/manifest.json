@@ -1,6 +1,6 @@
 {
-  "generated": "2026-06-11",
-  "notes": "9 confidently matched images (4 food, 5 cocktail). Sources: bridgettebar.com/gallery-calgary Instagram-feed embed (alt text carries full IG captions; sitemap.xml itself has only interior/logo shots, menu pages are text-only) and @thebridgettebar public profile via web_profile_info API (12 most recent posts; GraphQL pagination returned 400, so deeper history unavailable unauthenticated). Unmatched-by-name shots (interiors, generic cocktails, Shrimp & Calamari, First Wives Club, Sure Thing Mom - not in catalog) were dropped per matching policy.",
+  "generated": "2026-06-13",
+  "notes": "31 images (26 food, 5 cocktail). 5 cocktail + 4 food shots were scraped/name-matched from bridgettebar.com + Instagram (see this file's git history for the original provenance). The remaining 22 food shots are Adrian's own labeled phone photos (repo /Photos), square-cropped to the teach-card band by tools/photo_scrape/build_dish_photos.py.",
   "images": [
     {
       "id": "bread-butter",
@@ -73,6 +73,182 @@
       "source": "instagram",
       "sourceUrl": "https://www.instagram.com/p/DYAXoGcEd5b/",
       "matchedBy": "caption: \"Rolling Canoe / rye. ruby port. ginger. lemon\""
+    },
+    {
+      "id": "bibb-lettuce",
+      "kind": "food",
+      "file": "bibb-lettuce.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Bibb Lettuce.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "burrata-cheese",
+      "kind": "food",
+      "file": "burrata-cheese.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Burrata Cheese.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "chocolate-pot-de-creme",
+      "kind": "food",
+      "file": "chocolate-pot-de-creme.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Chocolate Pot de Cr\u00e8me.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "crispy-smashed-potatoes",
+      "kind": "food",
+      "file": "crispy-smashed-potatoes.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Crispy Smashed Potatoes.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "eggplant-fries",
+      "kind": "food",
+      "file": "eggplant-fries.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Eggplant Fries.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "garlic-bread",
+      "kind": "food",
+      "file": "garlic-bread.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Garlic Bread.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "grilled-octopus-salad",
+      "kind": "food",
+      "file": "grilled-octopus-salad.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Grilled Octopus Salad.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "italian-pork-sausage",
+      "kind": "food",
+      "file": "italian-pork-sausage.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Italian Pork Sausage.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "lamb-sausage",
+      "kind": "food",
+      "file": "lamb-sausage.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Lamb Sausage.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "maple-bbq-rainbow-trout",
+      "kind": "food",
+      "file": "maple-bbq-rainbow-trout.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Maple BBQ Rainbow Trout.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "oysters-1-2-dozen",
+      "kind": "food",
+      "file": "oysters-1-2-dozen.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Oysters 12 dozen.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "ricotta-dumplings",
+      "kind": "food",
+      "file": "ricotta-dumplings.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Ricotta Dumplings.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "roasted-olives",
+      "kind": "food",
+      "file": "roasted-olives.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Roasted Olives.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "shrimp-crab",
+      "kind": "food",
+      "file": "shrimp-crab.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Shimp & Crab Linguini.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "smashed-cucumbers",
+      "kind": "food",
+      "file": "smashed-cucumbers.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Smashed Cucumbers.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "spiced-beet-salad",
+      "kind": "food",
+      "file": "spiced-beet-salad.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Spiced Beet Salad.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "rigatoni",
+      "kind": "food",
+      "file": "rigatoni.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Truffled Mushroom Rigatoni.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "wagyu-beef-carpaccio",
+      "kind": "food",
+      "file": "wagyu-beef-carpaccio.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Wagyu Beef Carpaccio.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "wood-grilled-asparagus",
+      "kind": "food",
+      "file": "wood-grilled-asparagus.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Wood Grilled Asparagus.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "wood-grilled-beef-strip-steak",
+      "kind": "food",
+      "file": "wood-grilled-beef-strip-steak.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Wood Grilled Beef Strip Steak.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "wood-roasted-half-duck",
+      "kind": "food",
+      "file": "wood-roasted-half-duck.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Wood Roasted Half Duck.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "wood-roasted-halibut",
+      "kind": "food",
+      "file": "wood-roasted-halibut.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Adrian's labeled dish photo (Wood Roasted Halibut.jpg), square-cropped to the food-card band"
     }
   ]
 }

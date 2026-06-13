@@ -312,9 +312,11 @@
   }
 
   /* ---- photo band + branded placeholder ---- */
+  /* Square band: the dish photos are overhead shots of round, centred plates —
+     a 1:1 frame shows the whole plate (a 16:9 letterbox sliced it in half). */
   .t-photo {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 1 / 1;
     background: color-mix(in srgb, var(--bb-ink) 6%, var(--bb-paper));
   }
   .t-photo img {
