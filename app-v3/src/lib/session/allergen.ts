@@ -31,8 +31,10 @@ export function createAllergenSession(
   // Caller order is preserved (the caller decides shakiest-first + interleave)
   // and the caller excludes flagless dishes — a missing card here is a bug.
   const queue: QueueEntry[] = items.map((item) => {
-    if (item.kind !== 'dish')
-      throw new Error(`session: allergen item '${item.id}' is not a dish — only dishes carry flags`);
+    // dish items (the mock-test sweep) OR allergen items (the Stage-2 path) —
+    // both carry a foodId, both quiz the flag MC.
+    if (item.kind !== 'dish' && item.kind !== 'allergen')
+      throw new Error(`session: '${item.id}' has no flags — the sweep needs dish/allergen items`);
     if (!hasAllergenMc(item))
       throw new Error(
         `session: '${item.id}' has no allergens card (no flags) — callers exclude these via hasAllergenMc`
