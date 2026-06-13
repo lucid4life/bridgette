@@ -90,6 +90,52 @@
     if (a.newItems) parts.push(`${a.newItems} new`);
     return `${dayLabel(a.day)} — ${parts.join(', ')}`;
   }
+
+  // §1B persistence hardening: durability status, the iOS add-to-home hint
+  // (Safari evicts un-installed PWAs + never fires beforeinstallprompt), and a
+  // reachable backup so a device wipe isn't fatal.
+  let persisted = $state(false);
+  let iosHint = $state(false);
+  let importError = $state(false);
+  $effect(() => {
+    if (!progress.ready) return;
+    void progress.storagePersisted().then((p) => (persisted = p)).catch(() => {});
+    const ua = navigator.userAgent || '';
+    const ios = /iphone|ipad|ipod/i.test(ua);
+    const standalone =
+      (navigator as Navigator & { standalone?: boolean }).standalone === true ||
+      window.matchMedia?.('(display-mode: standalone)').matches === true;
+    iosHint = ios && !standalone;
+  });
+  function downloadBackup(): void {
+    const blob = new Blob([progress.exportProgress()], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bridgette-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+  async function restoreBackup(e: Event): Promise<void> {
+    importError = false;
+    const input = e.currentTarget as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      const ok = await progress.importProgress(await file.text());
+      if (ok) {
+        location.reload(); // re-read the restored state from scratch
+        return;
+      }
+      importError = true; // valid file? no. current progress untouched.
+    } catch {
+      importError = true; // unreadable file (permissions / encoding / I-O)
+    } finally {
+      input.value = ''; // always reset so the same file can be re-picked
+    }
+  }
 </script>
 
 <svelte:head><title>Progress · Bridgette Trainer</title></svelte:head>
@@ -213,6 +259,29 @@
         <Icon name="freeze" size={13} />
         {freezeFree ? '1 freeze left this week' : 'freeze used this week'}
       </p>
+    </section>
+
+    <!-- §1B: your data lives on this device — keep it safe -->
+    <section class="card data">
+      <h2 class="card-h">your data</h2>
+      <p class="meta data-line">
+        Your progress is saved on this device{persisted ? ' and protected from automatic cleanup' : ''}. Download a backup before you switch phones or clear your browser — restoring it brings everything back.
+      </p>
+      {#if iosHint}
+        <p class="ios-hint">
+          <Icon name="shield" size={13} /> On iPhone, add this to your Home Screen (Share → Add to Home Screen) so Safari keeps your progress safe.
+        </p>
+      {/if}
+      <div class="data-actions">
+        <button type="button" class="btn ghost" onclick={downloadBackup}>download a backup</button>
+        <label class="btn ghost file-btn">
+          restore a backup
+          <input type="file" accept="application/json,.json" onchange={restoreBackup} />
+        </label>
+      </div>
+      {#if importError}
+        <p class="data-err" role="alert">That file isn't a valid Bridgette backup — your current progress is untouched.</p>
+      {/if}
     </section>
   </div>
 {/if}
@@ -538,6 +607,56 @@
     color: var(--text-muted);
     background: var(--surface-card-faint);
     border-color: var(--line);
+  }
+
+  /* ---- §1B your data ---- */
+  .data {
+    margin-top: 16px;
+  }
+  .data-line {
+    max-width: 56ch;
+  }
+  .ios-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin: 10px 0 0;
+    padding: 9px 12px;
+    border-radius: var(--radius-card);
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-strong);
+    background: color-mix(in srgb, var(--info) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--info) 35%, transparent);
+  }
+  .data-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .file-btn {
+    position: relative;
+    cursor: pointer;
+  }
+  .file-btn input[type='file'] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  /* the input itself is opacity:0 — surface its keyboard focus on the label
+     button so it isn't an invisible tab stop (WCAG 2.4.7) */
+  .file-btn:focus-within {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .data-err {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--accent-text);
   }
 
   /* skeleton — quiet pulse; the global reduced-motion rule stills it */

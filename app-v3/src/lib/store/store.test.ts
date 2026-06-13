@@ -16,6 +16,8 @@ import {
   daysUntil,
   defaultState,
   dueItems,
+  exportProgress,
+  importProgress,
   introduceItem,
   loadProgress,
   newToday,
@@ -570,5 +572,71 @@ describe('recentActivity (§1c history)', () => {
     const week = recentActivity(s, 7, T);
     const slot = week.find((d) => d.day === TODAY - 3)!;
     expect(slot.reviews).toBe(1);
+  });
+});
+
+describe('backup: export / import (§1B)', () => {
+  it('exportProgress emits valid JSON of the current state', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:a', T);
+    const json = exportProgress(s);
+    const parsed = JSON.parse(json);
+    expect(parsed.schema).toBe(1);
+    expect(parsed.items['dish:a']).toBeDefined();
+  });
+
+  it('import → reload round-trips the backup and it wins the next load', async () => {
+    // build a backup on one "device"
+    const a = await loadProgress(T);
+    await introduceItem(a, 'dish:halibut', T);
+    await recordReview(a, 'dish:halibut', 'good', T);
+    const backup = exportProgress(a);
+
+    // a fresh device (cleared): import the backup, then reload
+    _resetStore();
+    localStorage.clear();
+    vi.stubGlobal('indexedDB', new IDBFactory());
+    const blank = await loadProgress(T);
+    expect(blank.items['dish:halibut']).toBeUndefined();
+    expect(await importProgress(backup)).toBe(true);
+    _resetStore();
+    const restored = await loadProgress(T);
+    expect(restored.items['dish:halibut']).toBeDefined();
+    expect(restored.items['dish:halibut'].correct).toBe(1);
+  });
+
+  it('rejects corrupt JSON and a wrong-schema object without writing', async () => {
+    await loadProgress(T);
+    expect(await importProgress('{not json')).toBe(false);
+    expect(await importProgress(JSON.stringify({ schema: 2, items: {}, meta: {} }))).toBe(false);
+  });
+});
+
+describe('import hardening: deep validation rejects corrupt-but-parseable backups (§1B)', () => {
+  const base = () => ({
+    schema: 1,
+    items: {},
+    meta: { streak: { current: 1, lastDay: 0, freezeUsedWeekOf: null }, settings: { lessonsPerDay: 8 }, unitDone: {}, dayLog: {} }
+  });
+  it('rejects a non-number streak.lastDay', async () => {
+    const bad = base(); (bad.meta.streak as Record<string, unknown>).lastDay = {};
+    expect(await importProgress(JSON.stringify(bad))).toBe(false);
+  });
+  it('rejects a dayLog entry whose counts are not numbers', async () => {
+    const bad = base(); (bad.meta.dayLog as Record<string, unknown>)['7'] = { reviews: 'lots', newItems: 1 };
+    expect(await importProgress(JSON.stringify(bad))).toBe(false);
+  });
+  it('rejects an unsafe item key (__proto__) — JSON.parse makes it an OWN key', async () => {
+    // built as raw JSON so JSON.parse creates an own "__proto__" property (the
+    // real import path); assigning obj['__proto__'] in JS would set the prototype.
+    const rec = JSON.stringify({ srs: newItemSrs(T), lapses: 0, correct: 1, lastGrade: 'good', introducedDay: 0 });
+    const json = `{"schema":1,"items":{"__proto__":${rec}},"meta":{"streak":{"current":1,"lastDay":0,"freezeUsedWeekOf":null},"settings":{"lessonsPerDay":8},"unitDone":{},"dayLog":{}}}`;
+    expect(await importProgress(json)).toBe(false);
+  });
+  it('still accepts a clean, fully-typed backup', async () => {
+    const good = base();
+    (good.meta.dayLog as Record<string, unknown>)['0'] = { reviews: 3, newItems: 1 };
+    (good.items as Record<string, unknown>)['dish:x'] = { srs: newItemSrs(T), lapses: 0, correct: 1, lastGrade: 'good', introducedDay: 0 };
+    expect(await importProgress(JSON.stringify(good))).toBe(true);
   });
 });

@@ -201,3 +201,16 @@ test('path resume: lands on the current node when it is deep in the spine (seede
   // without the land-on-current scroll this node is ~3000px below the fold
   await expect(current).toBeInViewport();
 });
+
+test('backup: the "your data" card offers export/import and rejects a bad file safely', async ({ page }) => {
+  await page.goto('/progress');
+  const card = page.locator('.card.data');
+  await expect(card).toBeVisible();
+  await expect(card.getByRole('button', { name: 'download a backup' })).toBeVisible();
+  // feed an invalid file → a safe error, current progress untouched (no reload)
+  await card.locator('input[type="file"]').setInputFiles({
+    name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{not a backup')
+  });
+  await expect(card.locator('.data-err')).toBeVisible();
+  await expect(page).toHaveURL(/\/progress$/);
+});

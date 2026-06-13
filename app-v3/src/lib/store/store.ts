@@ -151,6 +151,13 @@ function isItemRecord(v: unknown): v is ItemRecord {
   );
 }
 
+const isNumOrNull = (x: unknown): boolean => x === null || typeof x === 'number';
+// Reject keys that would pollute or silently corrupt the items index — matters
+// for the untrusted IMPORT path (a hand-edited backup file); app-written ids are
+// always safe. Empty keys break selectors; the prototype keys are the classic trap.
+const isSafeItemKey = (k: string): boolean =>
+  k.length > 0 && k !== '__proto__' && k !== 'prototype' && k !== 'constructor';
+
 function isProgressState(v: unknown): v is ProgressState {
   if (!v || typeof v !== 'object') return false;
   const s = v as Record<string, unknown>;
@@ -159,13 +166,32 @@ function isProgressState(v: unknown): v is ProgressState {
   const m = s.meta as Record<string, unknown> | null | undefined;
   if (!m || typeof m !== 'object') return false;
   const streak = m.streak as Record<string, unknown> | undefined;
-  if (!streak || typeof streak !== 'object' || typeof streak.current !== 'number') return false;
+  if (
+    !streak ||
+    typeof streak !== 'object' ||
+    typeof streak.current !== 'number' ||
+    !isNumOrNull(streak.lastDay) ||
+    !isNumOrNull(streak.freezeUsedWeekOf)
+  )
+    return false;
   const settings = m.settings as Record<string, unknown> | undefined;
   if (!settings || typeof settings !== 'object' || typeof settings.lessonsPerDay !== 'number')
     return false;
+  if (m.writeSeq !== undefined && typeof m.writeSeq !== 'number') return false;
+  if (m.examTarget !== undefined && typeof m.examTarget !== 'number') return false;
   if (!m.unitDone || typeof m.unitDone !== 'object') return false;
   if (!m.dayLog || typeof m.dayLog !== 'object') return false;
-  return Object.values(s.items).every(isItemRecord);
+  // Every dayLog entry must be a real {reviews, newItems} pair (tickStreak +
+  // the heat-strip do arithmetic on these — a stray object/string would NaN).
+  for (const e of Object.values(m.dayLog as Record<string, unknown>)) {
+    const de = e as Record<string, unknown> | null;
+    if (!de || typeof de !== 'object' || typeof de.reviews !== 'number' || typeof de.newItems !== 'number')
+      return false;
+  }
+  for (const [k, rec] of Object.entries(s.items)) {
+    if (!isSafeItemKey(k) || !isItemRecord(rec)) return false;
+  }
+  return true;
 }
 
 function idbBackend(db: IDBPDatabase<Bb3Db>): Backend {
@@ -330,6 +356,51 @@ async function persist(state: ProgressState, itemId?: string): Promise<void> {
 /** Persist meta + mirror without an item write (for wrapper-level tickStreak calls). */
 export function persistMeta(state: ProgressState): Promise<void> {
   return persist(state);
+}
+
+// --- §1B backup: export / import / persisted ------------------------------
+
+/** Serialize the current progress for a user-facing backup download. */
+export function exportProgress(state: ProgressState): string {
+  return JSON.stringify(plain(state), null, 2);
+}
+
+/**
+ * Restore from a backup file: validate, then make it the WINNING state on the
+ * next load — stamp a writeSeq above whatever's stored, write the mirror (the
+ * sync recovery path), and rewrite idb in full (clearing prior rows). Returns
+ * false on invalid/corrupt input (the caller keeps the current state + warns).
+ * The caller reloads on success so the in-memory store re-reads the import.
+ */
+export async function importProgress(json: string): Promise<boolean> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    return false;
+  }
+  if (!isProgressState(parsed)) return false;
+  const incoming = plain(parsed) as ProgressState;
+  const mirror = readMirror();
+  incoming.meta.writeSeq = Math.max(seqOf(incoming), mirror ? seqOf(mirror) : 0) + 1;
+  writeMirror(incoming);
+  const b = await getBackend();
+  try {
+    await b.writeAll(incoming);
+  } catch {
+    idbStale = true; // idb write failed — the mirror above is the recovery path
+  }
+  return true;
+}
+
+/** Whether the browser granted durable (eviction-exempt) storage. Best-effort. */
+export async function storagePersisted(): Promise<boolean> {
+  try {
+    const nav = globalThis.navigator as Navigator | undefined;
+    return (await nav?.storage?.persisted?.()) ?? false;
+  } catch {
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------------------

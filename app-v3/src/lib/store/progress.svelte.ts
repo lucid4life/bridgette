@@ -9,7 +9,9 @@ import {
   confidentMisses,
   defaultState,
   dueItems,
+  exportProgress,
   freezeAvailable,
+  importProgress,
   introduceItem,
   loadProgress,
   newToday,
@@ -19,6 +21,7 @@ import {
   recordReview,
   setExamTarget,
   shakyItems,
+  storagePersisted,
   tickStreak,
   type Confidence,
   type ProgressState,
@@ -112,5 +115,12 @@ export const progress = {
   recentActivity: (days: number, now: Date = new Date()) => {
     void clock;
     return recentActivity(state, days, now);
-  }
+  },
+  // --- §1B backup / durability ----------------------------------------------
+  /** A JSON backup of the current progress (for download). */
+  exportProgress: () => exportProgress(state),
+  /** Restore from a backup file's text — true on success (caller reloads). */
+  importProgress: (json: string) => importProgress(json),
+  /** Whether the browser granted durable, eviction-exempt storage. */
+  storagePersisted: () => storagePersisted()
 };
