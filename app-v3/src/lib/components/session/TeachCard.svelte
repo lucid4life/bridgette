@@ -5,6 +5,7 @@
   // ingredient chunks, allergen chips + the NON-NEGOTIABLE confirm line.
   // Service: the rule + its source. Resolves with oncontinue (advance()).
   import type { TeachContent } from '$lib/journey/items';
+  import { formatGlassPrice } from '$lib/journey/price';
   import { termsFor } from '$lib/journey/pronunciation';
   import { PHOTO_IDS } from './photos';
   import TermSay from './TermSay.svelte';
@@ -12,13 +13,6 @@
 
   // structure level → filled meter segments (the WSET low/medium/high scale)
   const LMH: Record<string, number> = { low: 1, medium: 2, high: 3 };
-  // wine price "15 | 24 | 75" → "5oz $15 · 8oz $24 · bottle $75" (raw if not 3-part)
-  function winePrice(p: string): string {
-    const parts = p.split('|').map((s) => s.trim());
-    return parts.length === 3
-      ? `5oz $${parts[0]} · 8oz $${parts[1]} · bottle $${parts[2]}`
-      : `$${p}`;
-  }
 
   let {
     teach,
@@ -192,7 +186,7 @@
       <header class="t-head">
         <h3 class="t-name" tabindex="-1" bind:this={hEl}>{teach.name}</h3>
       </header>
-      <p class="t-priceladder">{winePrice(teach.price)}</p>
+      <p class="t-priceladder">{formatGlassPrice(teach.price)}</p>
       <p class="t-cat">
         <span class="pill">{teach.family}</span>
         <span class="pill alt">{teach.climate} climate</span>

@@ -17,6 +17,7 @@ import {
   defaultState,
   dueItems,
   exportProgress,
+  flushMirror,
   importProgress,
   introduceItem,
   loadProgress,
@@ -638,5 +639,81 @@ describe('import hardening: deep validation rejects corrupt-but-parseable backup
     (good.meta.dayLog as Record<string, unknown>)['0'] = { reviews: 3, newItems: 1 };
     (good.items as Record<string, unknown>)['dish:x'] = { srs: newItemSrs(T), lapses: 0, correct: 1, lastGrade: 'good', introducedDay: 0 };
     expect(await importProgress(JSON.stringify(good))).toBe(true);
+  });
+});
+
+describe('mirror-write coalescing (§4)', () => {
+  it('an isolated write still hits the mirror synchronously (leading edge)', async () => {
+    const s = await loadProgress(T); // flushed — no pending debounce
+    const spy = vi.spyOn(localStorage, 'setItem');
+    await introduceItem(s, 'dish:a', T);
+    expect(spy.mock.calls.filter((c) => c[0] === MIRROR_KEY).length).toBe(1);
+    expect(JSON.parse(localStorage.getItem(MIRROR_KEY)!).items['dish:a']).toBeDefined();
+  });
+
+  it('a rapid burst coalesces to zero writes in-window; flushMirror lands the final state', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:lead', T); // leading write arms the debounce window
+    const spy = vi.spyOn(localStorage, 'setItem');
+    for (let i = 0; i < 12; i++) await recordReview(s, 'dish:lead', 'good', T);
+    // every burst write fell inside the open window → coalesced, no mirror write
+    expect(spy.mock.calls.filter((c) => c[0] === MIRROR_KEY).length).toBe(0);
+    flushMirror();
+    expect(spy.mock.calls.filter((c) => c[0] === MIRROR_KEY).length).toBe(1); // one trailing write
+    expect((JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState).items['dish:lead'].correct).toBe(12);
+    // the final state + its latest writeSeq survive a reload
+    _resetStore();
+    const reloaded = await loadProgress(T);
+    expect(reloaded.items['dish:lead'].correct).toBe(12);
+  });
+
+  it('an idb write failure flushes the mirror immediately — the net never lags', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:x', T); // arms the window
+    const put = breakIdbPuts();
+    await recordReview(s, 'dish:x', 'good', T); // coalesced, then idb fails → flush
+    put.mockRestore();
+    expect((JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState).items['dish:x'].correct).toBe(1);
+  });
+
+  it('a FAILED leading-edge write is retried at the trailing flush, not masked (§4 finding 1)', async () => {
+    const s = await loadProgress(T); // flushed — timer null, no pending
+    // The next setItem (the leading write of the introduce below) throws once,
+    // then storage recovers. The old code bumped mirrorWrittenSeq anyway and
+    // dropped the pending state, so flushMirror would write nothing.
+    const setItem = vi.spyOn(localStorage, 'setItem').mockImplementationOnce(() => {
+      throw new Error('quota — transient');
+    });
+    await introduceItem(s, 'dish:retry', T); // leading write throws (swallowed), window armed
+    expect(setItem).toHaveBeenCalledTimes(1); // it was attempted and failed
+    flushMirror(); // must RETRY now that storage recovered
+    expect((JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState).items['dish:retry']).toBeDefined();
+  });
+
+  it('an import advances the mirror seq; a stale lower-seq persist cannot regress it (§4 finding 2)', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:old', T);
+    flushMirror(); // timer null; mirror at the live state's small seq
+    // A backup at a much higher writeSeq → importProgress stamps it higher still.
+    const backup = JSON.stringify({
+      schema: 1,
+      items: { 'dish:imported': { srs: newItemSrs(T), lapses: 0, correct: 5, lastGrade: 'good', introducedDay: 0 } },
+      meta: {
+        streak: { current: 1, lastDay: 0, freezeUsedWeekOf: null },
+        settings: { lessonsPerDay: 8 },
+        unitDone: {},
+        dayLog: {},
+        writeSeq: 50
+      }
+    });
+    expect(await importProgress(backup)).toBe(true);
+    expect((JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState).items['dish:imported']).toBeDefined();
+    // The session keeps mutating the OLD pre-import object (the reload hasn't landed):
+    // its seq is far below the import's, so the leading-edge write must be skipped.
+    await recordReview(s, 'dish:old', 'good', T);
+    const mirror = JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState;
+    expect(mirror.items['dish:imported']).toBeDefined(); // import NOT clobbered
+    expect(mirror.items['dish:old']).toBeUndefined(); // the stale state never reached the mirror
+    expect(mirror.meta.writeSeq).toBeGreaterThanOrEqual(50);
   });
 });

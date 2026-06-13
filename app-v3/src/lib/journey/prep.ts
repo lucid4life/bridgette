@@ -4,6 +4,7 @@
 // 5-question self-check + the 60-second presentation script from its own facts.
 // No SRS, no invented facts — every line is the official record's own field.
 import type { Wine, Bottle, Objection } from '$lib/data';
+import { formatGlassPrice } from './price';
 
 export interface PrepWine {
   id: string;
@@ -32,13 +33,6 @@ export interface PrepWine {
   price: string;
 }
 
-function glassPrice(p: string): string {
-  const parts = p.split('|').map((s) => s.trim());
-  return parts.length === 3
-    ? `5oz $${parts[0]} · 8oz $${parts[1]} · bottle $${parts[2]}`
-    : `$${p}`;
-}
-
 export function glassToPrep(w: Wine): PrepWine {
   return {
     id: w.id,
@@ -63,7 +57,7 @@ export function glassToPrep(w: Wine): PrepWine {
     ...(w.mnemonic ? { mnemonic: w.mnemonic } : {}),
     vegan: w.vegan,
     exclusive: w.exclusive,
-    price: glassPrice(w.price)
+    price: formatGlassPrice(w.price)
   };
 }
 

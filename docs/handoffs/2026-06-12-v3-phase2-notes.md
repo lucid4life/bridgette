@@ -81,6 +81,46 @@ routes, re-logged):**
   review/shaky lists. Intended (three distinct skills); disambiguated by the unit
   title in the Progress shaky list and by the distinct prompt in review cards.
 
+## 2026-06-13 — §4 code-health closeout (memory-and-enhancements session)
+
+**CLOSED (done this session):**
+- **localStorage mirror-write coalescing** — DONE (the TOP perf item). `persist`
+  now coalesces the mirror write with a leading+trailing debounce
+  (`scheduleMirrorWrite`/`flushMirror`, store.ts): an isolated write still hits
+  localStorage synchronously on the leading edge (the iOS net + the "mirror on
+  every write" guarantee are unchanged), but a rapid burst collapses to one
+  trailing write. `flushMirror()` forces it current on idb-failure + on tab
+  pagehide/visibilitychange-hidden (wired in +layout). writeSeq still bumps per
+  persist; idb stays per-persist (the durable store) and wins the next load on
+  its higher seq. 3 store tests (leading-edge immediate, burst-coalesce + flush,
+  idb-fail flush).
+- **catLabel/price format helper** — DONE. `formatGlassPrice` extracted to
+  `$lib/journey/price.ts`; TeachCard + prep.ts both consume it (price.test.ts).
+
+**STILL DEFERRED (optional refactors — none blocking; deliberately not done in
+this marathon session to avoid regression risk in large cross-cutting refactors):**
+- **Session-runner runes scaffold extraction** — the `session/nonce/step/prog/bump`
+  scaffold is now in ~9 routes (unit/review/preshift/checkpoint + romance/build/
+  pour/burst drills + prep + the romance exam). A shared rune factory / component
+  would pay off — but it touches every session surface, so it deserves its own
+  focused pass + full e2e sweep, not a session tail. TOP remaining item.
+- **Review/preshift route merge** — unchanged; one parameterized surface (now both
+  also carry the §0c sure/shaky confidence wiring, so merge after the scaffold).
+- **Skeleton CSS dedup** — the `.sk` + `sk-pulse` block is copy-pasted in ~13 files
+  now (+ romance exam / pour). Hoist to app.css (mechanical, low-risk; defer with
+  the scaffold so the session-card chrome is touched once).
+- **e2e teach+reveal drive merge** — the a11y spec has several near-identical
+  drive-to-teach/reveal loops; one parameterized fixture.
+- **Per-track eyebrow text + continue card (§2 follow-up)** — §2 coloured the
+  decorative spine/markers/meter per track but left the eyebrow text + hero
+  continue card neutral (teal/coral as TEXT need a both-themes -deep/-bright token
+  pair — teal has no dark-theme text token yet). Add `--track-text` theme-aware
+  tokens if the eyebrow should also carry the track hue.
+- **Stage-5 optional faces (§3 follow-up)** — the unused frozen decks
+  pairing-principle (which-lever MC) / cocktail-pairing (dish→cocktail) /
+  wine-dish (reverse pour→dish) are built but not drilled; fold into /burst or a
+  pairings mock wheel.
+
 ## Accepted by design (do NOT re-flag)
 
 - **Clean-run rank jump learning → locked-in** — ts-fsrs default weights let a

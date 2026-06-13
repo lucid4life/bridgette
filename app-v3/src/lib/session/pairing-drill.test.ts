@@ -53,10 +53,11 @@ describe('pour session: miss → again → reteach → retry → clear', () => {
     while (!s.isComplete()) {
       if (guard++ > 200) throw new Error('runaway');
       const step = s.current()!;
-      if (step.type === 'reteach') s.advance();
-      else {
+      if (step.type === 'quiz') {
         expect(step.rung).toBe('pour');
         s.selfGrade(true);
+      } else {
+        s.advance(); // reteach
       }
     }
     // exactly one 'again' (item0) + one 'good' per OTHER item; the recycled item0

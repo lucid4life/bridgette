@@ -10,6 +10,7 @@ import {
   defaultState,
   dueItems,
   exportProgress,
+  flushMirror,
   freezeAvailable,
   importProgress,
   introduceItem,
@@ -122,5 +123,7 @@ export const progress = {
   /** Restore from a backup file's text — true on success (caller reloads). */
   importProgress: (json: string) => importProgress(json),
   /** Whether the browser granted durable, eviction-exempt storage. */
-  storagePersisted: () => storagePersisted()
+  storagePersisted: () => storagePersisted(),
+  /** §4: force any debounced mirror write out now (call when the tab can die). */
+  flushMirror: () => flushMirror()
 };

@@ -56,12 +56,23 @@
     const wake = () => {
       if (document.visibilityState === 'visible') progress.wake();
     };
+    // §4: when the tab backgrounds or closes it may be discarded/evicted before a
+    // debounced mirror write fires — force it out now so the iOS safety net + the
+    // resume state are always current at the last moment we control.
+    const flushOnHide = () => {
+      if (document.visibilityState === 'hidden') progress.flushMirror();
+    };
+    const flush = () => progress.flushMirror();
     document.addEventListener('visibilitychange', wake);
+    document.addEventListener('visibilitychange', flushOnHide);
     window.addEventListener('focus', wake);
+    window.addEventListener('pagehide', flush);
     const timer = setInterval(wake, 60_000);
     return () => {
       document.removeEventListener('visibilitychange', wake);
+      document.removeEventListener('visibilitychange', flushOnHide);
       window.removeEventListener('focus', wake);
+      window.removeEventListener('pagehide', flush);
       clearInterval(timer);
     };
   });

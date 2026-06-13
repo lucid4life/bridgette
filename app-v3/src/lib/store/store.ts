@@ -281,6 +281,7 @@ export function _resetStore(): void {
   backend = null;
   storagePersistRequested = false;
   idbStale = false; // re-derived at the next load's seq comparison
+  cancelPendingMirror(); // drop any debounced write + reset the leading-edge seq
 }
 
 // --- localStorage mirror (best-effort; never throws) -----------------------
@@ -296,12 +297,86 @@ function readMirror(): ProgressState | null {
   }
 }
 
-function writeMirror(state: ProgressState): void {
+/** Returns whether the state actually reached localStorage — the coalescer uses
+ * this to keep mirrorWrittenSeq honest (a swallowed failure must NOT advance it,
+ * or a later flush would skip the retry, masking the loss). */
+function writeMirror(state: ProgressState): boolean {
   try {
-    globalThis.localStorage?.setItem(MIRROR_KEY, JSON.stringify(state));
+    const ls = globalThis.localStorage;
+    if (!ls) return false; // SSR / no storage — optional chaining wouldn't throw, so report it
+    ls.setItem(MIRROR_KEY, JSON.stringify(state));
+    return true;
   } catch {
-    // quota/private-mode/SSR — idb (or memory) still holds the state
+    return false; // quota/private-mode — idb (or memory) still holds the state
   }
+}
+
+// --- §4: mirror-write coalescing --------------------------------------------
+// writeMirror serializes the FULL state; at ~180 path items + the burst/drills
+// driving rapid reviews that's real write amplification. Coalesce with a
+// leading+trailing debounce: write IMMEDIATELY on the leading edge (an isolated
+// write — the common case — still hits localStorage synchronously, so the iOS
+// safety net and the existing "mirror on every write" guarantee are unchanged),
+// then collapse a burst and flush the latest state once at the trailing edge.
+// writeSeq still increments per persist (conflict resolution is untouched), and
+// flushMirror() forces the net current whenever the tab can die (idb failure,
+// pagehide). idb keeps writing per-persist, so during a burst idb is the durable
+// store and the mirror is at most one debounce window behind — and idb always
+// wins the next load on its higher seq.
+const MIRROR_DEBOUNCE_MS = 600;
+let mirrorTimer: ReturnType<typeof setTimeout> | null = null;
+let mirrorPending: ProgressState | null = null;
+let mirrorWrittenSeq = -1;
+
+function scheduleMirrorWrite(state: ProgressState): void {
+  const seq = seqOf(state);
+  // Monotonic guard: never regress the mirror to an older seq. An import advances
+  // mirrorWrittenSeq past the (now-stale) live state; without this, a stray persist
+  // from that old state object would take the leading edge below and clobber the
+  // newer mirror — the same conflict-resolution rule loadProgress uses, enforced
+  // here at the writer so the mirror only ever moves forward within a session.
+  if (seq <= mirrorWrittenSeq) return;
+  if (mirrorTimer === null) {
+    // leading edge — synchronous, like before. Bump the seq marker ONLY on a
+    // confirmed write; a swallowed failure leaves the state pending so the trailing
+    // flush (or the idb-fail flush) retries instead of recording a phantom write.
+    if (writeMirror(state)) {
+      mirrorWrittenSeq = seq;
+      mirrorPending = null;
+    } else {
+      mirrorPending = state;
+    }
+    mirrorTimer = setTimeout(() => {
+      mirrorTimer = null;
+      flushMirror(); // trailing edge — write the latest (or retry a failed leading write)
+    }, MIRROR_DEBOUNCE_MS);
+  } else {
+    mirrorPending = state; // within the window — coalesce (same live ref, latest seq)
+  }
+}
+
+/** Force any pending (coalesced) mirror write out NOW — call before the tab can
+ * die (pagehide), on an idb write failure, and before an import overwrites it. */
+export function flushMirror(): void {
+  if (mirrorTimer !== null) {
+    clearTimeout(mirrorTimer);
+    mirrorTimer = null;
+  }
+  if (mirrorPending && seqOf(mirrorPending) > mirrorWrittenSeq) {
+    if (writeMirror(mirrorPending)) mirrorWrittenSeq = seqOf(mirrorPending);
+  }
+  mirrorPending = null;
+}
+
+/** Drop any pending coalesced write WITHOUT flushing it — so a stale lower-seq
+ * snapshot can't clobber a fresh full rewrite (import / reset). */
+function cancelPendingMirror(): void {
+  if (mirrorTimer !== null) {
+    clearTimeout(mirrorTimer);
+    mirrorTimer = null;
+  }
+  mirrorPending = null;
+  mirrorWrittenSeq = -1;
 }
 
 /** Ask the browser to exempt our storage from eviction — once per session. */
@@ -333,10 +408,11 @@ function seqOf(state: ProgressState): number {
  */
 let idbStale = false;
 
-/** Mirror first (the iOS safety net), then idb. Mutations never throw on persistence. */
+/** Mirror first (the iOS safety net, leading-edge synchronous), then idb.
+ * Mutations never throw on persistence. */
 async function persist(state: ProgressState, itemId?: string): Promise<void> {
   state.meta.writeSeq = seqOf(state) + 1;
-  writeMirror(state);
+  scheduleMirrorWrite(state); // coalesced: immediate on the leading edge, else debounced
   const b = await getBackend();
   try {
     if (idbStale) {
@@ -349,7 +425,8 @@ async function persist(state: ProgressState, itemId?: string): Promise<void> {
       await b.putMeta(plain(state.meta)); // meta (the new seq) LAST — only after the item landed
     }
   } catch {
-    idbStale = true; // idb write failed — the mirror above is the recovery path
+    idbStale = true; // idb write failed — the mirror is now the only recovery path
+    flushMirror(); // …so make it current IMMEDIATELY, don't wait out the debounce
   }
 }
 
@@ -383,7 +460,11 @@ export async function importProgress(json: string): Promise<boolean> {
   const incoming = plain(parsed) as ProgressState;
   const mirror = readMirror();
   incoming.meta.writeSeq = Math.max(seqOf(incoming), mirror ? seqOf(mirror) : 0) + 1;
-  writeMirror(incoming);
+  cancelPendingMirror(); // a stale debounced write must not clobber the import
+  // Record the import's seq in the coalescer so a stale post-import persist (the
+  // session kept mutating the OLD state object before the caller's reload lands)
+  // is caught by scheduleMirrorWrite's monotonic guard and can't regress the mirror.
+  if (writeMirror(incoming)) mirrorWrittenSeq = seqOf(incoming);
   const b = await getBackend();
   try {
     await b.writeAll(incoming);
@@ -430,6 +511,7 @@ export async function loadProgress(now: Date = new Date()): Promise<ProgressStat
   if (state !== idbState) idbStale = true;
   tickStreak(state, now); // a freeze may be spent (or a dead streak zeroed) at open
   await persist(state); // winner → mirror + idb: the losing side is healed here
+  flushMirror(); // leave no pending debounce from load — the next mutation writes immediately
   requestStoragePersist();
   return state;
 }
