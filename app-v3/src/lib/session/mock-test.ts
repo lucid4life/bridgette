@@ -11,6 +11,7 @@ import {
   hasAllergenMc,
   hasModsMc,
   hasNotFlagMc,
+  hasSafeCallMc,
   mcFor,
   modsMcFor,
   notFlagMcFor,
@@ -59,6 +60,7 @@ const VARIANT: Record<Exclude<MockQuestionType, 'romance'>, McVariant> = {
 export interface MockTypePredicates {
   hasAllergen: (item: JourneyItem) => boolean;
   hasMods: (item: JourneyItem) => boolean;
+  hasSafeCall: (item: JourneyItem) => boolean;
 }
 
 /** Pure type assignment: round-robin from `offset`; slots a dish can't serve
@@ -72,8 +74,10 @@ export function assignMockTypes(
 ): MockQuestionType[] {
   return items.map((item, i) => {
     const qtype = MOCK_TYPE_ROTATION[(offset + i) % MOCK_TYPE_ROTATION.length];
-    if ((qtype === 'allergen-mc' || qtype === 'safe-call') && !preds.hasAllergen(item))
-      return 'components-mc';
+    if (qtype === 'allergen-mc' && !preds.hasAllergen(item)) return 'components-mc';
+    // safe-call's REAL precondition is stronger than "has flags" — a rare
+    // first flag can lack carriers/safe picks; the predicate mirrors the mint.
+    if (qtype === 'safe-call' && !preds.hasSafeCall(item)) return 'components-mc';
     if (qtype === 'mods-mc' && !preds.hasMods(item)) return 'components-mc';
     return qtype;
   });
@@ -141,7 +145,11 @@ export function createMockTestSession(
   // deterministic per run for an injected rng, fresh deal per retake otherwise.
   const offset = Math.floor(rng() * MOCK_TYPE_ROTATION.length);
   const order = shuffled(items, rng);
-  const qtypes = assignMockTypes(order, offset, { hasAllergen: hasAllergenMc, hasMods: hasModsMc });
+  const qtypes = assignMockTypes(order, offset, {
+    hasAllergen: hasAllergenMc,
+    hasMods: hasModsMc,
+    hasSafeCall: hasSafeCallMc
+  });
   const queue = order.map((item, i) => ({ item, qtype: qtypes[i] }));
 
   const total = items.length;

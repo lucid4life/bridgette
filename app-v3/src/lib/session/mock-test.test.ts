@@ -17,7 +17,7 @@ import {
   type Step
 } from './index';
 
-const PREDS = { hasAllergen: () => true, hasMods: () => true };
+const PREDS = { hasAllergen: () => true, hasMods: () => true, hasSafeCall: () => true };
 
 // mulberry32 — deterministic rng for tests
 function rng(seed: number): () => number {

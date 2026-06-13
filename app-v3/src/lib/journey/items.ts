@@ -350,17 +350,57 @@ function getSafeUniverse(): Food[] {
 
 /** Dishes that must NEVER be dealt as the 'safe' answer for an allergen the
  * official notes reveal as present-but-unlisted (research gap 1): the ricotta
- * dumpling dough carries eggs off the Allergies line; the duck's turnip relish
- * carries miso (soy) off the line. */
+ * dumpling dough carries eggs AND vodka off the Allergies line; the duck's
+ * turnip relish carries miso (soy); the halibut is itself a fish though only
+ * 'Crustaceans' prints. */
 export const SAFE_CALL_EXCLUSIONS: Record<string, readonly string[]> = {
   eggs: ['ricotta-dumplings'],
-  soy: ['wood-roasted-half-duck']
+  alcohol: ['ricotta-dumplings'],
+  soy: ['wood-roasted-half-duck'],
+  fish: ['wood-roasted-halibut']
 };
+
+/** Seasoning-level allergens the printed lines demonstrably under-report
+ * (e.g. the Farm Chicken's roasted-garlic aioli prints no garlic flag) — we
+ * never mint a SAFE recommendation on these lines. The dish→flag direction
+ * (classic card, sweep) stays: the lines are official; only the inverted
+ * safety claim needs the higher bar. */
+export const SAFE_CALL_BLOCKED_ALLERGENS: ReadonlySet<string> = new Set(['garlic', 'onion']);
+
+/** Contradiction scan: tokens in a dish's own ingredients/description that
+ * reveal an allergen the line may not print. Used to keep a dish out of the
+ * SAFE pool (and out of the NOT-a-flag answer slot) for that allergen. */
+const ALLERGEN_HINT_WORDS: Record<string, readonly string[]> = {
+  alcohol: ['wine', 'vodka', 'armagnac', 'vermouth', 'beer', 'brandy', 'marsala', 'bourbon', 'rum', 'sherry'],
+  garlic: ['garlic', 'aioli'],
+  onion: ['onion', 'shallot'],
+  eggs: ['egg', 'aioli', 'mayo', 'mayonnaise'],
+  fish: ['fish', 'anchovy', 'tonnato', 'tuna', 'trout', 'halibut'],
+  soy: ['soy', 'miso', 'tamari'],
+  shellfish: ['shrimp', 'crab', 'lobster', 'oyster', 'octopus'],
+  sesame: ['sesame', 'tahini'],
+  pork: ['pork', 'bacon', 'salami', 'nduja', 'tallow', 'guanciale']
+};
+
+function mentionsAllergen(f: Food, allergen: string): boolean {
+  const hints = ALLERGEN_HINT_WORDS[allergen];
+  if (!hints) return false;
+  const words = new Set(normWords(`${f.ingredients?.join(' ') ?? ''} ${f.description ?? ''}`));
+  return hints.some((h) => words.has(foldPlural(h)));
+}
 
 const flagsOf = (f: Food): string[] => f.allergens ?? [];
 const carries = (f: Food, allergen: string): boolean => flagsOf(f).includes(allergen);
-const safeFor = (f: Food, allergen: string): boolean =>
-  !carries(f, allergen) && !(SAFE_CALL_EXCLUSIONS[allergen] ?? []).includes(f.id);
+const safeFor = (f: Food, allergen: string): boolean => {
+  if (SAFE_CALL_BLOCKED_ALLERGENS.has(allergen)) return false;
+  if (carries(f, allergen)) return false;
+  if ((SAFE_CALL_EXCLUSIONS[allergen] ?? []).includes(f.id)) return false;
+  if (mentionsAllergen(f, allergen)) return false;
+  // The off-menu Sorbet is certified for ONE lane only: dairy-free. Its
+  // rotating flavour's other allergens are explicitly unknown (official note).
+  if (f.id === 'sorbet' && allergen !== 'dairy') return false;
+  return true;
+};
 
 /** The allergy INVERSION, anchored on a dish (mock-test wheel slot): the asked
  * dish's first flag becomes the guest's allergy, the dish itself is one of the
@@ -389,18 +429,40 @@ function mintSafeCall(anchor: Food, allergen: string): WhyMcContent & { allergen
       answer.name
     ),
     allergen,
-    why: `${answer.name} carries no ${allergen} flag — the other three all do.`,
+    // Precise claim: the LINE is the evidence — the confirm rule still rides.
+    why: `${answer.name} lists no ${allergen} on its Allergies line — the other three do.`,
     confirmLine: data.confirm.allergens
   };
+}
+
+/** The allergen a dish's safe-call would invert: its first NON-BLOCKED flag. */
+function safeCallAllergenFor(f: Food): string | undefined {
+  return flagsOf(f).find((a) => !SAFE_CALL_BLOCKED_ALLERGENS.has(a));
+}
+
+/** True when the dish can mint a safe-call (a non-blocked flag with >=2 other
+ * line-carriers and >=1 genuinely safe dish). The mock-test wheel MUST check
+ * this (not just hasAllergenMc) or a future seasonal dish could throw at
+ * render time. */
+export function hasSafeCallMc(item: JourneyItem): boolean {
+  if (item.kind !== 'dish') return false;
+  const f = foodFor(item);
+  const allergen = safeCallAllergenFor(f);
+  if (!allergen) return false;
+  const universe = getSafeUniverse();
+  return (
+    universe.filter((d) => d.id !== f.id && carries(d, allergen)).length >= 2 &&
+    universe.some((d) => safeFor(d, allergen))
+  );
 }
 
 export function safeCallMcForDish(item: JourneyItem): WhyMcContent & { allergen: string } {
   if (item.kind !== 'dish')
     throw new Error(`journey: safeCallMcFor is dish-only — '${item.id}' has no flags`);
   const f = foodFor(item);
-  const allergen = flagsOf(f)[0];
+  const allergen = safeCallAllergenFor(f);
   if (!allergen)
-    throw new Error(`journey: '${item.id}' has no flags to invert — check hasAllergenMc first`);
+    throw new Error(`journey: '${item.id}' has no safe-call-eligible flag — check hasSafeCallMc`);
   return mintSafeCall(f, allergen);
 }
 
@@ -426,7 +488,18 @@ export function notFlagMcFor(item: JourneyItem): WhyMcContent {
     throw new Error(`journey: notFlagMcFor needs a dish with >=3 flags — '${item.id}'`);
   const f = foodFor(item);
   const flags = flagsOf(f);
-  const nonFlags = getAllergenVocab().filter((a) => !flags.includes(a));
+  // The NOT answer must hold up: never a token off the printed line that the
+  // dish's own ingredients/description contradict (the fennel salami's red
+  // wine would refute "alcohol is NOT a flag"), and never one the official
+  // note reveals as present-but-unlisted.
+  const nonFlags = getAllergenVocab().filter(
+    (a) =>
+      !flags.includes(a) &&
+      !mentionsAllergen(f, a) &&
+      !(SAFE_CALL_EXCLUSIONS[a] ?? []).includes(f.id)
+  );
+  if (nonFlags.length === 0)
+    throw new Error(`journey: no defensible NOT-a-flag answer for '${item.id}'`);
   const answer = nonFlags[hashId(`${item.id}:notflag`) % nonFlags.length];
   const reals = flags.slice(0, 3);
   return {
@@ -453,7 +526,14 @@ export function descriptionMcFor(item: JourneyItem): McContent {
   let excerpt = f.description;
   if (excerpt.length > 220) {
     const cut = excerpt.slice(0, 220);
-    excerpt = cut.slice(0, Math.max(cut.lastIndexOf('. '), 120) + 1);
+    const sentence = cut.lastIndexOf('. ');
+    if (sentence >= 80) {
+      excerpt = cut.slice(0, sentence + 1);
+    } else {
+      // No usable sentence boundary — cut at the last whole word + ellipsis.
+      const space = cut.lastIndexOf(' ');
+      excerpt = `${cut.slice(0, space > 0 ? space : cut.length).trimEnd()}…`;
+    }
   }
   // Cloze the dish's own name words to a blank ("___") — prose substitution
   // ("this dish") garbles runs like "this duck dish" into "this this dish

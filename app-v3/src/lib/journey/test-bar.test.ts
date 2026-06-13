@@ -58,13 +58,41 @@ describe('safe-call MC — the allergy inversion', () => {
     }
   });
 
-  it('a dairy-allergic dessert guest gets the Sorbet (same-category safe pick)', () => {
-    const tatin = DISHES.find((i) => i.foodId === 'apple-tatin')!;
-    const mc = safeCallMcForDish(tatin); // apple-tatin's first flag is gluten…
-    // …so force the dessert+dairy case through the judgment set instead:
-    const dairy = judgmentQuestions().find((q) => q.id === 'judg:safe:dairy');
-    expect(dairy).toBeDefined();
-    expect(mc.choices.length).toBe(4);
+  it('a dairy-allergic dessert guest gets the Sorbet — PINNED (the gap-3 headline)', () => {
+    // chocolate-pot-de-creme's first flag IS dairy, and the Dessert-category
+    // safe pool for dairy is exactly [sorbet] (tatin + banana pie both carry it).
+    const pdc = DISHES.find((i) => i.foodId === 'chocolate-pot-de-creme')!;
+    const mc = safeCallMcForDish(pdc);
+    expect(mc.allergen).toBe('dairy');
+    expect(mc.choices[mc.answerIndex]).toBe('Sorbet');
+  });
+
+  it('the Sorbet is certified for ONE lane: never the safe answer for any non-dairy allergen', () => {
+    for (const item of DISHES) {
+      const mc = safeCallMcForDish(item);
+      if (mc.allergen !== 'dairy') expect(mc.choices[mc.answerIndex]).not.toBe('Sorbet');
+    }
+    for (const q of judgmentQuestions())
+      if (q.id.startsWith('judg:safe:') && q.id !== 'judg:safe:dairy')
+        expect(q.choices[q.answerIndex]).not.toBe('Sorbet');
+  });
+
+  it('seasoning-level allergens (garlic/onion) never mint a safe call; safe answers never CONTAIN the allergen per their own text', () => {
+    for (const item of DISHES) {
+      const mc = safeCallMcForDish(item);
+      expect(['garlic', 'onion']).not.toContain(mc.allergen);
+      // contradiction scan: the safe dish's own words never reveal the allergen
+      const answer = foodByName.get(mc.choices[mc.answerIndex])!;
+      const words = new Set(
+        normWords(`${answer.ingredients?.join(' ') ?? ''} ${answer.description ?? ''}`)
+      );
+      if (mc.allergen === 'eggs')
+        for (const w of ['egg', 'aioli']) expect(words.has(w), `${answer.id} (${mc.allergen})`).toBe(false);
+      if (mc.allergen === 'alcohol')
+        for (const w of ['wine', 'vodka']) expect(words.has(w), `${answer.id} (${mc.allergen})`).toBe(false);
+    }
+    for (const q of judgmentQuestions())
+      expect(q.id).not.toMatch(/^judg:safe:(garlic|onion)$/);
   });
 });
 
@@ -85,6 +113,20 @@ describe('NOT-a-flag MC — full flag-set certification', () => {
     const small = DISHES.find((i) => (foodById.get(i.foodId!)!.allergens ?? []).length < 3);
     if (small) expect(() => notFlagMcFor(small)).toThrow(/>=3 flags/);
   });
+
+  it("the NOT answer never contradicts the dish's own text or notes (fennel salami's red wine, ricotta's eggs/vodka, duck's miso, halibut's fish)", () => {
+    const pinned: Record<string, string[]> = {
+      'fennel-salami': ['alcohol', 'pork'],
+      'ricotta-dumplings': ['eggs', 'alcohol'],
+      'wood-roasted-half-duck': ['soy'],
+      'wood-roasted-halibut': ['fish']
+    };
+    for (const item of DISHES.filter(hasNotFlagMc)) {
+      const banned = pinned[item.foodId!] ?? [];
+      const mc = notFlagMcFor(item);
+      expect(banned, `${item.foodId} NOT-answer`).not.toContain(mc.choices[mc.answerIndex]);
+    }
+  });
 });
 
 describe('description→dish MC — explain-it inverted', () => {
@@ -97,6 +139,11 @@ describe('description→dish MC — explain-it inverted', () => {
       for (const w of normWords(f.name))
         expect(promptWords.has(w), `${item.id}: name word '${w}' leaked into the prompt`).toBe(false);
       expect(new Set(mc.choices).size).toBe(4);
+      // well-formed excerpt: ends at a sentence or a whole-word ellipsis, and
+      // cloze runs never double up
+      const excerpt = mc.prompt.replace(/" — which dish is this\?$/i, '').replace(/^"/, '');
+      expect(excerpt, `${item.id}: mid-word cut`).toMatch(/(\.|…)$/);
+      expect(excerpt).not.toMatch(/___\s+___/);
     }
   });
 });

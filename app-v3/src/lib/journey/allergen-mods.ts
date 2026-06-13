@@ -47,8 +47,11 @@ export const MODS_ROWS: readonly ModsRow[] = [
   row('wood-grilled-beef-strip-steak', 'eggs', 'omit', 'Eggs can come off — ring it with the allergy note.', 'Dairy and eggs can be omitted'),
   row('wood-roasted-halibut', 'gluten', 'cc-only', 'Gluten can come off, BUT warn them: pizza-oven cross-contamination is still possible.', 'Gluten can be removed but cross contamination still possible from pizza oven'),
   row('wood-roasted-halibut', 'dairy', 'cannot', "Dairy can't come out of this one — steer them elsewhere.", 'Crustaceans, dairy, garlic, onion cannot be removed'),
+  // NOTE deliberately absent: a banana-pie/pork row — the official note states
+  // the gelatin is pork-BASED but never states whether it can be omitted, and
+  // this file authors only calls the note makes (the pork FLAG itself is still
+  // drilled by the classic allergen card).
   row('the-banana-pie', 'alcohol', 'omit', 'The alcohol can come off — ring it with the allergy note.', 'Gelatin is pork based; alcohol can be omitted'),
-  row('the-banana-pie', 'pork', 'cannot', "The gelatin is pork-based and can't come out — steer them elsewhere.", 'Gelatin is pork based'),
   row('apple-tatin', 'gluten', 'no-mods', 'No mods on this one — steer them to another dessert.', 'No mods'),
   row('apple-tatin', 'dairy', 'no-mods', 'No mods on this one — the Sorbet is the dairy-free dessert.', 'No mods'),
   row('chocolate-pot-de-creme', 'dairy', 'no-mods', 'No mods on this one — the Sorbet is the dairy-free dessert.', 'No mods'),
