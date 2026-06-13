@@ -2,6 +2,7 @@
   // Task J — /playbook: the lookup-first reference tab. This is what the runner
   // opens BETWEEN tasks on the floor — speed-to-answer over everything: one
   // search box, one chip row, all 42 dishes client-side, zero navigation depth.
+  import { SvelteSet } from 'svelte/reactivity';
   import { data } from '$lib/data/index';
   import type { Food } from '$lib/data/types';
   import { HOUSE_NOTES } from '$lib/journey/house-items';
@@ -18,6 +19,19 @@
 
   let q = $state('');
   let cat = $state('All');
+
+  // "Quiz me" flip mode: cards collapse to name + price, the components/flags
+  // hidden behind a per-card tap — a zero-commitment self-test over the lookup
+  // grid (no SRS, no session). Switching mode or filtering clears reveals.
+  let quizMode = $state(false);
+  const revealed = new SvelteSet<string>();
+  function toggleQuiz(): void {
+    quizMode = !quizMode;
+    revealed.clear();
+  }
+  function reveal(id: string): void {
+    if (quizMode) revealed.add(id);
+  }
 
   // Instant filter — no debounce, $derived recomputes per keystroke over 42
   // records. Matches name / ingredients / description (the three things a
@@ -57,12 +71,24 @@
     {/each}
   </div>
 
-  <p class="meta count" aria-live="polite">{shown.length} of {data.foods.length} dishes</p>
+  <div class="count-row">
+    <p class="meta count" aria-live="polite">{shown.length} of {data.foods.length} dishes</p>
+    <button type="button" class="quiz-toggle" aria-pressed={quizMode} onclick={toggleQuiz}>
+      {quizMode ? 'quiz me: on' : 'quiz me'}
+    </button>
+  </div>
 
   {#if shown.length}
     <div class="grid cols-2 on-cream">
       {#each shown as f (f.id)}
-        <article class="card light dish">
+        {@const hidden = quizMode && !revealed.has(f.id)}
+        <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+        <article
+          class="card light dish"
+          class:quiz={quizMode}
+          class:hidden
+          onclick={() => reveal(f.id)}
+        >
           <h3 class="dish-name">
             <span class="nm">{f.name}</span><span class="dots" aria-hidden="true"
             ></span><span class="price">{price(f.price)}</span>
@@ -71,18 +97,22 @@
             <span class="pill">{catLabel(f.category)}</span>
             {#if f.vegan === true}<span class="pill vegan">vegan</span>{/if}
           </div>
-          {#if f.menu}<p class="menu-line">{f.menu}</p>{/if}
-          {#if f.description}<p class="desc">{f.description}</p>{/if}
-          {#if f.ingredients?.length}
-            <p class="comps"><span class="comps-label">Components:</span>
-              {#each f.ingredients as ing, i}{#if i > 0}{', '}{/if}{#if i < 3}<b>{ing}</b>{:else}{ing}{/if}{/each}</p>
-          {/if}
-          {#if f.allergens?.length}
-            <div class="allergens" role="list" aria-label="Allergens">
-              {#each f.allergens as a (a)}<span class="pill alt" role="listitem">{a}</span>{/each}
-            </div>
-            {#if f.allergenNote}<p class="meta a-note">{f.allergenNote}</p>{/if}
-            <p class="meta confirm">{data.confirm.allergens}</p>
+          {#if hidden}
+            <p class="quiz-prompt">name it, then tap to check →</p>
+          {:else}
+            {#if f.menu}<p class="menu-line">{f.menu}</p>{/if}
+            {#if f.description}<p class="desc">{f.description}</p>{/if}
+            {#if f.ingredients?.length}
+              <p class="comps"><span class="comps-label">Components:</span>
+                {#each f.ingredients as ing, i}{#if i > 0}{', '}{/if}{#if i < 3}<b>{ing}</b>{:else}{ing}{/if}{/each}</p>
+            {/if}
+            {#if f.allergens?.length}
+              <div class="allergens" role="list" aria-label="Allergens">
+                {#each f.allergens as a (a)}<span class="pill alt" role="listitem">{a}</span>{/each}
+              </div>
+              {#if f.allergenNote}<p class="meta a-note">{f.allergenNote}</p>{/if}
+              <p class="meta confirm">{data.confirm.allergens}</p>
+            {/if}
           {/if}
         </article>
       {/each}
@@ -139,7 +169,43 @@
   .search input::placeholder { color: var(--text-muted); opacity: 1; }
 
   .chips { margin-bottom: 10px; }
-  .count { margin: 0 0 12px; }
+  .count { margin: 0; }
+  .count-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 12px;
+  }
+  .quiz-toggle {
+    flex: none;
+    padding: 7px 14px;
+    border-radius: var(--radius-chip);
+    border: 1px solid var(--line);
+    background: var(--surface-card);
+    color: var(--text-body);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: lowercase;
+    min-height: 34px;
+  }
+  .quiz-toggle[aria-pressed='true'] {
+    background: var(--highlight);
+    border-color: var(--highlight);
+    color: var(--highlight-ink);
+  }
+  .dish.quiz {
+    cursor: pointer;
+  }
+  .dish.hidden {
+    background: color-mix(in srgb, var(--bb-ink) 3%, var(--surface-paper));
+  }
+  .quiz-prompt {
+    margin: 10px 0 2px;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--text-muted);
+  }
 
   .dish { display: flex; flex-direction: column; align-items: flex-start; }
   /* name … price — the printed menu's dotted leader */
