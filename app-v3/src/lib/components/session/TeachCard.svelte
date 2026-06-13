@@ -127,6 +127,52 @@
         <button type="button" class="btn" onclick={oncontinue}>{continueLabel}</button>
       </div>
     </div>
+  {:else if teach.kind === 'build'}
+    <div class="t-body">
+      <header class="t-head">
+        <h3 class="t-name" tabindex="-1" bind:this={hEl}>{teach.name}</h3>
+        <span class="t-leader" aria-hidden="true"></span>
+        <span class="t-price">${teach.price}</span>
+      </header>
+      <p class="t-cat"><span class="pill">{teach.category}</span></p>
+
+      {#if teach.description}<p class="t-desc">{teach.description}</p>{/if}
+
+      <div class="t-sec">
+        <p class="t-label">the build</p>
+        <ol class="t-build">
+          {#each teach.build as part (part)}<li>{part}</li>{/each}
+        </ol>
+        {#if teach.flavorTags.length > 0}
+          <div class="t-chips t-flavours">
+            {#each teach.flavorTags as t (t)}<span class="pill">{t}</span>{/each}
+          </div>
+        {/if}
+      </div>
+
+      <div class="t-sec">
+        <p class="t-label">what to say</p>
+        <p class="t-rule t-say">{teach.say}</p>
+        <p class="t-pairs">pairs with: {teach.pair}</p>
+      </div>
+
+      {#if teach.allergens.length > 0}
+        <div class="t-sec">
+          <p class="t-label">allergens</p>
+          <div class="t-chips">
+            {#each teach.allergens as a (a)}<span class="pill alt">{a}</span>{/each}
+          </div>
+          {#if teach.allergenNote}<p class="t-anote">{teach.allergenNote}</p>{/if}
+          <p class="t-confirm">{teach.confirmLine}</p>
+        </div>
+      {:else}
+        <p class="t-confirm t-confirm-solo">{teach.confirmLine}</p>
+      {/if}
+
+      <div class="t-actions">
+        <button type="button" class="btn" onclick={oncontinue}>{continueLabel}</button>
+      </div>
+    </div>
   {:else}
     <div class="t-body t-service">
       <p class="t-kicker">service call</p>
@@ -332,6 +378,55 @@
     font-size: 12.5px;
     font-style: italic;
     color: var(--text-muted);
+  }
+
+  /* ---- build (cocktail) variant ---- */
+  .t-build {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: build;
+    display: grid;
+    gap: 5px;
+  }
+  .t-build li {
+    counter-increment: build;
+    position: relative;
+    padding-left: 26px;
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+  .t-build li::before {
+    content: counter(build);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-content: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--highlight-line) 30%, transparent);
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-label);
+  }
+  .t-flavours {
+    margin-top: 12px;
+  }
+  .t-say {
+    font-style: italic;
+  }
+  .t-pairs {
+    margin: 11px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .t-confirm-solo {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid color-mix(in srgb, var(--highlight-line) 45%, transparent);
   }
 
   /* ---- service variant ---- */

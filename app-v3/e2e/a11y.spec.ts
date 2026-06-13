@@ -17,6 +17,25 @@ const ROUTES = [
 ];
 const THEMES = ['light', 'dark'] as const;
 
+// Seed Stages 1+2 complete (the localStorage mirror, which wins over a fresh,
+// empty idb on its higher writeSeq) so the gated Stage-3 surfaces are reachable.
+const STAGE12_UNITS = [
+  'day-one', 'snacks', 'snacks-2', 'small-plates', 'vegetables', 'pizza', 'pasta', 'mains',
+  'dessert', 'checkpoint-food', 'allergens-seafood', 'allergens-nuts', 'allergens-diet',
+  'allergens-common', 'checkpoint-allergens'
+];
+const SEED_STAGE12 = JSON.stringify({
+  schema: 1,
+  items: {},
+  meta: {
+    streak: { current: 0, lastDay: null, freezeUsedWeekOf: null },
+    settings: { lessonsPerDay: 8 },
+    unitDone: Object.fromEntries(STAGE12_UNITS.map((u) => [u, 'gate'])),
+    dayLog: {},
+    writeSeq: 9999
+  }
+});
+
 // Axe must measure the SETTLED state — the card-in entrance fade transiently
 // lowers opacity, which axe samples as a false-positive contrast hit.
 // Hard-disable all animation/transition before analyzing (a static-a11y measurement).
@@ -160,6 +179,48 @@ for (const theme of THEMES) {
       await page.locator('.fmc .choices .choice').first().click();
       await expect(page.locator('.fmc .fb')).toBeVisible();
       await scan(page); // feedback with the flags teach-back + confirm line
+    });
+
+    test('axe: build drill intro (seeded — the drill is gated to Stage 3)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE12);
+      await page.goto('/build');
+      await expect(page.getByRole('button', { name: 'start the drill' })).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: build drill face + revealed state (with the bar-confirm line)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE12);
+      await page.goto('/build');
+      await page.getByRole('button', { name: 'start the drill' }).click();
+      await expect(page.locator('article.frv')).toBeVisible();
+      await scan(page); // the build-it-out-loud question face
+      await page.locator('.frv .act .btn').click();
+      await expect(page.locator('.frv .rv')).toBeVisible();
+      await scan(page); // the revealed build + grade bar (incl. the standalone bar-confirm line)
+    });
+
+    test('axe: build teach card (cocktail recipe, via reteach)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE12);
+      await page.goto('/build');
+      await page.getByRole('button', { name: 'start the drill' }).click();
+      await page.locator('.frv .act .btn').click(); // reveal
+      await page.getByRole('button', { name: 'Missed it' }).click(); // miss → reteach
+      await expect(page.locator('.tcard')).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: bar unit pretest MC (seeded past Stage 2)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE12);
+      await page.goto('/unit/bar-bright');
+      await expect(page.locator('.fmc .choices .choice').first()).toBeVisible();
+      await scan(page);
+    });
+
+    test('axe: bar checkpoint intro (seeded past Stage 2)', async ({ page }) => {
+      await page.addInitScript((seed) => localStorage.setItem('bb3_progress_v1', seed), SEED_STAGE12);
+      await page.goto('/checkpoint/behind-the-bar');
+      await expect(page.getByRole('button', { name: /start the shift check/i })).toBeVisible();
+      await scan(page);
     });
   });
 }

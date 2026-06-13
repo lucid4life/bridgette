@@ -5,18 +5,31 @@
   // rank distribution · shaky list · the habit (streak/freeze/study days).
   import Icon from '$lib/components/Icon.svelte';
   import { nameOf, stage1ItemById } from '$lib/components/session/util';
-  import { stageProgress } from '$lib/journey/gating';
+  import { stageProgress, stageStatus } from '$lib/journey/gating';
   import { STAGES, unitById } from '$lib/journey/stages';
   import type { Rank } from '$lib/srs/scheduler';
   import { progress } from '$lib/store/progress.svelte';
   import { progressView } from '$lib/store/view';
 
-  const stage1 = STAGES[0];
-  const lockedStages = STAGES.filter((s) => s.locked);
-
   const view = $derived(progressView(progress.state));
-  const sp = $derived(stageProgress(stage1.id, view));
-  const pct = $derived(Math.round(sp.ratio * 100));
+
+  // Per-stage readiness, computed for every stage (locked stages report 0/0).
+  const stageRows = $derived(
+    STAGES.map((s, i) => ({
+      stage: s,
+      n: i + 1,
+      status: stageStatus(s.id, view),
+      sp: stageProgress(s.id, view)
+    }))
+  );
+  const unlocked = $derived(stageRows.filter((r) => r.status !== 'locked'));
+  const lockedStages = $derived(stageRows.filter((r) => r.status === 'locked'));
+  // The ring tracks the stage you're working now: the first unlocked one not yet
+  // complete, else the furthest unlocked (everything done so far).
+  const focus = $derived(
+    unlocked.find((r) => r.status !== 'complete') ?? unlocked[unlocked.length - 1] ?? stageRows[0]
+  );
+  const pct = $derived(Math.round(focus.sp.ratio * 100));
 
   // guest language only — what each rank means on the floor
   const RANK_ROWS: { rank: Rank; label: string }[] = [
@@ -27,14 +40,15 @@
   ];
   const counts = $derived(progress.rankCounts());
   const introduced = $derived(RANK_ROWS.reduce((t, r) => t + counts[r.rank], 0));
-  // bars scale against the whole stage so the dashboard fills as the path does
-  const denom = $derived(Math.max(sp.totalItems, introduced, 1));
+  // bars scale against every unlocked stage's items so the dashboard fills as the path does
+  const totalUnlocked = $derived(unlocked.reduce((t, r) => t + r.sp.totalItems, 0));
+  const denom = $derived(Math.max(totalUnlocked, introduced, 1));
 
   const shaky = $derived.by(() => {
     if (!progress.ready) return [];
     return progress.shakyItems(10).flatMap((id) => {
-      const item = stage1ItemById(id);
-      if (!item) return []; // ids outside Stage 1 — nothing to render in Phase 1
+      const item = stage1ItemById(id); // resolves any introduced item, all stages
+      if (!item) return []; // unresolvable id — nothing to render
       return [
         {
           id,
@@ -71,25 +85,42 @@
     <section class="card ready">
       <div class="ready-grid">
         <div class="ready-text">
-          <p class="kicker">stage one · {stage1.track} track</p>
-          <h2>{stage1.title}</h2>
+          <p class="kicker">stage {focus.n} · {focus.stage.track} track</p>
+          <h2>{focus.stage.title}</h2>
           <p class="ready-line"><b>{pct}%</b> shift-ready</p>
-          <p class="crit">{sp.itemsAtCriterion}/{sp.totalItems} items at criterion</p>
+          <p class="crit">{focus.sp.itemsAtCriterion}/{focus.sp.totalItems} items at criterion</p>
         </div>
         <div class="ring" style:--p={pct} role="img" aria-label="{pct} percent shift-ready">
           <span>{pct}%</span>
         </div>
       </div>
-      <ul class="locked-rows">
-        {#each lockedStages as stage, i (stage.id)}
-          <li>
-            <Icon name="lock" size={13} />
-            <span class="lr-n">stage {i + 2}</span>
-            <span class="lr-t">{stage.title}</span>
-            <span class="visually-hidden">— locked, opens after the stage before it</span>
-          </li>
-        {/each}
-      </ul>
+
+      {#if unlocked.length > 1}
+        <ul class="stage-strip">
+          {#each unlocked as r (r.stage.id)}
+            <li class:isfocus={r.stage.id === focus.stage.id}>
+              <span class="ss-t">{r.stage.title}</span>
+              <span class="ss-bar" aria-hidden="true">
+                <span class="ss-fill" style:width="{Math.round(r.sp.ratio * 100)}%"></span>
+              </span>
+              <b class="ss-pct">{Math.round(r.sp.ratio * 100)}%</b>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+
+      {#if lockedStages.length > 0}
+        <ul class="locked-rows">
+          {#each lockedStages as r (r.stage.id)}
+            <li>
+              <Icon name="lock" size={13} />
+              <span class="lr-n">stage {r.n}</span>
+              <span class="lr-t">{r.stage.title}</span>
+              <span class="visually-hidden">— locked, opens after the stage before it</span>
+            </li>
+          {/each}
+        </ul>
+      {/if}
     </section>
 
     <div class="grid cols-2 mid">
@@ -199,6 +230,54 @@
   .ring {
     margin: 0; /* global .ring centres itself; here it sits flush right */
     flex: none;
+  }
+
+  /* per-stage readiness strip (shown once a second stage is unlocked) */
+  .stage-strip {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 14px 0 0;
+    border-top: 1px solid color-mix(in srgb, var(--highlight-line) 40%, transparent);
+    display: grid;
+    gap: 9px;
+  }
+  .stage-strip li {
+    display: grid;
+    grid-template-columns: minmax(8ch, 14ch) 1fr auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .ss-t {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .stage-strip li.isfocus .ss-t {
+    color: var(--text-strong);
+  }
+  .ss-bar {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--surface-track);
+    overflow: hidden;
+  }
+  .ss-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--highlight-line) 70%, transparent);
+  }
+  .stage-strip li.isfocus .ss-fill {
+    background: var(--highlight-line);
+  }
+  .ss-pct {
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    min-width: 4ch;
+    text-align: right;
   }
 
   .locked-rows {

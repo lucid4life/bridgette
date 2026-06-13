@@ -6,6 +6,7 @@ export { createLearnSession } from './learn';
 export { createReviewSession } from './review';
 export { createCheckpointSession } from './checkpoint';
 export { createRomanceSession } from './romance';
+export { createBuildSession } from './build';
 export {
   createMockTestSession,
   assignMockTypes,

@@ -2,7 +2,7 @@
 // Spec: docs/handoffs/2026-06-11-v3-phase1-spec.md (unit ids/titles locked).
 import { describe, expect, it } from 'vitest';
 import { data } from '$lib/data';
-import { CHECKPOINT_UNIT_ID, STAGES, UNIT_FOOD_IDS, stageById, unitById } from './stages';
+import { CHECKPOINT_UNIT_ID, STAGES, UNIT_BUILD_IDS, UNIT_FOOD_IDS, stageById, unitById } from './stages';
 
 const LESSON_ORDER = [
   'day-one',
@@ -94,7 +94,7 @@ describe('dish roster (UNIT_FOOD_IDS)', () => {
 });
 
 describe('stages 2-5', () => {
-  it('declares allergen-guardian (Stage 2, built), then behind-the-bar/wine/pairings (locked)', () => {
+  it('declares allergen-guardian + behind-the-bar (built), then wine/pairings (locked)', () => {
     expect(STAGES.map((s) => s.id)).toEqual([
       'food-runner',
       'allergen-guardian',
@@ -120,11 +120,80 @@ describe('stages 2-5', () => {
     ]);
     expect(stage2.units.filter((u) => u.kind === 'checkpoint')).toHaveLength(1);
 
-    // Stages 3-5 stay declared-but-locked (no content yet).
-    for (const s of STAGES.slice(2)) {
+    // Stage 3 is built: arc-of-service module + 4 build modules + a checkpoint.
+    const stage3 = STAGES[2];
+    expect(stage3.locked).not.toBe(true);
+    expect(stage3.units.map((u) => u.id)).toEqual([
+      'bar-arc',
+      'bar-bright',
+      'bar-floral',
+      'bar-spirit',
+      'bar-zero',
+      'checkpoint-bar'
+    ]);
+    expect(stage3.units.filter((u) => u.kind === 'checkpoint')).toHaveLength(1);
+    expect(stage3.units.every((u) => !u.blurb.includes('\n'))).toBe(true);
+
+    // Stages 4-5 stay declared-but-locked (no content yet).
+    for (const s of STAGES.slice(3)) {
       expect(s.locked, s.id).toBe(true);
       expect(s.units, s.id).toEqual([]);
     }
+  });
+});
+
+describe('build roster (UNIT_BUILD_IDS)', () => {
+  it('covers the 13 cocktails with official builds exactly once across 4 modules', () => {
+    const all = Object.values(UNIT_BUILD_IDS).flat();
+    expect(all.length).toBe(13);
+    expect(new Set(all).size).toBe(13);
+  });
+
+  it('covers EXACTLY the cocktails that carry an official build (no drink dropped)', () => {
+    const built = data.cocktails
+      .filter((c) => c.build && c.build.length > 0)
+      .map((c) => c.id)
+      .sort();
+    const rostered = Object.values(UNIT_BUILD_IDS).flat().sort();
+    expect(rostered).toEqual(built);
+  });
+
+  it('the arc-of-service module and the checkpoint mint no build rows', () => {
+    expect(UNIT_BUILD_IDS['bar-arc']).toBeUndefined();
+    expect(UNIT_BUILD_IDS['checkpoint-bar']).toBeUndefined();
+  });
+
+  it('every listed cocktailId exists in data.cocktails WITH an official build', () => {
+    for (const cocktailId of Object.values(UNIT_BUILD_IDS).flat()) {
+      const c = data.cocktails.find((x) => x.id === cocktailId);
+      expect(c, cocktailId).toBeDefined();
+      expect(c!.build && c!.build.length, cocktailId).toBeGreaterThan(0);
+    }
+  });
+
+  it('excludes the build-less cocktails (Spicy Sandia, Lovers Mountain)', () => {
+    const all = Object.values(UNIT_BUILD_IDS).flat();
+    expect(all).not.toContain('spicy-sandia');
+    expect(all).not.toContain('lovers-mountain');
+  });
+
+  it('pins the module rosters by flavour family', () => {
+    expect(UNIT_BUILD_IDS['bar-bright']).toEqual([
+      'jr-stargazer',
+      'eat-apres-love',
+      'cruel-summer',
+      'paradise-city'
+    ]);
+    // Order follows the data.cocktails array (floral + bitter categories interleave).
+    expect(UNIT_BUILD_IDS['bar-floral']).toEqual([
+      'heartbreak-mountain',
+      'doctor-jones',
+      'french-export',
+      'white-peach-negroni',
+      'cloud-9'
+    ]);
+    expect(UNIT_BUILD_IDS['bar-spirit']).toEqual(['spaghetti-western', 'rolling-canoe']);
+    expect(UNIT_BUILD_IDS['bar-zero']).toEqual(['short-film', 'sunrise-spritz']);
   });
 });
 

@@ -2,25 +2,29 @@
 // Items are DERIVED from the path data (stages.ts) + authored service items;
 // dish content comes ONLY from official data.foods fields, and the MC rung
 // reuses the frozen v2 engine card (components:<foodId>:pick) as material.
-import { data, type Food } from '$lib/data';
+import { data, type Food, type Cocktail } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import type { Card } from '$lib/data';
 import { mulberry32, shuffled } from '$lib/rng';
 import {
+  BAR_ARC_UNIT_ID,
   DAY_ONE_UNIT_ID,
   STAGES,
   UNIT_ALLERGEN_IDS,
+  UNIT_BUILD_IDS,
   UNIT_FOOD_IDS,
   stageById,
   unitById
 } from './stages';
 import { SERVICE_ITEMS, type ServiceItem } from './service-items';
+import { BAR_SERVICE_ITEMS } from './bar-items';
 import type { JourneyItem } from './types';
 
 // ---------------------------------------------------------------- init guard
 // Never render empty teach content silently: every dish on the path must exist
 // in data.foods WITH its official ingredients. Throws at module init.
 const foodById = new Map<string, Food>(data.foods.map((f) => [f.id, f]));
+const cocktailById = new Map<string, Cocktail>(data.cocktails.map((c) => [c.id, c]));
 
 for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
   const food = foodById.get(foodId);
@@ -29,7 +33,23 @@ for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
     throw new Error(`journey: food '${foodId}' has no official ingredients`);
 }
 
-const serviceById = new Map<string, ServiceItem>(SERVICE_ITEMS.map((s) => [s.id, s]));
+// Same hard-fail philosophy for Stage 3: every cocktail on a build module must
+// exist in data.cocktails WITH an official build (UNIT_BUILD_IDS already excludes
+// build-less drinks, so this also guards the roster and the frozen builds deck
+// from drifting apart).
+for (const cocktailId of Object.values(UNIT_BUILD_IDS).flat()) {
+  const c = cocktailById.get(cocktailId);
+  if (!c) throw new Error(`journey: cocktailId '${cocktailId}' missing from data.cocktails`);
+  if (!c.build || c.build.length === 0)
+    throw new Error(`journey: cocktail '${cocktailId}' has no official build`);
+}
+
+// Day-one + the bar arc-of-service module are the two authored-content units;
+// their items share the service:* namespace + accessors, so the lookup merges
+// both arrays (ids are disjoint by prefix: service:<slug> vs service:bar-<slug>).
+const serviceById = new Map<string, ServiceItem>(
+  [...SERVICE_ITEMS, ...BAR_SERVICE_ITEMS].map((s) => [s.id, s])
+);
 
 // ------------------------------------------------------------ item derivation
 const dishItem = (unitId: string, foodId: string): JourneyItem => ({
@@ -44,6 +64,13 @@ const allergenItem = (unitId: string, foodId: string): JourneyItem => ({
   kind: 'allergen',
   unitId,
   foodId
+});
+
+const buildItem = (unitId: string, cocktailId: string): JourneyItem => ({
+  id: `build:${cocktailId}`,
+  kind: 'build',
+  unitId,
+  cocktailId
 });
 
 // Items are STATIC after module init — memoized so the gating layer (which
@@ -64,10 +91,14 @@ export function itemsForUnit(unitId: string): readonly JourneyItem[] {
     built = stage.units.filter((u) => u.kind === 'lesson').flatMap((u) => itemsForUnit(u.id));
   } else if (unitId === DAY_ONE_UNIT_ID) {
     built = SERVICE_ITEMS.map((s) => ({ id: s.id, kind: 'service', unitId }));
+  } else if (unitId === BAR_ARC_UNIT_ID) {
+    built = BAR_SERVICE_ITEMS.map((s) => ({ id: s.id, kind: 'service', unitId }));
   } else if (UNIT_FOOD_IDS[unitId]) {
     built = UNIT_FOOD_IDS[unitId].map((foodId) => dishItem(unitId, foodId));
   } else if (UNIT_ALLERGEN_IDS[unitId]) {
     built = UNIT_ALLERGEN_IDS[unitId].map((foodId) => allergenItem(unitId, foodId));
+  } else if (UNIT_BUILD_IDS[unitId]) {
+    built = UNIT_BUILD_IDS[unitId].map((cocktailId) => buildItem(unitId, cocktailId));
   } else {
     throw new Error(`journey: unit '${unitId}' has no item roster`);
   }
@@ -100,9 +131,12 @@ export function pathCategories(): string[] {
   return pathCats;
 }
 
-/** The dish category of a dish- or allergen-kind item (both carry a foodId). */
+/** The menu category of a food-backed item (dish/allergen/pairing → data.foods)
+ * or a build item (→ data.cocktails). For drill interleaving + category chips. */
 export function categoryOf(item: JourneyItem): string {
-  return item.foodId ? (foodById.get(item.foodId)?.category ?? '') : '';
+  if (item.foodId) return foodById.get(item.foodId)?.category ?? '';
+  if (item.cocktailId) return cocktailById.get(item.cocktailId)?.category ?? '';
+  return '';
 }
 
 /** Filter food-backed items (dish or allergen) to a single menu category
@@ -170,7 +204,27 @@ export interface ServiceTeach {
   body: string;
   why: string;
 }
-export type TeachContent = DishTeach | ServiceTeach;
+/** Stage 3 — the cocktail teach surface: the official build + how it drinks +
+ * what to say setting it down, with the bar-confirm safety line. */
+export interface BuildTeach {
+  kind: 'build';
+  name: string;
+  price: string;
+  category: string;
+  description?: string;
+  /** official build, syllabus order */
+  build: string[];
+  flavorTags: string[];
+  /** the dishes this drink pours alongside (cocktail.pair, comma-joined string) */
+  pair: string;
+  /** the floor-ready "what to say" line */
+  say: string;
+  allergens: string[];
+  allergenNote?: string;
+  /** safety framing is non-negotiable on any surface that shows allergens */
+  confirmLine: string;
+}
+export type TeachContent = DishTeach | ServiceTeach | BuildTeach;
 
 function foodFor(item: JourneyItem): Food {
   const food = item.foodId ? foodById.get(item.foodId) : undefined;
@@ -183,6 +237,18 @@ function serviceFor(item: JourneyItem): ServiceItem {
   if (!s) throw new Error(`journey: item '${item.id}' has no authored service content`);
   return s;
 }
+
+function cocktailFor(item: JourneyItem): Cocktail {
+  const c = item.cocktailId ? cocktailById.get(item.cocktailId) : undefined;
+  if (!c) throw new Error(`journey: item '${item.id}' has no cocktail record`);
+  return c;
+}
+
+/** The standing bar-confirm safety line — drinks are confirmed with the BAR, not
+ * the kitchen (mirrors data.confirm.allergens' phrasing for the bar counter; the
+ * frozen builds/allergens engine cards already end every flagged drink with the
+ * equivalent rule). Shown on every build reveal. */
+export const BAR_CONFIRM = 'Always confirm allergens with the bar. Never guess — this is safety-critical.';
 
 // Deterministic per-item shuffle: the answer's position is stable for a given
 // item id but varies across items (no always-first tell from the engine card,
@@ -209,6 +275,26 @@ function componentsCardFor(foodId: string): Card {
   return card;
 }
 
+// The frozen v2 builds deck (Stage 3 — cocktail rows only), indexed by cocktailId.
+// Reused as MC material only — exactly how dish:* reuses the components deck. Only
+// cocktails with an official build mint a card (Spicy Sandia / Lovers Mountain mint
+// none — callers guard with hasBuildDeck).
+let buildsCards: Map<string, Card> | null = null;
+function buildsCardFor(cocktailId: string): Card | undefined {
+  if (!buildsCards) {
+    const deck = generateDeck('builds', data) as Card[];
+    buildsCards = new Map(deck.map((c) => [c.sourceId!, c]));
+  }
+  return buildsCards.get(cocktailId);
+}
+
+/** True when the cocktail has a frozen builds card to quiz from (a drink with no
+ * official build mints none). Mirrors hasAllergenMc — rosters already exclude the
+ * build-less drinks, this is the belt-and-suspenders guard for callers. */
+export function hasBuildDeck(item: JourneyItem): boolean {
+  return item.kind === 'build' && !!item.cocktailId && !!buildsCardFor(item.cocktailId);
+}
+
 function toMc(itemId: string, prompt: string, choices: readonly string[], answer: string): McContent {
   const order = shuffled(choices, mulberry32(hashId(itemId)));
   const answerIndex = order.indexOf(answer);
@@ -224,8 +310,43 @@ export function mcFor(item: JourneyItem): McContent {
   // Allergen items (Stage 2) grade on the flag MC; the learn session reads this
   // for correctness, so the dispatch has to be here, not just in the route.
   if (item.kind === 'allergen') return allergenMcFor(item);
+  // Build items (Stage 3) grade on the builds MC — same dispatch-in-mcFor rule.
+  if (item.kind === 'build') return buildMcFor(item);
   const card = componentsCardFor(foodFor(item).id);
   return toMc(item.id, card.prompt, card.choices!, card.answer);
+}
+
+export interface BuildMcContent extends McContent {
+  /** the official build (+ allergen line when flagged) for the reveal teach-back */
+  why: string;
+  /** safety framing is non-negotiable on any surface that shows a drink */
+  confirmLine: string;
+}
+
+/** The cocktail build MC (Stage 3 path + bar checkpoint). Question/choices come
+ * from the frozen builds card ("Which of these is IN the X?"); the reveal teaches
+ * the full official build and, when the drink is flagged, its allergens + the
+ * standing bar-confirm line. Both the path unit and the checkpoint grade on this. */
+export function buildMcFor(item: JourneyItem): BuildMcContent {
+  if (item.kind !== 'build')
+    throw new Error(`journey: buildMcFor needs a build item — '${item.id}' is not a cocktail build`);
+  const c = cocktailFor(item);
+  const card = buildsCardFor(c.id);
+  if (!card)
+    throw new Error(
+      `journey: '${item.id}' has no builds engine card (no official build) — check hasBuildDeck first`
+    );
+  const flags = c.allergens ?? [];
+  let why = `Official build: ${c.build!.join(', ')}.`;
+  if (flags.length > 0) {
+    const note = c.allergenNote ? ` ${c.allergenNote}${/[.!?]$/.test(c.allergenNote) ? '' : '.'}` : '';
+    why += ` Contains ${flags.join(', ')}.${note}`;
+  }
+  return {
+    ...toMc(`${item.id}:build`, card.prompt, card.choices!, card.answer),
+    why,
+    confirmLine: BAR_CONFIRM
+  };
 }
 
 // ----------------------------------------------------- Test-Prep accessors
@@ -724,10 +845,33 @@ function allergenFraming(f: Food): Required<Pick<AllergenFraming, 'allergens' | 
   };
 }
 
+/** The cocktail (Stage 3) reveal framing — flags only when present, always the
+ * bar-confirm line. Mixed into cued/free build content for FlashReveal. */
+function barFraming(c: Cocktail): AllergenFraming {
+  return {
+    ...(c.allergens && c.allergens.length ? { allergens: c.allergens } : {}),
+    ...(c.allergenNote ? { allergenNote: c.allergenNote } : {}),
+    confirmLine: BAR_CONFIRM
+  };
+}
+
 export function cuedFor(item: JourneyItem): CuedContent {
   if (item.kind === 'service') {
     const s = serviceFor(item);
     return { prompt: s.prompt, hint: s.hint, answer: s.answer };
+  }
+  // Build items (Stage 3): cued BUILD recall — name the build with part-count +
+  // first letters. Must come before foodFor (a build item carries no foodId).
+  if (item.kind === 'build') {
+    const c = cocktailFor(item);
+    const build = c.build!;
+    const letters = build.map((b) => b[0].toUpperCase()).join(' · ');
+    return {
+      prompt: `Name the build of the ${c.name}.`,
+      hint: `${build.length} part${build.length === 1 ? '' : 's'} — ${letters}`,
+      answer: build.join(', '),
+      ...barFraming(c)
+    };
   }
   const f = foodFor(item);
   // Allergen items (Stage 2): cued FLAG recall, not component recall.
@@ -755,6 +899,16 @@ export function freeFor(item: JourneyItem): FreeContent {
   if (item.kind === 'service') {
     const s = serviceFor(item);
     return { prompt: s.prompt, answer: s.answer };
+  }
+  // Build items (Stage 3): free BUILD recall — build it from memory, cold.
+  if (item.kind === 'build') {
+    const c = cocktailFor(item);
+    return {
+      prompt: `Build the ${c.name} from memory.`,
+      answer: c.build!.join(', '),
+      ...(c.description ? { detail: c.description } : {}),
+      ...barFraming(c)
+    };
   }
   const f = foodFor(item);
   // Allergen items (Stage 2): free FLAG recall — name every flag, cold.
@@ -828,6 +982,24 @@ export function teachFor(item: JourneyItem): TeachContent {
   if (item.kind === 'service') {
     const s = serviceFor(item);
     return { kind: 'service', name: s.title, body: s.answer, why: s.why };
+  }
+  // Build items (Stage 3): the cocktail teach surface. Before foodFor (no foodId).
+  if (item.kind === 'build') {
+    const c = cocktailFor(item);
+    return {
+      kind: 'build',
+      name: c.name,
+      price: c.price,
+      category: c.category,
+      ...(c.description ? { description: c.description } : {}),
+      build: c.build!.slice(),
+      flavorTags: c.flavorTags ?? [],
+      pair: c.pair,
+      say: c.say,
+      allergens: c.allergens ?? [],
+      ...(c.allergenNote ? { allergenNote: c.allergenNote } : {}),
+      confirmLine: BAR_CONFIRM
+    };
   }
   const f = foodFor(item);
   return {

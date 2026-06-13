@@ -42,7 +42,9 @@
             ? `${total} service calls`
             : kind === 'allergen'
               ? `${total} dishes · flags`
-              : `${total} dishes`,
+              : kind === 'build'
+                ? `${total} ${total === 1 ? 'cocktail' : 'cocktails'} · builds`
+                : `${total} dishes`,
         href: unitHref(stage, unit)
       };
     });

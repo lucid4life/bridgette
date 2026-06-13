@@ -136,7 +136,7 @@
         { label: 'pass bar', value: `${passPct}%` }
       ]}
       note={summary.passed
-        ? 'the whole food stage is marked done behind you — reviews keep it warm from here.'
+        ? 'the whole stage is marked done behind you — reviews keep it warm from here.'
         : `you need ${passPct}% — closer than it feels. the units below are where the points went.`}
       missesTitle={summary.passed ? 'worth a revisit anyway' : 'where the misses live'}
       misses={missRows}
@@ -161,7 +161,7 @@
         <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="shift check — service call" ongrade={grade} note="grade it like a chef is listening" />
       {:else if step.type === 'quiz' && step.rung === 'free'}
         {@const f = freeFor(step.item)}
-        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shift check — dish, cold" ongrade={grade} note="grade it like a chef is listening" />
+        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shift check — cold" ongrade={grade} note="grade it like a chef is listening" />
       {:else if step.type === 'quiz' || step.type === 'pretest-mc'}
         <!-- the engine never serves MC here; rendered for step-matrix totality -->
         <FlashMc mc={mcFor(step.item)} onanswer={answer} oncontinue={continueStep} />

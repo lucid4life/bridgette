@@ -170,6 +170,53 @@ describe('stageStatus', () => {
   });
 });
 
+// Stage 3 unlocks sequentially behind Stages 1+2, then runs self-paced like the rest.
+const BAR_LESSONS = ['bar-arc', 'bar-bright', 'bar-floral', 'bar-spirit', 'bar-zero'];
+const STAGE12_DONE = [
+  ...LESSONS,
+  'checkpoint-food',
+  'allergens-seafood',
+  'allergens-nuts',
+  'allergens-diet',
+  'allergens-common',
+  'checkpoint-allergens'
+];
+
+describe('Stage 3 (behind-the-bar) gating', () => {
+  it('stays locked until allergen-guardian is complete, then unlocks', () => {
+    expect(stageStatus('behind-the-bar', view())).toBe('locked');
+    // Stage 1 done but Stage 2 not → still locked (sequential)
+    expect(stageStatus('behind-the-bar', doneUnits(...LESSONS, 'checkpoint-food'))).toBe('locked');
+    // Stages 1+2 done → available
+    expect(stageStatus('behind-the-bar', doneUnits(...STAGE12_DONE))).toBe('available');
+  });
+
+  it('once unlocked, every bar lesson module is available; the checkpoint is locked', () => {
+    const v = doneUnits(...STAGE12_DONE);
+    for (const u of BAR_LESSONS) expect(unitStatus(u, v), u).toBe('available');
+    expect(unitStatus('checkpoint-bar', v)).toBe('locked');
+  });
+
+  it('the bar checkpoint opens only when all 5 bar lessons are complete', () => {
+    expect(
+      unitStatus('checkpoint-bar', doneUnits(...STAGE12_DONE, ...BAR_LESSONS.slice(0, 4)))
+    ).toBe('locked');
+    expect(unitStatus('checkpoint-bar', doneUnits(...STAGE12_DONE, ...BAR_LESSONS))).toBe('available');
+  });
+
+  it('test-out is offered for bar units once the stage is unlocked, never before', () => {
+    expect(testOutAvailable('bar-bright', view())).toBe(false); // stage still locked
+    expect(testOutAvailable('bar-bright', doneUnits(...STAGE12_DONE))).toBe(true);
+    expect(testOutAvailable('behind-the-bar', doneUnits(...STAGE12_DONE))).toBe(true);
+  });
+
+  it('completing the whole bar stage marks it complete; wine stays locked (no content yet)', () => {
+    const barDone = doneUnits(...STAGE12_DONE, ...BAR_LESSONS, 'checkpoint-bar');
+    expect(stageStatus('behind-the-bar', barDone)).toBe('complete');
+    expect(stageStatus('wine', barDone)).toBe('locked');
+  });
+});
+
 describe('unitProgress', () => {
   it('counts items at criterion over the unit total', () => {
     expect(unitProgress('snacks', view())).toEqual({ studied: 0, total: 4, ratio: 0 });

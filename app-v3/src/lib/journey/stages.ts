@@ -8,6 +8,8 @@ import type { Stage, Unit } from './types';
 export const DAY_ONE_UNIT_ID = 'day-one';
 export const CHECKPOINT_UNIT_ID = 'checkpoint-food';
 export const ALLERGEN_CHECKPOINT_UNIT_ID = 'checkpoint-allergens';
+export const BAR_ARC_UNIT_ID = 'bar-arc';
+export const BAR_CHECKPOINT_UNIT_ID = 'checkpoint-bar';
 
 /** Dish rosters per lesson unit (day-one and the checkpoint mint no dish rows). */
 export const UNIT_FOOD_IDS: Record<string, readonly string[]> = {
@@ -86,6 +88,41 @@ export const UNIT_ALLERGEN_IDS: Record<string, readonly string[]> = (() => {
   return out;
 })();
 
+// ---- Stage 3 (Behind the Bar) by-flavour-family rosters ----
+// Each cocktail with an official build lands in ONE module by its menu category,
+// grouped into four flavour rooms (non-overlapping). Cocktails with NO official
+// build (Spicy Sandia, Lovers Mountain — newer than the Jan-2025 syllabus) are
+// excluded from build-recall outright (logged: open-questions item 18); they
+// still live in the Playbook + pairing material.
+const BAR_MODULE_OF_CATEGORY: Record<string, string> = {
+  'Bright, spicy, smoky': 'bar-bright',
+  'Fruity, tropical, sparkling': 'bar-bright',
+  'Floral, tea, citrus': 'bar-floral',
+  'Bitter, aperitivo, amaro': 'bar-floral',
+  'Rich, spirit-forward': 'bar-spirit',
+  'Zero-proof cocktail': 'bar-zero'
+};
+
+/** cocktailId rosters per Stage-3 build module, computed once from the official
+ * builds: a cocktail with no `build[]` mints no build-recall item. */
+export const UNIT_BUILD_IDS: Record<string, readonly string[]> = (() => {
+  const out: Record<string, string[]> = {
+    'bar-bright': [], 'bar-floral': [], 'bar-spirit': [], 'bar-zero': []
+  };
+  for (const c of data.cocktails) {
+    if (!c.build || c.build.length === 0) continue; // no official build → no build item
+    const unit = BAR_MODULE_OF_CATEGORY[c.category];
+    // Never silently drop a drillable cocktail: a built drink in an unmapped
+    // category is a content error (a new flavour family was added) — fail loud.
+    if (!unit)
+      throw new Error(
+        `stages: cocktail '${c.id}' has an official build but category '${c.category}' maps to no bar module`
+      );
+    out[unit].push(c.id);
+  }
+  return out;
+})();
+
 const lesson = (id: string, title: string, blurb: string): Unit => ({
   id,
   title,
@@ -150,8 +187,19 @@ export const STAGES: Stage[] = [
     title: 'Behind the Bar',
     track: 'bar',
     blurb: 'the cocktail list — builds, flavours, and what to say setting one down',
-    units: [],
-    locked: true
+    units: [
+      lesson(BAR_ARC_UNIT_ID, 'Running drinks', 'the arc of bar service — first in first out, romance at the seat, how a glass is handled'),
+      lesson('bar-bright', 'Bright & fruity', 'the agave-bright and tropical-sparkling crowd-pleasers — builds you reach for most'),
+      lesson('bar-floral', 'Floral & bitter', 'the tea-and-citrus aromatics and the amaro/aperitivo lane — builds and who they suit'),
+      lesson('bar-spirit', 'Spirit-forward', 'the rich, after-dinner pours — bourbon, cognac, rye and what carries them'),
+      lesson('bar-zero', 'Zero-proof', 'the no-alcohol cocktails — the call for a guest who is not drinking tonight'),
+      {
+        id: BAR_CHECKPOINT_UNIT_ID,
+        title: 'Shift check: Bar',
+        blurb: 'every build plus the floor ritual, cold — like a real bar shift',
+        kind: 'checkpoint'
+      }
+    ]
   },
   {
     id: 'wine',

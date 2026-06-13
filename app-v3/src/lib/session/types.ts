@@ -84,10 +84,11 @@
 import type { JourneyItem } from '../journey/types';
 import type { Rank } from '../srs/scheduler';
 
-/** Prompt-fading ladder rungs in climbing order — plus 'romance', the
- * say-it-aloud presentation rung used ONLY by the Romance drill (it never
- * appears on the learn ladder or in reviews/checkpoints). */
-export type Rung = 'mc' | 'cued' | 'free' | 'romance';
+/** Prompt-fading ladder rungs in climbing order — plus 'romance' (the
+ * say-it-aloud dish drill) and 'build' (the make-the-drink bar drill), the two
+ * presentation rungs used ONLY by their standalone drills (neither appears on
+ * the learn ladder or in reviews/checkpoints). */
+export type Rung = 'mc' | 'cued' | 'free' | 'romance' | 'build';
 
 /** MC content flavor on the Test-Prep sessions' quiz steps — picks the
  * accessor (mcFor / allergenMcFor / reverseMcFor). Absent on every step the
@@ -217,6 +218,22 @@ export interface RomanceSession extends SessionCore {
   progress(): RomanceProgress;
   /** Complete sessions only — throws otherwise. */
   summary(): RomanceSummary;
+}
+
+// ----------------------------------------------------------------- build
+// "Build the bar" — the make-the-drink say-it drill (Stage 3). Same review/
+// romance event/progress/summary semantics (one grade per item, miss events,
+// clearing order), one forced rung 'build' over build:<cocktailId> items —
+// aliases, not copies, so the surfaces can never drift apart.
+export type BuildDeps = ReviewDeps;
+export type BuildProgress = ReviewProgress;
+export type BuildItemResult = ReviewItemResult;
+export type BuildSummary = ReviewSummary;
+
+export interface BuildSession extends SessionCore {
+  progress(): BuildProgress;
+  /** Complete sessions only — throws otherwise. */
+  summary(): BuildSummary;
 }
 
 // -------------------------------------------------------------- allergen

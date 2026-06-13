@@ -94,6 +94,10 @@
           <!-- safety framing: always visible wherever allergens show -->
           {#if confirmLine}<p class="al-confirm">{confirmLine}</p>{/if}
         </div>
+      {:else if confirmLine}
+        <!-- safety framing rides EVERY reveal that carries it (e.g. an unflagged
+             cocktail still gets the bar-confirm line) — never gated behind flags -->
+        <p class="al-confirm solo">{confirmLine}</p>
       {/if}
       <div class="gradebar">
         <button type="button" class="btn" onclick={() => ongrade(true)}>Got it</button>
@@ -201,6 +205,10 @@
     font-size: 12px;
     font-style: italic;
     color: var(--text-muted);
+  }
+  .al-confirm.solo {
+    text-align: center;
+    margin-top: 4px;
   }
   .note-line {
     margin: 2px 0 0;
