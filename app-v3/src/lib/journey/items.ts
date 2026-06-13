@@ -54,6 +54,31 @@ export function itemsForUnit(unitId: string): readonly JourneyItem[] {
   return built;
 }
 
+/** Menu categories present among the path dishes, in path (menu) order — for
+ * the drill category filters ("drill just the pastas"). */
+let pathCats: string[] | null = null;
+export function pathCategories(): string[] {
+  if (!pathCats) {
+    const seen: string[] = [];
+    for (const item of allStage1Items()) {
+      if (item.kind !== 'dish') continue;
+      const cat = foodFor(item).category;
+      if (!seen.includes(cat)) seen.push(cat);
+    }
+    pathCats = seen;
+  }
+  return pathCats;
+}
+
+/** Filter dish items to a single menu category (null/undefined → unchanged). */
+export function filterByCategory(
+  items: readonly JourneyItem[],
+  category: string | null
+): readonly JourneyItem[] {
+  if (!category) return items;
+  return items.filter((i) => i.kind === 'dish' && foodFor(i).category === category);
+}
+
 let stage1Items: readonly JourneyItem[] | null = null;
 
 /** All 57 Stage-1 items (16 service + 41 dish), home unitIds preserved. */

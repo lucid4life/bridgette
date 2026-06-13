@@ -5,14 +5,22 @@
   // + the first-3 components) and self-checked against the pass bar. Grades
   // are real review grades on the SAME dish:<foodId> items the path tracks —
   // romance is a presentation mode, not a new card set.
+  import { page } from '$app/state';
   import Icon from '$lib/components/Icon.svelte';
+  import CategoryChips from '$lib/components/session/CategoryChips.svelte';
   import KeyHints from '$lib/components/session/KeyHints.svelte';
   import RomanceCard from '$lib/components/session/RomanceCard.svelte';
   import SessionHeader from '$lib/components/session/SessionHeader.svelte';
   import SessionSummary from '$lib/components/session/SessionSummary.svelte';
   import TeachCard from '$lib/components/session/TeachCard.svelte';
   import { nameOf } from '$lib/components/session/util';
-  import { allStage1Items, romanceFor, teachFor } from '$lib/journey/items';
+  import {
+    allStage1Items,
+    filterByCategory,
+    pathCategories,
+    romanceFor,
+    teachFor
+  } from '$lib/journey/items';
   import type { JourneyItem } from '$lib/journey/types';
   import {
     createRomanceSession,
@@ -25,10 +33,24 @@
   // Every dish on the path — service calls have no plate to romance.
   const DISHES: readonly JourneyItem[] = allStage1Items().filter((i) => i.kind === 'dish');
   const DISH_COUNT = DISHES.length; // 41
+  const CATEGORIES = pathCategories();
 
   let session: RomanceSession | null = $state(null);
   let nonce = $state(0);
   let summary = $state<RomanceSummary | null>(null);
+  let selectedCat = $state<string | null>(null);
+
+  // Targeted entry from the mock test: /romance?drill=id1,id2 drills exactly
+  // the dishes you just missed (the foodId, without the dish: prefix).
+  const drillIds = $derived(
+    (page.url.searchParams.get('drill') ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
+  const drillPool = $derived(
+    drillIds.length > 0 ? DISHES.filter((i) => drillIds.includes(i.foodId!)) : null
+  );
 
   /** Asking order from the CURRENT store state — deterministic per state. */
   function order(pool: readonly JourneyItem[]): JourneyItem[] {
@@ -89,6 +111,11 @@
     summary ? summary.perItem.filter((r) => r.missed).map((r) => ({ label: nameOf(r.itemId) })) : []
   );
   const clean = $derived(summary ? summary.perItem.filter((r) => !r.missed).length : 0);
+
+  // Auto-start a targeted drill when arriving from the mock test's miss list.
+  $effect(() => {
+    if (progress.ready && drillPool && drillPool.length > 0 && !session && !summary) start(drillPool);
+  });
 </script>
 
 <svelte:head><title>Romance the menu · Bridgette Trainer</title></svelte:head>
@@ -141,19 +168,27 @@
     {/key}
     <KeyHints />
   {:else}
+    {@const pool = filterByCategory(DISHES, selectedCat)}
     <!-- deliberate entry: know what the drill asks before the first card -->
     <section class="intro on-cream">
       <span class="i-mark" aria-hidden="true"><Icon name="speaker" size={22} /></span>
       <p class="i-eyebrow">for the sunday shift</p>
       <h1 class="i-title">romance the menu</h1>
-      <p class="i-line">{DISH_COUNT} dishes · about 20 honest minutes</p>
+      <p class="i-line">
+        {pool.length}
+        {selectedCat ? (selectedCat === 'Main' ? 'mains' : selectedCat.toLowerCase()) : 'dishes'}
+        {selectedCat ? '' : '· about 20 honest minutes'}
+      </p>
       <ul class="i-rules">
         <li>see the name — say the line out loud: “This is our…” plus the components that matter — three where the dish has them</li>
         <li>then check yourself against the pass bar: name + the components on it, spoken like you mean it</li>
         <li>misses come back until you clear them — better here than at the table</li>
       </ul>
+      <CategoryChips categories={CATEGORIES} bind:selected={selectedCat} />
       <div class="i-actions">
-        <button type="button" class="btn" onclick={() => start()}>start the drill</button>
+        <button type="button" class="btn" onclick={() => start(pool)}>
+          {selectedCat ? `drill the ${selectedCat === 'Main' ? 'mains' : selectedCat.toLowerCase()}` : 'start the drill'}
+        </button>
         <a class="btn ghost" href="/today">not yet — back to today</a>
       </div>
     </section>

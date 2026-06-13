@@ -61,6 +61,17 @@
           : (missText ?? "not quite — the right call is marked. it'll come back around.")
   );
 
+  // Tap-anywhere-to-continue once answered: the whole card advances, so a
+  // crammer never hunts for the Continue button. Guarded against the buttons
+  // (the choices are disabled; Continue handles its own click) to avoid a
+  // double-advance. Keyboard parity lives in onKey (Enter/Space).
+  function cardTap(e: MouseEvent): void {
+    if (!result) return;
+    const tgt = e.target;
+    if (tgt instanceof HTMLElement && tgt.closest('button, a, input, select, textarea')) return;
+    oncontinue();
+  }
+
   function onKey(e: KeyboardEvent): void {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const tgt = e.target;
@@ -83,7 +94,8 @@
 
 <svelte:window onkeydown={onKey} />
 
-<article class="flash fmc">
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+<article class="flash fmc" class:answered={!!result} onclick={cardTap}>
   {#if kicker}<p class="kicker">{kicker}</p>{/if}
   <p class="q" tabindex="-1" bind:this={qEl}>{mc.prompt}</p>
 
@@ -115,6 +127,7 @@
       <!-- safety framing: always visible wherever allergen content shows -->
       {#if confirmLine}<p class="fb-confirm">{confirmLine}</p>{/if}
       <button type="button" class="btn" onclick={oncontinue}>Continue</button>
+      <p class="fb-tap">tap anywhere to continue</p>
     </div>
   {/if}
 
@@ -259,5 +272,22 @@
     font-size: 12px;
     font-style: italic;
     color: var(--text-muted);
+  }
+  .answered {
+    cursor: pointer;
+  }
+  .fb-tap {
+    margin: -4px 0 0;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    opacity: 0.75;
+  }
+  /* the tap-to-continue affordance is touch-discoverability; pointer users see
+     it, keyboard users have Enter (KeyHints) — hide on fine pointers w/ hover */
+  @media (hover: hover) and (pointer: fine) {
+    .fb-tap {
+      display: none;
+    }
   }
 </style>

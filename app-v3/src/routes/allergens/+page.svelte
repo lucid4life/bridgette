@@ -5,6 +5,7 @@
   // (the full menu card) and recycles until cleared. Grades are real review
   // grades on the SAME dish:<foodId> items the path tracks.
   import Icon from '$lib/components/Icon.svelte';
+  import CategoryChips from '$lib/components/session/CategoryChips.svelte';
   import FlashMc from '$lib/components/session/FlashMc.svelte';
   import KeyHints from '$lib/components/session/KeyHints.svelte';
   import SessionHeader from '$lib/components/session/SessionHeader.svelte';
@@ -14,8 +15,10 @@
   import {
     allStage1Items,
     allergenMcFor,
+    filterByCategory,
     hasAllergenMc,
     judgmentQuestions,
+    pathCategories,
     romanceFor,
     teachFor
   } from '$lib/journey/items';
@@ -37,6 +40,8 @@
     (i) => i.kind === 'dish' && hasAllergenMc(i)
   );
   const FLAGGED_COUNT = FLAGGED.length;
+  const CATEGORIES = pathCategories();
+  let selectedCat = $state<string | null>(null);
 
   let session: AllergenSession | null = $state(null);
   let nonce = $state(0);
@@ -227,20 +232,27 @@
     {/key}
     <KeyHints />
   {:else}
+    {@const pool = filterByCategory(FLAGGED, selectedCat)}
     <!-- deliberate entry: know what the sweep asks before the first card -->
     <section class="intro on-cream">
       <span class="i-mark" aria-hidden="true"><Icon name="shield" size={22} /></span>
       <p class="i-eyebrow">safety-critical · for monday night</p>
       <h1 class="i-title">the allergen sweep</h1>
-      <p class="i-line">{FLAGGED_COUNT} dishes · every flag they carry</p>
+      <p class="i-line">
+        {pool.length}
+        {selectedCat ? (selectedCat === 'Main' ? 'mains' : selectedCat.toLowerCase()) : 'dishes'} · every flag they carry
+      </p>
       <ul class="i-rules">
         <li>every dish's flags — the part of the test you can't bluff</li>
         <li>four choices, button-graded; the feedback teaches back the official flags every time</li>
         <li>misses get the menu card again and come back until they're clean</li>
         <li>then round 2, the judgment round: safe calls for allergic guests, what can come off, and the fancy words</li>
       </ul>
+      <CategoryChips categories={CATEGORIES} bind:selected={selectedCat} />
       <div class="i-actions">
-        <button type="button" class="btn" onclick={() => start()}>start the sweep</button>
+        <button type="button" class="btn" onclick={() => start(pool)}>
+          {selectedCat ? `sweep the ${selectedCat === 'Main' ? 'mains' : selectedCat.toLowerCase()}` : 'start the sweep'}
+        </button>
         <button type="button" class="btn ghost" onclick={startJudgment}>skip to the judgment round</button>
         <a class="btn ghost" href="/today">not yet — back to today</a>
       </div>

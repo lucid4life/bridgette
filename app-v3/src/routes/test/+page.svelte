@@ -105,6 +105,13 @@
   );
   const catRows = $derived(summary ? summary.byCategory : []);
   const missList = $derived(summary ? summary.missed.map((id) => ({ label: nameOf(id) })) : []);
+  // Hand the misses to the romance drill as foodIds (strip the dish: prefix) so
+  // "drill the misses out loud" drills EXACTLY the dishes that got away.
+  const missDrillHref = $derived(
+    summary && summary.missed.length > 0
+      ? `/romance?drill=${summary.missed.map((id) => id.replace(/^dish:/, '')).join(',')}`
+      : '/romance'
+  );
 </script>
 
 <svelte:head><title>The food test · Bridgette Trainer</title></svelte:head>
@@ -158,14 +165,14 @@
         </div>
       {/snippet}
       {#if missList.length > 0}
-        <a class="btn" href="/romance">drill the misses out loud</a>
+        <a class="btn" href={missDrillHref}>drill the {missList.length} misses out loud</a>
         <button type="button" class="btn ghost" onclick={start}>take it again</button>
       {:else}
         <a class="btn" href="/today">back to today</a>
         <button type="button" class="btn ghost" onclick={start}>take it again</button>
       {/if}
       {#if missList.length > 0}
-        <p class="rom-note">the romance drill leads with your shakiest dishes — exactly where the points went.</p>
+        <p class="rom-note">that drills exactly the {missList.length} you missed — say each one out loud till it holds.</p>
       {/if}
     </SessionSummary>
   {:else if step && prog}
