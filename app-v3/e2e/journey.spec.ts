@@ -83,7 +83,8 @@ test('allergen sweep: start → answer → feedback carries the confirm line', a
 
 test('playbook search narrows to the one octopus dish', async ({ page }) => {
   await page.goto('/playbook');
-  await page.getByRole('searchbox').fill('octopus');
+  // the dish search (the page also has a guest-ask translator search)
+  await page.getByPlaceholder('search a dish…').fill('octopus');
   await expect(page.locator('article.dish')).toHaveCount(1);
   await expect(page.locator('article.dish .nm')).toHaveText('Grilled Octopus Salad');
   await expect(page.locator('.count')).toContainText('1 of');
