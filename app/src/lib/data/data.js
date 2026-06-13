@@ -1746,6 +1746,7 @@ export const data = {
         "eggs"
       ],
       "allergenNote": "Sub Ketchup and *this dish is vegan (vegan when aioli is substituted with ketchup)",
+      "memoryHook": "Shoestring fries, salted, dipped in garlic aioli — three words, the whole plate.",
       "tags": [
         "food",
         "fries",
@@ -1783,6 +1784,7 @@ export const data = {
       ],
       "allergenNote": "*This dish is vegan",
       "vegan": true,
+      "memoryHook": "Hummus becomes a crispy chip; preserved lemon shines on top.",
       "tags": [
         "food",
         "spice",
@@ -1818,6 +1820,7 @@ export const data = {
         "dairy",
         "gluten"
       ],
+      "memoryHook": "Cheese curds wrapped in bread, basted in garlic butter, fried golden.",
       "tags": [
         "food",
         "cheese",
@@ -1850,6 +1853,7 @@ export const data = {
       ],
       "allergenNote": "*This dish is vegan",
       "vegan": true,
+      "memoryHook": "Cashews boiled in vinegar, salted and crystallized — a chip's crunch without the chip.",
       "tags": [
         "food",
         "nuts",
@@ -1885,6 +1889,7 @@ export const data = {
         "gluten",
         "eggs"
       ],
+      "memoryHook": "Eggplant fries coated in panko and nori, fried golden and stacked high.",
       "tags": [
         "food",
         "spice",
@@ -1919,6 +1924,7 @@ export const data = {
         "gluten"
       ],
       "allergenNote": "Possible cross contamination from pizza oven only - gluten is not an ingredient of the dish",
+      "memoryHook": "Castelvetrano olives roasted with orange peel and Calabrian chili — buttery and spiced.",
       "tags": [
         "food",
         "olive",
@@ -1953,6 +1959,7 @@ export const data = {
         "gluten",
         "onion"
       ],
+      "memoryHook": "Smoky beef tallow whipped into butter, charred onion dust, served with sourdough.",
       "tags": [
         "food",
         "rich",
@@ -1987,6 +1994,7 @@ export const data = {
         "shellfish"
       ],
       "allergenNote": "'Seafood, Shellfish' - oysters are molluscan shellfish; normalized to shellfish",
+      "memoryHook": "East Coast oysters, ice-cold on a salt bed, with dill pickle granita, horseradish and lemon.",
       "tags": [
         "food",
         "seafood",
@@ -2026,6 +2034,7 @@ export const data = {
         "fish"
       ],
       "allergenNote": "Dairy cannot be omitted",
+      "memoryHook": "Salt-cured ahi over smoked tonnato, puttanesca punch, fried capers and mint.",
       "tags": [
         "food",
         "seafood",
@@ -2064,6 +2073,7 @@ export const data = {
         "garlic"
       ],
       "allergenNote": "Dairy can be omitted",
+      "memoryHook": "Raw velvety Wagyu, mushroom vinaigrette, crispy parmesan frico, horseradish heat.",
       "tags": [
         "food",
         "beef",
@@ -2104,6 +2114,7 @@ export const data = {
         "garlic"
       ],
       "allergenNote": "Dairy can be omitted",
+      "memoryHook": "Wood-fire lamb sausage, garlic labneh, a fried egg, potato crunch.",
       "tags": [
         "food",
         "lamb",
@@ -2139,6 +2150,7 @@ export const data = {
         "gluten"
       ],
       "allergenNote": "Gluten: can sub bread with Hummus Chips",
+      "memoryHook": "Runny burrata, poached rhubarb, strawberry jam, charred sourdough.",
       "tags": [
         "food",
         "cheese",
@@ -2177,6 +2189,7 @@ export const data = {
         "shellfish"
       ],
       "allergenNote": "'Seafood' refers to octopus (molluscan shellfish); normalized to shellfish",
+      "memoryHook": "Octopus grilled over wood — braised, shaved fennel, orange-segment pop.",
       "tags": [
         "food",
         "seafood",
@@ -2215,6 +2228,7 @@ export const data = {
         "soy"
       ],
       "allergenNote": "Soy is from tamari",
+      "memoryHook": "Mushroom parfait on toast crowned with black truffle silk.",
       "tags": [
         "food",
         "mushroom",
@@ -2251,6 +2265,7 @@ export const data = {
         "tree nuts"
       ],
       "allergenNote": "Dairy can be omitted; nuts can be omitted",
+      "memoryHook": "Spiced beets on whipped feta, pickled shallots, pistachio and dill.",
       "tags": [
         "food",
         "vegetable",
@@ -2287,6 +2302,7 @@ export const data = {
         "tree nuts"
       ],
       "allergenNote": "Dairy can be omitted",
+      "memoryHook": "Endive, apple vinaigrette, Fontina layers, toasted pecan crunch.",
       "tags": [
         "food",
         "salad",
@@ -2323,6 +2339,7 @@ export const data = {
         "dairy"
       ],
       "allergenNote": "Eggs can be omitted",
+      "memoryHook": "Crispy smashed potatoes, charred shallot aioli, Avonlea cheddar finish.",
       "tags": [
         "food",
         "potato",
@@ -2361,6 +2378,7 @@ export const data = {
         "shellfish"
       ],
       "allergenNote": "Dairy, onion, garlic cannot be removed; gluten and crustacean (crab) can be removed",
+      "memoryHook": "Wood-grilled charred asparagus topped with crab and vadouvan cream.",
       "tags": [
         "food",
         "vegetable",
@@ -2401,6 +2419,7 @@ export const data = {
         "gluten"
       ],
       "allergenNote": "Dairy, pork, eggs, garlic cannot be removed; gluten can be removed; this dish is not vegetarian",
+      "memoryHook": "Spicy 'nduja dressing, shaved fennel, pecorino, crispy bacon gremolata.",
       "tags": [
         "food",
         "vegetable",
@@ -2440,6 +2459,7 @@ export const data = {
         "gluten"
       ],
       "allergenNote": "Nuts are almond",
+      "memoryHook": "Smashed cukes meet green tahini, toasted almond, chili heat.",
       "tags": [
         "food",
         "spice",
@@ -2475,6 +2495,7 @@ export const data = {
         "eggs"
       ],
       "allergenNote": "Jalapeño cream itself is dairy free (per description); dairy comes from the Nostrala cheese",
+      "memoryHook": "Crisp bibb in jalapeño cream with puffed grains and alpine cheese crunch.",
       "tags": [
         "food",
         "green",
@@ -2511,6 +2532,7 @@ export const data = {
         "gluten",
         "garlic"
       ],
+      "memoryHook": "Pizza dough, tomato sauce, fior di latte and basil — wood-fired classic.",
       "tags": [
         "food",
         "pizza",
@@ -2554,6 +2576,7 @@ export const data = {
         "garlic",
         "onion"
       ],
+      "memoryHook": "No-red-sauce pie on garlic béchamel — provolone, bacon, pickled jalapeño, chicken sausage.",
       "tags": [
         "food",
         "pizza",
@@ -2595,6 +2618,7 @@ export const data = {
         "garlic",
         "onion"
       ],
+      "memoryHook": "Five cheeses — fior di latte, fontina, oka, parmesan, provolone — over garlic béchamel.",
       "tags": [
         "food",
         "pizza",
@@ -2633,6 +2657,7 @@ export const data = {
         "pork",
         "onion"
       ],
+      "memoryHook": "Fennel salami pie: shaved onion, Calabrian chili heat, caramelized honey, basil.",
       "tags": [
         "food",
         "pizza",
@@ -2672,6 +2697,7 @@ export const data = {
         "garlic",
         "gluten"
       ],
+      "memoryHook": "Italian sausage with confit garlic, charred kale, pecorino crunch.",
       "tags": [
         "food",
         "pizza",
@@ -2714,6 +2740,7 @@ export const data = {
         "garlic",
         "onion"
       ],
+      "memoryHook": "Spinach conchiglie with house pork sausage, shallot, garlic, white wine, Calabrian chili.",
       "tags": [
         "food",
         "pasta",
@@ -2750,6 +2777,7 @@ export const data = {
         "onion"
       ],
       "allergenNote": "Eggs appear in the description (dumpling dough) but are not listed on the Allergies line; vodka (alcohol) in sauce also unlisted",
+      "memoryHook": "Ricotta dumplings, light as clouds, in vodka tomato sauce with basil.",
       "tags": [
         "food",
         "pasta",
@@ -2790,6 +2818,7 @@ export const data = {
         "sesame",
         "gluten"
       ],
+      "memoryHook": "Linguini in brown butter with shrimp, crab and chili.",
       "tags": [
         "food",
         "pasta",
@@ -2828,6 +2857,7 @@ export const data = {
         "fish"
       ],
       "allergenNote": "'Seafood' = fish sauce; both the cheese and the fish sauce can be omitted",
+      "memoryHook": "Bigoli in pomodoro — crushed olive and caper bring the brine, parsley to finish.",
       "tags": [
         "food",
         "pasta",
@@ -2868,6 +2898,7 @@ export const data = {
         "onion"
       ],
       "allergenNote": "Pork is listed on the Allergies line but no pork ingredient appears in the ingredients or description - confirm with kitchen",
+      "memoryHook": "Rigatoni with mushrooms, parmesan sauce, a black-gold whisper of truffle oil.",
       "tags": [
         "food",
         "pasta",
@@ -2904,6 +2935,7 @@ export const data = {
         "eggs"
       ],
       "allergenNote": "All listed allergens (gluten, dairy, pork, eggs) can be omitted",
+      "memoryHook": "Wood-grilled chicken sausage in dill gravy, golden fries anchor the plate.",
       "tags": [
         "food",
         "chicken",
@@ -2940,6 +2972,7 @@ export const data = {
         "garlic"
       ],
       "allergenNote": "'Seafood' refers to the trout (fish); soy listed as tamari (description mentions miso)",
+      "memoryHook": "Steel Head trout, creamed kale, smoked potato puree.",
       "tags": [
         "food",
         "seafood",
@@ -2978,6 +3011,7 @@ export const data = {
         "eggs"
       ],
       "allergenNote": "Dairy and eggs can be omitted",
+      "memoryHook": "Strip steak under béarnaise, charred shallot and mushrooms, pommes paillasson, wild mushroom jus.",
       "tags": [
         "food",
         "steak",
@@ -3020,6 +3054,7 @@ export const data = {
         "gluten"
       ],
       "allergenNote": "Crustaceans, dairy, garlic, onion cannot be removed; gluten can be removed but cross contamination still possible from pizza oven. Note: halibut itself is fish - the listed 'Crustaceans' refers to the crab/lobster butter",
+      "memoryHook": "Wood-roasted halibut into crab butter, snap peas, leeks, brioche.",
       "tags": [
         "food",
         "seafood",
@@ -3059,6 +3094,7 @@ export const data = {
         "garlic",
         "onion"
       ],
+      "memoryHook": "Lamb saddle on garlicky labneh with warm potato salad and mint.",
       "tags": [
         "food",
         "lamb",
@@ -3094,6 +3130,7 @@ export const data = {
         "sesame"
       ],
       "allergenNote": "Description mentions miso (soy) in the turnip relish, but soy is not listed on the Allergies line",
+      "memoryHook": "Half duck roasted glossy, black garlic emulsion, turnips two ways.",
       "tags": [
         "food",
         "duck",
@@ -3131,6 +3168,7 @@ export const data = {
         "onion"
       ],
       "allergenNote": "Dairy in pomme aligot; garlic and onion in steak rub",
+      "memoryHook": "26oz wood-grilled ribeye with creamy pomme aligot and green peppercorn bone marrow jus.",
       "tags": [
         "food",
         "steak",
@@ -3174,6 +3212,7 @@ export const data = {
         "alcohol"
       ],
       "allergenNote": "Gelatin is pork based (pork added to normalized array for dietary filtering); alcohol can be omitted",
+      "memoryHook": "Salted pretzel crust cradles caramelized banana, coffee cream, Italian meringue, rum caramel.",
       "tags": [
         "food",
         "dessert"
@@ -3208,6 +3247,7 @@ export const data = {
         "eggs"
       ],
       "allergenNote": "No mods",
+      "memoryHook": "Apples slow-caramelized with warm spices, capped in puff pastry, armagnac cream alongside.",
       "tags": [
         "food",
         "dessert"
@@ -3240,6 +3280,7 @@ export const data = {
         "eggs"
       ],
       "allergenNote": "No mods",
+      "memoryHook": "Dark chocolate custard over sour cherry jam, salted chocolate caramel, cherry gelato.",
       "tags": [
         "food",
         "dessert",

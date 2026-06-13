@@ -42,6 +42,11 @@ for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
   // first card, if a path dish ever ships without one.
   if (!food.description)
     throw new Error(`journey: food '${foodId}' has no official description`);
+  // §0b: every path dish carries a memory hook (the romance/exam/teach reveals
+  // surface it). Required for PATH dishes only (off-menu foods carry none) —
+  // fail loud at init so a new dish can't silently ship hookless.
+  if (!food.memoryHook)
+    throw new Error(`journey: food '${foodId}' has no memory hook`);
 }
 
 // Same hard-fail philosophy for Stage 3: every cocktail on a build module must
@@ -255,6 +260,8 @@ export interface DishTeach {
   photoId: string;
   /** safety framing is non-negotiable on any surface that shows allergens */
   confirmLine: string;
+  /** Optional memory hook (§0b) — a vivid name→components mnemonic, when authored. */
+  memoryHook?: string;
 }
 export interface ServiceTeach {
   kind: 'service';
@@ -1172,6 +1179,8 @@ export interface RomanceContent extends AllergenFraming {
   modelLine: string;
   /** Full official ingredients, syllabus order. */
   ingredients: string[];
+  /** Optional memory hook (§0b) — a vivid name→components mnemonic, when authored. */
+  memoryHook?: string;
 }
 
 export function romanceFor(item: JourneyItem): RomanceContent {
@@ -1189,6 +1198,7 @@ export function romanceFor(item: JourneyItem): RomanceContent {
     romanceTargets: f.ingredients!.slice(0, 3),
     modelLine: f.description,
     ingredients: f.ingredients!.slice(),
+    ...(f.memoryHook ? { memoryHook: f.memoryHook } : {}),
     ...allergenFraming(f)
   };
 }
@@ -1284,6 +1294,7 @@ export function teachFor(item: JourneyItem): TeachContent {
     ...(f.allergenNote ? { allergenNote: f.allergenNote } : {}),
     menu: f.menu,
     photoId: f.id,
-    confirmLine: data.confirm.allergens
+    confirmLine: data.confirm.allergens,
+    ...(f.memoryHook ? { memoryHook: f.memoryHook } : {})
   };
 }

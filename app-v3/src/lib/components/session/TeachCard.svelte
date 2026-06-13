@@ -112,6 +112,9 @@
         </div>
         <!-- the service guide's romance formula, kept in view at every teach -->
         <p class="t-sayit">say it: “This is our {teach.name}…” + {sayCount} component{sayCount === 1 ? '' : 's'}</p>
+        {#if teach.memoryHook}
+          <p class="t-hook"><span class="t-hook-label">the hook</span>{teach.memoryHook}</p>
+        {/if}
         {#if termsFor(teach.photoId).length > 0}
           <div class="t-terms">
             <p class="t-label">say it right</p>
@@ -446,6 +449,21 @@
     font-size: 12px;
     font-style: italic;
     color: var(--text-muted);
+  }
+  .t-hook {
+    margin: 9px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+  .t-hook-label {
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--highlight);
+    margin-right: 8px;
   }
   .t-chips {
     display: flex;

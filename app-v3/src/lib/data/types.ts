@@ -85,6 +85,11 @@ export interface Food {
   allergens?: string[]; // normalized lowercase allergen tokens (official)
   allergenNote?: string; // official caveats — omissions/subs/cross-contamination
   vegan?: boolean; // only where the syllabus states vegan outright
+  // Memory aid (§0b): a vivid one-line mnemonic welding the dish NAME to its
+  // headline components — grounded only in official name/components/description,
+  // never an invented fact. Same idea as Wine.mnemonic. Surfaced on the romance
+  // reveal + the dish teach.
+  memoryHook?: string;
   tags: string[];
 }
 

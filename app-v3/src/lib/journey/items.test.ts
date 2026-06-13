@@ -254,6 +254,17 @@ describe('romanceFor', () => {
     expect(r.romanceTargets.length).toBe(2);
   });
 
+  it('every path dish carries a memory hook, surfaced verbatim on romance + teach', () => {
+    for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
+      const f = food(foodId);
+      expect(f.memoryHook, foodId).toBeTruthy();
+      expect(typeof f.memoryHook, foodId).toBe('string');
+      expect(romanceFor(dishItem(foodId)).memoryHook, foodId).toBe(f.memoryHook);
+      const teach = teachFor(dishItem(foodId));
+      expect(teach.kind === 'dish' && teach.memoryHook, foodId).toBe(f.memoryHook);
+    }
+  });
+
   it('dish: carries allergen framing (chips + the non-negotiable confirm line)', () => {
     for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
       const r = romanceFor(dishItem(foodId));

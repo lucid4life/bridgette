@@ -87,6 +87,10 @@
         <p class="m-line">“{content.modelLine}”</p>
       </blockquote>
 
+      {#if content.memoryHook}
+        <p class="hook"><span class="hook-label">the hook</span>{content.memoryHook}</p>
+      {/if}
+
       <p class="all-comps"><span class="ac-label">all of it:</span> {content.ingredients.join(', ')}</p>
 
       {#if content.allergens && content.allergens.length > 0}
@@ -267,6 +271,22 @@
     color: var(--text-body);
   }
 
+  .hook {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-body);
+    text-align: left;
+  }
+  .hook-label {
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--highlight);
+    margin-right: 8px;
+  }
   .all-comps {
     margin: 0;
     font-size: 12.5px;
