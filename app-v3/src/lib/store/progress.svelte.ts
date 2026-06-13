@@ -6,6 +6,7 @@ import { browser } from '$app/environment';
 import type { Grade, Rank } from '../srs/scheduler';
 import {
   completeUnit,
+  confidentMisses,
   defaultState,
   dueItems,
   freezeAvailable,
@@ -18,6 +19,7 @@ import {
   setExamTarget,
   shakyItems,
   tickStreak,
+  type Confidence,
   type ProgressState,
   type UnitDoneVia
 } from './store';
@@ -65,8 +67,8 @@ export const progress = {
 
   // --- mutations (each persists through store.ts) ---------------------------
   introduceItem: (itemId: string, now: Date = new Date()) => introduceItem(state, itemId, now),
-  recordReview: (itemId: string, grade: Grade, now: Date = new Date()) =>
-    recordReview(state, itemId, grade, now),
+  recordReview: (itemId: string, grade: Grade, confidence?: Confidence, now: Date = new Date()) =>
+    recordReview(state, itemId, grade, now, confidence),
   completeUnit: (unitId: string, via: UnitDoneVia) => completeUnit(state, unitId, via),
   setExamTarget: (day: number | null) => setExamTarget(state, day),
   /** Re-evaluate the streak (e.g. on app foreground after midnight) and persist. */
@@ -102,5 +104,7 @@ export const progress = {
   shakyItems: (n?: number) => {
     void clock;
     return shakyItems(state, n);
-  }
+  },
+  /** Confident misses (hypercorrection targets) — surfaced first in the warm-up. */
+  confidentMisses: (n?: number) => confidentMisses(state, n)
 };

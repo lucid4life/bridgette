@@ -14,6 +14,7 @@
     confirmLine,
     kicker,
     note,
+    confidence = false,
     ongrade
   }: {
     prompt: string;
@@ -28,10 +29,14 @@
     kicker?: string;
     /** small honesty line under the grade buttons (surface-specific copy) */
     note?: string;
-    ongrade: (gotIt: boolean) => void;
+    /** §0c: offer the optional "I wasn't sure" tap (the daily-review surfaces).
+     * When set, ongrade reports 'sure' (default) or 'shaky' alongside the grade. */
+    confidence?: boolean;
+    ongrade: (gotIt: boolean, confidence?: 'sure' | 'shaky') => void;
   } = $props();
 
   let revealed = $state(false);
+  let shaky = $state(false);
   let qEl: HTMLElement | null = null;
   let rvEl = $state<HTMLElement | null>(null);
 
@@ -43,6 +48,10 @@
     revealed = true;
     void tick().then(() => rvEl?.focus());
   }
+
+  // The grade carries confidence only when this surface opted in; an untapped
+  // "shaky" defaults to 'sure' — so a plain miss reads as a confident miss.
+  const grade = (gotIt: boolean): void => ongrade(gotIt, confidence ? (shaky ? 'shaky' : 'sure') : undefined);
 
   function onKey(e: KeyboardEvent): void {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -59,10 +68,13 @@
     const k = e.key.toLowerCase();
     if (k === 'g') {
       e.preventDefault();
-      ongrade(true);
+      grade(true);
     } else if (k === 'm') {
       e.preventDefault();
-      ongrade(false);
+      grade(false);
+    } else if (k === 's' && confidence && !interactive) {
+      e.preventDefault();
+      shaky = !shaky; // toggle the "I wasn't sure" flag (not while a control is focused)
     }
   }
 </script>
@@ -99,9 +111,21 @@
              cocktail still gets the bar-confirm line) — never gated behind flags -->
         <p class="al-confirm solo">{confirmLine}</p>
       {/if}
+      {#if confidence}
+        <button
+          type="button"
+          class="shaky-tog"
+          class:on={shaky}
+          aria-pressed={shaky}
+          onclick={() => (shaky = !shaky)}
+        >
+          <span class="st-tick" aria-hidden="true"></span>
+          <span class="st-t">{shaky ? 'I wasn’t sure on this one' : 'I wasn’t sure?'}</span>
+        </button>
+      {/if}
       <div class="gradebar">
-        <button type="button" class="btn" onclick={() => ongrade(true)}>Got it</button>
-        <button type="button" class="btn ghost" onclick={() => ongrade(false)}>Missed it</button>
+        <button type="button" class="btn" onclick={() => grade(true)}>Got it</button>
+        <button type="button" class="btn ghost" onclick={() => grade(false)}>Missed it</button>
       </div>
       {#if note}<p class="note-line">{note}</p>{/if}
     </div>
@@ -215,5 +239,57 @@
     font-size: 12.5px;
     font-style: italic;
     color: var(--text-muted);
+  }
+  /* §0c: the optional "I wasn't sure" confidence flag (daily-review reveals) */
+  .shaky-tog {
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 11px;
+    border-radius: var(--radius-chip, 999px);
+    border: 1.5px solid color-mix(in srgb, var(--text-label) 40%, transparent);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  }
+  .shaky-tog:hover {
+    border-color: var(--accent-text);
+    color: var(--text-body);
+  }
+  .st-tick {
+    width: 13px;
+    height: 13px;
+    border-radius: 4px;
+    /* a clearly-visible empty box in the OFF state (the label + aria-pressed
+       carry the state too — this is reinforcement, not the only signal) */
+    border: 1.5px solid color-mix(in srgb, var(--text-label) 80%, transparent);
+    position: relative;
+    flex: none;
+  }
+  .shaky-tog.on {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border-color: var(--accent-text);
+    color: var(--text-strong);
+  }
+  .shaky-tog.on .st-tick {
+    background: var(--accent-text);
+    border-color: var(--accent-text);
+  }
+  .shaky-tog.on .st-tick::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 3.5px;
+    height: 7px;
+    border: solid var(--bb-paper);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
   }
 </style>

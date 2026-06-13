@@ -24,11 +24,18 @@ import {
 // State shape (all plain JSON)
 // ---------------------------------------------------------------------------
 
+/** §0c sure/shaky — the runner's confidence on a recall (metacognition). */
+export type Confidence = 'sure' | 'shaky';
+
 export interface ItemRecord {
   srs: ItemSrs;
   lapses: number;
   correct: number;
   lastGrade: Grade | null;
+  /** Confidence on the most recent graded review (additive; absent on old
+   * records + on grades that don't capture it). A 'sure' + 'again' is a
+   * confident miss — the highest-value thing to re-teach (hypercorrection). */
+  confidence?: Confidence;
   introducedDay: number; // dayNumber the item was introduced
 }
 
@@ -456,7 +463,8 @@ export async function recordReview(
   state: ProgressState,
   itemId: string,
   grade: Grade,
-  now: Date
+  now: Date,
+  confidence?: Confidence
 ): Promise<void> {
   const existing = state.items[itemId];
   const rec = existing ?? introduceLocal(state, itemId, now);
@@ -467,6 +475,9 @@ export async function recordReview(
     rec.correct += 1;
   }
   rec.lastGrade = grade;
+  // Capture confidence when the surface reports it (the daily-review reveal);
+  // leave it untouched on grades that don't (drills, learn graduation).
+  if (confidence !== undefined) rec.confidence = confidence;
   bumpDay(state, dayNumber(now), 'reviews');
   tickStreak(state, now);
   await persist(state, itemId);
@@ -515,6 +526,17 @@ export function rankCounts(state: ProgressState): Record<Rank, number> {
   const counts: Record<Rank, number> = { new: 0, learning: 0, solid: 0, 'locked-in': 0 };
   for (const r of Object.values(state.items)) counts[rankOf(r.srs)] += 1;
   return counts;
+}
+
+/** Confident misses — items whose most recent review was a miss made while the
+ * runner felt SURE (the hypercorrection set: a confident error needs the most
+ * re-teaching). Most-overdue first, then id. Top `n` if given. */
+export function confidentMisses(state: ProgressState, n?: number): string[] {
+  const ranked = Object.entries(state.items)
+    .filter(([, r]) => r.lastGrade === 'again' && r.confidence === 'sure')
+    .sort(([aId, a], [bId, b]) => a.srs.due - b.srs.due || (aId < bId ? -1 : 1))
+    .map(([id]) => id);
+  return n === undefined ? ranked : ranked.slice(0, n);
 }
 
 /** Lapsed items, shakiest first: lapses desc, then most-overdue, then id. Top `n` if given. */

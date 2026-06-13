@@ -1,8 +1,13 @@
 <!-- Task H — subtle keyboard legend, desktop only (>1000px: the layouts with a
      physical keyboard). Phones never see it. -->
+<script lang="ts">
+  // §0c: surfaces with the optional sure/shaky tap document the 's' hotkey too.
+  let { shaky = false }: { shaky?: boolean } = $props();
+</script>
+
 <p class="keys">
   <kbd>1</kbd>–<kbd>4</kbd> pick · <kbd>enter</kbd>/<kbd>space</kbd> continue or reveal ·
-  <kbd>g</kbd> got it · <kbd>m</kbd> missed it
+  <kbd>g</kbd> got it · <kbd>m</kbd> missed it{#if shaky} · <kbd>s</kbd> wasn’t sure{/if}
 </p>
 
 <style>

@@ -11,6 +11,7 @@ import {
   MIRROR_KEY,
   _resetStore,
   completeUnit,
+  confidentMisses,
   dayNumber,
   daysUntil,
   defaultState,
@@ -494,5 +495,53 @@ describe('cram target (§0c) — additive, persisted, survives reload', () => {
     await setExamTarget(s, TODAY + 1);
     const mirror = JSON.parse(localStorage.getItem(MIRROR_KEY)!) as ProgressState;
     expect(mirror.meta.examTarget).toBe(TODAY + 1);
+  });
+});
+
+describe('sure/shaky confidence (§0c) + hypercorrection', () => {
+  it('recordReview stores confidence when given, and leaves it unset otherwise', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:a', T);
+    await recordReview(s, 'dish:a', 'good', T); // no confidence
+    expect(s.items['dish:a'].confidence).toBeUndefined();
+    await recordReview(s, 'dish:a', 'again', T, 'sure');
+    expect(s.items['dish:a'].confidence).toBe('sure');
+  });
+
+  it('confidentMisses = last review was a miss made while SURE (not shaky, not correct)', async () => {
+    const s = await loadProgress(T);
+    for (const id of ['sure-miss', 'shaky-miss', 'sure-hit']) await introduceItem(s, id, T);
+    await recordReview(s, 'sure-miss', 'again', T, 'sure'); // confident miss ✓
+    await recordReview(s, 'shaky-miss', 'again', T, 'shaky'); // a flagged miss — not it
+    await recordReview(s, 'sure-hit', 'good', T, 'sure'); // confident but correct — not it
+    expect(confidentMisses(s)).toEqual(['sure-miss']);
+  });
+
+  it('a confident miss clears once it is answered correctly again', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:b', T);
+    await recordReview(s, 'dish:b', 'again', T, 'sure');
+    expect(confidentMisses(s)).toEqual(['dish:b']);
+    await recordReview(s, 'dish:b', 'good', new Date(T.getTime() + 60_000), 'sure');
+    expect(confidentMisses(s)).toEqual([]); // lastGrade is now 'good'
+  });
+
+  it('confidence survives a reload (mirror + idb carry the field)', async () => {
+    const s = await loadProgress(T);
+    await introduceItem(s, 'dish:c', T);
+    await recordReview(s, 'dish:c', 'again', T, 'sure');
+    _resetStore();
+    const reloaded = await loadProgress(T);
+    expect(reloaded.items['dish:c'].confidence).toBe('sure');
+    expect(confidentMisses(reloaded)).toEqual(['dish:c']);
+  });
+
+  it('confidentMisses respects the top-n cap', async () => {
+    const s = await loadProgress(T);
+    for (const id of ['m1', 'm2', 'm3']) {
+      await introduceItem(s, id, T);
+      await recordReview(s, id, 'again', T, 'sure');
+    }
+    expect(confidentMisses(s, 2)).toHaveLength(2);
   });
 });

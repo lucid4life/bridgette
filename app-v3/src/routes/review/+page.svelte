@@ -28,9 +28,15 @@
       return;
     }
     session = createReviewSession(entries, {
-      onResult: (id, grade) => void progress.recordReview(id, grade)
+      // confidence is captured at grade time (the reveal's optional "shaky" tap)
+      // and read here — keeps the session's onResult contract unchanged.
+      onResult: (id, grade) => void progress.recordReview(id, grade, pendingConfidence)
     });
   });
+
+  // The confidence the runner reported on the CURRENT card (default 'sure' — an
+  // unflagged miss is a confident miss, the hypercorrection target).
+  let pendingConfidence: 'sure' | 'shaky' = 'sure';
 
   const step = $derived.by(() => {
     void nonce;
@@ -52,7 +58,8 @@
     nonce += 1;
     if (session && session.isComplete() && !summary) summary = session.summary();
   }
-  function grade(gotIt: boolean): void {
+  function grade(gotIt: boolean, conf: 'sure' | 'shaky' = 'sure'): void {
+    pendingConfidence = conf;
     session?.selfGrade(gotIt);
     bump();
   }
@@ -108,15 +115,15 @@
     {#key prog.position}
       {#if step.type === 'quiz' && step.rung === 'cued'}
         {@const c = cuedFor(step.item)}
-        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="still warm? — with a hint" ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
+        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="still warm? — with a hint" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
       {:else if step.type === 'quiz'}
         {@const f = freeFor(step.item)}
-        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="still warm? — cold" ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
+        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="still warm? — cold" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
       {:else}
         <TeachCard teach={teachFor(step.item)} eyebrow="back to this one" oncontinue={continueStep} continueLabel="Got it — continue" />
       {/if}
     {/key}
-    <KeyHints />
+    <KeyHints shaky={step.type === 'quiz'} />
   {/if}
 </div>
 

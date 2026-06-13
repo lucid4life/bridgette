@@ -415,6 +415,24 @@ for (const theme of THEMES) {
       await scan(page);
     });
 
+    test('axe: daily review reveal with the sure/shaky confidence tap (seeded due items)', async ({ page }) => {
+      const rec = {
+        srs: { due: 0, stability: 5, difficulty: 5, elapsed_days: 1, scheduled_days: 1, learning_steps: 0, reps: 2, lapses: 0, state: 2, last_review: 0 },
+        lapses: 0, correct: 2, lastGrade: 'good', introducedDay: 0
+      };
+      const seed = JSON.stringify({
+        schema: 1,
+        items: { 'dish:french-fries': rec, 'dish:garlic-bread': rec },
+        meta: { streak: { current: 0, lastDay: null, freezeUsedWeekOf: null }, settings: { lessonsPerDay: 8 }, unitDone: {}, dayLog: {}, writeSeq: 9999 }
+      });
+      await page.addInitScript((s) => localStorage.setItem('bb3_progress_v1', s), seed);
+      await page.goto('/review');
+      await expect(page.locator('article.frv')).toBeVisible();
+      await page.locator('.frv .act .btn').click(); // Show answer
+      await expect(page.locator('.frv .shaky-tog')).toBeVisible();
+      await scan(page); // revealed answer + the optional "I wasn't sure" tap + grade bar
+    });
+
     test('axe: today with a cram countdown + a shaky-dish plan (seeded)', async ({ page }) => {
       // a future test date + one shaky (lapsed) dish → the countdown + the
       // "N dishes still shaky" re-drill link both render.

@@ -23,16 +23,24 @@
   $effect(() => {
     if (!progress.ready || built) return;
     built = true;
-    // lapse-ranked shakiest; ids outside Stage 1 are skipped (Phase 1)
-    const entries = toStage1Entries(progress.shakyItems(SHAKY_COUNT), progress.state);
+    // Hypercorrection: confident misses (you were SURE, but missed) lead the
+    // warm-up — a confident error is the highest-value re-teach — then the rest
+    // of the shakiest, deduped, capped. ids outside Stage 1 are skipped (Phase 1).
+    const confident = progress.confidentMisses();
+    const rest = progress.shakyItems().filter((id) => !confident.includes(id));
+    const ordered = [...confident, ...rest].slice(0, SHAKY_COUNT);
+    const entries = toStage1Entries(ordered, progress.state);
     if (entries.length === 0) {
       empty = true;
       return;
     }
     session = createReviewSession(entries, {
-      onResult: (id, grade) => void progress.recordReview(id, grade)
+      onResult: (id, grade) => void progress.recordReview(id, grade, pendingConfidence)
     });
   });
+
+  // The confidence the runner reported on the CURRENT card (default 'sure').
+  let pendingConfidence: 'sure' | 'shaky' = 'sure';
 
   const step = $derived.by(() => {
     void nonce;
@@ -54,7 +62,8 @@
     nonce += 1;
     if (session && session.isComplete() && !summary) summary = session.summary();
   }
-  function grade(gotIt: boolean): void {
+  function grade(gotIt: boolean, conf: 'sure' | 'shaky' = 'sure'): void {
+    pendingConfidence = conf;
     session?.selfGrade(gotIt);
     bump();
   }
@@ -119,15 +128,15 @@
     {#key prog.position}
       {#if step.type === 'quiz' && step.rung === 'cued'}
         {@const c = cuedFor(step.item)}
-        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="shaky call — with a hint" ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
+        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="shaky call — with a hint" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
       {:else if step.type === 'quiz'}
         {@const f = freeFor(step.item)}
-        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shaky call — cold" ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
+        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shaky call — cold" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
       {:else}
         <TeachCard teach={teachFor(step.item)} eyebrow="back to this one" oncontinue={continueStep} continueLabel="Got it — continue" />
       {/if}
     {/key}
-    <KeyHints />
+    <KeyHints shaky={step.type === 'quiz'} />
   {/if}
 </div>
 
