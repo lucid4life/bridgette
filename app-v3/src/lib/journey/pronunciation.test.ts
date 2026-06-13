@@ -9,8 +9,10 @@ const TERMS_DIR = fileURLToPath(new URL('../../../static/audio/terms/', import.m
 const foodIds = new Set(data.foods.map((f) => f.id));
 
 describe('pronunciation pack', () => {
-  it('39 must-say terms, unique slugs, every dish reference real', () => {
-    expect(PRON_TERMS.length).toBe(39);
+  it('73 terms (39 must + 34 nice), unique slugs, every dish reference real', () => {
+    expect(PRON_TERMS.length).toBe(73);
+    expect(PRON_TERMS.filter((t) => t.priority === 'must').length).toBe(39);
+    expect(PRON_TERMS.filter((t) => t.priority === 'nice').length).toBe(34);
     expect(new Set(PRON_TERMS.map((t) => t.slug)).size).toBe(PRON_TERMS.length);
     for (const t of PRON_TERMS) {
       expect(t.respell.length).toBeGreaterThan(2);
