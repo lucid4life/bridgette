@@ -556,7 +556,8 @@ export const data = {
         "Wood Roasted Halibut",
         "Shrimp & Crab",
         "Ricotta Dumplings",
-        "Garlic Bread"
+        "Garlic Bread",
+        "Crab Toast"
       ],
       "avoid": "If a guest wants very lean and crisp, steer to Gruner or bubbles.",
       "say": "For a fuller white, I would use the Spanish Chardonnay. It has enough roundness for trout, halibut, crab, and buttery pasta.",
@@ -1188,7 +1189,8 @@ export const data = {
         "Oysters 1/2 dozen",
         "Tuna Crudo",
         "Hummus Chips",
-        "Bibb Lettuce"
+        "Bibb Lettuce",
+        "Crab Toast"
       ],
       "avoid": "Not a full replacement for rich Chardonnay or red wine.",
       "say": "If you are skipping alcohol but still want something wine-like, the Neverwine is citrusy and saline, so it works with seafood and lighter plates.",
@@ -2202,10 +2204,10 @@ export const data = {
       "price": "19",
       "menu": "Crab, Saffron Mousse, Chive",
       "flavor": "sweet crab and shrimp, saffron mousse, toasted bread, briny Old Bay",
-      "wine": "Deinhard Deidesheim",
-      "cocktail": "Spaghetti Western",
-      "zero": "Noughty Rouge",
-      "why": "Rich saffron mousse and sweet crab carry real intensity; an aromatic Riesling keeps pace and its citrus lift mirrors the lemon cheek.",
+      "wine": "Bodega Cerrón Remordimiento Blanco",
+      "cocktail": "Cloud 9",
+      "zero": "Gallina de Piel Neverwine",
+      "why": "This rounder Spanish Chardonnay has the body to meet the rich saffron mousse, its ripe lemon echoes the lemon cheek, and its low tannin stays clear of the delicate crab.",
       "flags": [
         "shellfish",
         "gluten",
@@ -3652,7 +3654,7 @@ export const data = {
       "category": "Floral, tea, citrus",
       "price": "17",
       "profile": "gin, elderflower, grapefruit, lime, egg whites",
-      "pair": "Wood Roasted Halibut, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes",
+      "pair": "Wood Roasted Halibut, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes, Crab Toast",
       "caveat": "Confirm egg-white allergy and vegan language before recommending.",
       "say": "Cloud 9 is citrusy, floral, and lifted. I would use it for seafood, creamy garlic, or lighter fried plates.",
       "build": [
