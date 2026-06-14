@@ -8,6 +8,7 @@
   import { tick } from 'svelte';
   import type { RomanceContent } from '$lib/journey/items';
   import type { RomanceExamOutcome } from '$lib/session';
+  import DishPhoto from './DishPhoto.svelte';
 
   let {
     content,
@@ -102,6 +103,10 @@
     <p class="think">actually out loud — then mark what you said.</p>
   {:else}
     <div class="rv" tabindex="-1" bind:this={rvEl}>
+      <!-- the plate, on the REVEAL only — it anchors the line as you self-check
+           (showing it on the question face would give the answer away; §0b) -->
+      <div class="r-photo"><DishPhoto photoId={content.photoId} name={content.name} /></div>
+
       <blockquote class="model">
         <p class="m-label">the line to land</p>
         <p class="m-line">“{content.modelLine}”</p>
@@ -258,6 +263,14 @@
     display: grid;
     gap: 14px;
     animation: card-in 0.2s ease;
+  }
+  /* a contained, rounded plate (matches the daily romance reveal) */
+  .r-photo {
+    width: min(240px, 100%);
+    margin: 0 auto;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-1);
   }
 
   .model {

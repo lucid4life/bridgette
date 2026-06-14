@@ -7,7 +7,7 @@
   import type { TeachContent } from '$lib/journey/items';
   import { formatGlassPrice } from '$lib/journey/price';
   import { termsFor } from '$lib/journey/pronunciation';
-  import { PHOTO_IDS } from './photos';
+  import DishPhoto from './DishPhoto.svelte';
   import TermSay from './TermSay.svelte';
   import WineSay from './WineSay.svelte';
 
@@ -25,10 +25,6 @@
     oncontinue: () => void;
     continueLabel?: string;
   } = $props();
-
-  let imgFailed = $state(false);
-  let imgLoaded = $state(false);
-  const hasPhoto = $derived(teach.kind === 'dish' && PHOTO_IDS.has(teach.photoId) && !imgFailed);
 
   // The say-it pass bar matches romanceFor's bold-first-3 rule: three
   // components — fewer when the dish only has 1-2 (ingredients are display
@@ -61,28 +57,7 @@
   {#if eyebrow}<p class="t-eyebrow">{eyebrow}</p>{/if}
 
   {#if teach.kind === 'dish'}
-    <div class="t-photo">
-      {#if hasPhoto}
-        <img
-          src="/img/{teach.photoId}.webp"
-          alt={teach.name}
-          class:show={imgLoaded}
-          onload={() => (imgLoaded = true)}
-          onerror={() => (imgFailed = true)}
-        />
-      {/if}
-      {#if !hasPhoto || !imgLoaded}
-        <div class="t-noimg" aria-hidden="true">
-          <span class="t-initial">{teach.name.charAt(0)}</span>
-          <svg class="t-cutlery" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 4v4a2 2 0 0 0 4 0V4" />
-            <path d="M9 10v10" />
-            <path d="M15.5 4c2.6 2.4 2.6 6.6 0 9v7" />
-          </svg>
-          <span class="t-noimg-label">photo coming</span>
-        </div>
-      {/if}
-    </div>
+    <DishPhoto photoId={teach.photoId} name={teach.name} />
 
     <div class="t-body">
       <header class="t-head">
@@ -303,56 +278,6 @@
     text-transform: uppercase;
     letter-spacing: 0.16em;
     color: var(--highlight);
-  }
-
-  /* ---- photo band + branded placeholder ---- */
-  /* Square band: the dish photos are overhead shots of round, centred plates —
-     a 1:1 frame shows the whole plate (a 16:9 letterbox sliced it in half). */
-  .t-photo {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    background: color-mix(in srgb, var(--bb-ink) 6%, var(--bb-paper));
-  }
-  .t-photo img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-  .t-photo img.show {
-    opacity: 1;
-  }
-  .t-noimg {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    gap: 2px;
-    color: var(--bb-stone);
-  }
-  .t-initial {
-    font-family: var(--font-display);
-    font-size: 56px;
-    font-weight: 300;
-    line-height: 1;
-    color: color-mix(in srgb, var(--bb-ochre) 55%, transparent);
-  }
-  .t-cutlery {
-    width: 22px;
-    height: 22px;
-    color: color-mix(in srgb, var(--bb-stone) 70%, transparent);
-  }
-  .t-noimg-label {
-    font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: color-mix(in srgb, var(--bb-stone) 75%, transparent);
   }
 
   /* ---- body ---- */
