@@ -31,7 +31,7 @@ export const ROMANCE: Record<string, string> = {
   'lamb-sausage': 'Here\'s the lamb sausage — spiced lamb kefta grilled over the wood fire, set on roasted garlic labneh with a sunny fried egg, cilantro vinaigrette and a crunchy potato finish.',
   'burrata-cheese': 'This is the burrata — soft, runny burrata over gently poached rhubarb and a strawberry jam, served with house sourdough charred on the wood grill.',
   'grilled-octopus-salad': 'Here\'s the grilled octopus salad — Vancouver Island octopus braised tender and grilled over the wood fire, tossed with shaved fennel and sweet orange segments in a sherry-soy vinaigrette.',
-  'mushrooms-on-toast': 'Here we have the crab toast — toasted pain de mie piled with a saffron egg mousse, sweet Dungeness crab and Fogo Island shrimp, finished with Old Bay, chives, and a squeeze of lemon.',
+  'mushrooms-on-toast': 'Here we have the crab toast — sweet Dungeness crab and Fogo Island shrimp over a silky saffron mousse on toasted pain de mie, finished with chives and a bright squeeze of lemon.',
   // Vegetables
   'spiced-beet-salad': 'This is the spiced beet salad — Ras el Hanout-spiced beets resting on cool whipped feta, finished with pickled shallots, toasted pistachio, and fresh dill.',
   endive: 'Here\'s the endive — crisp leaves tossed in a bright apple vinaigrette, layered with shaved Fontina and toasted pecans.',
