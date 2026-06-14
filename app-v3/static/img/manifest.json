@@ -1,7 +1,15 @@
 {
   "generated": "2026-06-14",
-  "notes": "33 images (28 food, 5 cocktail). 5 cocktail + 4 food shots scraped/name-matched from bridgettebar.com + Instagram; 22 food shots are Adrian's own labeled phone photos (repo /Photos), square-cropped by tools/photo_scrape/build_dish_photos.py; Hummus Chips + Snap Peas are verified TripAdvisor customer photos pending Adrian's own reshoot.",
+  "notes": "34 images (29 food, 5 cocktail). 5 cocktail + 4 food shots scraped/name-matched from bridgettebar.com + Instagram; 22 food shots are Adrian's own labeled phone photos (repo /Photos), square-cropped by tools/photo_scrape/build_dish_photos.py; Hummus Chips + Snap Peas are verified TripAdvisor customer photos pending Adrian's own reshoot.",
   "images": [
+    {
+      "id": "mushrooms-on-toast",
+      "kind": "food",
+      "file": "mushrooms-on-toast.webp",
+      "source": "local",
+      "sourceUrl": "",
+      "matchedBy": "Crab Toast — Adrian's labeled PDF (Crab Toast.pdf), 2026-06-14; replaced the photoless mushrooms-on-toast dish"
+    },
     {
       "id": "bread-butter",
       "kind": "food",

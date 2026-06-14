@@ -756,11 +756,10 @@ export const data = {
         "tannin": "low",
         "sweetness": "dry"
       },
-      "tenSecond": "The soft, lighter red — cherry and earth for mushrooms, carpaccio, duck, and even trout.",
-      "profile": "A flexible lighter red for mushrooms, carpaccio, duck, trout, and red-leaning guests who do not want a heavy wine.",
+      "tenSecond": "The soft, lighter red — cherry and earth for carpaccio, duck, and even trout.",
+      "profile": "A flexible lighter red for carpaccio, duck, trout, and red-leaning guests who do not want a heavy wine.",
       "pair": [
         "Wagyu Beef Carpaccio",
-        "Mushrooms on Toast",
         "Rigatoni",
         "Wood Roasted Half Duck",
         "Maple BBQ Rainbow Trout"
@@ -831,7 +830,6 @@ export const data = {
         "Wagyu Beef Carpaccio",
         "Wood Grilled Beef Strip Steak",
         "Grilled Lamb Saddle",
-        "Mushrooms on Toast",
         "Rigatoni"
       ],
       "avoid": "Tannin can fight spicy heat or delicate seafood.",
@@ -1117,7 +1115,6 @@ export const data = {
       "pair": [
         "Wood Grilled Beef Strip Steak",
         "26oz Wood Grilled Beef Ribeye",
-        "Mushrooms on Toast",
         "Rigatoni",
         "Wood Roasted Half Duck"
       ],
@@ -1355,7 +1352,7 @@ export const data = {
         "Pierre Thibert Chorey-les-Beaune",
         "Kistler"
       ],
-      "familiar": "Light red body, cherry/strawberry fruit, soft tannin, and an earthy lane for mushrooms, carpaccio, duck, trout, and lighter red drinkers.",
+      "familiar": "Light red body, cherry/strawberry fruit, soft tannin, and an earthy lane for carpaccio, duck, trout, and lighter red drinkers.",
       "different": "The German Pinot is lighter and brighter than many California Pinots.",
       "phrase": "This is the soft, lighter red. If you want a richer Pinot bottle, I would go Burgundy or Kistler."
     },
@@ -2199,40 +2196,43 @@ export const data = {
     {
       "id": "mushrooms-on-toast",
       "lever": "match-intensity",
-      "name": "Mushrooms on Toast",
+      "name": "Crab Toast",
       "group": "food",
       "category": "Small Plates",
       "price": "19",
-      "menu": "Mushroom Parfait, Black Truffle, Chervil",
-      "flavor": "deep mushroom, truffle, toast, creamy umami",
+      "menu": "Crab, Saffron Mousse, Chive",
+      "flavor": "sweet crab and shrimp, saffron mousse, toasted bread, briny Old Bay",
       "wine": "Deinhard Deidesheim",
       "cocktail": "Spaghetti Western",
       "zero": "Noughty Rouge",
-      "why": "Earthy mushroom and truffle mirror an earthy light red or nutty cocktail; matching savoury intensity beats fighting it with tannin.",
+      "why": "Rich saffron mousse and sweet crab carry real intensity; an aromatic Riesling keeps pace and its citrus lift mirrors the lemon cheek.",
       "flags": [
+        "shellfish",
         "gluten",
-        "confirm dairy"
+        "dairy",
+        "eggs",
+        "garlic"
       ],
       "ingredients": [
-        "Mushroom Parfait",
-        "Black Truffle",
-        "Chervil"
+        "Crab",
+        "Saffron Mousse",
+        "Chive"
       ],
-      "description": "For this dish, we prepare a rich mushroom custard—essentially a smooth, spreadable mousse built from a deeply flavorful base of sautéed mushrooms and shallots, deglazed with port, Madeira, and white wine. The mixture is enriched with butter and egg, then gently cooked until it develops a silky, custard-like texture that is both light and intensely savory. The custard is piped generously onto slices of toasted pain de mie. On top, we add a mushroom condiment inspired by XO sauce, made with shredded oyster mushrooms and dried porcini, slowly cooked with garlic, chili, and shallots, then seasoned with tamari and brown sugar for depth and umami. To finish, the dish is garnished with a generous grating of fresh black truffle as well as a thyme honey spiked with a small amount of sherry vinegar for an acidic boost.",
+      "description": "Toasted pain de mie (white loaf enriched with milk and egg) is topped with a saffron egg mousse (similar to a devilled egg filling), Dungeness crab and Fogo Island shrimp salad, Old Bay seasoning (a mix of celery salt, spices and paprika) and chives. We garnish with seasonal edible flowers, or chervil if none are in season. Served with a lemon cheek to brighten up the dish.",
       "allergens": [
         "dairy",
         "gluten",
         "eggs",
-        "onion",
         "garlic",
-        "soy"
+        "shellfish"
       ],
-      "allergenNote": "Soy is from tamari",
-      "memoryHook": "Mushroom parfait on toast crowned with black truffle silk.",
+      "allergenNote": "Bread also contains sunflower oil.",
+      "memoryHook": "Saffron-mousse toast piled with Dungeness crab and Fogo Island shrimp.",
       "tags": [
         "food",
-        "mushroom",
-        "rich"
+        "seafood",
+        "crab",
+        "shrimp"
       ]
     },
     {
@@ -3617,7 +3617,7 @@ export const data = {
       "category": "Rich, spirit-forward",
       "price": "17",
       "profile": "bourbon, cognac, amaro Montenegro, hazelnut, basil",
-      "pair": "Wood Grilled Beef Strip Steak, 26oz Wood Grilled Beef Ribeye, Mushrooms on Toast, Chocolate Pot de Crème",
+      "pair": "Wood Grilled Beef Strip Steak, 26oz Wood Grilled Beef Ribeye, Chocolate Pot de Crème",
       "caveat": "Contains nuts.",
       "say": "Spaghetti Western is richer and nuttier, with bourbon, cognac, Montenegro, hazelnut, and basil. It does contain nuts.",
       "build": [

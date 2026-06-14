@@ -50,7 +50,7 @@ export const KEY_COMPONENTS: Record<string, readonly string[]> = {
   'lamb-sausage': ['Garlic Labneh', 'Cilantro Vinaigrette', 'Potato Crunch'],
   'burrata-cheese': ['Strawberry Jam', 'Poached Rhubarb'],
   'grilled-octopus-salad': ['Sherry-Soy Vinaigrette', 'Orange Segments', 'Fennel Salt'],
-  'mushrooms-on-toast': ['Black Truffle', 'Mushroom Parfait'],
+  'mushrooms-on-toast': ['Saffron Mousse', 'Crab'],
   // Vegetables
   'spiced-beet-salad': ['Pistachio', 'Whipped Feta', 'Pickled Shallots'],
   endive: ['Pecan', 'Apple Vinaigrette', 'Fontina'],
