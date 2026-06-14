@@ -163,8 +163,9 @@
         {@const f = freeFor(step.item)}
         <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shift check — cold" ongrade={grade} note="grade it like a chef is listening" />
       {:else if step.type === 'quiz' || step.type === 'pretest-mc'}
-        <!-- the engine never serves MC here; rendered for step-matrix totality -->
-        <FlashMc mc={mcFor(step.item)} onanswer={answer} oncontinue={continueStep} />
+        <!-- the engine never serves MC here; rendered for step-matrix totality.
+             hidePhoto keeps the plate off this graded/gated prompt if it ever does (D5). -->
+        <FlashMc mc={mcFor(step.item)} hidePhoto onanswer={answer} oncontinue={continueStep} />
       {:else}
         <TeachCard teach={teachFor(step.item)} oncontinue={continueStep} />
       {/if}

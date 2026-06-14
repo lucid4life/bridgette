@@ -17,15 +17,16 @@
   let {
     photoId,
     name,
-    framed = false
-  }: { photoId: string; name: string; framed?: boolean } = $props();
+    framed = false,
+    thumb = false
+  }: { photoId: string; name: string; framed?: boolean; thumb?: boolean } = $props();
 
   let imgFailed = $state(false);
   let imgLoaded = $state(false);
   const hasPhoto = $derived(PHOTO_IDS.has(photoId) && !imgFailed);
 </script>
 
-<div class="dp" class:framed>
+<div class="dp" class:framed class:thumb>
   {#if hasPhoto}
     <img
       src="/img/{photoId}.webp"
@@ -64,6 +65,15 @@
      bar. TeachCard omits `framed` and keeps the full-bleed band. */
   .dp.framed {
     width: min(240px, 100%);
+    margin: 0 auto;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-1);
+  }
+  /* the compact "thumb" treatment — a small centred plate peek above a flash
+     card's question, so the dish you'd see at the drop rides along on the prompt
+     without crowding the choices/answer below. */
+  .dp.thumb {
+    width: min(150px, 56%);
     margin: 0 auto;
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-1);

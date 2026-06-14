@@ -190,6 +190,7 @@
         <RomanceCard
           content={romanceFor(step.item)}
           kicker="the food test — say it aloud"
+          platePrompt={false}
           ongrade={grade}
         />
       {:else if step.type === 'quiz'}
@@ -199,6 +200,7 @@
         {@const mc = mockMcContentFor(step.item, qtype)}
         <FlashMc
           {mc}
+          hidePhoto
           why={'why' in mc ? (mc.why as string) : undefined}
           confirmLine={'confirmLine' in mc ? (mc.confirmLine as string) : undefined}
           missText={MISS_TEXT}

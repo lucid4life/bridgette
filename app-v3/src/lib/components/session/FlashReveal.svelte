@@ -3,6 +3,7 @@
   // reveal is pure UI state; selfGrade(gotIt) (via ongrade) resolves AND
   // advances in one call — reveal-before-grade, always.
   import { tick } from 'svelte';
+  import DishPhoto from './DishPhoto.svelte';
 
   let {
     prompt,
@@ -14,6 +15,9 @@
     confirmLine,
     kicker,
     note,
+    photoId,
+    photoName,
+    romance,
     confidence = false,
     ongrade
   }: {
@@ -27,6 +31,12 @@
     /** safety framing — non-negotiable wherever allergens show */
     confirmLine?: string;
     kicker?: string;
+    /** dish plate on the prompt (food-anchored practice cards) — the route opts
+     * in by passing it; the graded mock test omits it so it stays unseen (D5) */
+    photoId?: string;
+    photoName?: string;
+    /** the say-it-like-this romance recital, shown on the reveal (dish cards) */
+    romance?: string;
     /** small honesty line under the grade buttons (surface-specific copy) */
     note?: string;
     /** §0c: offer the optional "I wasn't sure" tap (the daily-review surfaces).
@@ -83,6 +93,9 @@
 
 <article class="flash frv">
   {#if kicker}<p class="kicker">{kicker}</p>{/if}
+  {#if photoId}
+    <div class="q-photo"><DishPhoto thumb photoId={photoId} name={photoName ?? ''} /></div>
+  {/if}
   <p class="q" tabindex="-1" bind:this={qEl}>{prompt}</p>
   {#if hint}
     <p class="hint"><span class="hint-k">hint</span> {hint}</p>
@@ -96,6 +109,9 @@
   {:else}
     <div class="rv" tabindex="-1" bind:this={rvEl}>
       <p class="ans">{answer}</p>
+      {#if romance}
+        <p class="say"><span class="say-k">say it like this</span>{romance}</p>
+      {/if}
       {#if detail}<p class="detail">{detail}</p>{/if}
       {#if allergens && allergens.length > 0}
         <div class="allerg">
@@ -133,7 +149,7 @@
 
   <!-- persistent live region: mounted before its text changes (SR announce) -->
   <p class="visually-hidden" aria-live="polite" aria-atomic="true">
-    {revealed ? 'Answer: ' + answer + '.' : ''}
+    {revealed ? 'Answer: ' + answer + '.' + (romance ? ' Say it like this: ' + romance : '') : ''}
   </p>
 </article>
 
@@ -205,6 +221,34 @@
     font-size: 13.5px;
     line-height: 1.5;
     color: var(--text-muted);
+  }
+  .q-photo {
+    margin: 0 0 2px;
+  }
+  /* the say-it-like-this romance recital — the line to memorize and say at the
+     drop (the model, distinct from the literal component answer above it) */
+  .say {
+    margin: 0;
+    text-align: left;
+    padding: 9px 13px;
+    border-left: 3px solid var(--highlight-line);
+    background: color-mix(in srgb, var(--highlight) 8%, transparent);
+    border-radius: 0 10px 10px 0;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+  .say-k {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--highlight);
+    margin-bottom: 3px;
   }
   /* compact allergen framing under the answer (chips are the global .pill.alt) */
   .allerg {

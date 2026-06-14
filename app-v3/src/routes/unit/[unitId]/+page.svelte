@@ -170,10 +170,10 @@
         {/if}
       {:else if step.type === 'quiz' && step.rung === 'cued'}
         {@const c = cuedFor(step.item)}
-        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="prove it — with a hint" ongrade={grade} note="honest call — a miss just brings it back around" />
+        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} photoId={c.photoId} photoName={c.photoName} romance={c.romance} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="prove it — with a hint" ongrade={grade} note="honest call — a miss just brings it back around" />
       {:else if step.type === 'quiz' && step.rung === 'free'}
         {@const f = freeFor(step.item)}
-        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="prove it — cold" ongrade={grade} note="honest call — a miss just brings it back around" />
+        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} photoId={f.photoId} photoName={f.photoName} romance={f.romance} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="prove it — cold" ongrade={grade} note="honest call — a miss just brings it back around" />
       {:else}
         <TeachCard
           teach={teachFor(step.item)}

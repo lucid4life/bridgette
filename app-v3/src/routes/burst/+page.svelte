@@ -5,6 +5,7 @@
   // no leaderboard, no penalty — it never touches your reviews or your rank.
   // A warm-up game, one tap from Today.
   import Icon from '$lib/components/Icon.svelte';
+  import DishPhoto from '$lib/components/session/DishPhoto.svelte';
   import { allItems, mcFor } from '$lib/journey/items';
   import { nameOf } from '$lib/components/session/util';
   import type { JourneyItem } from '$lib/journey/types';
@@ -113,6 +114,9 @@
 
     {#key idx}
       <article class="bcard">
+        {#if mc.photoId}
+          <div class="b-photo"><DishPhoto thumb photoId={mc.photoId} name={mc.photoName ?? ''} /></div>
+        {/if}
         <p class="b-q">{mc.prompt}</p>
         <div class="b-choices">
           {#each mc.choices as choice, i (i)}
@@ -356,6 +360,9 @@
     border-radius: var(--radius-flash);
     box-shadow: var(--shadow-2);
     animation: card-in 0.16s ease;
+  }
+  .b-photo {
+    margin: 0 0 14px;
   }
   .b-q {
     margin: 0 0 16px;

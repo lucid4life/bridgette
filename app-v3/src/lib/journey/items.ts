@@ -25,6 +25,7 @@ import {
 import { SERVICE_ITEMS, type ServiceItem } from './service-items';
 import { BAR_SERVICE_ITEMS } from './bar-items';
 import { GIVEN_RAW, KEY_COMPONENTS } from './key-components';
+import { ROMANCE } from './romance';
 import type { JourneyItem } from './types';
 
 // ---------------------------------------------------------------- init guard
@@ -51,6 +52,12 @@ for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
   // fail loud at init so a new dish can't silently ship hookless.
   if (!food.memoryHook)
     throw new Error(`journey: food '${foodId}' has no memory hook`);
+  // Every path dish carries a guest-facing romance line (the say-it-at-the-drop
+  // recital surfaced on the dish reveal, the /romance drill + exam, and the study
+  // guide). Authored in journey/romance.ts — fail loud at init so a new path dish
+  // can't silently ship without one.
+  if (!ROMANCE[foodId] || !ROMANCE[foodId].trim())
+    throw new Error(`journey: food '${foodId}' has no authored romance line`);
 }
 
 // Same hard-fail philosophy for Stage 3: every cocktail on a build module must
@@ -230,6 +237,12 @@ export interface McContent {
   prompt: string;
   choices: string[];
   answerIndex: number;
+  /** The dish plate for the prompt (food-anchored kinds only): photoId = food id
+   * (gates on PHOTO_IDS in DishPhoto), photoName for the alt + placeholder. The
+   * route decides whether to render it — practice surfaces pass it through; the
+   * graded mock test does not (D5: never inflate a readiness score). */
+  photoId?: string;
+  photoName?: string;
 }
 /** Allergen framing carried by every dish REVEAL surface (spec: allergen chips
  * + the data.confirm.allergens line wherever a dish answer shows). Service
@@ -244,11 +257,28 @@ export interface CuedContent extends AllergenFraming {
   prompt: string;
   hint: string;
   answer: string;
+  /** dish plate for the prompt (food-anchored kinds) — see McContent */
+  photoId?: string;
+  photoName?: string;
+  /** the say-it-like-this romance line (dish reveals only) */
+  romance?: string;
 }
 export interface FreeContent extends AllergenFraming {
   prompt: string;
   answer: string;
   detail?: string;
+  /** dish plate for the prompt (food-anchored kinds) — see McContent */
+  photoId?: string;
+  photoName?: string;
+  /** the say-it-like-this romance line (dish reveals only) */
+  romance?: string;
+}
+
+/** The plate fields a food-anchored card hands its prompt: photoId = food id
+ * (DishPhoto gates on PHOTO_IDS, branded placeholder otherwise), photoName for
+ * the image alt. Spread into the dish/allergen/pairing accessor returns. */
+function photoOf(f: Food): { photoId: string; photoName: string } {
+  return { photoId: f.id, photoName: f.name };
 }
 export interface DishTeach {
   kind: 'dish';
@@ -266,6 +296,9 @@ export interface DishTeach {
   confirmLine: string;
   /** Optional memory hook (§0b) — a vivid name→components mnemonic, when authored. */
   memoryHook?: string;
+  /** the guest-facing romance recital (the say-it-at-the-drop line) — shown as
+   * the model on the dish teach/description card. */
+  romance?: string;
 }
 export interface ServiceTeach {
   kind: 'service';
@@ -450,6 +483,7 @@ export function pairingMcFor(item: JourneyItem, round = 0): PairingMcContent {
   const distractors = pickPairingDistractors(f, card.answer, round, 4);
   return {
     ...toMc(`${item.id}:pairing:${round}`, card.prompt, [card.answer, ...distractors], card.answer),
+    ...photoOf(f),
     why
   };
 }
@@ -514,8 +548,9 @@ export function mcFor(item: JourneyItem, round = 0): McContent {
   // Pairing items (Stage 5) grade on the dish→pour MC.
   if (item.kind === 'pairing') return pairingMcFor(item, round);
   // Dish items (Stage 1) — minted natively so the answer rotates by round and a
-  // base/given (e.g. "Pizza Dough") is never the call.
-  return componentsMcFor(item, round);
+  // base/given (e.g. "Pizza Dough") is never the call. The plate rides along for
+  // the prompt (food-anchored); the route decides whether to show it.
+  return { ...componentsMcFor(item, round), ...photoOf(foodFor(item)) };
 }
 
 export interface BuildMcContent extends McContent {
@@ -617,6 +652,7 @@ export function allergenMcFor(item: JourneyItem, round = 0): AllergenMcContent {
   const distractors = pickAllergenDistractors(f, answer, round, 4);
   return {
     ...toMc(`${item.id}:allergen:${round}`, card.prompt, [answer, ...distractors], answer),
+    ...photoOf(f),
     why,
     confirmLine: data.confirm.allergens
   };
@@ -1341,7 +1377,8 @@ export function cuedFor(item: JourneyItem): CuedContent {
     return {
       prompt: `A guest orders the ${f.name}. What's the by-the-glass pour, and which lever makes it work?`,
       hint: `the pour starts "${pourInitial}…" · then name the lever`,
-      answer: lever ? `${f.wine} — ${lever.label}. ${lever.script}` : `${f.wine}. ${f.why ?? ''}`
+      answer: lever ? `${f.wine} — ${lever.label}. ${lever.script}` : `${f.wine}. ${f.why ?? ''}`,
+      ...photoOf(f)
     };
   }
   // Allergen items (Stage 2): cued FLAG recall, not component recall.
@@ -1352,6 +1389,7 @@ export function cuedFor(item: JourneyItem): CuedContent {
       prompt: `Which allergens does the ${f.name} carry?`,
       hint: `${flags.length} flag${flags.length === 1 ? '' : 's'} — ${letters}`,
       answer: flags.join(', '),
+      ...photoOf(f),
       ...allergenFraming(f)
     };
   }
@@ -1361,6 +1399,8 @@ export function cuedFor(item: JourneyItem): CuedContent {
     prompt: `What's in the ${f.name}?`,
     hint: `${ingredients.length} components — ${letters}`,
     answer: ingredients.join(', '),
+    ...photoOf(f),
+    romance: ROMANCE[f.id],
     ...allergenFraming(f)
   };
 }
@@ -1399,6 +1439,7 @@ export function freeFor(item: JourneyItem): FreeContent {
     return {
       prompt: `The ${f.name} just landed — call the pour and say why, out loud.`,
       answer: `${f.wine}. ${f.why ?? leverOf(f)?.script ?? ''}`,
+      ...photoOf(f),
       ...(f.cocktail
         ? { detail: `Not drinking? ${f.cocktail}.${f.zero ? ` Zero-proof: ${f.zero}.` : ''}` }
         : {})
@@ -1410,6 +1451,7 @@ export function freeFor(item: JourneyItem): FreeContent {
     return {
       prompt: `Name every allergen flag on the ${f.name}.`,
       answer: flags.join(', '),
+      ...photoOf(f),
       ...(f.allergenNote ? { detail: f.allergenNote } : {}),
       ...allergenFraming(f)
     };
@@ -1417,6 +1459,8 @@ export function freeFor(item: JourneyItem): FreeContent {
   return {
     prompt: `Describe the ${f.name} to a guest — name + key components.`,
     answer: f.ingredients!.join(', '),
+    ...photoOf(f),
+    romance: ROMANCE[f.id],
     ...(f.description ? { detail: f.description } : {}),
     ...allergenFraming(f)
   };
@@ -1431,7 +1475,10 @@ export interface RomanceContent extends AllergenFraming {
   /** The pass bar: the official FIRST-3 ingredients (the Playbook's bold-first-3
    * rule) — fewer when the dish only has 1-2 official components. */
   romanceTargets: string[];
-  /** The official description — it already reads as the romance sentence. */
+  /** The authored guest-facing romance — the say-it-like-this recital the runner
+   * recites (the dish name + >=3 real components in warm, sayable language). */
+  romance: string;
+  /** The official menu description — secondary reference under the romance. */
   modelLine: string;
   /** Full official ingredients, syllabus order. */
   ingredients: string[];
@@ -1451,17 +1498,49 @@ export function romanceFor(item: JourneyItem): RomanceContent {
   // an empty model line silently (every official path dish has a description).
   if (!f.description)
     throw new Error(`journey: food '${f.id}' has no official description for the romance line`);
+  const romance = ROMANCE[f.id];
+  if (!romance) throw new Error(`journey: food '${f.id}' has no authored romance line`);
   return {
     name: f.name,
     category: f.category,
     price: f.price,
     romanceTargets: f.ingredients!.slice(0, 3),
+    romance,
     modelLine: f.description,
     ingredients: f.ingredients!.slice(),
     photoId: f.id,
     ...(f.memoryHook ? { memoryHook: f.memoryHook } : {}),
     ...allergenFraming(f)
   };
+}
+
+export interface RomanceGuideEntry {
+  id: string;
+  name: string;
+  category: string;
+  photoId: string;
+  romance: string;
+}
+export interface RomanceGuideGroup {
+  category: string;
+  dishes: RomanceGuideEntry[];
+}
+/** Every dish with an authored romance line, grouped by menu category in data
+ * order — the read-through study guide (/romance/guide). Includes any off-path
+ * dish that carries a line (e.g. sorbet). Pure: no store, no SRS. */
+export function romanceGuide(): RomanceGuideGroup[] {
+  const groups: RomanceGuideGroup[] = [];
+  for (const f of data.foods) {
+    const romance = ROMANCE[f.id];
+    if (!romance) continue;
+    let g = groups.find((x) => x.category === f.category);
+    if (!g) {
+      g = { category: f.category, dishes: [] };
+      groups.push(g);
+    }
+    g.dishes.push({ id: f.id, name: f.name, category: f.category, photoId: f.id, romance });
+  }
+  return groups;
 }
 
 /** Group into <=4 chunks; order preserved; sizes differ by at most 1. */
@@ -1556,6 +1635,7 @@ export function teachFor(item: JourneyItem): TeachContent {
     menu: f.menu,
     photoId: f.id,
     confirmLine: data.confirm.allergens,
-    ...(f.memoryHook ? { memoryHook: f.memoryHook } : {})
+    ...(f.memoryHook ? { memoryHook: f.memoryHook } : {}),
+    ...(ROMANCE[f.id] ? { romance: ROMANCE[f.id] } : {})
   };
 }

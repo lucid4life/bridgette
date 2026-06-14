@@ -128,10 +128,10 @@
     {#key prog.position}
       {#if step.type === 'quiz' && step.rung === 'cued'}
         {@const c = cuedFor(step.item)}
-        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="shaky call — with a hint" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
+        <FlashReveal prompt={c.prompt} hint={c.hint} answer={c.answer} photoId={c.photoId} photoName={c.photoName} romance={c.romance} allergens={c.allergens} allergenNote={c.allergenNote} confirmLine={c.confirmLine} kicker="shaky call — with a hint" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
       {:else if step.type === 'quiz'}
         {@const f = freeFor(step.item)}
-        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shaky call — cold" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
+        <FlashReveal prompt={f.prompt} answer={f.answer} detail={f.detail} photoId={f.photoId} photoName={f.photoName} romance={f.romance} allergens={f.allergens} allergenNote={f.allergenNote} confirmLine={f.confirmLine} kicker="shaky call — cold" confidence ongrade={grade} note="honest call — misses come back tonight, not on the floor" />
       {:else}
         <TeachCard teach={teachFor(step.item)} eyebrow="back to this one" oncontinue={continueStep} continueLabel="Got it — continue" />
       {/if}

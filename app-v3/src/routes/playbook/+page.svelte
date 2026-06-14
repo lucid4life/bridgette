@@ -68,6 +68,7 @@
     <h1>playbook</h1>
     <p class="sub">what's in it, what it costs, what to flag — fast.</p>
     <a class="cram-link" href="/playbook/cram">print the menu cram →</a>
+    <a class="cram-link" href="/romance/guide">read the romance guide →</a>
   </header>
 
   <nav class="jump no-print" aria-label="Jump to a section">

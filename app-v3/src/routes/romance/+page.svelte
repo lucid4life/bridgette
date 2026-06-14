@@ -190,6 +190,7 @@
           {selectedCat ? `drill the ${selectedCat === 'Main' ? 'mains' : selectedCat.toLowerCase()}` : 'start the drill'}
         </button>
         <a class="btn ghost" href="/romance/exam">take the scored exam</a>
+        <a class="btn ghost" href="/romance/guide">read the guide</a>
         <a class="btn ghost" href="/today">not yet — back to today</a>
       </div>
       <p class="i-exam">tested Monday? the <a href="/romance/exam">romance exam</a> scores you to the real bar — name + three components, every dish.</p>

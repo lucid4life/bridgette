@@ -109,8 +109,10 @@
 
       <blockquote class="model">
         <p class="m-label">the line to land</p>
-        <p class="m-line">“{content.modelLine}”</p>
+        <p class="m-line">“{content.romance}”</p>
       </blockquote>
+
+      <p class="menu-desc"><span class="md-label">the menu reads</span>{content.modelLine}</p>
 
       {#if content.memoryHook}
         <p class="hook"><span class="hook-label">the hook</span>{content.memoryHook}</p>
@@ -287,6 +289,23 @@
     font-style: italic;
     line-height: 1.55;
     color: var(--text-body);
+  }
+  /* official menu description as a smaller secondary reference under the romance */
+  .menu-desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: left;
+    color: var(--text-muted);
+  }
+  .md-label {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-label);
+    margin-right: 6px;
   }
 
   .hook {

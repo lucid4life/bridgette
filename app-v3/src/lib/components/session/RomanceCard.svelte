@@ -12,10 +12,15 @@
   let {
     content,
     kicker = 'say it like you’re setting it down',
+    platePrompt = true,
     ongrade
   }: {
     content: RomanceContent;
     kicker?: string;
+    /** show the plate on the PROMPT (the drill — realistic drop-off practice).
+     * The graded mock test passes false so the plate waits for the reveal and a
+     * readiness score stays honest (D5). */
+    platePrompt?: boolean;
     ongrade: (gotIt: boolean) => void;
   } = $props();
 
@@ -65,6 +70,12 @@
   <p class="kicker">{kicker}</p>
   <p class="r-name" tabindex="-1" bind:this={qEl}>{content.name}</p>
   <p class="r-meta">{content.category}<span class="r-dot" aria-hidden="true"></span>{price}</p>
+  <!-- the plate, on the PROMPT — you see it the way you would at the drop, then
+       romance it (practice mirrors the real hand-off). Graded surfaces (the mock
+       test) pass platePrompt={false} so the plate waits for the reveal. -->
+  {#if platePrompt}
+    <div class="r-photo"><DishPhoto thumb photoId={content.photoId} name={content.name} /></div>
+  {/if}
   <p class="r-prompt">“This is our {content.name}…” — plus the {targetCount === 3 ? 'three' : targetCount} things that matter.</p>
 
   {#if !revealed}
@@ -74,10 +85,11 @@
     <p class="think">out loud — actually out loud. then check.</p>
   {:else}
     <div class="rv" tabindex="-1" bind:this={rvEl}>
-      <!-- the plate, on the REVEAL only — seeing it before recall would give the
-           answer away; here it anchors the line you just said (§0b dual coding) -->
-      <DishPhoto framed photoId={content.photoId} name={content.name} />
-
+      {#if !platePrompt}
+        <!-- graded surfaces: the plate waits for the reveal so seeing it can't
+             inflate the score; here it anchors the line you just said -->
+        <DishPhoto framed photoId={content.photoId} name={content.name} />
+      {/if}
       <div class="passbar">
         <p class="pb-label">the pass bar — say these {targetCount}</p>
         <ol class="targets" aria-label="The components your line must carry">
@@ -88,9 +100,11 @@
       </div>
 
       <blockquote class="model">
-        <p class="m-label">say it like</p>
-        <p class="m-line">“{content.modelLine}”</p>
+        <p class="m-label">say it like this</p>
+        <p class="m-line">“{content.romance}”</p>
       </blockquote>
+
+      <p class="menu-desc"><span class="md-label">the menu reads</span>{content.modelLine}</p>
 
       {#if content.memoryHook}
         <p class="hook"><span class="hook-label">the hook</span>{content.memoryHook}</p>
@@ -190,6 +204,9 @@
     max-width: 36ch;
     justify-self: center;
   }
+  .r-photo {
+    margin: 2px 0 0;
+  }
   .act {
     display: flex;
     justify-content: center;
@@ -274,6 +291,24 @@
     font-style: italic;
     line-height: 1.55;
     color: var(--text-body);
+  }
+  /* the official menu description, kept as a smaller secondary reference under
+     the romance the runner actually recites */
+  .menu-desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: left;
+    color: var(--text-muted);
+  }
+  .md-label {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-label);
+    margin-right: 6px;
   }
 
   .hook {

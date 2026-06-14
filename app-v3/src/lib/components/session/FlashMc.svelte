@@ -5,6 +5,7 @@
   // `warm` = pretest framing: a miss is the point, never an alarm.
   import { tick } from 'svelte';
   import Icon from '$lib/components/Icon.svelte';
+  import DishPhoto from './DishPhoto.svelte';
   import type { McContent } from '$lib/journey/items';
   import type { McAnswer } from '$lib/session';
 
@@ -15,6 +16,7 @@
     why,
     confirmLine,
     missText,
+    hidePhoto = false,
     onanswer,
     oncontinue
   }: {
@@ -28,6 +30,10 @@
     /** override the default miss line (which promises the item "comes back
      * around" — wrong on one-pass surfaces like the mock test) */
     missText?: string;
+    /** suppress the prompt plate (mc.photoId, on food-anchored cards) — the
+     * graded mock test sets this so seeing the dish can't inflate a readiness
+     * score (D5); practice surfaces leave it off and the plate rides along. */
+    hidePhoto?: boolean;
     onanswer: (choiceIndex: number) => McAnswer;
     oncontinue: () => void;
   } = $props();
@@ -97,6 +103,9 @@
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 <article class="flash fmc" class:answered={!!result} onclick={cardTap}>
   {#if kicker}<p class="kicker">{kicker}</p>{/if}
+  {#if mc.photoId && !hidePhoto}
+    <div class="q-photo"><DishPhoto thumb photoId={mc.photoId} name={mc.photoName ?? ''} /></div>
+  {/if}
   <p class="q" tabindex="-1" bind:this={qEl}>{mc.prompt}</p>
 
   <div class="choices" role="group" aria-label="Answer choices">
@@ -169,6 +178,9 @@
   }
   .q:focus {
     outline: none; /* programmatic landing spot, not an interactive control */
+  }
+  .q-photo {
+    margin: 0 0 2px;
   }
   .choices {
     display: grid;

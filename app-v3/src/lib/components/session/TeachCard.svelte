@@ -69,6 +69,9 @@
       <p class="t-cat"><span class="pill">{teach.category}</span></p>
 
       {#if teach.description}<p class="t-desc">{teach.description}</p>{/if}
+      {#if teach.romance}
+        <p class="t-romance"><span class="t-romance-k">say it like this</span>{teach.romance}</p>
+      {/if}
 
       <div class="t-sec">
         <p class="t-label">components</p>
@@ -325,6 +328,30 @@
     margin: 14px 0 0;
     font-size: 14.5px;
     line-height: 1.55;
+  }
+  /* the romance recital — the line to memorize and say at the drop, set off as
+     the model right under the menu description */
+  .t-romance {
+    margin: 12px 0 0;
+    padding: 10px 14px;
+    border-left: 3px solid var(--highlight-line);
+    background: color-mix(in srgb, var(--highlight) 8%, transparent);
+    border-radius: 0 10px 10px 0;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text-body);
+  }
+  .t-romance-k {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--highlight);
+    margin-bottom: 3px;
   }
 
   .t-sec {

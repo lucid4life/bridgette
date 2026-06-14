@@ -213,26 +213,26 @@ for (const theme of THEMES) {
       await page.goto('/romance');
       await page.getByRole('button', { name: 'start the drill' }).click();
       await expect(page.locator('article.rom')).toBeVisible();
-      // the plate must NOT be on the question face — seeing it gives the answer away
-      await expect(page.locator('.rom .dp.framed')).toHaveCount(0);
-      await scan(page); // the question face (name + prompt)
+      // the plate now rides the PROMPT — you see it the way you would at the drop,
+      // then romance it (practice; the graded exam keeps the plate reveal-only)
+      await expect(page.locator('.rom .r-photo .dp')).toBeVisible();
+      await scan(page); // the question face (name + plate + prompt)
       await page.locator('.rom .act .btn').click();
       await expect(page.locator('.rom .rv')).toBeVisible();
-      await expect(page.locator('.rom .dp.framed')).toBeVisible(); // the plate anchors the reveal (§0b)
+      await expect(page.locator('.rom .model .m-line')).toBeVisible(); // the romance model line
+      await expect(page.locator('.rom .rv .dp')).toHaveCount(0); // plate stays on the prompt, not duplicated on the reveal
       await scan(page); // the pass bar + model line + grade bar
     });
 
-    test('axe: romance reveal renders a real dish photo (dual coding, photo’d dish)', async ({ page }) => {
+    test('axe: romance drill prompt renders a real dish photo (dual coding, photo’d dish)', async ({ page }) => {
       // /romance?drill=<foodId> auto-starts a targeted drill — tuna-crudo HAS a
       // plate, so this exercises the real <img alt> path (not the placeholder).
       await page.goto('/romance?drill=tuna-crudo');
       await expect(page.locator('article.rom')).toBeVisible();
-      await page.locator('.rom .act .btn').click();
-      await expect(page.locator('.rom .rv')).toBeVisible();
-      const img = page.locator('.rom .dp.framed img');
+      const img = page.locator('.rom .r-photo .dp img'); // the plate rides the prompt now
       await expect(img).toBeVisible();
       await expect(img).toHaveAttribute('alt', 'Tuna Crudo'); // alt = dish name (axe AA)
-      await scan(page); // a real plate image on the reveal, both themes
+      await scan(page); // a real plate image on the prompt, both themes
     });
 
     test('axe: romance exam — question face + the structured self-check', async ({ page }) => {
@@ -255,11 +255,14 @@ for (const theme of THEMES) {
       await scan(page); // the readiness ring + stats + byCategory breakdown
     });
 
-    test('axe: food test in-question state', async ({ page }) => {
+    test('axe: food test in-question state — graded, so no plate on the prompt (D5)', async ({ page }) => {
       await page.goto('/test');
       await page.getByRole('button', { name: 'start the test' }).click();
       // the first face is dealt per run: an MC variant OR the romance card
       await expect(page.locator('article.fmc, article.rom').first()).toBeVisible();
+      // D5: a scored surface never shows the dish on the prompt (would inflate the score)
+      await expect(page.locator('.fmc .dp')).toHaveCount(0);
+      await expect(page.locator('.rom .r-photo .dp')).toHaveCount(0);
       await scan(page);
     });
 
