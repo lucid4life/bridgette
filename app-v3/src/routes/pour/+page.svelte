@@ -165,6 +165,8 @@
           prompt={f.prompt}
           answer={f.answer}
           detail={f.detail}
+          photoId={f.photoId}
+          photoName={f.photoName}
           kicker="call the pour + the why out loud, then check"
           note="honest call — a miss just brings it back around"
           ongrade={grade}

@@ -9,6 +9,7 @@
   import { PRON_TERMS } from '$lib/journey/pronunciation';
   import { ALLERGEN_LEGEND, SEAT_RULES, TABLE_MAP } from '$lib/journey/reference';
   import TermSay from '$lib/components/session/TermSay.svelte';
+  import DishPhoto from '$lib/components/session/DishPhoto.svelte';
 
   // Category chips come from the data in menu order (Snacks → Matinee / Late
   // Night); the long pseudo-category renders short on the chip and the pill.
@@ -110,6 +111,7 @@
           class:hidden
           onclick={() => reveal(f.id)}
         >
+          <div class="pb-photo" aria-hidden="true"><DishPhoto photoId={f.id} name={f.name} /></div>
           <h3 class="dish-name">
             <span class="nm">{f.name}</span><span class="dots" aria-hidden="true"
             ></span><span class="price">{price(f.price)}</span>
@@ -326,6 +328,15 @@
   }
 
   .dish { display: flex; flex-direction: column; align-items: flex-start; }
+  /* a small plate at the top-left of each card — see the dish at a glance in the
+     lookup (decorative: the name is the h3 below, so the wrapper is aria-hidden) */
+  .pb-photo {
+    width: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 0 10px;
+    box-shadow: var(--shadow-1);
+  }
   /* name … price — the printed menu's dotted leader */
   .dish-name {
     display: flex; align-items: baseline; width: 100%; margin: 0; font-size: 19px;
