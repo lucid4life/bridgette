@@ -1,8 +1,9 @@
 name: CI
 
 # Runs the same gates Adrian runs locally, on every push/PR — so the data-safety
-# guard, the type check, and the axe/a11y suite become real merge blockers once a
-# GitHub remote exists. No deploy here (Adrian deploys).
+# guard, the type check, and the axe/a11y suite become real merge blockers.
+# The `app` job matrixes over both Svelte apps: app/ (v2, frozen) and app-v3/
+# (v3, the live app). No deploy here (Adrian deploys).
 on:
   push:
     branches: [main, v2-app]
@@ -10,19 +11,23 @@ on:
 
 jobs:
   app:
-    name: app (test · check · build · e2e)
+    name: ${{ matrix.dir }} (test · check · build · e2e)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: [app, app-v3]
     defaults:
       run:
-        working-directory: app
+        working-directory: ${{ matrix.dir }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: app/package-lock.json
-      # npm install (not ci): the committed lockfile omits some platform-optional
+          cache-dependency-path: ${{ matrix.dir }}/package-lock.json
+      # npm install (not ci): the committed lockfiles omit some platform-optional
       # native deps (@emnapi/*), which `npm ci` rejects but `npm install` resolves —
       # matching what runs locally and on Vercel.
       - run: npm install --no-audit --no-fund
