@@ -1,6 +1,6 @@
 {
-  "generated": "2026-06-13",
-  "notes": "31 images (26 food, 5 cocktail). 5 cocktail + 4 food shots were scraped/name-matched from bridgettebar.com + Instagram (see this file's git history for the original provenance). The remaining 22 food shots are Adrian's own labeled phone photos (repo /Photos), square-cropped to the teach-card band by tools/photo_scrape/build_dish_photos.py.",
+  "generated": "2026-06-14",
+  "notes": "33 images (28 food, 5 cocktail). 5 cocktail + 4 food shots scraped/name-matched from bridgettebar.com + Instagram; 22 food shots are Adrian's own labeled phone photos (repo /Photos), square-cropped by tools/photo_scrape/build_dish_photos.py; Hummus Chips + Snap Peas are verified TripAdvisor customer photos pending Adrian's own reshoot.",
   "images": [
     {
       "id": "bread-butter",
@@ -249,6 +249,22 @@
       "source": "local",
       "sourceUrl": "",
       "matchedBy": "Adrian's labeled dish photo (Wood Roasted Halibut.jpg), square-cropped to the food-card band"
+    },
+    {
+      "id": "hummus-chips",
+      "kind": "food",
+      "file": "hummus-chips.webp",
+      "source": "tripadvisor",
+      "sourceUrl": "https://media-cdn.tripadvisor.com/media/photo-o/10/51/e1/ec/hummus-chips.jpg",
+      "matchedBy": "TripAdvisor customer photo on the Bridgette Bar Calgary listing, captioned with the dish name; verified by eye; square-cropped to the food-card band"
+    },
+    {
+      "id": "snap-peas",
+      "kind": "food",
+      "file": "snap-peas.webp",
+      "source": "tripadvisor",
+      "sourceUrl": "https://media-cdn.tripadvisor.com/media/photo-o/10/51/e2/44/snap-peas.jpg",
+      "matchedBy": "TripAdvisor customer photo on the Bridgette Bar Calgary listing, captioned with the dish name; verified by eye; square-cropped to the food-card band"
     }
   ]
 }
