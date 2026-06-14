@@ -16,8 +16,8 @@ jobs:
       run:
         working-directory: app
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -41,14 +41,14 @@ jobs:
     name: data (check_training.py)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       # check_training.py runs `node --check`/`node -e` on src/data.js and verifies the
       # dist/ bundle is byte-in-sync — so the runner needs Node AND a fresh bundle build
       # (dist/ is gitignored, absent on a clean checkout).
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Build the v1 single-file bundle
