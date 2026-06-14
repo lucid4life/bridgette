@@ -445,8 +445,11 @@ export function pairingMcFor(item: JourneyItem, round = 0): PairingMcContent {
   if (!card) throw new Error(`journey: '${item.id}' has no pairing engine card (dish has no pour)`);
   const lever = leverOf(f);
   const why = lever ? `${lever.label} — ${lever.script}${f.why ? ` ${f.why}` : ''}` : (f.why ?? '');
+  // One true pour (card.answer) — can't rotate — but the WRONG pours rotate by
+  // round (other dishes' pours, same dish-category first), 5 options.
+  const distractors = pickPairingDistractors(f, card.answer, round, 4);
   return {
-    ...toMc(roundSeed(`${item.id}:pairing`, round), card.prompt, card.choices!, card.answer),
+    ...toMc(`${item.id}:pairing:${round}`, card.prompt, [card.answer, ...distractors], card.answer),
     why
   };
 }
@@ -467,8 +470,11 @@ export function wineMcFor(item: JourneyItem, round = 0): WineMcContent {
   const card = wineIdentityCardFor(w.id);
   if (!card)
     throw new Error(`journey: '${item.id}' has no wine-identity engine card`);
+  // One true grape+region (card.answer) — can't rotate — but the WRONG identities
+  // rotate by round (other wines, same family first), 5 options.
+  const distractors = pickWineDistractors(w, card.answer, round, 4);
   return {
-    ...toMc(roundSeed(`${item.id}:wine`, round), card.prompt, card.choices!, card.answer),
+    ...toMc(`${item.id}:wine:${round}`, card.prompt, [card.answer, ...distractors], card.answer),
     why: w.tenSecond || w.profile || ''
   };
 }
@@ -602,8 +608,15 @@ export function allergenMcFor(item: JourneyItem, round = 0): AllergenMcContent {
   if (!card.why || !card.why.endsWith(ENGINE_KITCHEN_CONFIRM))
     throw new Error(`journey: allergens card '${card.id}' lost its confirm tail — deck shape drifted`);
   const why = card.why.slice(0, card.why.length - ENGINE_KITCHEN_CONFIRM.length).trim();
+  // Mint the QUESTION natively so each round differs: a dish carries SEVERAL flags,
+  // so rotate WHICH flag is the answer (each is genuinely carried) + fresh
+  // distractor allergens the dish does NOT carry, 5 options. The `why` (the dish's
+  // FULL flags + note — the safety teach-back) and confirmLine are unchanged.
+  const flags = f.allergens ?? [];
+  const answer = flags[((round % flags.length) + flags.length) % flags.length];
+  const distractors = pickAllergenDistractors(f, answer, round, 4);
   return {
-    ...toMc(roundSeed(`${item.id}:allergen`, round), card.prompt, card.choices!, card.answer),
+    ...toMc(`${item.id}:allergen:${round}`, card.prompt, [answer, ...distractors], answer),
     why,
     confirmLine: data.confirm.allergens
   };
@@ -716,6 +729,17 @@ export function distinctivePool(f: Food): string[] {
   return [...pool].sort((a, b) => (freq.get(normKey(a)) ?? 99) - (freq.get(normKey(b)) ?? 99));
 }
 
+/** Take `n` items from an ordered candidate list through a `round`-stepped window
+ * — consecutive rounds get disjoint sets until the pool wraps, so no two rounds
+ * show the same distractors. Shared by every MC distractor picker. */
+function windowed(ordered: readonly string[], round: number, n: number): string[] {
+  if (ordered.length <= n) return [...ordered];
+  const start = (round * n) % ordered.length;
+  const out: string[] = [];
+  for (let k = 0; k < ordered.length && out.length < n; k++) out.push(ordered[(start + k) % ordered.length]);
+  return out;
+}
+
 /** Distractors for a dish MC: ingredients of OTHER path dishes (never in this
  * dish, never a given/generic), deduped by normKey, same-category first for
  * tougher discrimination — drawn through a `round`-rotated window so each round
@@ -741,11 +765,7 @@ function pickDishDistractors(f: Food, answer: string, round: number, n: number):
     ...shuffled(sameCat, mulberry32(hashId(`${f.id}:dd`))),
     ...shuffled(crossCat, mulberry32(hashId(`${f.id}:dx`)))
   ];
-  if (ordered.length <= n) return ordered; // unreachable on path data (40 other dishes)
-  const start = (round * n) % ordered.length;
-  const out: string[] = [];
-  for (let k = 0; k < ordered.length && out.length < n; k++) out.push(ordered[(start + k) % ordered.length]);
-  return out;
+  return windowed(ordered, round, n);
 }
 
 /**
@@ -822,11 +842,75 @@ function pickBuildDistractors(c: Cocktail, answer: string, round: number, n: num
     ...shuffled(sameCat, mulberry32(hashId(`${c.id}:bd`))),
     ...shuffled(crossCat, mulberry32(hashId(`${c.id}:bx`)))
   ];
-  if (ordered.length <= n) return ordered;
-  const start = (round * n) % ordered.length;
-  const out: string[] = [];
-  for (let k = 0; k < ordered.length && out.length < n; k++) out.push(ordered[(start + k) % ordered.length]);
-  return out;
+  return windowed(ordered, round, n);
+}
+
+// ---- single-fact MC distractor variety (allergen / wine / pairing) ----------
+// These cards have ONE true answer (a flag the dish carries / the wine's grape+
+// region / the dish's pour). Unlike a dish component the answer mostly can't
+// rotate (allergens are the exception — a dish carries several flags, so we
+// rotate WHICH one is asked), but the WRONG options CAN, so no two rounds show
+// the same line-up. Same round-windowed pattern as the dish/build pickers; the
+// frozen decks still supply the prompt + the one true answer (+ the allergen
+// safety teach-back), but the distractors are minted here.
+
+/** Other allergen tokens (the path vocab) NOT carried by this dish — windowed. */
+function pickAllergenDistractors(f: Food, answer: string, round: number, n: number): string[] {
+  const mine = new Set((f.allergens ?? []).map((a) => a.toLowerCase()));
+  const a0 = answer.toLowerCase();
+  const pool = getAllergenVocab().filter((a) => !mine.has(a.toLowerCase()) && a.toLowerCase() !== a0);
+  return windowed(shuffled(pool, mulberry32(hashId(`${f.id}:ad`))), round, n);
+}
+
+/** Every wine's "grape — region" identity string (frozen wine-identity deck) with
+ * its family — the distractor pool for wineMcFor. Built once. */
+type WineIdentity = { answer: string; family: Wine['family'] };
+let wineIdentityPool: WineIdentity[] | null = null;
+function getWineIdentityPool(): WineIdentity[] {
+  if (!wineIdentityPool) {
+    wineIdentityPool = data.wines
+      .map((w): WineIdentity | null => {
+        const card = wineIdentityCardFor(w.id);
+        return card ? { answer: card.answer, family: w.family } : null;
+      })
+      .filter((x): x is WineIdentity => x !== null);
+  }
+  return wineIdentityPool;
+}
+
+/** Other wines' grape+region — same family first — windowed. */
+function pickWineDistractors(w: Wine, answer: string, round: number, n: number): string[] {
+  const seen = new Set<string>([answer]);
+  const sameFam: string[] = [];
+  const crossFam: string[] = [];
+  for (const o of getWineIdentityPool()) {
+    if (seen.has(o.answer)) continue;
+    seen.add(o.answer);
+    (o.family === w.family ? sameFam : crossFam).push(o.answer);
+  }
+  const ordered = [
+    ...shuffled(sameFam, mulberry32(hashId(`${w.id}:wd`))),
+    ...shuffled(crossFam, mulberry32(hashId(`${w.id}:wx`)))
+  ];
+  return windowed(ordered, round, n);
+}
+
+/** Other dishes' by-the-glass pours — same dish-category first — windowed. */
+function pickPairingDistractors(f: Food, answer: string, round: number, n: number): string[] {
+  const { dishes } = getReverseUniverse();
+  const seen = new Set<string>([answer]);
+  const sameCat: string[] = [];
+  const crossCat: string[] = [];
+  for (const d of dishes) {
+    if (d.id === f.id || !d.wine || seen.has(d.wine)) continue;
+    seen.add(d.wine);
+    (d.category === f.category ? sameCat : crossCat).push(d.wine);
+  }
+  const ordered = [
+    ...shuffled(sameCat, mulberry32(hashId(`${f.id}:pd`))),
+    ...shuffled(crossCat, mulberry32(hashId(`${f.id}:px`)))
+  ];
+  return windowed(ordered, round, n);
 }
 
 /** NEW minted runtime content (no frozen ids involved): "Which dish comes with

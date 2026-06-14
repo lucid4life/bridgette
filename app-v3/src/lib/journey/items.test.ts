@@ -382,7 +382,7 @@ const PATH_FOOD_IDS = Object.values(UNIT_FOOD_IDS).flat();
 const ENGINE_KITCHEN_CONFIRM =
   'Always confirm allergens with the kitchen before promising a guest.';
 
-describe('hasAllergenMc / allergenMcFor: the frozen allergens card, reused', () => {
+describe('hasAllergenMc / allergenMcFor: native flag MC (frozen why+prompt, minted rotating choices)', () => {
   const deck = (generateDeck('allergens', data) as Card[]).filter((c) => c.sourceKind === 'food');
 
   it('the engine deck shape holds: 41 food cards, every why ends with the kitchen confirm', () => {
@@ -405,27 +405,51 @@ describe('hasAllergenMc / allergenMcFor: the frozen allergens card, reused', () 
     expect(() => allergenMcFor(svc)).toThrow(/dish/);
   });
 
-  it.each(PATH_FOOD_IDS)('%s reuses the engine card content', (foodId) => {
+  it.each(PATH_FOOD_IDS)('%s — native flag MC: answer is a real flag, distractors are NOT, safety why intact', (foodId) => {
+    const f = food(foodId);
+    const flagSet = new Set(f.allergens!.map((a) => a.toLowerCase()));
     const card = deck.find((c) => c.sourceId === foodId)!;
-    const mc = allergenMcFor(dishItem(foodId));
-    expect(mc.prompt).toBe(card.prompt);
-    expect([...mc.choices].sort()).toEqual([...card.choices!].sort());
-    expect(mc.choices[mc.answerIndex]).toBe(card.answer);
-    // why = the card's flags + note VERBATIM; only the frozen v2 confirm tail is
-    // lifted off (replaced by the app-wide confirmLine) — reconstruction proves
-    // no content was lost or rewritten.
-    expect(`${mc.why} ${ENGINE_KITCHEN_CONFIRM}`).toBe(card.why);
-    expect(mc.why).toMatch(/^Allergen flags: /);
-    for (const flag of food(foodId).allergens!) expect(mc.why, foodId).toContain(flag);
-    // safety framing is non-negotiable — the ONE standard line, same as every
-    // other allergen surface in v3
-    expect(mc.confirmLine).toBe(data.confirm.allergens);
+    for (let r = 0; r < 3; r++) {
+      const mc = allergenMcFor(dishItem(foodId), r);
+      expect(mc.prompt).toBe(card.prompt); // prompt unchanged ("Which allergen flag does the X carry?")
+      expect(mc.choices.length).toBeGreaterThanOrEqual(2);
+      expect(mc.choices.length).toBeLessThanOrEqual(5);
+      expect(new Set(mc.choices.map((c) => c.toLowerCase())).size, `${foodId} r${r} distinct`).toBe(mc.choices.length);
+      const answer = mc.choices[mc.answerIndex];
+      expect(flagSet.has(answer.toLowerCase()), `${foodId} r${r} answer "${answer}"`).toBe(true);
+      mc.choices.forEach((c, i) => {
+        if (i !== mc.answerIndex)
+          expect(flagSet.has(c.toLowerCase()), `${foodId} r${r} distractor "${c}"`).toBe(false);
+      });
+      // the safety teach-back is UNCHANGED: still the card's flags + note (only the
+      // frozen v2 confirm tail lifted off, replaced by the app-wide confirmLine)
+      expect(`${mc.why} ${ENGINE_KITCHEN_CONFIRM}`).toBe(card.why);
+      expect(mc.confirmLine).toBe(data.confirm.allergens);
+    }
   });
 
-  it('is deterministic per item (same choice order on every call)', () => {
-    const a = allergenMcFor(dishItem('french-fries'));
-    const b = allergenMcFor(dishItem('french-fries'));
-    expect(a).toEqual(b);
+  it('offers 5 options on a typical dish (more options than before)', () => {
+    expect(allergenMcFor(dishItem('french-fries'), 0).choices.length).toBe(5);
+  });
+
+  it('rotates WHICH flag is asked across rounds for a multi-flag dish', () => {
+    const multi = PATH_FOOD_IDS.find((id) => food(id).allergens!.length >= 2)!;
+    const asked = [0, 1].map((r) => {
+      const mc = allergenMcFor(dishItem(multi), r);
+      return mc.choices[mc.answerIndex].toLowerCase();
+    });
+    expect(new Set(asked).size).toBe(2); // a different real flag each round
+  });
+
+  it('a different round shows a different line-up (answer or distractors change)', () => {
+    const sig = (m: { choices: string[]; answerIndex: number }) =>
+      `${m.choices[m.answerIndex].toLowerCase()}|${[...m.choices].map((c) => c.toLowerCase()).sort().join(',')}`;
+    expect(sig(allergenMcFor(dishItem('french-fries'), 0))).not.toBe(sig(allergenMcFor(dishItem('french-fries'), 1)));
+  });
+
+  it('is deterministic per (item, round)', () => {
+    expect(allergenMcFor(dishItem('french-fries'), 0)).toEqual(allergenMcFor(dishItem('french-fries'), 0));
+    expect(allergenMcFor(dishItem('french-fries'), 2)).toEqual(allergenMcFor(dishItem('french-fries'), 2));
   });
 
   it('answer position varies across items (no always-first tell)', () => {

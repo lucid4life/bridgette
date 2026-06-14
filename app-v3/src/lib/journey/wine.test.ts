@@ -41,19 +41,45 @@ describe('itemsForUnit: wine modules', () => {
   });
 });
 
-describe('wineMcFor: reuses the frozen wine-identity card', () => {
+describe('wineMcFor: native identity MC (one true answer, distractors varied by round)', () => {
+  const allIdentities = [...grapeCardOf.values()].map((c) => c.answer);
+
   it.each(WINE_ITEMS.map((i) => [i.wineId!, i] as const))(
-    '%s — MC matches wine-identity:<id>:grape',
+    '%s — answer is THIS wine\'s grape+region; the distractors are OTHER wines, never this one',
     (wineId, item) => {
       const card = grapeCardOf.get(wineId)!;
-      expect(card, wineId).toBeDefined();
-      const mc = wineMcFor(item);
-      expect(mc.prompt).toBe(card.prompt);
-      expect([...mc.choices].sort()).toEqual([...card.choices!].sort());
-      expect(mc.choices[mc.answerIndex]).toBe(card.answer);
-      expect(new Set(mc.choices).size).toBe(4);
+      const others = new Set(allIdentities.filter((a) => a !== card.answer));
+      for (let r = 0; r < 3; r++) {
+        const mc = wineMcFor(item, r);
+        expect(mc.prompt).toBe(card.prompt);
+        expect(mc.choices.length).toBeGreaterThanOrEqual(2);
+        expect(mc.choices.length).toBeLessThanOrEqual(5);
+        expect(new Set(mc.choices).size).toBe(mc.choices.length); // distinct
+        expect(mc.choices[mc.answerIndex]).toBe(card.answer); // the ONE true grape+region
+        mc.choices.forEach((c, i) => {
+          if (i !== mc.answerIndex) expect(others.has(c), `${wineId} r${r} distractor "${c}"`).toBe(true);
+        });
+      }
     }
   );
+
+  it('offers 5 options (more than before)', () => {
+    expect(wineMcFor(WINE_ITEMS[0], 0).choices.length).toBe(5);
+  });
+
+  it('a different round keeps the one right answer but shows different wrong options', () => {
+    const item = WINE_ITEMS[0];
+    const wrongs = (r: number) => {
+      const m = wineMcFor(item, r);
+      return m.choices.filter((_, i) => i !== m.answerIndex).slice().sort().join('|');
+    };
+    const ans = (r: number) => {
+      const m = wineMcFor(item, r);
+      return m.choices[m.answerIndex];
+    };
+    expect(ans(0)).toBe(ans(1)); // one true identity — can't rotate
+    expect(wrongs(0)).not.toBe(wrongs(1)); // but the distractors do
+  });
 
   it('the reveal teaches the ten-second story', () => {
     for (const item of WINE_ITEMS) {
@@ -67,8 +93,11 @@ describe('wineMcFor: reuses the frozen wine-identity card', () => {
     for (const item of WINE_ITEMS) expect(mcFor(item)).toEqual(wineMcFor(item));
   });
 
-  it('is deterministic and does not place the answer first on every card', () => {
-    for (const item of WINE_ITEMS) expect(wineMcFor(item)).toEqual(wineMcFor(item));
+  it('is deterministic per (item, round) and does not place the answer first on every card', () => {
+    for (const item of WINE_ITEMS) {
+      expect(wineMcFor(item, 0)).toEqual(wineMcFor(item, 0));
+      expect(wineMcFor(item, 2)).toEqual(wineMcFor(item, 2));
+    }
     const positions = new Set(WINE_ITEMS.map((i) => wineMcFor(i).answerIndex));
     expect(positions.size).toBeGreaterThan(1);
   });

@@ -42,19 +42,45 @@ describe('itemsForUnit: pairing modules', () => {
   });
 });
 
-describe('pairingMcFor: reuses the frozen pairing card', () => {
+describe('pairingMcFor: native dish→pour MC (one true pour, distractors varied by round)', () => {
+  const allPours = [...new Set(data.foods.map((f) => f.wine).filter((w): w is string => !!w))];
+
   it.each(PAIR_ITEMS.map((i) => [i.foodId!, i] as const))(
-    '%s — MC matches pairing:<id>:match (dish → pour)',
+    '%s — answer is THIS dish\'s pour; the distractors are OTHER pours, never this one',
     (foodId, item) => {
       const card = pairCardOf.get(foodId)!;
-      expect(card, foodId).toBeDefined();
-      const mc = pairingMcFor(item);
-      expect(mc.prompt).toBe(card.prompt);
-      expect([...mc.choices].sort()).toEqual([...card.choices!].sort());
-      expect(mc.choices[mc.answerIndex]).toBe(card.answer); // the wine pour
-      expect(new Set(mc.choices).size).toBe(4);
+      const others = new Set(allPours.filter((p) => p !== card.answer));
+      for (let r = 0; r < 3; r++) {
+        const mc = pairingMcFor(item, r);
+        expect(mc.prompt).toBe(card.prompt);
+        expect(mc.choices.length).toBeGreaterThanOrEqual(2);
+        expect(mc.choices.length).toBeLessThanOrEqual(5);
+        expect(new Set(mc.choices).size).toBe(mc.choices.length); // distinct
+        expect(mc.choices[mc.answerIndex]).toBe(card.answer); // the dish's by-the-glass pour
+        mc.choices.forEach((c, i) => {
+          if (i !== mc.answerIndex) expect(others.has(c), `${foodId} r${r} distractor "${c}"`).toBe(true);
+        });
+      }
     }
   );
+
+  it('offers 5 options (more than before)', () => {
+    expect(pairingMcFor(PAIR_ITEMS[0], 0).choices.length).toBe(5);
+  });
+
+  it('a different round keeps the one right pour but shows different wrong pours', () => {
+    const item = PAIR_ITEMS[0];
+    const wrongs = (r: number) => {
+      const m = pairingMcFor(item, r);
+      return m.choices.filter((_, i) => i !== m.answerIndex).slice().sort().join('|');
+    };
+    const ans = (r: number) => {
+      const m = pairingMcFor(item, r);
+      return m.choices[m.answerIndex];
+    };
+    expect(ans(0)).toBe(ans(1)); // one true pour — can't rotate
+    expect(wrongs(0)).not.toBe(wrongs(1)); // distractors do
+  });
 
   it('the reveal teaches the lever that makes the pairing work', () => {
     for (const item of PAIR_ITEMS) {
@@ -68,10 +94,10 @@ describe('pairingMcFor: reuses the frozen pairing card', () => {
     }
   });
 
-  it('mcFor dispatches pairing items to pairingMcFor; deterministic; no first-tell', () => {
+  it('mcFor dispatches pairing items to pairingMcFor; deterministic per (item,round); no first-tell', () => {
     for (const item of PAIR_ITEMS) {
-      expect(mcFor(item)).toEqual(pairingMcFor(item));
-      expect(pairingMcFor(item)).toEqual(pairingMcFor(item));
+      expect(mcFor(item)).toEqual(pairingMcFor(item)); // round 0
+      expect(pairingMcFor(item, 2)).toEqual(pairingMcFor(item, 2));
     }
     const positions = new Set(PAIR_ITEMS.map((i) => pairingMcFor(i).answerIndex));
     expect(positions.size).toBeGreaterThan(1);
