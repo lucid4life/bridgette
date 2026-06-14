@@ -1,9 +1,10 @@
 // Stage 3 — build:* accessor validity over the REAL cocktail data. Mirrors
-// items.test.ts: reuse-the-frozen-engine-card (buildMcFor ↔ builds:<id>:pick),
-// determinism, no answer-first tell, and the cued/free/teach recall shapes.
+// items.test.ts: the dish components MC is minted natively (rotate the asked
+// build component by round, never a name-leak, fresh distractors, 5 options),
+// determinism per (item, round), no answer-first tell, and the cued/free/teach
+// recall shapes.
 import { describe, expect, it } from 'vitest';
-import { data, type Card } from '$lib/data';
-import { generateDeck } from '$lib/engine/training.js';
+import { data } from '$lib/data';
 import { UNIT_BUILD_IDS } from './stages';
 import {
   BAR_CONFIRM,
@@ -13,6 +14,8 @@ import {
   hasBuildDeck,
   itemsForUnit,
   mcFor,
+  normKey,
+  normWords,
   teachFor
 } from './items';
 import type { BuildTeach } from './items';
@@ -21,9 +24,6 @@ import type { JourneyItem } from './types';
 const BAR_MODULES = ['bar-bright', 'bar-floral', 'bar-spirit', 'bar-zero'] as const;
 const BUILD_ITEMS: JourneyItem[] = BAR_MODULES.flatMap((u) => [...itemsForUnit(u)]);
 const cocktailById = new Map(data.cocktails.map((c) => [c.id, c]));
-
-const buildsDeck = generateDeck('builds', data) as Card[];
-const buildsCardOf = new Map(buildsDeck.map((c) => [c.sourceId!, c]));
 
 describe('itemsForUnit: bar modules', () => {
   it('mints build:<cocktailId> items in roster order, keyed to data.cocktails', () => {
@@ -59,19 +59,44 @@ describe('itemsForUnit: bar modules', () => {
   });
 });
 
-describe('buildMcFor: reuses the frozen builds card', () => {
+describe('buildMcFor: native build MC (variety)', () => {
   it.each(BUILD_ITEMS.map((i) => [i.cocktailId!, i] as const))(
-    '%s — MC matches builds:<id>:pick',
+    '%s — 5 distinct options; answer is a real build item; distractors are NOT in the build',
     (cocktailId, item) => {
-      const card = buildsCardOf.get(cocktailId)!;
-      expect(card, cocktailId).toBeDefined();
-      const mc = buildMcFor(item);
-      expect(mc.prompt).toBe(card.prompt);
-      expect([...mc.choices].sort()).toEqual([...card.choices!].sort());
-      expect(mc.choices[mc.answerIndex]).toBe(card.answer);
-      expect(new Set(mc.choices).size).toBe(4);
+      const c = cocktailById.get(cocktailId)!;
+      const buildKeys = new Set(c.build!.map(normKey));
+      const nameWords = new Set(normWords(c.name));
+      for (let r = 0; r < 4; r++) {
+        const mc = buildMcFor(item, r);
+        expect(mc.prompt).toBe(`Which of these is IN the ${c.name}?`);
+        expect(mc.choices).toHaveLength(5);
+        expect(new Set(mc.choices.map(normKey)).size).toBe(5);
+        const answer = mc.choices[mc.answerIndex];
+        expect(buildKeys.has(normKey(answer)), `${cocktailId} r${r} answer "${answer}"`).toBe(true);
+        // the answer never shares a word with the drink name (White Peach Negroni
+        // never asks "Peach Liqueur") — unless the whole build name-leaks
+        if (c.build!.some((b) => !normWords(b).some((w) => nameWords.has(w))))
+          expect(normWords(answer).some((w) => nameWords.has(w)), `${cocktailId} r${r}`).toBe(false);
+        mc.choices.forEach((choice, i) => {
+          if (i !== mc.answerIndex)
+            expect(buildKeys.has(normKey(choice)), `${cocktailId} r${r} distractor "${choice}"`).toBe(false);
+        });
+      }
     }
   );
+
+  it('rotates the asked build item across rounds (a multi-item build)', () => {
+    const item = BUILD_ITEMS.find((i) => cocktailById.get(i.cocktailId!)!.build!.length >= 3)!;
+    const asked = new Set([0, 1, 2].map((r) => normKey(buildMcFor(item, r).choices[buildMcFor(item, r).answerIndex])));
+    expect(asked.size).toBeGreaterThan(1);
+  });
+
+  it('a different round shows a different question', () => {
+    const item = BUILD_ITEMS.find((i) => cocktailById.get(i.cocktailId!)!.build!.length >= 3)!;
+    const sig = (m: { choices: string[]; answerIndex: number }) =>
+      `${normKey(m.choices[m.answerIndex])}|${[...m.choices].map(normKey).sort().join(',')}`;
+    expect(sig(buildMcFor(item, 0))).not.toBe(sig(buildMcFor(item, 1)));
+  });
 
   it('the reveal teaches the full official build, and flags the drink when relevant', () => {
     for (const item of BUILD_ITEMS) {
@@ -93,9 +118,10 @@ describe('buildMcFor: reuses the frozen builds card', () => {
     }
   });
 
-  it('is deterministic — same item, same MC every call', () => {
+  it('is deterministic per (item, round)', () => {
     for (const item of BUILD_ITEMS) {
-      expect(buildMcFor(item)).toEqual(buildMcFor(item));
+      expect(buildMcFor(item)).toEqual(buildMcFor(item)); // round 0
+      expect(buildMcFor(item, 2)).toEqual(buildMcFor(item, 2));
     }
   });
 

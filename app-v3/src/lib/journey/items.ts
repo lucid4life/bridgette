@@ -379,9 +379,10 @@ function hashId(id: string): number {
 }
 
 // The frozen v2 builds deck (Stage 3 — cocktail rows only), indexed by cocktailId.
-// Reused as MC material only — exactly how dish:* reuses the components deck. Only
-// cocktails with an official build mint a card (Spicy Sandia / Lovers Mountain mint
-// none — callers guard with hasBuildDeck).
+// Now used ONLY as a PRESENCE GATE (hasBuildDeck): the build MC content is minted
+// natively in buildMcFor (the deck's prompt/choices/answer are no longer read),
+// exactly as dish:* mints components natively. A drink with no official build mints
+// no card (Spicy Sandia / Lovers Mountain) — callers guard with hasBuildDeck.
 let buildsCards: Map<string, Card> | null = null;
 function buildsCardFor(cocktailId: string): Card | undefined {
   if (!buildsCards) {
@@ -526,19 +527,22 @@ export function buildMcFor(item: JourneyItem, round = 0): BuildMcContent {
   if (item.kind !== 'build')
     throw new Error(`journey: buildMcFor needs a build item — '${item.id}' is not a cocktail build`);
   const c = cocktailFor(item);
-  const card = buildsCardFor(c.id);
-  if (!card)
-    throw new Error(
-      `journey: '${item.id}' has no builds engine card (no official build) — check hasBuildDeck first`
-    );
+  if (!c.build || c.build.length === 0)
+    throw new Error(`journey: '${item.id}' has no official build — check hasBuildDeck first`);
+  // Minted natively from the official build (the frozen builds card is NOT used
+  // here): the asked component ROTATES by round + fresh distractors, exactly like
+  // the dish components MC, so pretest / quiz / recycle never repeat. 5 options.
+  const pool = buildPool(c);
+  const answer = pool[((round % pool.length) + pool.length) % pool.length];
+  const distractors = pickBuildDistractors(c, answer, round, N_BUILD_OPTIONS - 1);
   const flags = c.allergens ?? [];
-  let why = `Official build: ${c.build!.join(', ')}.`;
+  let why = `Official build: ${c.build.join(', ')}.`;
   if (flags.length > 0) {
     const note = c.allergenNote ? ` ${c.allergenNote}${/[.!?]$/.test(c.allergenNote) ? '' : '.'}` : '';
     why += ` Contains ${flags.join(', ')}.${note}`;
   }
   return {
-    ...toMc(roundSeed(`${item.id}:build`, round), card.prompt, card.choices!, card.answer),
+    ...toMc(`${item.id}:build:${round}`, `Which of these is IN the ${c.name}?`, [answer, ...distractors], answer),
     why,
     confirmLine: BAR_CONFIRM
   };
@@ -762,6 +766,67 @@ export function componentsMcFor(item: JourneyItem, round = 0): McContent {
     [answer, ...distractors],
     answer
   );
+}
+
+// ------------------------------------------------ cocktail build MC (variety)
+// The bar "which is IN the <drink>?" MC, minted natively from the official build
+// — the exact sibling of the dish components MC: rotate the asked component by
+// round + fresh distractors, 5 options. No "given" set (a build has no dough-
+// equivalent), but a build item that shares a word with the DRINK name is dropped
+// (the White Peach Negroni never asks about "Peach Liqueur"). The frozen builds
+// deck + its card ids stay untouched.
+const N_BUILD_OPTIONS = 5;
+
+let buildUniverse: { cocktails: Cocktail[]; freq: Map<string, number> } | null = null;
+function getBuildUniverse(): { cocktails: Cocktail[]; freq: Map<string, number> } {
+  if (!buildUniverse) {
+    const cocktails = data.cocktails.filter((c) => c.build && c.build.length >= 1);
+    const freq = new Map<string, number>();
+    for (const c of cocktails) for (const b of c.build!) freq.set(normKey(b), (freq.get(normKey(b)) ?? 0) + 1);
+    buildUniverse = { cocktails, freq };
+  }
+  return buildUniverse;
+}
+
+/** A cocktail's quiz-worthy build components, ranked most-tellable (rarest across
+ * all builds) first, name-leaks dropped. Always >= 1 (never throws). */
+function buildPool(c: Cocktail): string[] {
+  const build = c.build ?? [];
+  const nameWords = new Set(normWords(c.name));
+  const isNameLeak = (b: string): boolean => normWords(b).some((w) => nameWords.has(w));
+  const noLeak = build.filter((b) => !isNameLeak(b));
+  const pool = noLeak.length ? noLeak : build.slice();
+  const { freq } = getBuildUniverse();
+  return [...pool].sort((a, b) => (freq.get(normKey(a)) ?? 99) - (freq.get(normKey(b)) ?? 99));
+}
+
+/** Distractors for a build MC: build items of OTHER cocktails (never in this
+ * build), deduped by normKey, same-flavour-family first, drawn through a
+ * round-rotated window so each round shows a different set. */
+function pickBuildDistractors(c: Cocktail, answer: string, round: number, n: number): string[] {
+  const { cocktails } = getBuildUniverse();
+  const mine = new Set((c.build ?? []).map(normKey));
+  const seen = new Set<string>([normKey(answer)]);
+  const sameCat: string[] = [];
+  const crossCat: string[] = [];
+  for (const o of cocktails) {
+    if (o.id === c.id) continue;
+    for (const b of o.build ?? []) {
+      const k = normKey(b);
+      if (mine.has(k) || seen.has(k)) continue;
+      seen.add(k);
+      (o.category === c.category ? sameCat : crossCat).push(b);
+    }
+  }
+  const ordered = [
+    ...shuffled(sameCat, mulberry32(hashId(`${c.id}:bd`))),
+    ...shuffled(crossCat, mulberry32(hashId(`${c.id}:bx`)))
+  ];
+  if (ordered.length <= n) return ordered;
+  const start = (round * n) % ordered.length;
+  const out: string[] = [];
+  for (let k = 0; k < ordered.length && out.length < n; k++) out.push(ordered[(start + k) % ordered.length]);
+  return out;
 }
 
 /** NEW minted runtime content (no frozen ids involved): "Which dish comes with
