@@ -138,35 +138,35 @@
     {#key prog.position}
       {#if step.type === 'pretest-mc'}
         {#if step.item.kind === 'allergen'}
-          {@const mc = allergenMcFor(step.item)}
+          {@const mc = allergenMcFor(step.item, step.round)}
           <FlashMc {mc} warm why={mc.why} confirmLine={mc.confirmLine} kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
         {:else if step.item.kind === 'build'}
-          {@const mc = buildMcFor(step.item)}
+          {@const mc = buildMcFor(step.item, step.round)}
           <FlashMc {mc} warm why={mc.why} confirmLine={mc.confirmLine} kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
         {:else if step.item.kind === 'wine'}
-          {@const mc = wineMcFor(step.item)}
+          {@const mc = wineMcFor(step.item, step.round)}
           <FlashMc {mc} warm why={mc.why} kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
         {:else if step.item.kind === 'pairing'}
-          {@const mc = pairingMcFor(step.item)}
+          {@const mc = pairingMcFor(step.item, step.round)}
           <FlashMc {mc} warm why={mc.why} kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
         {:else}
-          <FlashMc mc={mcFor(step.item)} warm kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
+          <FlashMc mc={mcFor(step.item, step.round)} warm kicker="warm-up — a guess is the point" onanswer={answer} oncontinue={continueStep} />
         {/if}
       {:else if step.type === 'quiz' && step.rung === 'mc'}
         {#if step.item.kind === 'allergen'}
-          {@const mc = allergenMcFor(step.item)}
+          {@const mc = allergenMcFor(step.item, step.round)}
           <FlashMc {mc} why={mc.why} confirmLine={mc.confirmLine} kicker="prove it — the flags" onanswer={answer} oncontinue={continueStep} />
         {:else if step.item.kind === 'build'}
-          {@const mc = buildMcFor(step.item)}
+          {@const mc = buildMcFor(step.item, step.round)}
           <FlashMc {mc} why={mc.why} confirmLine={mc.confirmLine} kicker="prove it — the build" onanswer={answer} oncontinue={continueStep} />
         {:else if step.item.kind === 'wine'}
-          {@const mc = wineMcFor(step.item)}
+          {@const mc = wineMcFor(step.item, step.round)}
           <FlashMc {mc} why={mc.why} kicker="prove it — grape & place" onanswer={answer} oncontinue={continueStep} />
         {:else if step.item.kind === 'pairing'}
-          {@const mc = pairingMcFor(step.item)}
+          {@const mc = pairingMcFor(step.item, step.round)}
           <FlashMc {mc} why={mc.why} kicker="prove it — the pour & why" onanswer={answer} oncontinue={continueStep} />
         {:else}
-          <FlashMc mc={mcFor(step.item)} kicker="prove it — round one" onanswer={answer} oncontinue={continueStep} />
+          <FlashMc mc={mcFor(step.item, step.round)} kicker="prove it — round one" onanswer={answer} oncontinue={continueStep} />
         {/if}
       {:else if step.type === 'quiz' && step.rung === 'cued'}
         {@const c = cuedFor(step.item)}

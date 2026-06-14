@@ -31,7 +31,7 @@ function answerMc(s: LearnSession, correct: boolean): void {
   const step = s.current();
   if (!step || (step.type !== 'pretest-mc' && !(step.type === 'quiz' && step.rung === 'mc')))
     throw new Error(`test: expected an MC step, got ${step?.type}`);
-  const mc = mcFor(step.item);
+  const mc = mcFor(step.item, step.round ?? 0); // grade the round the session serves
   const idx = correct ? mc.answerIndex : (mc.answerIndex + 1) % mc.choices.length;
   const res = s.answerMc(idx);
   expect(res).toEqual({ correct, answerIndex: mc.answerIndex });
@@ -61,7 +61,7 @@ describe('learn session: full single-item walkthrough', () => {
     const items = itemsForUnit('snacks').slice(0, 1); // dish:french-fries
     const { calls, deps } = logging();
     const s = createLearnSession(items, deps);
-    const mc = mcFor(items[0]);
+    const mc = mcFor(items[0], 0); // pretest is round 0
 
     // pretest: deliberately wrong — errorful generation, NO events, no 'hard' later
     let step = s.current()!;
@@ -78,9 +78,10 @@ describe('learn session: full single-item walkthrough', () => {
     expect(calls).toEqual([]);
     s.advance();
 
-    // quiz ladder
-    expect(s.current()).toEqual({ type: 'quiz', item: items[0], rung: 'mc' });
-    s.answerMc(mc.answerIndex);
+    // quiz ladder — first quiz-mc is round 1 (pretest was round 0), so a fresh question
+    expect(s.current()).toEqual({ type: 'quiz', item: items[0], rung: 'mc', round: 1 });
+    const mcQuiz = mcFor(items[0], 1);
+    s.answerMc(mcQuiz.answerIndex);
     s.advance();
     expect(s.current()).toEqual({ type: 'quiz', item: items[0], rung: 'cued' });
     expect(calls).toEqual([]); // nothing until graduation
@@ -163,7 +164,8 @@ describe('learn session: miss recycling', () => {
       answerMc(s, true); // all still on the mc first pass
     }
     const again = s.current()!;
-    expect(again).toEqual({ type: 'quiz', item: missed.item, rung: 'mc' }); // same rung
+    // same rung; round bumped to 2 (1 + the one miss) → a different question
+    expect(again).toEqual({ type: 'quiz', item: missed.item, rung: 'mc', round: 2 });
   });
 
   it('recycles to the end of the queue when fewer than 3 steps remain', () => {
@@ -176,7 +178,7 @@ describe('learn session: miss recycling', () => {
     const other = s.current()!;
     expect(other.item.id).not.toBe(first.item.id);
     answerMc(s, true); // other advances to cued and re-queues at the end
-    expect(s.current()).toEqual({ type: 'quiz', item: first.item, rung: 'mc' });
+    expect(s.current()).toEqual({ type: 'quiz', item: first.item, rung: 'mc', round: 2 }); // back after its miss
   });
 });
 

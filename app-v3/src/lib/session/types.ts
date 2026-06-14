@@ -53,11 +53,11 @@
 // ## Step → render + resolve matrix
 // | step.type    | step.rung (variant)  | render with         | resolve with                          |
 // |--------------|----------------------|---------------------|---------------------------------------|
-// | 'pretest-mc' | 'mc'                 | mcFor(item)         | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'mc'                 | mcFor(item)         | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'mc' ('components')  | mcFor(item)         | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'mc' ('allergen')    | allergenMcFor(item) | answerMc(i) → show reveal → advance() |
-// | 'quiz'       | 'mc' ('reverse')     | reverseMcFor(item)  | answerMc(i) → show reveal → advance() |
+// | 'pretest-mc' | 'mc'                 | mcFor(item, step.round)        | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc'                 | mcFor(item, step.round)        | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc' ('components')  | mcFor(item, step.round)        | answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc' ('allergen')    | allergenMcFor(item, step.round)| answerMc(i) → show reveal → advance() |
+// | 'quiz'       | 'mc' ('reverse')     | reverseMcFor(item)             | answerMc(i) → show reveal → advance() |
 // | 'quiz'       | 'cued'               | cuedFor(item)       | UI reveal → selfGrade(gotIt)          |
 // | 'quiz'       | 'free'               | freeFor(item)       | UI reveal → selfGrade(gotIt)          |
 // | 'quiz'       | 'romance'            | romanceFor(item)    | RomanceCard reveal → selfGrade(gotIt) |
@@ -95,10 +95,14 @@ export type Rung = 'mc' | 'cued' | 'free' | 'romance' | 'build' | 'pour';
  * original sessions emit. */
 export type McVariant = 'components' | 'allergen' | 'reverse' | 'safe-call' | 'description' | 'mods';
 
-/** One screen of a session. Discriminate on `type` (then `rung` for quiz). */
+/** One screen of a session. Discriminate on `type` (then `rung` for quiz).
+ * `round` (quiz-mc only) is the MC variety seed: the learn session sets it so a
+ * dish's pretest, criterion quiz, and each recycle ask a DIFFERENT component /
+ * order — render with mcFor(item, step.round). Absent ⇒ round 0 (the original
+ * content); the pretest is always round 0, so pretest ≠ the first quiz. */
 export type Step =
-  | { type: 'pretest-mc'; item: JourneyItem; rung: 'mc' }
-  | { type: 'quiz'; item: JourneyItem; rung: Rung; variant?: McVariant }
+  | { type: 'pretest-mc'; item: JourneyItem; rung: 'mc'; round?: number }
+  | { type: 'quiz'; item: JourneyItem; rung: Rung; variant?: McVariant; round?: number }
   | { type: 'teach'; item: JourneyItem }
   | { type: 'reteach'; item: JourneyItem };
 

@@ -44,7 +44,14 @@ export function createLearnSession(items: readonly JourneyItem[], deps: LearnDep
   function current(): Step | null {
     if (pretest.length > 0) return { type: 'pretest-mc', item: pretest[0], rung: 'mc' };
     if (teach.length > 0) return { type: 'teach', item: teach[0] };
-    if (quiz.length > 0) return { type: 'quiz', item: quiz[0].item, rung: quiz[0].rung };
+    if (quiz.length > 0) {
+      const entry = quiz[0];
+      // MC variety: pretest is round 0, so the first quiz-mc is round 1 (a
+      // different question), and each recycle after a miss bumps it again.
+      if (entry.rung === 'mc')
+        return { type: 'quiz', item: entry.item, rung: 'mc', round: 1 + (missCounts.get(entry.item.id) ?? 0) };
+      return { type: 'quiz', item: entry.item, rung: entry.rung };
+    }
     return null;
   }
 
@@ -54,7 +61,8 @@ export function createLearnSession(items: readonly JourneyItem[], deps: LearnDep
     if (step.type !== 'pretest-mc' && !(step.type === 'quiz' && step.rung === 'mc'))
       throw new Error(`session: answerMc is only valid on an MC step (current: ${describeStep(step)})`);
     if (pendingMc) throw new Error('session: MC already answered — call advance()');
-    const mc = mcFor(step.item);
+    // Grade against the SAME round the UI rendered (step.round) — pretest is 0.
+    const mc = mcFor(step.item, step.round ?? 0);
     if (!Number.isInteger(choiceIndex) || choiceIndex < 0 || choiceIndex >= mc.choices.length)
       throw new Error(`session: choiceIndex ${choiceIndex} out of range (0..${mc.choices.length - 1})`);
     pendingMc = { correct: choiceIndex === mc.answerIndex };

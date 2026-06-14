@@ -88,10 +88,12 @@ async function scan(page: Page) {
 //   .fmc   — MC question (pretest or quiz mc rung)
 //   .tcard — teach card (the menu page)
 //   .frv   — cued/free reveal card
-// MC content is deterministic per item (seeded shuffle), and the QUIZ asks the
-// SAME questions the PRETEST did — so recording prompt → correct-choice while
-// answering the pretest lets the driver answer every quiz MC right and reach
-// the cued rung without ever looping on a recycled miss.
+// `driveTo` only ever drives /unit/day-one (SERVICE items): their MC option set
+// + correct answer are stable across rounds (only the order re-seeds), so caching
+// prompt → correct-choice from the pretest answers every quiz MC right and reaches
+// the target face without looping. (DISH units instead rotate the asked component
+// by round — pretest ≠ quiz — so this cache is NOT valid for them; dish-unit
+// a11y checks below only single-click to render a face, never drive to criterion.)
 // ---------------------------------------------------------------------------
 type Face = 'mc' | 'teach' | 'reveal';
 
@@ -211,19 +213,37 @@ for (const theme of THEMES) {
       await page.goto('/romance');
       await page.getByRole('button', { name: 'start the drill' }).click();
       await expect(page.locator('article.rom')).toBeVisible();
+      // the plate must NOT be on the question face — seeing it gives the answer away
+      await expect(page.locator('.rom .r-photo')).toHaveCount(0);
       await scan(page); // the question face (name + prompt)
       await page.locator('.rom .act .btn').click();
       await expect(page.locator('.rom .rv')).toBeVisible();
+      await expect(page.locator('.rom .r-photo')).toBeVisible(); // the plate anchors the reveal (§0b)
       await scan(page); // the pass bar + model line + grade bar
+    });
+
+    test('axe: romance reveal renders a real dish photo (dual coding, photo’d dish)', async ({ page }) => {
+      // /romance?drill=<foodId> auto-starts a targeted drill — tuna-crudo HAS a
+      // plate, so this exercises the real <img alt> path (not the placeholder).
+      await page.goto('/romance?drill=tuna-crudo');
+      await expect(page.locator('article.rom')).toBeVisible();
+      await page.locator('.rom .act .btn').click();
+      await expect(page.locator('.rom .rv')).toBeVisible();
+      const img = page.locator('.rom .r-photo img');
+      await expect(img).toBeVisible();
+      await expect(img).toHaveAttribute('alt', 'Tuna Crudo'); // alt = dish name (axe AA)
+      await scan(page); // a real plate image on the reveal, both themes
     });
 
     test('axe: romance exam — question face + the structured self-check', async ({ page }) => {
       await page.goto('/romance/exam');
       await page.getByRole('button', { name: 'start the exam' }).click();
       await expect(page.locator('article.rom-exam')).toBeVisible();
+      await expect(page.locator('.rom-exam .r-photo')).toHaveCount(0); // no plate on the question face
       await scan(page); // the question face (name + the "romance it" prompt)
       await page.locator('.rom-exam .act .btn').click(); // Check yourself
       await expect(page.locator('.rom-exam .check')).toBeVisible();
+      await expect(page.locator('.rom-exam .r-photo')).toBeVisible(); // the plate on the exam reveal too
       await scan(page); // the model line + name toggle + component chips + verdict + lock-in
     });
 

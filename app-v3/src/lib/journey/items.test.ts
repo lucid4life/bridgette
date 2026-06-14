@@ -1,15 +1,18 @@
 // Task D — item derivation + content accessors (dish:* / service:* items).
-// Dish MC content REUSES the frozen v2 engine card (components:<foodId>:pick);
-// teach/cued/free derive only from official data.foods fields.
+// Dish MC content is MINTED NATIVELY (componentsMcFor + key-components.ts) —
+// rotating the asked distinctive component by round, never a base/given like
+// "Pizza Dough"; teach/cued/free derive only from official data.foods fields.
 import { describe, expect, it } from 'vitest';
-import { data, type Card } from '$lib/data';
+import { data, type Card, type Food } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import { CHECKPOINT_UNIT_ID, UNIT_FOOD_IDS, stageById } from './stages';
+import { KEY_COMPONENTS } from './key-components';
 import { SERVICE_ITEMS } from './service-items';
 import {
   allStage1Items,
   allergenMcFor,
   cuedFor,
+  distinctivePool,
   freeFor,
   hasAllergenMc,
   itemsForUnit,
@@ -77,22 +80,99 @@ describe('allStage1Items', () => {
   });
 });
 
-describe('mcFor: dish items reuse the REAL engine card', () => {
-  const deck = generateDeck('components', data) as Card[];
+describe('mcFor: native dish components MC (variety + no base/given)', () => {
+  const ALL_FOOD_IDS = Object.values(UNIT_FOOD_IDS).flat();
+  const PIZZAS_WITH_DOUGH = ['margherita', 'chicken-sausage', 'five-cheese'];
 
-  it.each(Object.values(UNIT_FOOD_IDS).flat())('%s', (foodId) => {
-    const card = deck.find((c) => c.sourceId === foodId)!;
-    expect(card).toBeDefined();
-    const mc = mcFor(dishItem(foodId));
-    expect(mc.prompt).toBe(card.prompt);
-    expect([...mc.choices].sort()).toEqual([...card.choices!].sort());
-    expect(mc.choices[mc.answerIndex]).toBe(card.answer);
+  it('NEVER quizzes "Pizza Dough" — not as the answer, not even as a distractor (the bug)', () => {
+    for (const id of PIZZAS_WITH_DOUGH) {
+      for (let r = 0; r < 6; r++) {
+        const mc = mcFor(dishItem(id), r);
+        for (const c of mc.choices) expect(normKey(c), `${id} r${r}`).not.toBe(normKey('Pizza Dough'));
+      }
+    }
   });
 
-  it('is deterministic per item (same choice order on every call)', () => {
-    const a = mcFor(dishItem('tuna-crudo'));
-    const b = mcFor(dishItem('tuna-crudo'));
-    expect(a).toEqual(b);
+  it.each(ALL_FOOD_IDS)('%s: 5 distinct options; answer is a real component; the 4 distractors are NOT in the dish', (foodId) => {
+    const ingKeys = new Set(food(foodId).ingredients!.map(normKey));
+    for (let r = 0; r < 4; r++) {
+      const mc = mcFor(dishItem(foodId), r);
+      expect(mc.prompt).toBe(`Which of these is IN the ${food(foodId).name}?`);
+      expect(mc.choices).toHaveLength(5); // 1 answer + 4 distractors (more options)
+      expect(new Set(mc.choices.map(normKey)).size).toBe(5); // all distinct
+      const answer = mc.choices[mc.answerIndex];
+      expect(ingKeys.has(normKey(answer)), `${foodId} r${r} answer "${answer}"`).toBe(true);
+      mc.choices.forEach((c, i) => {
+        if (i !== mc.answerIndex)
+          expect(ingKeys.has(normKey(c)), `${foodId} r${r} distractor "${c}"`).toBe(false);
+      });
+    }
+  });
+
+  it('the answer is always one of the dish\'s authored distinctive components', () => {
+    for (const foodId of ALL_FOOD_IDS) {
+      const allowed = new Set((KEY_COMPONENTS[foodId] ?? []).map(normKey)); // pool ⊆ authored
+      for (let r = 0; r < 4; r++) {
+        const mc = mcFor(dishItem(foodId), r);
+        expect(allowed.has(normKey(mc.choices[mc.answerIndex])), `${foodId} r${r}`).toBe(true);
+      }
+    }
+  });
+
+  it('rotates the asked component across rounds (a multi-distinctive dish)', () => {
+    const asked = new Set<string>();
+    for (let r = 0; r < 3; r++) {
+      const mc = mcFor(dishItem('five-cheese'), r); // Oka / Fontina / Fior di Latte
+      asked.add(normKey(mc.choices[mc.answerIndex]));
+    }
+    expect(asked.size).toBeGreaterThan(1); // not the same question every round
+  });
+
+  it('a different round shows a different question', () => {
+    const sig = (m: { choices: string[]; answerIndex: number }) =>
+      `${normKey(m.choices[m.answerIndex])}|${[...m.choices].map(normKey).sort().join(',')}`;
+    expect(sig(mcFor(dishItem('margherita'), 0))).not.toBe(sig(mcFor(dishItem('margherita'), 1)));
+  });
+
+  it('a single-distinctive dish keeps its answer but varies the distractors by round', () => {
+    const a0 = mcFor(dishItem('french-fries'), 0); // only "Garlic Aioli" is distinctive
+    const a1 = mcFor(dishItem('french-fries'), 1);
+    expect(normKey(a0.choices[a0.answerIndex])).toBe(normKey('Garlic Aioli'));
+    expect(normKey(a1.choices[a1.answerIndex])).toBe(normKey('Garlic Aioli'));
+    const distractors = (m: { choices: string[]; answerIndex: number }) =>
+      m.choices.filter((_, i) => i !== m.answerIndex).map(normKey).sort().join(',');
+    expect(distractors(a0)).not.toBe(distractors(a1));
+  });
+
+  it('is deterministic per (item, round)', () => {
+    expect(mcFor(dishItem('tuna-crudo'), 2)).toEqual(mcFor(dishItem('tuna-crudo'), 2));
+  });
+
+  it('answer position varies across dishes (no always-first tell)', () => {
+    const positions = new Set(ALL_FOOD_IDS.map((id) => mcFor(dishItem(id), 0).answerIndex));
+    expect(positions.size).toBeGreaterThan(1);
+  });
+});
+
+describe('distinctivePool: the never-quiz-a-given invariant holds under drift (review §)', () => {
+  // A synthetic, un-audited dish (NOT in KEY_COMPONENTS) forces the algorithmic
+  // fallback. The fix: relax the name-leak rule before the given rule, so a base/
+  // given is the answer ONLY when the dish is 100% givens.
+  const fake = (name: string, ingredients: string[]): Food =>
+    ({ id: 'zzz-not-on-path', name, ingredients } as Food);
+
+  it('prefers a name-leaking NON-given over a base/given (the surviving finding)', () => {
+    // every non-given ingredient name-leaks ("Cheddar Dough" shares "Dough");
+    // the only non-leaks are givens. Old code returned the givens — now it must not.
+    const pool = distinctivePool(fake('Dough', ['Pizza Dough', 'Crust', 'Cheddar Dough']));
+    expect(pool).toContain('Cheddar Dough');
+    expect(pool).not.toContain('Pizza Dough');
+    expect(pool).not.toContain('Crust');
+  });
+
+  it('returns the givens ONLY when the dish has no non-given ingredient at all', () => {
+    const pool = distinctivePool(fake('Plain', ['Pizza Dough', 'Crust']));
+    expect(pool.length).toBeGreaterThan(0); // never empty (componentsMcFor must not crash)
   });
 });
 
@@ -236,6 +316,17 @@ describe('romanceFor', () => {
     expect(r.romanceTargets).toEqual(f.ingredients!.slice(0, 3)); // the Playbook bold-first-3 rule
     expect(r.modelLine).toBe(f.description);
     expect(r.ingredients).toEqual(f.ingredients);
+    expect(r.photoId).toBe('tuna-crudo'); // the plate anchors the reveal (§0b dual-coding)
+  });
+
+  it('dish: photoId is the food id on every path dish — same id the teach card gates on', () => {
+    for (const foodId of Object.values(UNIT_FOOD_IDS).flat()) {
+      const r = romanceFor(dishItem(foodId));
+      expect(r.photoId, foodId).toBe(foodId);
+      const teach = teachFor(dishItem(foodId));
+      // one id, one gate: the romance reveal and the teach card show the SAME plate.
+      expect(teach.kind === 'dish' && teach.photoId, foodId).toBe(r.photoId);
+    }
   });
 
   it('every path dish romances: ≤3 targets (all of them on short dishes), a non-empty model line', () => {

@@ -1,7 +1,10 @@
 // Task D — item derivation + pure content accessors.
 // Items are DERIVED from the path data (stages.ts) + authored service items;
-// dish content comes ONLY from official data.foods fields, and the MC rung
-// reuses the frozen v2 engine card (components:<foodId>:pick) as material.
+// dish content comes ONLY from official data.foods fields. The dish MC rung is
+// MINTED NATIVELY (componentsMcFor + key-components.ts) so it can vary by round
+// and never quiz a base/given like "Pizza Dough"; the frozen v2 engine card
+// (components:<foodId>:pick) and its ids are untouched (build/wine/pairing/
+// allergen MCs still lift from their frozen decks).
 import { data, type Food, type Cocktail, type Wine } from '$lib/data';
 import { generateDeck } from '$lib/engine/training.js';
 import { LEVERS } from '$lib/engine/pairing.js';
@@ -21,6 +24,7 @@ import {
 } from './stages';
 import { SERVICE_ITEMS, type ServiceItem } from './service-items';
 import { BAR_SERVICE_ITEMS } from './bar-items';
+import { GIVEN_RAW, KEY_COMPONENTS } from './key-components';
 import type { JourneyItem } from './types';
 
 // ---------------------------------------------------------------- init guard
@@ -374,19 +378,6 @@ function hashId(id: string): number {
   return h >>> 0;
 }
 
-// The frozen v2 components deck, generated once and indexed by foodId. Reused
-// as MC material only — the engine card ids never become journey item ids.
-let componentsCards: Map<string, Card> | null = null;
-function componentsCardFor(foodId: string): Card {
-  if (!componentsCards) {
-    const deck = generateDeck('components', data) as Card[];
-    componentsCards = new Map(deck.map((c) => [c.sourceId!, c]));
-  }
-  const card = componentsCards.get(foodId);
-  if (!card) throw new Error(`journey: no components:${foodId}:pick engine card`);
-  return card;
-}
-
 // The frozen v2 builds deck (Stage 3 — cocktail rows only), indexed by cocktailId.
 // Reused as MC material only — exactly how dish:* reuses the components deck. Only
 // cocktails with an official build mint a card (Spicy Sandia / Lovers Mountain mint
@@ -445,7 +436,7 @@ export interface PairingMcContent extends McContent {
 /** The pairing MC (Stage 5 path + pairings checkpoint). Recognition rung: given
  * the dish, name the best by-the-glass pour (the frozen pairing card); the reveal
  * teaches the lever that makes it work + the dish's structural why. */
-export function pairingMcFor(item: JourneyItem): PairingMcContent {
+export function pairingMcFor(item: JourneyItem, round = 0): PairingMcContent {
   if (item.kind !== 'pairing')
     throw new Error(`journey: pairingMcFor needs a pairing item — '${item.id}' is not a dish pairing`);
   const f = foodFor(item);
@@ -454,7 +445,7 @@ export function pairingMcFor(item: JourneyItem): PairingMcContent {
   const lever = leverOf(f);
   const why = lever ? `${lever.label} — ${lever.script}${f.why ? ` ${f.why}` : ''}` : (f.why ?? '');
   return {
-    ...toMc(`${item.id}:pairing`, card.prompt, card.choices!, card.answer),
+    ...toMc(roundSeed(`${item.id}:pairing`, round), card.prompt, card.choices!, card.answer),
     why
   };
 }
@@ -468,7 +459,7 @@ export interface WineMcContent extends McContent {
  * name the grape + region (the frozen wine-identity card); the reveal teaches the
  * ten-second story. The path's mc→cued→free ladder grades on this MC at the mc
  * rung; the checkpoint serves the free rung (cold grape+region+pitch recall). */
-export function wineMcFor(item: JourneyItem): WineMcContent {
+export function wineMcFor(item: JourneyItem, round = 0): WineMcContent {
   if (item.kind !== 'wine')
     throw new Error(`journey: wineMcFor needs a wine item — '${item.id}' is not a by-the-glass pour`);
   const w = wineFor(item);
@@ -476,7 +467,7 @@ export function wineMcFor(item: JourneyItem): WineMcContent {
   if (!card)
     throw new Error(`journey: '${item.id}' has no wine-identity engine card`);
   return {
-    ...toMc(`${item.id}:wine`, card.prompt, card.choices!, card.answer),
+    ...toMc(roundSeed(`${item.id}:wine`, round), card.prompt, card.choices!, card.answer),
     why: w.tenSecond || w.profile || ''
   };
 }
@@ -488,22 +479,36 @@ function toMc(itemId: string, prompt: string, choices: readonly string[], answer
   return { prompt, choices: order, answerIndex };
 }
 
-export function mcFor(item: JourneyItem): McContent {
+/** The per-round shuffle seed for a single-fact MC: round 0 keeps the original
+ * seed (so a fresh showing is byte-identical to before), round>0 re-orders. */
+function roundSeed(base: string, round: number): string {
+  return round ? `${base}:${round}` : base;
+}
+
+/**
+ * The MC content for any item's recognition rung. `round` (default 0) varies the
+ * question across showings so pretest, the criterion quiz, and each recycle never
+ * repeat the same screen: dish + build MCs ROTATE which component is asked and
+ * draw fresh distractors; single-fact MCs (allergen/wine/pairing/service) re-seed
+ * the choice ORDER. round 0 reproduces the original content (back-compatible).
+ */
+export function mcFor(item: JourneyItem, round = 0): McContent {
   if (item.kind === 'service') {
     const s = serviceFor(item);
-    return toMc(item.id, s.prompt, s.choices, s.answer);
+    return toMc(roundSeed(item.id, round), s.prompt, s.choices, s.answer);
   }
   // Allergen items (Stage 2) grade on the flag MC; the learn session reads this
   // for correctness, so the dispatch has to be here, not just in the route.
-  if (item.kind === 'allergen') return allergenMcFor(item);
+  if (item.kind === 'allergen') return allergenMcFor(item, round);
   // Build items (Stage 3) grade on the builds MC — same dispatch-in-mcFor rule.
-  if (item.kind === 'build') return buildMcFor(item);
+  if (item.kind === 'build') return buildMcFor(item, round);
   // Wine items (Stage 4) grade on the identity MC.
-  if (item.kind === 'wine') return wineMcFor(item);
+  if (item.kind === 'wine') return wineMcFor(item, round);
   // Pairing items (Stage 5) grade on the dish→pour MC.
-  if (item.kind === 'pairing') return pairingMcFor(item);
-  const card = componentsCardFor(foodFor(item).id);
-  return toMc(item.id, card.prompt, card.choices!, card.answer);
+  if (item.kind === 'pairing') return pairingMcFor(item, round);
+  // Dish items (Stage 1) — minted natively so the answer rotates by round and a
+  // base/given (e.g. "Pizza Dough") is never the call.
+  return componentsMcFor(item, round);
 }
 
 export interface BuildMcContent extends McContent {
@@ -517,7 +522,7 @@ export interface BuildMcContent extends McContent {
  * from the frozen builds card ("Which of these is IN the X?"); the reveal teaches
  * the full official build and, when the drink is flagged, its allergens + the
  * standing bar-confirm line. Both the path unit and the checkpoint grade on this. */
-export function buildMcFor(item: JourneyItem): BuildMcContent {
+export function buildMcFor(item: JourneyItem, round = 0): BuildMcContent {
   if (item.kind !== 'build')
     throw new Error(`journey: buildMcFor needs a build item — '${item.id}' is not a cocktail build`);
   const c = cocktailFor(item);
@@ -533,7 +538,7 @@ export function buildMcFor(item: JourneyItem): BuildMcContent {
     why += ` Contains ${flags.join(', ')}.${note}`;
   }
   return {
-    ...toMc(`${item.id}:build`, card.prompt, card.choices!, card.answer),
+    ...toMc(roundSeed(`${item.id}:build`, round), card.prompt, card.choices!, card.answer),
     why,
     confirmLine: BAR_CONFIRM
   };
@@ -581,7 +586,7 @@ export function hasAllergenMc(item: JourneyItem): boolean {
   return isFoodItem(item) && !!item.foodId && !!allergenCardFor(item.foodId);
 }
 
-export function allergenMcFor(item: JourneyItem): AllergenMcContent {
+export function allergenMcFor(item: JourneyItem, round = 0): AllergenMcContent {
   if (!isFoodItem(item))
     throw new Error(`journey: allergenMcFor needs a dish/allergen item — '${item.id}' carries no flags`);
   const f = foodFor(item);
@@ -594,7 +599,7 @@ export function allergenMcFor(item: JourneyItem): AllergenMcContent {
     throw new Error(`journey: allergens card '${card.id}' lost its confirm tail — deck shape drifted`);
   const why = card.why.slice(0, card.why.length - ENGINE_KITCHEN_CONFIRM.length).trim();
   return {
-    ...toMc(`${item.id}:allergen`, card.prompt, card.choices!, card.answer),
+    ...toMc(roundSeed(`${item.id}:allergen`, round), card.prompt, card.choices!, card.answer),
     why,
     confirmLine: data.confirm.allergens
   };
@@ -655,6 +660,108 @@ function getReverseUniverse(): { dishes: Food[]; freq: Map<string, number> } {
     reverseUniverse = { dishes, freq };
   }
   return reverseUniverse;
+}
+
+// ------------------------------------------------- dish components MC (variety)
+// The dish recognition rung ("Which of these is IN the <dish>?") is minted HERE,
+// natively from the official ingredients — NOT lifted from the frozen v2 card —
+// so it can (a) never quiz a base/given like "Pizza Dough", and (b) vary by
+// `round`: each showing (pretest / quiz / recycle) ROTATES which distinctive
+// component is asked and draws a fresh distractor window. Five options. The
+// frozen engine deck + its card ids are untouched.
+const N_DISH_OPTIONS = 5;
+const GIVEN_KEYS = new Set(GIVEN_RAW.map(normKey));
+
+/** A base/given/generic that must never be the tested answer or a distractor. */
+function isGivenComponent(ing: string): boolean {
+  return GENERIC_COMPONENTS.has(ing.toLowerCase()) || GIVEN_KEYS.has(normKey(ing));
+}
+
+/** A dish's distinctive, quiz-worthy components, RANKED best-first. The verified
+ * agent audit (key-components.ts) wins; else an algorithmic fallback ranks the
+ * non-given, non-name-leak ingredients by menu-wide rarity (rarer = more
+ * tellable). Always returns >= 1 (never throws) — every path dish has one.
+ * Exported for the fallback regression test. */
+export function distinctivePool(f: Food): string[] {
+  const ings = f.ingredients ?? [];
+  const nameWords = new Set(normWords(f.name));
+  const isNameLeak = (i: string): boolean => normWords(i).some((w) => nameWords.has(w));
+  const ok = (i: string): boolean => !isGivenComponent(i) && !isNameLeak(i);
+
+  // Authored ranking — keep only entries still backed by a real, non-given,
+  // non-name-leak ingredient (so a data drift shrinks the pool, never poisons it).
+  const authored = KEY_COMPONENTS[f.id];
+  if (authored && authored.length) {
+    const byKey = new Map(ings.map((i) => [normKey(i), i] as const));
+    const valid: string[] = [];
+    for (const a of authored) {
+      const real = byKey.get(normKey(a)); // map the authored token → the verbatim data string
+      if (real && ok(real) && !valid.includes(real)) valid.push(real);
+    }
+    if (valid.length) return valid;
+  }
+  // Fallback (off-path / unaudited dishes): rank the eligible ingredients by
+  // global rarity, rarest first. Relax the NAME-LEAK rule before the GIVEN rule
+  // (a leak only gives the answer away; a given is uninformative), so a base/given
+  // is the answer ONLY when the dish has no non-given ingredient at all — the
+  // "never quiz a given" invariant holds even under data drift.
+  const { freq } = getReverseUniverse();
+  const eligible = ings.filter(ok);
+  const nonGiven = ings.filter((i) => !isGivenComponent(i));
+  const pool = eligible.length ? eligible : nonGiven.length ? nonGiven : ings.slice();
+  return [...pool].sort((a, b) => (freq.get(normKey(a)) ?? 99) - (freq.get(normKey(b)) ?? 99));
+}
+
+/** Distractors for a dish MC: ingredients of OTHER path dishes (never in this
+ * dish, never a given/generic), deduped by normKey, same-category first for
+ * tougher discrimination — drawn through a `round`-rotated window so each round
+ * shows a DIFFERENT set. */
+function pickDishDistractors(f: Food, answer: string, round: number, n: number): string[] {
+  const { dishes } = getReverseUniverse();
+  const mine = new Set((f.ingredients ?? []).map(normKey));
+  const seen = new Set<string>([normKey(answer)]);
+  const sameCat: string[] = [];
+  const crossCat: string[] = [];
+  for (const d of dishes) {
+    if (d.id === f.id) continue;
+    for (const ing of d.ingredients ?? []) {
+      const k = normKey(ing);
+      if (mine.has(k) || seen.has(k) || isGivenComponent(ing)) continue;
+      seen.add(k);
+      (d.category === f.category ? sameCat : crossCat).push(ing);
+    }
+  }
+  // Stable base order per dish, then a round-stepped window → disjoint sets
+  // round-to-round until the pool wraps.
+  const ordered = [
+    ...shuffled(sameCat, mulberry32(hashId(`${f.id}:dd`))),
+    ...shuffled(crossCat, mulberry32(hashId(`${f.id}:dx`)))
+  ];
+  if (ordered.length <= n) return ordered; // unreachable on path data (40 other dishes)
+  const start = (round * n) % ordered.length;
+  const out: string[] = [];
+  for (let k = 0; k < ordered.length && out.length < n; k++) out.push(ordered[(start + k) % ordered.length]);
+  return out;
+}
+
+/**
+ * The dish components MC, minted natively. `round` rotates the asked component
+ * (round 0 = most distinctive, round 1 = next, …) and the distractor window, so
+ * pretest, the criterion quiz, and each recycle never repeat. Five options; the
+ * answer is always a real, distinctive component; the four distractors are never
+ * in the dish and never a base/given. Default round 0 keeps it deterministic.
+ */
+export function componentsMcFor(item: JourneyItem, round = 0): McContent {
+  const f = foodFor(item);
+  const pool = distinctivePool(f);
+  const answer = pool[((round % pool.length) + pool.length) % pool.length]; // safe wrap for any round
+  const distractors = pickDishDistractors(f, answer, round, N_DISH_OPTIONS - 1);
+  return toMc(
+    `${item.id}:components:${round}`,
+    `Which of these is IN the ${f.name}?`,
+    [answer, ...distractors],
+    answer
+  );
 }
 
 /** NEW minted runtime content (no frozen ids involved): "Which dish comes with
@@ -1179,6 +1286,10 @@ export interface RomanceContent extends AllergenFraming {
   modelLine: string;
   /** Full official ingredients, syllabus order. */
   ingredients: string[];
+  /** The dish photo id (= the food id) — anchors the plate on the reveal, the
+   * SAME id the teach card gates on (§0b dual coding). Only ids in PHOTO_IDS
+   * actually render an image; the rest keep the branded placeholder. */
+  photoId: string;
   /** Optional memory hook (§0b) — a vivid name→components mnemonic, when authored. */
   memoryHook?: string;
 }
@@ -1198,6 +1309,7 @@ export function romanceFor(item: JourneyItem): RomanceContent {
     romanceTargets: f.ingredients!.slice(0, 3),
     modelLine: f.description,
     ingredients: f.ingredients!.slice(),
+    photoId: f.id,
     ...(f.memoryHook ? { memoryHook: f.memoryHook } : {}),
     ...allergenFraming(f)
   };

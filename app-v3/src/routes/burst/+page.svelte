@@ -23,6 +23,7 @@
   let phase = $state<Phase>('intro');
   let pool = $state<JourneyItem[]>([]);
   let idx = $state(0);
+  let cycle = $state(0); // bumps each time the pool re-shuffles → repeats vary
   let score = $state(0);
   let answered = $state(0);
   let chosen = $state<number | null>(null);
@@ -40,12 +41,15 @@
   }
 
   const current = $derived(pool.length > 0 ? pool[idx % pool.length] : null);
-  const mc = $derived(current ? mcFor(current) : null);
+  // `cycle` only changes when the pool re-shuffles (between cards), so mc is
+  // stable for the card on screen but a repeated item gets a fresh question.
+  const mc = $derived(current ? mcFor(current, cycle) : null);
 
   function start(): void {
     if (introduced.length === 0) return;
     pool = shuffled(introduced, Math.random);
     idx = 0;
+    cycle = 0;
     score = 0;
     answered = 0;
     misses = [];
@@ -73,6 +77,7 @@
       if (idx >= pool.length) {
         pool = shuffled(introduced, Math.random);
         idx = 0;
+        cycle += 1; // next lap through the deck asks fresh questions
       }
     }, 280);
   }
