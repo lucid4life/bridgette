@@ -214,11 +214,11 @@ for (const theme of THEMES) {
       await page.getByRole('button', { name: 'start the drill' }).click();
       await expect(page.locator('article.rom')).toBeVisible();
       // the plate must NOT be on the question face — seeing it gives the answer away
-      await expect(page.locator('.rom .r-photo')).toHaveCount(0);
+      await expect(page.locator('.rom .dp.framed')).toHaveCount(0);
       await scan(page); // the question face (name + prompt)
       await page.locator('.rom .act .btn').click();
       await expect(page.locator('.rom .rv')).toBeVisible();
-      await expect(page.locator('.rom .r-photo')).toBeVisible(); // the plate anchors the reveal (§0b)
+      await expect(page.locator('.rom .dp.framed')).toBeVisible(); // the plate anchors the reveal (§0b)
       await scan(page); // the pass bar + model line + grade bar
     });
 
@@ -229,7 +229,7 @@ for (const theme of THEMES) {
       await expect(page.locator('article.rom')).toBeVisible();
       await page.locator('.rom .act .btn').click();
       await expect(page.locator('.rom .rv')).toBeVisible();
-      const img = page.locator('.rom .r-photo img');
+      const img = page.locator('.rom .dp.framed img');
       await expect(img).toBeVisible();
       await expect(img).toHaveAttribute('alt', 'Tuna Crudo'); // alt = dish name (axe AA)
       await scan(page); // a real plate image on the reveal, both themes
@@ -239,11 +239,11 @@ for (const theme of THEMES) {
       await page.goto('/romance/exam');
       await page.getByRole('button', { name: 'start the exam' }).click();
       await expect(page.locator('article.rom-exam')).toBeVisible();
-      await expect(page.locator('.rom-exam .r-photo')).toHaveCount(0); // no plate on the question face
+      await expect(page.locator('.rom-exam .dp.framed')).toHaveCount(0); // no plate on the question face
       await scan(page); // the question face (name + the "romance it" prompt)
       await page.locator('.rom-exam .act .btn').click(); // Check yourself
       await expect(page.locator('.rom-exam .check')).toBeVisible();
-      await expect(page.locator('.rom-exam .r-photo')).toBeVisible(); // the plate on the exam reveal too
+      await expect(page.locator('.rom-exam .dp.framed')).toBeVisible(); // the plate on the exam reveal too
       await scan(page); // the model line + name toggle + component chips + verdict + lock-in
     });
 

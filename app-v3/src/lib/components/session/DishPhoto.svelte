@@ -6,19 +6,26 @@
   // everything without a photo keeps the placeholder. Shared by the teach card
   // and BOTH romance reveals so the plate anchors the dish wherever it's taught
   // or said (§0b dual coding) — one gate, one fade, one placeholder, no drift.
-  // The OUTER frame (width, radius, full-bleed vs contained) is the parent's;
-  // this owns the band, the gate, and the load-in fade. The placeholder is
-  // aria-hidden — the only a11y-relevant text is the image's alt (the name).
+  // Bare (the default) it's a full-bleed band and the parent owns any outer
+  // width/radius (TeachCard). Pass `framed` for the contained treatment — a
+  // centred, rounded, shadowed 240px plate — used by both romance reveals so
+  // that wrapper CSS lives here once. This owns the band, the gate, and the
+  // load-in fade. The placeholder is aria-hidden — the only a11y-relevant text
+  // is the image's alt (the name).
   import { PHOTO_IDS } from './photos';
 
-  let { photoId, name }: { photoId: string; name: string } = $props();
+  let {
+    photoId,
+    name,
+    framed = false
+  }: { photoId: string; name: string; framed?: boolean } = $props();
 
   let imgFailed = $state(false);
   let imgLoaded = $state(false);
   const hasPhoto = $derived(PHOTO_IDS.has(photoId) && !imgFailed);
 </script>
 
-<div class="dp">
+<div class="dp" class:framed>
   {#if hasPhoto}
     <img
       src="/img/{photoId}.webp"
@@ -51,6 +58,15 @@
     width: 100%;
     background: color-mix(in srgb, var(--bb-ink) 6%, var(--bb-paper));
     overflow: hidden;
+  }
+  /* the contained "framed" treatment (both romance reveals): a centred, rounded,
+     shadowed plate that reinforces the line just said without crowding the pass
+     bar. TeachCard omits `framed` and keeps the full-bleed band. */
+  .dp.framed {
+    width: min(240px, 100%);
+    margin: 0 auto;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-1);
   }
   .dp img {
     position: absolute;

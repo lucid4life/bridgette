@@ -76,7 +76,7 @@
     <div class="rv" tabindex="-1" bind:this={rvEl}>
       <!-- the plate, on the REVEAL only — seeing it before recall would give the
            answer away; here it anchors the line you just said (§0b dual coding) -->
-      <div class="r-photo"><DishPhoto photoId={content.photoId} name={content.name} /></div>
+      <DishPhoto framed photoId={content.photoId} name={content.name} />
 
       <div class="passbar">
         <p class="pb-label">the pass bar — say these {targetCount}</p>
@@ -206,15 +206,6 @@
     display: grid;
     gap: 14px;
     animation: card-in 0.2s ease;
-  }
-  /* a contained, rounded plate (the teach band is full-bleed; on the reveal it's
-     a centred square that reinforces without crowding the pass bar) */
-  .r-photo {
-    width: min(240px, 100%);
-    margin: 0 auto;
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    box-shadow: var(--shadow-1);
   }
   .passbar {
     display: grid;
