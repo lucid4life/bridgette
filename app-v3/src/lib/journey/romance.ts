@@ -18,12 +18,12 @@
 /** foodId → the one-sentence guest romance. */
 export const ROMANCE: Record<string, string> = {
   // Snacks
-  'french-fries': 'Here\'s the french fries — crisp shoestring fries tossed in salt with garlic aioli for dipping.',
+  'french-fries': 'Here\'s the french fries — crisp shoestrings tossed in salt with garlic aioli for dipping.',
   'hummus-chips': 'This is the hummus chips — fried crisp with sesame, Aleppo chili, preserved lemon, and green olive.',
-  'garlic-bread': 'Here we have the garlic bread — molten cheese curds in buttery bread with parmesan and chives.',
+  'garlic-bread': 'Here we have the garlic bread — molten cheese curds, fried golden, with parmesan and chives.',
   cashews: 'Here\'s the cashews — boiled in white vinegar, baked crunchy, dusted in salt-and-vinegar spice.',
   'eggplant-fries': 'This is the eggplant fries — crisp panko and nori, fried golden over a green harissa yogurt.',
-  'roasted-olives': 'Here we have the roasted olives — buttery Castelvetrano olives with thyme, orange peel, and Calabrian chili.',
+  'roasted-olives': 'Here we have the Castelvetrano olives — buttery and wood-roasted with thyme, orange peel, and Calabrian chili.',
   'bread-butter': 'Here\'s the bread and butter — smoked beef tallow whipped silky with charred onion, served with sourdough.',
   // Small Plates
   'oysters-1-2-dozen': 'This is the half-dozen oysters — ice-cold on salt with dill pickle granita, horseradish, and lemon.',
@@ -31,8 +31,8 @@ export const ROMANCE: Record<string, string> = {
   'wagyu-beef-carpaccio': 'This is the Wagyu carpaccio — sliced raw and velvety with pickled mushroom, parmesan frico, and horseradish.',
   'lamb-sausage': 'Here\'s the lamb sausage — spiced kefta over garlic labneh with sunny fried egg and cilantro vinaigrette.',
   'burrata-cheese': 'Here we have the burrata — soft and runny over poached rhubarb, strawberry jam, and charred sourdough.',
-  'grilled-octopus-salad': 'Here\'s the grilled octopus salad — wood-grilled octopus with shaved fennel, sweet orange, and a sherry-soy vinaigrette.',
-  'mushrooms-on-toast': 'This is the crab toast — sweet crab and shrimp with silky saffron mousse, finished with lemon.',
+  'grilled-octopus-salad': 'Here\'s the wood-grilled octopus salad — shaved fennel, sweet orange, and a sherry-soy vinaigrette.',
+  'mushrooms-on-toast': 'This is the crab toast — Dungeness and Fogo Island shrimp over silky saffron mousse with lemon.',
   // Vegetables
   'spiced-beet-salad': 'Here\'s the spiced beet salad — over cool whipped feta with pickled shallots, toasted pistachio, and dill.',
   endive: 'Here we have the endive — crisp leaves in apple vinaigrette with shaved Fontina and toasted pecans.',
@@ -43,27 +43,27 @@ export const ROMANCE: Record<string, string> = {
   'bibb-lettuce': 'This is the bibb lettuce — crisp leaves in cool jalapeño cream, puffed grains, and alpine cheese.',
   // Pizza
   margherita: 'Here\'s the Margherita — wood-fired dough, house tomato sauce, milky fior di latte, and torn basil.',
-  'chicken-sausage': 'This is the chicken sausage — house-made over garlic béchamel with bacon, pickled jalapeño, and roasted mushrooms.',
+  'chicken-sausage': 'This is the chicken sausage — over garlic béchamel with bacon, pickled jalapeño, and roasted mushrooms.',
   'five-cheese': 'Here we have the Five Cheese — fior di latte, fontina, and parmesan over garlic béchamel base.',
   'fennel-salami': 'Here\'s the Fennel Salami — spicy and cured, with shaved onion, Calabrian-chili kick, caramelized honey, and basil.',
-  'italian-sausage': 'This is the Italian sausage — with confit garlic, charred kale, roasted pepper, and pecorino.',
+  'italian-sausage': 'This is the Italian sausage — confit garlic, charred kale, roasted pepper, and grated pecorino.',
   // Pasta
-  'italian-pork-sausage': 'Here\'s the Italian pork sausage — house sausage with garlic, Calabrian chili, and spinach conchiglie.',
-  'ricotta-dumplings': 'This is the ricotta dumplings — pillowy ricotta in a silky vodka tomato sauce with torn basil.',
+  'italian-pork-sausage': 'Here\'s the Italian pork sausage — house-made and tossed with garlic, Calabrian chili, and spinach conchiglie.',
+  'ricotta-dumplings': 'This is the ricotta dumplings — pillowy and poached in a silky vodka tomato sauce with basil.',
   'shrimp-crab': 'Here\'s the shrimp and crab — sweet and folded into linguini with brown butter, basil, and chili.',
-  bigoli: 'Here we have the bigoli — silky semolina pasta in pomodoro with crushed olive, caper, and parsley.',
-  rigatoni: 'This is the rigatoni — tubes tossed in a parmesan sauce with earthy mushrooms and truffle oil.',
+  bigoli: 'Here we have the bigoli — silky in San Marzano pomodoro with crushed olive, caper, and parsley.',
+  rigatoni: 'This is the truffled mushroom rigatoni — house-made and tossed in a creamy parmesan sauce.',
   // Mains
-  'grilled-farm-chicken': 'Here\'s the grilled farm chicken — honey-brined and wood-grilled with house sausage, dill gravy, and golden fries.',
-  'maple-bbq-rainbow-trout': 'This is the maple BBQ rainbow trout — steelhead over smoked potato purée with creamed kale.',
+  'grilled-farm-chicken': 'Here\'s the wood-grilled farm chicken — honey-brined, with house sausage, dill gravy, and golden fries.',
+  'maple-bbq-rainbow-trout': 'This is the maple BBQ rainbow trout — glazed over smoked potato purée with creamed kale.',
   'wood-grilled-beef-strip-steak': 'Here\'s the wood-grilled strip steak — Angus under béarnaise with charred shallot and wild mushroom jus.',
-  'wood-roasted-halibut': 'This is the Pacific halibut — wood-roasted over braised leeks and snap peas with crab butter.',
+  'wood-roasted-halibut': 'This is the wood-roasted halibut — braised leeks, sweet snap peas, and crab butter.',
   'grilled-lamb-saddle': 'Here\'s the grilled lamb saddle — rolled with merguez over garlic labneh, warm potato salad, and mint.',
-  'wood-roasted-half-duck': 'This is the half duck — glossy rosemary-glazed duck with black garlic emulsion and turnips two ways.',
-  '26oz-wood-grilled-beef-ribeye': 'Here\'s the 26oz ribeye — wood-fired prime beef over creamy pomme aligot and a green-peppercorn bone-marrow jus.',
+  'wood-roasted-half-duck': 'This is the half duck — glossy and rosemary-glazed, with black garlic emulsion and turnips two ways.',
+  '26oz-wood-grilled-beef-ribeye': 'Here\'s the 26oz prime ribeye — wood-fired over creamy pomme aligot with a green-peppercorn bone-marrow jus.',
   // Dessert
-  'the-banana-pie': 'Here\'s the banana pie — salted pretzel crust under caramelized banana, coffee cream, and toasted Italian meringue.',
-  'apple-tatin': 'This is the apple tatin — apples caramelized under puff pastry with Armagnac cream and cider caramel.',
-  'chocolate-pot-de-creme': 'Here\'s the chocolate pot de crème — dark custard over sour cherry jam with cool cherry gelato.',
+  'the-banana-pie': 'Here\'s the banana pie — salted pretzel crust, coffee cream, toasted Italian meringue, and rum caramel.',
+  'apple-tatin': 'This is the apple tatin — caramelized under puff pastry with Armagnac cream and cider caramel.',
+  'chocolate-pot-de-creme': 'Here\'s the chocolate pot de crème — dark and silky over sour cherry jam and salted caramel.',
   sorbet: 'This is the sorbet — a rotating flavour from Noto Gelato in Bridgeland, scooped cold, so ask the chef what\'s on this week.',
 };
