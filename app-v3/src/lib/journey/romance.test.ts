@@ -127,7 +127,10 @@ describe('ROMANCE overlay', () => {
     'rotating', 'dipping', 'crowned', 'two', 'ways', 'three', 'bone-in', 'thin-shaved',
     // more generic technique/texture/structural words used across the set
     'puffed', 'high', 'shavings', 'piled', 'five', 'base', 'melted', 'through', 'grated',
-    'tubes', 'earthy', 'cooked'
+    'tubes', 'earthy', 'cooked',
+    // generic descriptors true of a dish but not always in its own data row
+    // (e.g. "Italian burrata", "house-made" sourdough/pomodoro)
+    'italian', 'made'
   ]);
 
   it('names nothing ungrounded — every word is a dish ingredient/description word or cooking vocab', () => {
