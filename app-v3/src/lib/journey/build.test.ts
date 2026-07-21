@@ -53,9 +53,9 @@ describe('itemsForUnit: bar modules', () => {
     expect(itemsForUnit('checkpoint-bar')).toEqual(lessons);
   });
 
-  it('covers all 13 build items, unique', () => {
-    expect(BUILD_ITEMS.length).toBe(13);
-    expect(new Set(BUILD_ITEMS.map((i) => i.id)).size).toBe(13);
+  it('covers all 14 build items, unique', () => {
+    expect(BUILD_ITEMS.length).toBe(14);
+    expect(new Set(BUILD_ITEMS.map((i) => i.id)).size).toBe(14);
   });
 });
 
@@ -141,10 +141,11 @@ describe('hasBuildDeck', () => {
     expect(hasBuildDeck(service)).toBe(false);
   });
 
-  it('the build-less cocktails are not on any module (excluded upstream)', () => {
+  it('the removed cocktails are gone; Lovers Mountain now has a build deck', () => {
     const ids = BUILD_ITEMS.map((i) => i.cocktailId);
-    expect(ids).not.toContain('spicy-sandia');
-    expect(ids).not.toContain('lovers-mountain');
+    for (const gone of ['spicy-sandia', 'doctor-jones', 'jr-stargazer', 'french-export'])
+      expect(ids, gone).not.toContain(gone);
+    expect(ids).toContain('lovers-mountain');
   });
 });
 
@@ -161,13 +162,16 @@ describe('cuedFor / freeFor: build recall shapes', () => {
     }
   });
 
-  it('free is cold build-from-memory with the description as the detail', () => {
+  it('free is cold MAKE-IT recall: the measured spec + method/serve/garnish detail', () => {
     for (const item of BUILD_ITEMS) {
       const c = cocktailById.get(item.cocktailId!)!;
       const free = freeFor(item);
-      expect(free.prompt).toBe(`Build the ${c.name} from memory.`);
-      expect(free.answer).toBe(c.build!.join(', '));
-      if (c.description) expect(free.detail).toBe(c.description);
+      const spec = c.spec && c.spec.length ? c.spec : c.build!;
+      const serve = [c.glass, c.ice && (/^up$/i.test(c.ice) ? 'up' : c.ice)].filter(Boolean).join(', ');
+      const mechanics = [c.method, serve, c.garnish ? `garnish: ${c.garnish}` : ''].filter(Boolean).join(' · ');
+      expect(free.prompt).toBe(`Make the ${c.name} from memory — the build, then method and garnish.`);
+      expect(free.answer).toBe(spec.join(' · '));
+      if (mechanics) expect(free.detail).toBe(mechanics);
       expect(free.confirmLine).toBe(BAR_CONFIRM);
     }
   });

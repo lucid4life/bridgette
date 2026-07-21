@@ -165,6 +165,18 @@
       </section>
     </div>
 
+    <!-- pinned first-shift drill: the priority cocktails made earliest on the
+         rail — a deliberate pre-shift cram, reachable before the bar stage
+         unlocks (the full build drill stays gated with the stage) -->
+    <section class="card firstshift">
+      <div class="fs-text">
+        <h2 class="kicker fs-kicker">first shift · 7 drinks</h2>
+        <p class="jobtitle sm">the cocktails you'll make first</p>
+        <p class="meta fs-meta">Heartbreak Mountain · Eat Aprés Love · Cruel Summer · Rolling Canoe · Paradise City · Cloud 9 · Spaghetti Western — full recipe, built from memory.</p>
+      </div>
+      <p class="cta"><a class="btn" href="/build?shift=1">drill these 7</a></p>
+    </section>
+
     <!-- this week's job tasks: shift Sunday, food test Monday night. One tight
          card ABOVE the pre-shift door, without touching the reviews-first hero -->
     <section class="card week">
@@ -323,6 +335,24 @@
     color: var(--text-muted);
     background: var(--surface-card-faint);
     border-color: var(--line);
+  }
+
+  /* ---- pinned first-shift drill (marigold spine — the bar's room) ---- */
+  .firstshift {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    margin-top: 16px;
+    border-left: 4px solid var(--highlight-line);
+  }
+  .fs-kicker {
+    color: var(--highlight);
+  }
+  .fs-text .fs-meta {
+    margin: 4px 0 0;
+    max-width: 60ch;
   }
 
   /* ---- the week's prep door (marigold spine — Sunday's shift, Monday's test) ---- */

@@ -1,7 +1,7 @@
 // Task D2 — "Cocktail Builds" drill deck over the official Beverage Syllabus:
 // builds:<cocktailId>:pick. One card per cocktail carrying the official `build`
-// (13 today — spicy-sandia and lovers-mountain are menu items without an official
-// build and mint NO card). Written TDD-first: these specs define the deck.
+// (14 under the July 2026 syllabus — every menu cocktail now has an official
+// build). Written TDD-first: these specs define the deck.
 // Mirrors the Dish Components precedent (components-allergens.test.ts) — with ONE
 // deliberate difference: drinks come from the BAR, so the standing compliance
 // sentence says "the bar", never "the kitchen".
@@ -48,17 +48,14 @@ describe('Cocktail Builds deck', () => {
     }
   });
 
-  it('cocktails WITHOUT an official build (spicy-sandia, lovers-mountain) mint NO card', () => {
-    // Guard the premise in the data itself, then the generator's exclusion.
-    for (const id of ['spicy-sandia', 'lovers-mountain']) {
-      const ck: any = cocktailById.get(id);
-      expect(ck, 'cocktail missing from data: ' + id).toBeTruthy();
-      expect(ck.build && ck.build.length >= 1, id + ' unexpectedly grew a build — update this test').toBeFalsy();
-    }
+  it('every cocktail now carries an official build; the removed drinks are gone', () => {
+    // The July 2026 syllabus gave every menu cocktail a build (Lovers Mountain
+    // included) and dropped Spicy Sandia / Doctor Jones / Jr. Stargazer / French Export.
+    expect(withoutBuild.length, 'build-less: ' + withoutBuild.map((c: any) => c.id).join(',')).toBe(0);
+    for (const gone of ['spicy-sandia', 'doctor-jones', 'jr-stargazer', 'french-export'])
+      expect(cocktailById.get(gone), gone + ' should be off the menu').toBeFalsy();
     const minted = new Set(cards.map((c: any) => c.sourceId));
-    for (const ck of withoutBuild) {
-      expect(minted.has(ck.id), 'card minted for build-less cocktail: ' + ck.id).toBe(false);
-    }
+    for (const ck of withBuild) expect(minted.has(ck.id), 'no card for ' + ck.id).toBe(true);
   });
 
   it('answer is genuinely IN the build; NO distractor is (case-insensitive); 4 unique choices from other builds', () => {
@@ -175,7 +172,7 @@ describe('wiring — allCards, sourceForCard, expandFor, food sentence untouched
   });
 
   it('expandFor on a flag-less cocktail omits the allergen section (no empty boilerplate)', () => {
-    const c = T.generateDeck('builds', data).find((x: any) => x.sourceId === 'doctor-jones');
+    const c = T.generateDeck('builds', data).find((x: any) => x.sourceId === 'cruel-summer');
     const labels = T.expandFor(c, data).sections.map((s: any) => s.label);
     expect(labels).toContain('The official build');
     expect(labels).not.toContain('Allergen flags');

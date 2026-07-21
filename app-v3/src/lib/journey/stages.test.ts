@@ -237,10 +237,10 @@ describe('wine roster (UNIT_WINE_IDS)', () => {
 });
 
 describe('build roster (UNIT_BUILD_IDS)', () => {
-  it('covers the 13 cocktails with official builds exactly once across 4 modules', () => {
+  it('covers the 14 cocktails with official builds exactly once across 4 modules', () => {
     const all = Object.values(UNIT_BUILD_IDS).flat();
-    expect(all.length).toBe(13);
-    expect(new Set(all).size).toBe(13);
+    expect(all.length).toBe(14);
+    expect(new Set(all).size).toBe(14);
   });
 
   it('covers EXACTLY the cocktails that carry an official build (no drink dropped)', () => {
@@ -265,29 +265,29 @@ describe('build roster (UNIT_BUILD_IDS)', () => {
     }
   });
 
-  it('excludes the build-less cocktails (Spicy Sandia, Lovers Mountain)', () => {
+  it('drops the four removed cocktails; Lovers Mountain now carries a build', () => {
     const all = Object.values(UNIT_BUILD_IDS).flat();
-    expect(all).not.toContain('spicy-sandia');
-    expect(all).not.toContain('lovers-mountain');
+    for (const gone of ['spicy-sandia', 'doctor-jones', 'jr-stargazer', 'french-export'])
+      expect(all, gone).not.toContain(gone);
+    expect(all).toContain('lovers-mountain'); // gained an official build in the July 2026 syllabus
   });
 
   it('pins the module rosters by flavour family', () => {
+    // Order follows the data.cocktails array (syllabus order).
     expect(UNIT_BUILD_IDS['bar-bright']).toEqual([
-      'jr-stargazer',
       'eat-apres-love',
       'cruel-summer',
-      'paradise-city'
+      'paper-umbrella-policy',
+      'paradise-city',
+      'after-school-special'
     ]);
-    // Order follows the data.cocktails array (floral + bitter categories interleave).
     expect(UNIT_BUILD_IDS['bar-floral']).toEqual([
       'heartbreak-mountain',
-      'doctor-jones',
-      'french-export',
       'white-peach-negroni',
       'cloud-9'
     ]);
-    expect(UNIT_BUILD_IDS['bar-spirit']).toEqual(['spaghetti-western', 'rolling-canoe']);
-    expect(UNIT_BUILD_IDS['bar-zero']).toEqual(['short-film', 'sunrise-spritz']);
+    expect(UNIT_BUILD_IDS['bar-spirit']).toEqual(['rolling-canoe', '1988', 'spaghetti-western']);
+    expect(UNIT_BUILD_IDS['bar-zero']).toEqual(['sunrise-spritz', 'lovers-mountain', 'short-film']);
   });
 });
 

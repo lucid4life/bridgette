@@ -1,6 +1,6 @@
 {
   "generated": "2026-06-14",
-  "notes": "34 images (29 food, 5 cocktail). 5 cocktail + 4 food shots scraped/name-matched from bridgettebar.com + Instagram; 22 food shots are Adrian's own labeled phone photos (repo /Photos), square-cropped by tools/photo_scrape/build_dish_photos.py; Hummus Chips + Snap Peas are verified TripAdvisor customer photos pending Adrian's own reshoot.",
+  "notes": "32 images (29 food, 3 cocktail). 3 cocktail + 4 food shots scraped/name-matched from bridgettebar.com + Instagram; 22 food shots are Adrian's own labeled phone photos (repo /Photos), square-cropped by tools/photo_scrape/build_dish_photos.py; Hummus Chips + Snap Peas are verified TripAdvisor customer photos pending Adrian's own reshoot. Spicy Sandia + French Export photos dropped when those cocktails left the July 2026 menu.",
   "images": [
     {
       "id": "mushrooms-on-toast",
@@ -25,22 +25,6 @@
       "source": "site",
       "sourceUrl": "https://www.bridgettebar.com/gallery-calgary",
       "matchedBy": "gallery embed alt/caption: \"A piece of banana pie makes the day a whole lot better\" (post instagram.com/p/DCrmcQ7zBjw)"
-    },
-    {
-      "id": "french-export",
-      "kind": "cocktail",
-      "file": "french-export.webp",
-      "source": "site",
-      "sourceUrl": "https://www.bridgettebar.com/gallery-calgary",
-      "matchedBy": "gallery embed alt/caption: \"French Export / vanilla vodka. calvados. jasmine. lemon. pernod\" (post instagram.com/p/DB9mZAWzO1R)"
-    },
-    {
-      "id": "spicy-sandia",
-      "kind": "cocktail",
-      "file": "spicy-sandia.webp",
-      "source": "instagram",
-      "sourceUrl": "https://www.instagram.com/p/DZDTxmdD5WY/",
-      "matchedBy": "caption: \"Cocktail of the Month: Spicy Sandia\""
     },
     {
       "id": "eat-apres-love",

@@ -17,7 +17,7 @@ function logging() {
 
 describe('build session: one forced rung, caller order', () => {
   it("asks every build once at rung 'build', in the given order", () => {
-    const items = itemsForUnit('bar-bright'); // 4 build items
+    const items = itemsForUnit('bar-bright'); // the bar-bright build items, in roster order
     const { calls, deps } = logging();
     const s = createBuildSession(items, deps);
     for (const item of items) {
@@ -37,7 +37,9 @@ describe('build session: one forced rung, caller order', () => {
 
 describe('build session: miss → again → reteach → retry → clear', () => {
   it("emits 'again' immediately, reteaches next, retries at build after ~3 steps, clears silently", () => {
-    const items = itemsForUnit('bar-bright'); // 4 items
+    // A fixed 4-item slice: this exercises the miss→recycle mechanics (item0 comes
+    // back after the other three), independent of how many drinks bar-bright holds.
+    const items = itemsForUnit('bar-bright').slice(0, 4);
     const { calls, deps } = logging();
     const s = createBuildSession(items, deps);
 
@@ -139,14 +141,14 @@ describe('build session: progress + API misuse', () => {
   });
 });
 
-describe('build session: the drill covers all 13 cocktails with builds', () => {
+describe('build session: the drill covers all 14 cocktails with builds', () => {
   it('finishes a clean full-bar run with one good per build', () => {
     const builds: JourneyItem[] = itemsForUnit('checkpoint-bar').filter((i) => i.kind === 'build');
-    expect(builds.length).toBe(13);
+    expect(builds.length).toBe(14);
     const { calls, deps } = logging();
     const s = createBuildSession(builds, deps);
     while (!s.isComplete()) s.selfGrade(true);
-    expect(calls.length).toBe(13);
-    expect(s.summary().cleared).toBe(13);
+    expect(calls.length).toBe(14);
+    expect(s.summary().cleared).toBe(14);
   });
 });

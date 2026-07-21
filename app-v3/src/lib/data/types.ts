@@ -103,8 +103,15 @@ export interface Cocktail {
   pair: string;
   caveat?: string;
   say: string;
-  // Official enrichment (source: Beverage Syllabus Jan 2025, official; menu-current items only) — additive:
-  build?: string[]; // official build components, in syllabus order
+  // Official enrichment (source: Beverage Syllabus, official; menu-current items) — additive.
+  // Recipe fields (spec/method/glass/ice/garnish/section) added from the July 2026 syllabus.
+  build?: string[]; // official build components, in syllabus order (clean names — drives the build MC)
+  spec?: string[]; // measured build lines ("Beefeater Gin — 1.5 oz"), the make-it study surface
+  method?: string; // build technique (shake/stir/build, strain, keg-pour, …)
+  glass?: string; // glassware
+  ice?: string; // ice / how it's served (king cube, rocks, up)
+  garnish?: string; // the finishing garnish
+  section?: string; // menu section: Cross-Venue Classics | Calgary Exclusives | NA Cocktails
   description?: string; // official drink description (whitespace-normalized)
   flavorTags?: string[]; // official syllabus flavor tags
   allergens?: string[]; // normalized lowercase allergen tokens (official)

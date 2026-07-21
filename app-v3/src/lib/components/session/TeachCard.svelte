@@ -120,14 +120,17 @@
         <span class="t-leader" aria-hidden="true"></span>
         <span class="t-price">${teach.price}</span>
       </header>
-      <p class="t-cat"><span class="pill">{teach.category}</span></p>
+      <p class="t-cat">
+        <span class="pill">{teach.category}</span>
+        {#if teach.section}<span class="pill alt">{teach.section}</span>{/if}
+      </p>
 
       {#if teach.description}<p class="t-desc">{teach.description}</p>{/if}
 
       <div class="t-sec">
         <p class="t-label">the build</p>
         <ol class="t-build">
-          {#each teach.build as part (part)}<li>{part}</li>{/each}
+          {#each teach.spec && teach.spec.length ? teach.spec : teach.build as part (part)}<li>{part}</li>{/each}
         </ol>
         {#if teach.flavorTags.length > 0}
           <div class="t-chips t-flavours">
@@ -135,6 +138,18 @@
           </div>
         {/if}
       </div>
+
+      {#if teach.method || teach.glass || teach.ice || teach.garnish}
+        <div class="t-sec">
+          <p class="t-label">how to make it</p>
+          <dl class="t-facts">
+            {#if teach.method}<div><dt>method</dt><dd>{teach.method}</dd></div>{/if}
+            {#if teach.glass}<div><dt>glass</dt><dd>{teach.glass}</dd></div>{/if}
+            {#if teach.ice}<div><dt>ice</dt><dd>{teach.ice}</dd></div>{/if}
+            {#if teach.garnish}<div><dt>garnish</dt><dd>{teach.garnish}</dd></div>{/if}
+          </dl>
+        </div>
+      {/if}
 
       <div class="t-sec">
         <p class="t-label">what to say</p>

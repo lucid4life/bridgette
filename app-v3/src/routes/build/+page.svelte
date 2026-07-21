@@ -15,7 +15,7 @@
   import TeachCard from '$lib/components/session/TeachCard.svelte';
   import { nameOf } from '$lib/components/session/util';
   import { stageStatus } from '$lib/journey/gating';
-  import { allItems, categoryOf, freeFor, teachFor } from '$lib/journey/items';
+  import { allItems, categoryOf, freeFor, teachFor, FIRST_SHIFT_COCKTAIL_IDS } from '$lib/journey/items';
   import type { JourneyItem } from '$lib/journey/types';
   import {
     createBuildSession,
@@ -28,13 +28,18 @@
 
   // Every cocktail with an official build (the build-less drinks mint no item).
   const BUILDS: readonly JourneyItem[] = allItems().filter((i) => i.kind === 'build');
-  const BUILD_COUNT = BUILDS.length; // 13
+  const BUILD_COUNT = BUILDS.length; // every cocktail with an official build (14)
+
+  // The pinned "First shift" set: /build?shift=1 drills just the priority drinks
+  // and is reachable BEFORE the bar stage unlocks (deliberate pre-shift cram).
+  const firstShift = $derived(page.url.searchParams.get('shift') === '1');
 
   // Behind the Bar is a sequentially-gated stage: this drill grades real reviews
   // (auto-introducing build items), so — like /checkpoint — it is unreachable
   // until the stage is unlocked, or drilling early would desync path gating.
   $effect(() => {
     if (!progress.ready) return;
+    if (firstShift) return; // the priority-7 cram is reachable before the stage unlocks
     if (stageStatus('behind-the-bar', progressView(progress.state)) === 'locked') void goto('/');
   });
 
@@ -51,7 +56,11 @@
       .filter(Boolean)
   );
   const drillPool = $derived(
-    drillIds.length > 0 ? BUILDS.filter((i) => drillIds.includes(i.cocktailId!)) : null
+    firstShift
+      ? BUILDS.filter((i) => (FIRST_SHIFT_COCKTAIL_IDS as readonly string[]).includes(i.cocktailId!))
+      : drillIds.length > 0
+        ? BUILDS.filter((i) => drillIds.includes(i.cocktailId!))
+        : null
   );
 
   /** Asking order from the CURRENT store state — deterministic per state. */
@@ -150,8 +159,8 @@
     </SessionSummary>
   {:else if step && prog}
     <SessionHeader
-      title="Build the bar"
-      sub="every cocktail, built from memory"
+      title={firstShift ? 'First shift' : 'Build the bar'}
+      sub={firstShift ? 'the 7 you make first — from memory' : 'every cocktail, built from memory'}
       {phase}
       position={prog.position}
       total={prog.total}

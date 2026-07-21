@@ -119,6 +119,19 @@ const allergenItem = (unitId: string, foodId: string): JourneyItem => ({
   foodId
 });
 
+/** The first-shift priority cocktails — the drinks made earliest on the rail,
+ * surfaced as a pinned pre-shift drill (/build?shift=1) reachable before the bar
+ * stage unlocks. Kept here so the route and Today share ONE list. */
+export const FIRST_SHIFT_COCKTAIL_IDS = [
+  'heartbreak-mountain',
+  'eat-apres-love',
+  'cruel-summer',
+  'rolling-canoe',
+  'paradise-city',
+  'cloud-9',
+  'spaghetti-western'
+] as const;
+
 const buildItem = (unitId: string, cocktailId: string): JourneyItem => ({
   id: `build:${cocktailId}`,
   kind: 'build',
@@ -314,8 +327,18 @@ export interface BuildTeach {
   price: string;
   category: string;
   description?: string;
-  /** official build, syllabus order */
+  /** menu section: Cross-Venue Classics | Calgary Exclusives | NA Cocktails */
+  section?: string;
+  /** official build, syllabus order (clean component names) */
   build: string[];
+  /** measured build lines ("Beefeater Gin — 1.5 oz") — the make-it recipe */
+  spec?: string[];
+  /** build technique (shake/stir/build, strain, keg-pour) */
+  method?: string;
+  glass?: string;
+  /** ice / how it's served (king cube, rocks, up) */
+  ice?: string;
+  garnish?: string;
   flavorTags: string[];
   /** the dishes this drink pours alongside (cocktail.pair, comma-joined string) */
   pair: string;
@@ -1410,13 +1433,19 @@ export function freeFor(item: JourneyItem): FreeContent {
     const s = serviceFor(item);
     return { prompt: s.prompt, answer: s.answer };
   }
-  // Build items (Stage 3): free BUILD recall — build it from memory, cold.
+  // Build items (Stage 3): free MAKE-IT recall — build it from memory, cold, with
+  // the measured spec, then the method and garnish. The measured spec (falling back
+  // to the plain build when a drink is keg/batch-poured) is the answer; the mechanics
+  // ride in the detail. This is the make-the-drink target the bar checkpoint gates on.
   if (item.kind === 'build') {
     const c = cocktailFor(item);
+    const spec = c.spec && c.spec.length ? c.spec : c.build!;
+    const serve = [c.glass, c.ice && (/^up$/i.test(c.ice) ? 'up' : c.ice)].filter(Boolean).join(', ');
+    const mechanics = [c.method, serve, c.garnish ? `garnish: ${c.garnish}` : ''].filter(Boolean).join(' · ');
     return {
-      prompt: `Build the ${c.name} from memory.`,
-      answer: c.build!.join(', '),
-      ...(c.description ? { detail: c.description } : {}),
+      prompt: `Make the ${c.name} from memory — the build, then method and garnish.`,
+      answer: spec.join(' · '),
+      ...(mechanics ? { detail: mechanics } : {}),
       ...barFraming(c)
     };
   }
@@ -1571,8 +1600,14 @@ export function teachFor(item: JourneyItem): TeachContent {
       name: c.name,
       price: c.price,
       category: c.category,
+      ...(c.section ? { section: c.section } : {}),
       ...(c.description ? { description: c.description } : {}),
       build: c.build!.slice(),
+      ...(c.spec && c.spec.length ? { spec: c.spec.slice() } : {}),
+      ...(c.method ? { method: c.method } : {}),
+      ...(c.glass ? { glass: c.glass } : {}),
+      ...(c.ice ? { ice: c.ice } : {}),
+      ...(c.garnish ? { garnish: c.garnish } : {}),
       flavorTags: c.flavorTags ?? [],
       pair: c.pair,
       say: c.say,

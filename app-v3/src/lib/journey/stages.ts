@@ -92,10 +92,9 @@ export const UNIT_ALLERGEN_IDS: Record<string, readonly string[]> = (() => {
 
 // ---- Stage 3 (Behind the Bar) by-flavour-family rosters ----
 // Each cocktail with an official build lands in ONE module by its menu category,
-// grouped into four flavour rooms (non-overlapping). Cocktails with NO official
-// build (Spicy Sandia, Lovers Mountain — newer than the Jan-2025 syllabus) are
-// excluded from build-recall outright (logged: open-questions item 18); they
-// still live in the Playbook + pairing material.
+// grouped into four flavour rooms (non-overlapping). Under the July 2026 syllabus
+// every menu cocktail carries an official build, so all 14 are rostered; the
+// throw below still guards against a new flavour family slipping in unmapped.
 const BAR_MODULE_OF_CATEGORY: Record<string, string> = {
   'Bright, spicy, smoky': 'bar-bright',
   'Fruity, tropical, sparkling': 'bar-bright',

@@ -1728,7 +1728,7 @@ export const data = {
       "menu": "Garlic Aioli",
       "flavor": "salty, crisp, creamy aioli",
       "wine": "Blue Mountain Brut",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Paper Umbrella Policy",
       "zero": "Freixenet Sparkling Wine or Peroni Pilsner 0.0",
       "why": "Salt and fried fat want high acid and bubbles to scrub the palate clean (acid cuts fat; bubbles refresh).",
       "flags": [
@@ -1763,7 +1763,7 @@ export const data = {
       "menu": "Marash Chili, Preserved Lemon",
       "flavor": "tangy, chili, lemon, creamy chickpea",
       "wine": "Hiedler Löss",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Cruel Summer",
       "zero": "Short Film",
       "why": "Citrus and chili call for a high-acid white or zesty zero-proof; freshness lifts the lemon and tames the Marash heat.",
       "flags": [
@@ -1869,7 +1869,7 @@ export const data = {
       "menu": "Green Harissa Yogurt",
       "flavor": "fried, tangy yogurt, green spice",
       "wine": "Hiedler Löss",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Cruel Summer",
       "zero": "Short Film",
       "why": "Fried fat plus tangy yogurt and green spice want a peppery high-acid white; acid cuts the fry and matches the yogurt's tang.",
       "flags": [
@@ -1975,7 +1975,7 @@ export const data = {
       "menu": "Dill Pickle Granita",
       "flavor": "briny, cold, pickle, raw seafood",
       "wine": "Blue Mountain Brut",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Cloud 9",
       "zero": "Gallina de Piel Neverwine",
       "why": "Brine and cold raw seafood want high acid, bubbles, or saline freshness; acid mirrors a squeeze of lemon and lifts the brine.",
       "flags": [
@@ -2089,7 +2089,7 @@ export const data = {
       "menu": "Cilantro Vinaigrette, Labneh, Fried Egg",
       "flavor": "lamb, herb, tangy labneh, egg richness",
       "wine": "Bodega Cerrón Remordimiento Tinto",
-      "cocktail": "Doctor Jones",
+      "cocktail": "White Peach Negroni",
       "zero": "Noughty Rouge",
       "why": "Rich lamb and tangy labneh need dark fruit, spice, or amaro bitterness; intensity matches the meat and bitterness and acid cut the fat.",
       "flags": [
@@ -2167,7 +2167,7 @@ export const data = {
       "menu": "Orange, Fennel, Sherry Vinaigrette",
       "flavor": "grilled seafood, orange, fennel, sherry tang",
       "wine": "Vini be Good Hip Hop Chenin",
-      "cocktail": "French Export",
+      "cocktail": "Heartbreak Mountain",
       "zero": "Gallina de Piel Neverwine",
       "why": "Orange and sherry vinaigrette want fresh acidity and light texture, not tannin; acid matches the dressing and keeps grilled seafood lifted.",
       "flags": [
@@ -2285,7 +2285,7 @@ export const data = {
       "menu": "Apple Vinaigrette, Fontina, Pecan",
       "flavor": "bitter greens, apple acid, cheese, nuts",
       "wine": "Wagner-Stempel Weissburgunder",
-      "cocktail": "French Export",
+      "cocktail": "Heartbreak Mountain",
       "zero": "Short Film",
       "why": "Bitter greens plus apple acid and cheese want a gentle low-tannin white; softness avoids stacking bitterness on bitterness.",
       "flags": [
@@ -2438,7 +2438,7 @@ export const data = {
       "menu": "Green Tahini Dressing, Toasted Almond, Chili",
       "flavor": "fresh cucumber, tahini, almond, chili",
       "wine": "Hiedler Löss",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Cruel Summer",
       "zero": "Short Film",
       "why": "Fresh cucumber, tahini, and chili want a peppery high-acid white; freshness matches the cucumber and acid and low alcohol tame the heat.",
       "flags": [
@@ -2637,7 +2637,7 @@ export const data = {
       "menu": "Onion, Calabrian Chili, Caramelized Honey",
       "flavor": "salami, chili, honey, onion",
       "wine": "Fattoria Moretto Semprebon",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Paper Umbrella Policy",
       "zero": "Sunrise Spritz",
       "why": "Salty cured meat, chili, and honey are made for sparkling red, Riesling, or spicy citrus; salt softens the wine and a little sweetness tames the heat.",
       "flags": [
@@ -2677,7 +2677,7 @@ export const data = {
       "menu": "Confit Garlic, Charred Kale, Roasted Pepper, Pecorino",
       "flavor": "sausage, garlic, kale, pepper, cheese",
       "wine": "Sindicat la Figuera",
-      "cocktail": "Doctor Jones",
+      "cocktail": "White Peach Negroni",
       "zero": "Noughty Rouge",
       "why": "Sausage, roasted pepper, and pecorino want juicy Grenache fruit and spice; ripe fruit matches the meat and acidity carries the salt.",
       "flags": [
@@ -2716,7 +2716,7 @@ export const data = {
       "menu": "Conchiglie, Calabrian Chili",
       "flavor": "pork sausage, shell pasta, chili",
       "wine": "Darting Dürkheimer Fronhof",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Paper Umbrella Policy",
       "zero": "Peroni Pilsner 0.0",
       "why": "Calabrian chili heat amplifies alcohol and tannin, so a fresh low-tannin white (Riesling), beer, or bright cocktail is safer; acid and sweetness tame the burn.",
       "flags": [
@@ -3074,7 +3074,7 @@ export const data = {
       "menu": "Warm Merguez Potato Salad, Tender Greens, Labneh, Mint",
       "flavor": "lamb, merguez spice, potato, labneh, mint",
       "wine": "Ca' del Baio Langhe",
-      "cocktail": "Doctor Jones",
+      "cocktail": "Spaghetti Western",
       "zero": "Noughty Rouge",
       "why": "Lamb and merguez spice want Nebbiolo grip or a dark Spanish red; tannin binds the lamb fat and dark fruit matches the spice.",
       "flags": [
@@ -3230,7 +3230,7 @@ export const data = {
       "menu": "Armagnac, Cider Caramel, Toasted Hay",
       "flavor": "apple, caramel, cider, Armagnac",
       "wine": "Barbeito Madeira Rainwater Reserva 5yr",
-      "cocktail": "French Export",
+      "cocktail": "1988",
       "zero": "Sunrise Spritz",
       "why": "Caramelized apple and cider want a nutty fortified wine or apple brandy; matching sweetness and oxidative notes keep the wine from tasting sour next to dessert.",
       "flags": [
@@ -3324,7 +3324,7 @@ export const data = {
       "menu": "Snack menu daily 2pm to 5pm; late-night window listed on public Calgary page",
       "flavor": "quick share plates, pizza, snacks, salads",
       "wine": "Blue Mountain Brut",
-      "cocktail": "Spicy Sandia",
+      "cocktail": "Paper Umbrella Policy",
       "zero": "Lovers Mountain",
       "why": "For fast snack ordering, lead with bubbles, a crisp beer, or a signature cocktail; high acid and bubbles suit salty, fried, shareable plates.",
       "flags": [
@@ -3340,38 +3340,34 @@ export const data = {
   ],
   "cocktails": [
     {
-      "id": "spicy-sandia",
-      "name": "Spicy Sandia",
-      "group": "cocktail",
-      "category": "Bright, spicy, smoky",
-      "price": "20",
-      "profile": "tequila, mezcal, watermelon, dry curacao, lime, saline",
-      "pair": "Oysters, Tuna Crudo, Fennel Salami, Italian Pork Sausage",
-      "caveat": "Smoky/spicy profile; confirm heat tolerance.",
-      "say": "If you like a spicy margarita, Spicy Sandia is the Bridgette version: tequila, mezcal, watermelon, lime, and saline.",
-      "tags": [
-        "cocktail",
-        "spice",
-        "seafood"
-      ]
-    },
-    {
       "id": "heartbreak-mountain",
       "name": "Heartbreak Mountain",
       "group": "cocktail",
       "category": "Floral, tea, citrus",
+      "section": "Cross-Venue Classics",
       "price": "18",
-      "profile": "gin, Earl Grey tea, lemon, lavender, milk washed",
+      "profile": "gin, Earl Grey tea, lemon, lavender, milk clarified",
       "pair": "Bibb Lettuce, Spiced Beet Salad, Maple BBQ Rainbow Trout, Wood Roasted Halibut",
-      "caveat": "Milk washed; confirm dairy-allergy language.",
+      "caveat": "Milk-clarified; confirm dairy-allergy language.",
       "say": "This is floral, tea-driven, and very polished. It works well when a guest wants refreshing but not basic.",
       "build": [
-        "Gin",
+        "Beefeater Gin",
         "Earl Grey Tea Syrup",
         "Lemon",
-        "Lavender Bitters",
+        "Scrappy’s Lavender Bitters",
         "Milk Clarified"
       ],
+      "spec": [
+        "Beefeater Gin — 1.5 oz",
+        "Earl Grey Tea Syrup — 0.75 oz",
+        "Lemon — 0.75 oz",
+        "Scrappy’s Lavender Bitters — 2 dash",
+        "Milk Clarified — 1 oz"
+      ],
+      "method": "Build in single rocks — pre-diluted batch",
+      "glass": "Single rocks",
+      "ice": "King cube",
+      "garnish": "Dried lavender sprig",
       "description": "This milk-clarified gin cocktail blends Earl Grey tea, fresh lemon, and lavender bitters for a delicately floral and herbal profile. Silky smooth and crystal clear, it’s light, refreshing, and effortlessly drinkable with a soft citrus finish. Served over a large clear rock of ice.",
       "flavorTags": [
         "Floral",
@@ -3382,74 +3378,10 @@ export const data = {
       "allergens": [
         "dairy"
       ],
-      "allergenNote": "Milk-clarified build (dairy used in clarification, drink is strained clear but contains milk proteins).",
+      "allergenNote": "Milk-clarified build (dairy used in clarification; the drink is strained clear but contains milk proteins).",
       "tags": [
         "cocktail",
         "floral",
-        "seafood"
-      ]
-    },
-    {
-      "id": "doctor-jones",
-      "name": "Doctor Jones",
-      "group": "cocktail",
-      "category": "Bitter, aperitivo, amaro",
-      "price": "17",
-      "profile": "Averna amaro, red vermouth, orange, Dr. Pepper, lemon, mint",
-      "pair": "Lamb Sausage, Bigoli, Rigatoni, Wood Roasted Half Duck",
-      "caveat": "Amaro bitterness; better for adventurous guests.",
-      "say": "Doctor Jones is the fun amaro lane: bitter, citrusy, cola-spiced, and great with richer savory plates.",
-      "build": [
-        "Amaro Averna",
-        "Sweet Vermouth",
-        "Dry Curacao",
-        "Dr. Pepper Syrup",
-        "Mint"
-      ],
-      "description": "Refreshing and crisp, this low-ABV cocktail is thoughtfully balanced with herbal depth and bright citrus. Amaro Averna and sweet vermouth provide a rich, bittersweet backbone, while dry curaçao and fresh lemon lift the palate. Dr. Pepper syrup ties everything together with subtle spice and warmth. Finished with fresh mint and a maraschino cherry, it’s vibrant, playful, and easy to enjoy.",
-      "flavorTags": [
-        "Refreshing",
-        "Crisp",
-        "Citrus",
-        "Balanced"
-      ],
-      "allergens": [],
-      "tags": [
-        "cocktail",
-        "bitter",
-        "rich"
-      ]
-    },
-    {
-      "id": "jr-stargazer",
-      "name": "Jr. Stargazer",
-      "group": "cocktail",
-      "category": "Bright, spicy, smoky",
-      "price": "17",
-      "profile": "tequila, mezcal, apricot, pickled celery, lime",
-      "pair": "Oysters, Tuna Crudo, Smashed Cucumbers, Fennel Salami",
-      "caveat": "Pickled celery and mezcal profile; not for every guest.",
-      "say": "Jr. Stargazer is bright and a little savory, with tequila, mezcal, apricot, pickled celery, and lime.",
-      "build": [
-        "Blanco Tequila",
-        "Mezcal",
-        "Apricot Liqueur",
-        "Celery Shrub",
-        "Lime",
-        "Smoked Maldon"
-      ],
-      "description": "This margarita-inspired cocktail features a split base of blanco tequila and mezcal, offering a balance of bright agave and gentle smoke. Celery shrub adds crisp acidity and subtle bitterness, while apricot liqueur softens the smokiness with ripe stone-fruit sweetness. Fresh lime sharpens the finish, and a touch of smoked Maldon salt enhances depth and complexity. The result is fruit-forward, well-acidic, and delicately smoky.",
-      "flavorTags": [
-        "Agave-Forward",
-        "Subtly Smoky",
-        "Bright",
-        "Fruity",
-        "Savory"
-      ],
-      "allergens": [],
-      "tags": [
-        "cocktail",
-        "spice",
         "seafood"
       ]
     },
@@ -3458,18 +3390,29 @@ export const data = {
       "name": "Eat, Apres, Love",
       "group": "cocktail",
       "category": "Fruity, tropical, sparkling",
+      "section": "Cross-Venue Classics",
       "price": "17",
-      "profile": "rose gin, strawberry cordial, sparkling rose",
+      "profile": "rose gin, strawberry cordial, lemon, sparkling rosé",
       "pair": "Burrata Cheese, Margherita, Spiced Beet Salad, dessert starters",
       "caveat": "Fruit-forward and sparkling.",
-      "say": "This is the softer sparkling rose cocktail: great if someone wants fruit and bubbles without going heavy.",
+      "say": "This is the softer sparkling rosé cocktail: great if someone wants fruit and bubbles without going heavy.",
       "build": [
         "Dillon’s Rose Gin",
         "Strawberry Cordial",
         "Lemon",
         "Sparkling Rosé Wine"
       ],
-      "description": "This spritz-style cocktail is bright, fruit-forward, and reminiscent of a stroll through a summer berry patch. Rose-infused gin is paired with house strawberry cordial and fresh lemon to create a vibrant, aromatic base, then topped with sparkling rosé wine for a crisp, effervescent finish.",
+      "spec": [
+        "Dillon’s Rose Gin — 1.5 oz",
+        "Strawberry Cordial — 1 oz",
+        "Lemon — 0.5 oz",
+        "Sparkling Rosé Wine — 2 oz"
+      ],
+      "method": "Shake, double strain, top with sparkling rosé",
+      "glass": "Wine glass",
+      "ice": "Rocks",
+      "garnish": "Two strawberry slices",
+      "description": "This spritz-style cocktail is bright, fruit-forward, and reminiscent of a stroll through a summer berry patch. Rose-infused gin is paired with house strawberry cordial and fresh lemon to create a vibrant, aromatic base, served on the rocks and then topped with sparkling rosé wine for a crisp, effervescent finish.",
       "flavorTags": [
         "Fruity",
         "Floral",
@@ -3487,53 +3430,33 @@ export const data = {
       ]
     },
     {
-      "id": "french-export",
-      "name": "French Export",
-      "group": "cocktail",
-      "category": "Floral, tea, citrus",
-      "price": "17",
-      "profile": "vanilla vodka, calvados, jasmine, lemon, pernod",
-      "pair": "Apple Tatin, Endive, Grilled Octopus Salad, Maple BBQ Rainbow Trout",
-      "caveat": "Pernod/anise note may be polarizing.",
-      "say": "French Export has apple, jasmine, lemon, and a little anise. It is lovely with apple, fennel, seafood, and lighter plates.",
-      "build": [
-        "Absolut Vanilla Vodka",
-        "Apple Brandy (Calvados)",
-        "Jasmine Tea Syrup",
-        "Lemon",
-        "Absinthe Rinse"
-      ],
-      "description": "This aromatic cocktail layers vanilla vodka and apple brandy with the delicate florality of jasmine tea. Bright lemon adds lift, while a subtle absinthe rinse frames the drink with a whisper of anise. The result is softly floral, lightly spiced, and beautifully balanced with a clean, lingering finish.",
-      "flavorTags": [
-        "Orchard Fruit",
-        "Soft Vanilla",
-        "Bright",
-        "Aromatic"
-      ],
-      "allergens": [],
-      "tags": [
-        "cocktail",
-        "floral",
-        "dessert"
-      ]
-    },
-    {
       "id": "cruel-summer",
       "name": "Cruel Summer",
       "group": "cocktail",
       "category": "Fruity, tropical, sparkling",
+      "section": "Cross-Venue Classics",
       "price": "17",
-      "profile": "sage vodka, arancione aperitivo, rhubarb, strawberry, lemon",
-      "pair": "Burrata Cheese, Snap Peas, Chicken Sausage pizza",
+      "profile": "sage vodka, Aperol, strawberry-rhubarb, lemon",
+      "pair": "Burrata Cheese, Snap Peas, Hummus Chips, Chicken Sausage pizza",
       "caveat": "Aperitivo and fruit balance.",
       "say": "Cruel Summer is rhubarb-strawberry with sage and citrus. It is bright enough for spice and rich enough for share plates.",
       "build": [
-        "Sage Infused Vodka",
-        "Starlino Arancione Aperitivo",
+        "Sage Infused Bulldog Vodka",
+        "Aperol",
         "Strawberry Rhubarb Syrup",
         "Lemon"
       ],
-      "description": "This vibrant cocktail brings together sage-infused vodka and Starlino Arancione for a balance of herbal depth and bright citrus. Strawberry-rhubarb syrup adds gentle fruit sweetness and tartness, while fresh lemon keeps the finish crisp and refreshing. Served up and garnished with a fresh sage leaf, it’s aromatic, balanced, and quietly complex.",
+      "spec": [
+        "Sage Infused Bulldog Vodka — 1.5 oz",
+        "Aperol — 0.5 oz",
+        "Strawberry Rhubarb Syrup — 1 oz",
+        "Lemon — 0.75 oz"
+      ],
+      "method": "Shake, double strain",
+      "glass": "Adam’s coupe",
+      "ice": "Up",
+      "garnish": "Sage leaf",
+      "description": "This vibrant cocktail brings together sage-infused vodka and Aperol for a balance of herbal depth and bright citrus. Strawberry-rhubarb syrup adds gentle fruit sweetness and tartness, while fresh lemon keeps the finish crisp and refreshing. Served up and garnished with a fresh sage leaf, it’s aromatic, balanced, and complex.",
       "flavorTags": [
         "Herbal",
         "Citrus-Forward",
@@ -3548,22 +3471,160 @@ export const data = {
       ]
     },
     {
+      "id": "rolling-canoe",
+      "name": "Rolling Canoe",
+      "group": "cocktail",
+      "category": "Rich, spirit-forward",
+      "section": "Cross-Venue Classics",
+      "price": "17",
+      "profile": "rye, ruby port, ginger, lemon",
+      "pair": "Wood Grilled Beef Strip Steak, Grilled Farm Chicken, The Banana Pie, Apple Tatin",
+      "caveat": "Whiskey-forward but brightened with ginger and lemon.",
+      "say": "Rolling Canoe is whiskey, port, ginger, and lemon. It is a strong call for steak or a richer after-dinner drink.",
+      "build": [
+        "Forty Creek Rye",
+        "Ruby Port",
+        "Ginger Syrup",
+        "Lemon"
+      ],
+      "spec": [
+        "Forty Creek Rye — 1 oz",
+        "Ruby Port — 1 oz",
+        "Ginger Syrup — 1 oz",
+        "Lemon — 0.75 oz"
+      ],
+      "method": "Shake, double strain",
+      "glass": "Single rocks",
+      "ice": "Rocks",
+      "garnish": "Lemon twist",
+      "description": "Rolling Canoe is a bright, crowd-favourite cocktail and a true staple at Bridgette Bar. Ruby port and rye whiskey create a rich yet approachable base, lifted by fresh lemon and warming ginger syrup. Shaken and served on the rocks with a lemon twist, it’s vibrant, balanced, and endlessly drinkable — a classic that’s stood the test of time.",
+      "flavorTags": [
+        "Bright",
+        "Balanced",
+        "Ginger-Spiced"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "allergenNote": "Sulphites from the ruby port (a fortified wine).",
+      "tags": [
+        "cocktail",
+        "rich",
+        "steak",
+        "dessert"
+      ]
+    },
+    {
+      "id": "white-peach-negroni",
+      "name": "White Peach Negroni",
+      "group": "cocktail",
+      "category": "Bitter, aperitivo, amaro",
+      "section": "Cross-Venue Classics",
+      "price": "17",
+      "profile": "gin, Campari, blanc aperitif, peach liqueur, saline",
+      "pair": "Lamb Sausage, Italian Sausage, Bigoli, Rigatoni, Wood Roasted Half Duck",
+      "caveat": "Bitter Campari profile.",
+      "say": "This is a softer Negroni direction with peach, but it still has that bitter aperitivo backbone.",
+      "build": [
+        "Beefeater Gin",
+        "Campari",
+        "Mattei Blanc Aperitif",
+        "Peach Liqueur",
+        "Saline"
+      ],
+      "method": "Pour 3 oz from the keg — house-batched & nitrogenated",
+      "glass": "Single rocks",
+      "ice": "King cube",
+      "garnish": "Half orange wheel",
+      "description": "This house-made White Peach Negroni is keg-tapped and nitrogenated for a soft, velvety texture with just a hint of effervescence. Beefeater gin and Campari provide the classic bitter and herbal backbone, while Mattei Blanc and peach liqueur add gentle sweetness and ripe stone-fruit character. Balanced with a touch of saline, it’s bittersweet, peach-forward, and exceptionally smooth. Served over a large clear rock of ice.",
+      "flavorTags": [
+        "Bittersweet",
+        "Peach-Forward",
+        "Herbal",
+        "Smooth"
+      ],
+      "allergens": [
+        "sulphites"
+      ],
+      "allergenNote": "Sulphites from the Campari/blanc aperitif base.",
+      "tags": [
+        "cocktail",
+        "bitter",
+        "aperitivo"
+      ]
+    },
+    {
+      "id": "paper-umbrella-policy",
+      "name": "Paper Umbrella Policy",
+      "group": "cocktail",
+      "category": "Fruity, tropical, sparkling",
+      "section": "Calgary Exclusives",
+      "price": "18",
+      "profile": "pisco, amaro Montenegro, guava-ginger, lime, soda",
+      "pair": "French Fries, Oysters, Fennel Salami, Italian Pork Sausage",
+      "caveat": "Patio favourite — light and easy.",
+      "say": "Paper Umbrella Policy is our patio favourite: pisco, a touch of amaro, guava-ginger, lime, and soda — bright, tropical, and easy to drink.",
+      "build": [
+        "El Gobernador Pisco",
+        "Amaro Montenegro",
+        "Guava-Ginger Syrup",
+        "Lime",
+        "Soda"
+      ],
+      "spec": [
+        "El Gobernador Pisco — 1.75 oz",
+        "Amaro Montenegro — 0.5 oz",
+        "Guava-Ginger Syrup — 0.5 oz",
+        "Lime — 0.75 oz",
+        "Soda — 1.5 oz"
+      ],
+      "method": "Shake, double strain, top with soda",
+      "glass": "Pink double rocks",
+      "ice": "Rocks",
+      "garnish": "Mint bouquet",
+      "description": "Paper Umbrella Policy is a bright, highball-style cocktail built around pisco and Amaro Montenegro. House-made guava-ginger syrup brings tropical fruit and gentle spice, while fresh lime and soda create a crisp, refreshing finish. Light-bodied and effortlessly drinkable — a patio favourite.",
+      "flavorTags": [
+        "Tropical",
+        "Refreshing",
+        "Citrusy",
+        "Light"
+      ],
+      "allergens": [],
+      "tags": [
+        "cocktail",
+        "tropical",
+        "refreshing"
+      ]
+    },
+    {
       "id": "paradise-city",
       "name": "Paradise City",
       "group": "cocktail",
       "category": "Fruity, tropical, sparkling",
+      "section": "Calgary Exclusives",
       "price": "17",
-      "profile": "tequila, pineapple rum, Cointreau, toasted coconut, lime, cinnamon",
+      "profile": "tequila, pineapple rum, Cointreau, toasted coconut, lime",
       "pair": "Burrata Cheese, Grilled Octopus Salad, Margherita, Chicken Sausage",
       "caveat": "Tropical and coconut-forward.",
       "say": "Paradise City is the tropical lane: pineapple, coconut, lime, and cinnamon. Great with cheese, spice, and pizza.",
       "build": [
-        "Blanco Tequila",
+        "Espolon Blanco Tequila",
         "Planteray Pineapple Rum",
         "Cointreau",
         "Toasted Coconut Syrup",
         "Lime"
       ],
+      "spec": [
+        "Espolon Blanco Tequila — 1 oz",
+        "Planteray Pineapple Rum — 1 oz",
+        "Cointreau — 0.5 oz",
+        "Toasted Coconut Syrup — 1.25 oz",
+        "Lime — 1 oz"
+      ],
+      "method": "Shake, double strain",
+      "glass": "Half-Collins",
+      "ice": "Rocks",
+      "garnish": "Pink Himalayan salt & cinnamon-sugar rim",
       "description": "The Paradise City is the love child of a piña colada and a margarita: tropical, bright, and irresistibly smooth. Lush coconut and citrus notes are balanced by a subtle sweetness, while the rim of cinnamon sugar and pink Himalayan salt adds warmth, contrast, and a touch of indulgence to every sip.",
       "flavorTags": [
         "Coconut",
@@ -3574,7 +3635,7 @@ export const data = {
       "allergens": [
         "coconut"
       ],
-      "allergenNote": "Cinnamon-sugar and pink Himalayan salt rim mentioned in description but not in the ingredient list.",
+      "allergenNote": "Toasted coconut syrup (coconut). Cinnamon-sugar and pink Himalayan salt rim.",
       "tags": [
         "cocktail",
         "tropical",
@@ -3582,34 +3643,152 @@ export const data = {
       ]
     },
     {
-      "id": "white-peach-negroni",
-      "name": "White Peach Negroni",
+      "id": "after-school-special",
+      "name": "After School Special",
       "group": "cocktail",
-      "category": "Bitter, aperitivo, amaro",
-      "price": "17",
-      "profile": "gin, peach liqueur, blanc aperitif, Campari",
-      "pair": "Lamb Sausage, Bigoli, Rigatoni, Wood Roasted Half Duck",
-      "caveat": "Bitter Campari profile.",
-      "say": "This is a softer Negroni direction with peach, but it still has that bitter aperitivo backbone.",
+      "category": "Fruity, tropical, sparkling",
+      "section": "Calgary Exclusives",
+      "price": "18",
+      "profile": "tequila, Concord grape, plum wine, lemon, fino sherry, egg white",
+      "pair": "Burrata Cheese, Spiced Beet Salad, Apple Tatin, The Banana Pie",
+      "caveat": "Contains egg white; confirm egg allergy.",
+      "say": "After School Special is a silky, nostalgic sour — tequila, Concord grape, plum wine, and a touch of sherry under an egg-white foam. It’s playful and super drinkable.",
       "build": [
-        "Beefeater Gin",
-        "Campari",
-        "Mattei Blanc Aperitif",
-        "Peach Liqueur",
-        "Saline"
+        "Espolon Blanco Tequila",
+        "Concord Grape",
+        "Takara Plum Wine",
+        "Lemon",
+        "Alvear Fino Sherry",
+        "Egg White"
       ],
-      "description": "This house-made White Peach Negroni is keg-tapped and nitrogenated for a soft, velvety texture with just a hint of effervescence. Beefeater gin and Campari provide the classic bitter backbone, while Mattei Blanc and peach liqueur add gentle sweetness and ripe stone-fruit character. Balanced with a touch of saline, it’s bittersweet, peach-forward, and exceptionally smooth.",
+      "spec": [
+        "Espolon Blanco Tequila — 1.5 oz",
+        "Concord Grape — 0.75 oz",
+        "Takara Plum Wine — 0.75 oz",
+        "Lemon — 0.5 oz",
+        "Alvear Fino Sherry — 1 bsp",
+        "Egg White — 1 oz"
+      ],
+      "method": "Shake, double strain",
+      "glass": "Adam’s coupe",
+      "ice": "Up",
+      "garnish": "Sweet-Tart-Salt dust (pulverized Sweet Tarts & kosher salt)",
+      "description": "After School Special is a silky, fruit-forward sour that balances blanco tequila with the rich sweetness of Concord grape and plum wine. Fresh lemon provides brightness, while a touch of fino sherry adds subtle savoury complexity beneath a velvety egg white foam. It’s playful, nostalgic, and super YUM.",
       "flavorTags": [
-        "Bittersweet",
-        "Peach-Forward",
-        "Herbal",
-        "Smooth"
+        "Fruity",
+        "Silky",
+        "Balanced",
+        "Nostalgic"
       ],
-      "allergens": [],
+      "allergens": [
+        "eggs",
+        "sulphites"
+      ],
+      "allergenNote": "Egg-white foam (eggs). Sulphites from the plum wine and fino sherry.",
       "tags": [
         "cocktail",
-        "bitter",
-        "aperitivo"
+        "fruity",
+        "sour"
+      ]
+    },
+    {
+      "id": "cloud-9",
+      "name": "Cloud 9",
+      "group": "cocktail",
+      "category": "Floral, tea, citrus",
+      "section": "Calgary Exclusives",
+      "price": "17",
+      "profile": "gin, elderflower, pink grapefruit, lime, egg white",
+      "pair": "Wood Roasted Halibut, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes, Crab Toast",
+      "caveat": "Confirm egg-white allergy before recommending.",
+      "say": "Cloud 9 is citrusy, floral, and lifted. I would use it for seafood, creamy garlic, or lighter fried plates.",
+      "build": [
+        "Beefeater Gin",
+        "St Germain Elderflower Liqueur",
+        "Bol’s Pink Grapefruit Liqueur",
+        "Simple Syrup",
+        "Lime",
+        "Egg White"
+      ],
+      "spec": [
+        "Beefeater Gin — 1.5 oz",
+        "St Germain Elderflower Liqueur — 0.25 oz",
+        "Bol’s Pink Grapefruit Liqueur — 0.25 oz",
+        "Simple Syrup — 0.25 oz",
+        "Lime — 0.5 oz",
+        "Egg White — 0.5 oz"
+      ],
+      "method": "Shake, double strain, served up",
+      "glass": "Coupe",
+      "ice": "Up",
+      "garnish": "Peychaud’s bitters swirl",
+      "description": "Cloud 9 is a bright, lifted gin sour served up with a delicate balance of floral and citrus notes. Beefeater gin forms a crisp backbone, softened by elderflower, pink grapefruit liqueur, and lime. Finished with a gentle swirl of Peychaud’s bitters for subtle spice and colour.",
+      "flavorTags": [
+        "Floral",
+        "Citrus-Forward",
+        "Bright",
+        "Light"
+      ],
+      "allergens": [
+        "eggs"
+      ],
+      "allergenNote": "Egg-white foam (eggs).",
+      "tags": [
+        "cocktail",
+        "citrus",
+        "seafood"
+      ]
+    },
+    {
+      "id": "1988",
+      "name": "1988",
+      "group": "cocktail",
+      "category": "Rich, spirit-forward",
+      "section": "Calgary Exclusives",
+      "price": "18",
+      "profile": "tonka vodka, rye, Kahlua, cold brew, chocolate bitters, Grand Marnier foam",
+      "pair": "Chocolate Pot de Crème, Apple Tatin, The Banana Pie",
+      "caveat": "Coffee and dairy in the foam.",
+      "say": "1988 is our elevated espresso martini — tonka-bean vodka, cold brew, Kahlua, and a salted Grand Marnier foam. Rich, coffee-forward, and decadent.",
+      "build": [
+        "Tonka Bean Vodka",
+        "Rye",
+        "Kahlua",
+        "Cold Brew",
+        "Demerara Syrup",
+        "Scrappy’s Chocolate Bitters",
+        "Salted Grand Marnier Cold Foam"
+      ],
+      "spec": [
+        "Tonka Bean Vodka — 0.5 oz",
+        "Rye — 0.5 oz",
+        "Kahlua — 1 oz",
+        "Cold Brew — 1 oz",
+        "Demerara Syrup — 0.5 oz",
+        "Scrappy’s Chocolate Bitters — 2 dash",
+        "Salted Grand Marnier Cold Foam — covers half the glass"
+      ],
+      "method": "Shake, double strain, top with the cold foam",
+      "glass": "Rimm’s lotus",
+      "ice": "Rocks",
+      "garnish": "Fresh orange zest",
+      "description": "Named for the year Calgary hosted the Winter Olympics, 1988 is our elevated take on the Espresso Martini, inspired by Australia’s Mont Blanc coffee. Tonka bean-infused vodka and cold brew form the base, while a touch of rye adds depth without overpowering. Kahlua, demerara syrup, and chocolate bitters build a rich, balanced cocktail of coffee, chocolate, and warm spice, finished with a salted Grand Marnier cold foam for a creamy mouthfeel and a lift of citrus.",
+      "flavorTags": [
+        "Coffee-Forward",
+        "Rich",
+        "Decadent",
+        "Smooth"
+      ],
+      "allergens": [
+        "dairy",
+        "coffee"
+      ],
+      "allergenNote": "Dairy in the Grand Marnier cold foam; contains coffee (cold brew).",
+      "tags": [
+        "cocktail",
+        "coffee",
+        "rich",
+        "dessert"
       ]
     },
     {
@@ -3617,19 +3796,32 @@ export const data = {
       "name": "Spaghetti Western",
       "group": "cocktail",
       "category": "Rich, spirit-forward",
+      "section": "Calgary Exclusives",
       "price": "17",
       "profile": "bourbon, cognac, amaro Montenegro, hazelnut, basil",
-      "pair": "Wood Grilled Beef Strip Steak, 26oz Wood Grilled Beef Ribeye, Chocolate Pot de Crème",
-      "caveat": "Contains nuts.",
+      "pair": "Wood Grilled Beef Strip Steak, 26oz Wood Grilled Beef Ribeye, Grilled Lamb Saddle, Chocolate Pot de Crème",
+      "caveat": "Contains tree nuts (hazelnut).",
       "say": "Spaghetti Western is richer and nuttier, with bourbon, cognac, Montenegro, hazelnut, and basil. It does contain nuts.",
       "build": [
-        "Bourbon",
+        "Old Forester Bourbon",
         "Cognac",
         "Amaro Montenegro",
         "Frangelico",
         "Basil",
-        "Tiki Bitters"
+        "Bitterman’s Elemakule Tiki Bitters"
       ],
+      "spec": [
+        "Old Forester Bourbon — 1.5 oz",
+        "Cognac — 0.5 oz",
+        "Amaro Montenegro — 0.5 oz",
+        "Frangelico — 0.25 oz",
+        "Basil",
+        "Bitterman’s Elemakule Tiki Bitters — 2 dash"
+      ],
+      "method": "Stir with basil, strain",
+      "glass": "Single rocks",
+      "ice": "King cube",
+      "garnish": "Basil leaf",
       "description": "Spaghetti Western is a rich cocktail that bridges old-world elegance and frontier boldness. Bourbon and cognac form a warm, structured base, layered with the bittersweet complexity of Amaro Montenegro and the nutty richness of Frangelico. Fresh basil adds a green, aromatic lift, while tiki bitters bring subtle spice and depth. Bold and balanced, it’s smooth, savory-leaning, and quietly complex.",
       "flavorTags": [
         "Spirit-Forward",
@@ -3648,69 +3840,41 @@ export const data = {
       ]
     },
     {
-      "id": "cloud-9",
-      "name": "Cloud 9",
+      "id": "sunrise-spritz",
+      "name": "Sunrise Spritz",
       "group": "cocktail",
-      "category": "Floral, tea, citrus",
-      "price": "17",
-      "profile": "gin, elderflower, grapefruit, lime, egg whites",
-      "pair": "Wood Roasted Halibut, Shrimp & Crab, Garlic Bread, Crispy Smashed Potatoes, Crab Toast",
-      "caveat": "Confirm egg-white allergy and vegan language before recommending.",
-      "say": "Cloud 9 is citrusy, floral, and lifted. I would use it for seafood, creamy garlic, or lighter fried plates.",
+      "category": "Zero-proof cocktail",
+      "section": "NA Cocktails",
+      "price": "10",
+      "profile": "strawberry-rhubarb, lemon, NA sparkling wine",
+      "pair": "Burrata Cheese, Spiced Beet Salad, Apple Tatin, The Banana Pie",
+      "caveat": "Non-alcoholic.",
+      "say": "Sunrise Spritz is the lighter fruit-sparkling no-alcohol option: rhubarb, strawberry, and bubbles.",
       "build": [
-        "Beefeater Gin",
-        "Elderflower Liqueur",
-        "Pink Grapefruit Liqueur",
-        "Simple Syrup",
-        "Lime",
-        "Peychaud's Bitters Spritz"
+        "Strawberry Rhubarb Syrup",
+        "Lemon",
+        "Freixenet NA Sparkling Wine"
       ],
-      "description": "Cloud 9 is a bright, lifted gin sour served up with a delicate balance of floral and citrus notes. Beefeater gin forms a crisp backbone, softened by elderflower and vibrant pink grapefruit liqueur. Fresh lime adds brightness, while a gentle spritz of Peychaud’s bitters finishes the drink with subtle spice and color.",
+      "spec": [
+        "Strawberry Rhubarb Syrup — 1.5 oz",
+        "Lemon — 0.5 oz",
+        "Freixenet NA Sparkling Wine — 3 oz"
+      ],
+      "method": "Build in glass, top with NA sparkling",
+      "glass": "Wine glass",
+      "ice": "Rocks",
+      "garnish": "Lemon twist",
+      "description": "Sunrise Spritz is a bright, refreshing non-alcoholic cocktail that balances sweet-tart strawberry rhubarb with fresh lemon. Finished with crisp Freixenet NA sparkling wine, it’s light, vibrant, and beautifully effervescent.",
       "flavorTags": [
-        "Floral",
-        "Citrus-Forward",
-        "Bright",
+        "Fruity",
+        "Effervescent",
         "Light"
       ],
-      "allergens": [
-        "eggs"
-      ],
-      "allergenNote": "Allergies says Eggs but no egg white appears in the printed ingredient list — likely an unlisted egg-white foam in this gin sour. Verify build at the bar.",
-      "tags": [
-        "cocktail",
-        "citrus",
-        "seafood"
-      ]
-    },
-    {
-      "id": "rolling-canoe",
-      "name": "Rolling Canoe",
-      "group": "cocktail",
-      "category": "Rich, spirit-forward",
-      "price": "17",
-      "profile": "rye, ruby port, ginger, lemon",
-      "pair": "Wood Grilled Beef Strip Steak, Grilled Farm Chicken, The Banana Pie, Apple Tatin",
-      "caveat": "Whiskey-forward but brightened with ginger and lemon.",
-      "say": "Rolling Canoe is whiskey, port, ginger, and lemon. It is a strong call for steak or a richer after-dinner drink.",
-      "build": [
-        "Rye",
-        "Ruby Port",
-        "Ginger Syrup",
-        "Lemon"
-      ],
-      "description": "Rolling Canoe is a bright, crowd-favourite cocktail and a true staple at Bridgette Bar. Ruby port and rye whiskey create a rich yet approachable base, lifted by fresh lemon and warming ginger syrup. Shaken and served on the rocks with a lemon twist, it’s vibrant, balanced, and endlessly drinkable — a classic that’s stood the test of time.",
-      "flavorTags": [
-        "Bright",
-        "Balanced",
-        "Ginger-Spiced"
-      ],
       "allergens": [],
-      "allergenNote": "Doc says N/A, but ruby port is a fortified wine and typically contains sulphites — inconsistent with the sulphite flag on Eat, Aprés, Love. Verify.",
       "tags": [
         "cocktail",
-        "rich",
-        "steak",
-        "dessert"
+        "zero-proof",
+        "sparkling"
       ]
     },
     {
@@ -3718,11 +3882,35 @@ export const data = {
       "name": "Lovers Mountain",
       "group": "cocktail",
       "category": "Zero-proof cocktail",
+      "section": "NA Cocktails",
       "price": "12",
-      "profile": "NOA dry gin, Earl Grey tea, lemon, lavender, milk washed | 0.04%",
+      "profile": "NA gin, Earl Grey tea, lemon, lavender, milk clarified | 0.04%",
       "pair": "Bibb Lettuce, Spiced Beet Salad, Maple BBQ Rainbow Trout",
-      "caveat": "Milk washed; very low alcohol listed.",
-      "say": "If you are skipping alcohol, Lovers Mountain feels like a real cocktail: tea, lemon, lavender, and a polished finish.",
+      "caveat": "Milk-clarified; 0.04% ABV from the lavender bitters.",
+      "say": "If you are skipping alcohol, Lovers Mountain feels like a real cocktail: tea, lemon, lavender, and a polished finish — the NA sibling of Heartbreak Mountain.",
+      "build": [
+        "Noa Dry Gin",
+        "Earl Grey Tea",
+        "Lemon",
+        "Lavender Bitters",
+        "Milk Clarified"
+      ],
+      "method": "Build in single rocks — pre-diluted batch",
+      "glass": "Single rocks",
+      "ice": "Rocks",
+      "garnish": "Lemon twist",
+      "description": "This milk-clarified 0-proof gin cocktail blends Earl Grey tea, fresh lemon, and lavender bitters for a delicately floral and herbal profile. Silky smooth and crystal clear, it’s light, refreshing, and effortlessly drinkable with a soft citrus finish. Served over rocks so it reads apart from the Heartbreak Mountain.",
+      "flavorTags": [
+        "Floral",
+        "Gin",
+        "Light",
+        "Smooth"
+      ],
+      "allergens": [
+        "alcohol",
+        "dairy"
+      ],
+      "allergenNote": "0.04% ABV — the lavender bitters carry a trace of alcohol. Milk-clarified (dairy).",
       "tags": [
         "cocktail",
         "zero-proof",
@@ -3734,17 +3922,30 @@ export const data = {
       "name": "Short Film",
       "group": "cocktail",
       "category": "Zero-proof cocktail",
+      "section": "NA Cocktails",
       "price": "10",
-      "profile": "Caleno light & zesty, Martini Floreale, za'atar, spiced white cranberry, lemon",
+      "profile": "NA gin, Martini Floreale, za’atar, spiced white cranberry, lemon",
       "pair": "Hummus Chips, Smashed Cucumbers, Endive, Eggplant Fries",
-      "caveat": "Sesame allergy note on menu.",
+      "caveat": "Sesame (za’atar).",
       "say": "Short Film is zesty and spiced, with white cranberry and lemon. Great for a no-alcohol guest who wants complexity.",
       "build": [
         "Caleno Light and Zesty “Gin”",
         "Martini Floreale",
-        "Za'atar Syrup",
-        "Spiced White Cranberry"
+        "Za’atar Syrup",
+        "Spiced White Cranberry",
+        "Lemon"
       ],
+      "spec": [
+        "Caleno Light and Zesty “Gin” — 1 oz",
+        "Martini Floreale — 1 oz",
+        "Za’atar Syrup — 0.75 oz",
+        "Spiced White Cranberry — 0.5 oz",
+        "Lemon — 0.75 oz"
+      ],
+      "method": "Shake, double strain",
+      "glass": "Single rocks",
+      "ice": "Rocks",
+      "garnish": "Mint top",
       "description": "Short Film is a layered, non-alcoholic cocktail that balances bright citrus with savory herbal spice. Caleno Light & Zesty “Gin” and Martini Floreale create a floral, botanical base, while za’atar syrup adds unexpected depth and warmth. Spiced white cranberry brings a crisp, gently tart finish. Shaken and served on the rocks, then garnished with a fresh mint top, it’s refreshing, expressive, and quietly complex.",
       "flavorTags": [
         "Herbal",
@@ -3754,40 +3955,11 @@ export const data = {
       "allergens": [
         "sesame"
       ],
-      "allergenNote": "Sesame from the za'atar syrup.",
+      "allergenNote": "Sesame from the za’atar syrup.",
       "tags": [
         "cocktail",
         "zero-proof",
         "spice"
-      ]
-    },
-    {
-      "id": "sunrise-spritz",
-      "name": "Sunrise Spritz",
-      "group": "cocktail",
-      "category": "Zero-proof cocktail",
-      "price": "10",
-      "profile": "rhubarb, strawberry, non-alcoholic sparkling wine | 0.05%",
-      "pair": "Burrata Cheese, Spiced Beet Salad, Apple Tatin, The Banana Pie",
-      "caveat": "Very low alcohol listed.",
-      "say": "Sunrise Spritz is the lighter fruit-sparkling no-alcohol option: rhubarb, strawberry, and bubbles.",
-      "build": [
-        "Strawberry Rhubarb Syrup",
-        "Lemon",
-        "Freixenet NA Sparkling Wine"
-      ],
-      "description": "Sunrise Spritz is a bright, refreshing non-alcoholic cocktail that balances sweet-tart strawberry rhubarb with fresh lemon. Finished with crisp Freixenet NA sparkling wine, it’s light, vibrant, and beautifully effervescent",
-      "flavorTags": [
-        "Fruity",
-        "Effervescent",
-        "Light"
-      ],
-      "allergens": [],
-      "allergenNote": "Doc says N/A, but dealcoholized sparkling wine commonly contains sulphites. Verify.",
-      "tags": [
-        "cocktail",
-        "zero-proof",
-        "sparkling"
       ]
     }
   ],
